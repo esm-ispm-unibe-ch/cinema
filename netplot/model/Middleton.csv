@@ -1,0 +1,41 @@
+Study (name);Study id;Treatment;r;n
+Dickersin;1;1;13;107
+Dickersin;1;2;7;103
+Crosignani;2;1;5;38
+Crosignani;2;2;2;39
+O' Connor;3;1;7;106
+O' Connor;3;2;2;50
+Pinion;4;1;13;104
+Pinion;4;2;4;93
+Dwyer;5;1;19;99
+Dwyer;5;2;6;97
+Brun;6;1;3;16
+Brun;6;3;2;27
+Cooper 1;7;1;1;101
+Cooper 1;7;3;3;201
+Perino;8;1;5;55
+Perino;8;3;3;56
+Duleba;9;1;10;72
+Duleba;9;3;16;156
+Hawe;10;1;3;33
+Hawe;10;3;4;37
+Van Zon-Rabelink;11;1;13;58
+Van Zon-Rabelink;11;3;15;75
+Cooper 2;12;1;5;82
+Cooper 2;12;3;11;154
+Pellicano;13;1;14;38
+Pellicano;13;3;7;37
+Soysai;14;1;19;48
+Soysai;14;3;15;45
+Cooper 3;15;1;33;128
+Cooper 3;15;3;29;121
+Meyer;16;1;1;120
+Meyer;16;3;5;125
+Crosignani;17;4;5;34
+Crosignani;17;1;2;35
+Shaw;18;4;5;25
+Shaw;18;3;5;28
+Busfield;19;4;2;37
+Busfield;19;3;9;39
+Soysal;20;4;10;32
+Soysal;20;3;9;35
