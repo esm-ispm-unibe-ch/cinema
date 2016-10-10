@@ -1,3 +1,7 @@
 
 node_modules/
 lib/
+*/dist
+*/.tmp
+*/bower_components
+*/test/bower_components
