@@ -1,6 +1,6 @@
 {
   "generator-mocha": {
-    "ui": "tdd",
+    "ui": "bdd",
     "rjs": false
   }
 }
