@@ -7,6 +7,7 @@
 </head>
 <body>
   <div id="mocha"></div>
+  <div id="cy" style="width:600px;height:600px;display:block;"></div>
   <script src="../bower_components/mocha/mocha.js"></script>
   <script>mocha.setup('bdd');</script>
   <script src="../bower_components/chai/chai.js"></script>
@@ -16,12 +17,18 @@
     var should = chai.should();
   </script>
   <!-- bower:js -->
+  <script src="../bower_components/underscore/underscore.js"></script>
   <script src="../bower_components/jquery/dist/jquery.js"></script>
+  <script src="../bower_components/cytoscape/dist/cytoscape.js"></script>
+  <script src="../bower_components/cytoscape/cytoscape.js-graphml/cytoscape-graphml.js"></script>
   <!-- endbower -->
   <!-- include source files here... -->
+  <script src="../scripts/Middleton.js"></script>
   <script src="../scripts/getJson.js"></script>
+  <script src="../scripts/main.js"></script>
+  <script src="../scripts/netplot.js"></script>
   <!-- include spec files here... -->
-  <script src="spec/readJson.js"></script>
+  <script src="spec/index.js"></script>
   <script>
     if (navigator.userAgent.indexOf('PhantomJS') === -1) {
       mocha.run();

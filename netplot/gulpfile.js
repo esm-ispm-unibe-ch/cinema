@@ -68,7 +68,7 @@ gulp.task('lint:test', () => {
     .pipe(gulp.dest('test/spec'));
 });
 
-gulp.task('html', ['styles', 'templates', 'scripts'], () => {
+gulp.task('html', ['styles', 'scripts','templates'], () => {
   return gulp.src('app/*.html')
     .pipe($.useref({searchPath: ['.tmp', 'app', '.']}))
     .pipe($.if('*.js', $.uglify()))
@@ -139,7 +139,7 @@ gulp.task('serve:dist', () => {
   });
 });
 
-gulp.task('serve:test', ['scripts'], () => {
+gulp.task('serve:test', ['templates','scripts'], () => {
   browserSync({
     notify: false,
     port: 9000,
@@ -153,6 +153,7 @@ gulp.task('serve:test', ['scripts'], () => {
     }
   });
 
+  gulp.watch('app/templates/**/*.hbs', ['templates']);
   gulp.watch('app/scripts/**/*.js', ['scripts']);
   gulp.watch(['test/spec/**/*.js', 'test/index.html']).on('change', reload);
   gulp.watch('test/spec/**/*.js', ['lint:test']);

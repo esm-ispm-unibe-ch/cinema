@@ -8,7 +8,6 @@
         function (value) {
           try{
             JSON.parse(value).should.have.length(40);
-            console.log('Contents: ' + value);
             done();
           }catch (e){
             done(e);
@@ -19,4 +18,11 @@
       });
     });
   });
+
+describe('Plot network plot from middleton.json using cytoscape', function () {
+  it('short entries by treatment', function (){
+    cy.nodes().should.have.length(4);
+  });
+});
+
 })();

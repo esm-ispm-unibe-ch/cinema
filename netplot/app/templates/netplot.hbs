@@ -1,0 +1,10 @@
+<div id="netplotControls">
+  {{#each controls.vertices}}
+    {{title}}
+  <ul class="controls nav nav-pills pull-left">
+    {{#each selections}}
+      <li class={{#if isActive}}"active"{{/if}}><a  class='controls' data-type={{action}} filter={{value}}>{{label}}</a></li>
+    {{/each}}
+  </ul>
+  {{/each}}
+</div>

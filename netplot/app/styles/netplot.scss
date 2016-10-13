@@ -1,0 +1,16 @@
+$icon-font-path: '../fonts/';
+$cySize: 600px;
+// bower:scss
+@import "bower_components/bootstrap-sass/assets/stylesheets/_bootstrap.scss";
+// endbower
+#cy{
+  width:$cySize;
+  height:$cySize;
+  display:block;
+  border:2px grey solid;
+}
+
+#netplotControls{
+  padding:4px;
+  display:block;
+}
