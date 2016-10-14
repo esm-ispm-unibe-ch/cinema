@@ -1,10 +1,18 @@
-<div id="netplotControls">
-  {{#each controls.vertices}}
-    {{title}}
-  <ul class="controls nav nav-pills pull-left">
-    {{#each selections}}
-      <li class={{#if isActive}}"active"{{/if}}><a  class='controls' data-type={{action}} filter={{value}}>{{label}}</a></li>
-    {{/each}}
-  </ul>
+<ul id="netplotControls">
+  {{#each controls}}
+  <li class='controls-container'>
+    <button class='controls-title' data-toggle="collapse" href="#{{id}}">{{title}}</button>
+    <div id={{id}} class="panel-collapse collapse">
+      <ul class="controls nav nav-pills pull-left">
+        {{#each selections}}
+          <li class={{#if isActive}}"active"{{/if}}>
+            <a  class='control' action={{action}} filter={{value}}>
+              {{label}}
+            </a>
+          </li>
+        {{/each}}
+      </ul>
+    </div>
+  </li>
   {{/each}}
-</div>
+</ul>

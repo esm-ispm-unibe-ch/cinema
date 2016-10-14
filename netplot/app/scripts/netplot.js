@@ -2,14 +2,24 @@
 console.log('\'Allo \'Allo! netplot js here!');
 
 
- var NetPlot = {
+ var NP = {
    vertices : [],
    edges : [],
    etovRatio : 0.5,
+   options: {
+     vertexSizeBy: 'sampleSize',
+     edgeSizeBy: 'sampleSize',
+     edgeColorBy: 'majority',
+     noROBcolor: '#282C34',
+     lowROBcolor: '#9DA5B4',
+     unclearROBcolor: '#FBBC05',
+     highROBcolor: '#E0685C',
+   },
+
    makeVertices : (model) => {
-     var elements = NetPlot.makeGraphFromTreatments(model);
-     [NetPlot.vertices, NetPlot.edges] = elements;
-     NetPlot.cy.add(_.reduce(_.flatten(elements),
+     var elements = NP.makeGraphFromTreatments(model);
+     [NP.vertices, NP.edges] = elements;
+     NP.cy.add(_.reduce(_.flatten(elements),
          function(memo, nd){
           nd.width = nd.sampleSize;
           var keyList = Object.keys(nd);
@@ -79,6 +89,8 @@ console.log('\'Allo \'Allo! netplot js here!');
 
 
   resizeElements : (nodeFilter, edgeFilter) => {
+    NP.options.vertexSizeBy = nodeFilter;
+    NP.options.edgeSizeBy = edgeFilter;
     var setSize = (elem, elements, key, minSize=30, maxSize=140, ratio=1) => {
       var minVertexSize = (elements, key) => {return _.reduce(elements, (memo, e)=>{return memo<e[key]&&memo!==-1?memo:e[key];},-1)};
       var maxVertexSize = (elements, key) => {return _.reduce(elements, (memo, e)=>{return memo>e[key]?memo:e[key];},0)};
@@ -88,23 +100,12 @@ console.log('\'Allo \'Allo! netplot js here!');
       var ratio = maxVertexSize(elements,key)*minRuleRatio>maxSize?maxRuleRatio:minRuleRatio;
       _.reduce(elements, (memo,e) => {
         e.renderSize = e[key]*ratio;
-        console.log(e.renderSize);
+        //console.log(e.renderSize);
         return memo.concat(e);},[])
-    }
-    var renderElements = () =>{
-      var elements = NetPlot.vertices.concat(NetPlot.edges);
-    _.map(elements, (e) => {
-      var elem = e.type;
-      if(e.renderSize<40){
-      NetPlot.cy.elements(elem+'[id="'+e.id+'"]').style({"text-valign":"top"});
-      }
-      NetPlot.cy.elements(elem+'[id="'+e.id+'"]').style({'width':e.renderSize,'height':e.renderSize});});
-      NetPlot.cy.center();
-    }
-
+    };
     var adjustEdgesWidth = () => {
-      var edges = NetPlot.edges;
-      var vertices = NetPlot.vertices;
+      var edges = NP.edges;
+      var vertices = NP.vertices;
       var connectedNodes = (edge) => {
         var st =[edge.source,edge.target];
         var out =  _.map(st,(n)=>{return _.find(vertices,v=>{return v.id==n})});
@@ -113,35 +114,84 @@ console.log('\'Allo \'Allo! netplot js here!');
       var sizeDiff = e => _.map(connectedNodes(e), n=>{
         var diff=n.renderSize - e.renderSize;
         return {diff:diff,vsize:n.renderSize}; });
-
       var diffs =_.reduce(edges, (memo,e) => {
         return memo.concat(sizeDiff(e));
       },[]);
-
       var maxDiff = _.reduce(diffs, (memo, d) => {
-        return memo.diff>=d.diff?d:memo;
-      },{diff:0,vsize:0})
-
-      var sizeFactor = NetPlot.etovRatio* maxDiff.vsize/(-maxDiff.diff+maxDiff.vsize);
-
-      _.map(edges, e =>{ e.renderSize*=sizeFactor});
-
-    }
-
-    setSize('node', NetPlot.vertices, nodeFilter);
-    setSize('edge', NetPlot.edges, nodeFilter);
+        return memo.diff/memo.vsize>=d.diff/d.vsize?d:memo;
+      },{diff:0,vsize:1});
+      var sizeFactor = NP.etovRatio * maxDiff.vsize / (-maxDiff.diff+maxDiff.vsize);
+      console.log('adjusting edge size',maxDiff,sizeFactor);
+      if(maxDiff.diff<0){
+        _.map(edges, e =>{e.renderSize *= sizeFactor});
+      }
+    };
+    var renderElements = () =>{
+      var elements = NP.vertices.concat(NP.edges);
+    _.map(elements, (e) => {
+      var elem = e.type;
+      if(e.renderSize<40){
+      NP.cy.elements(elem+'[id="'+e.id+'"]').style({'text-valign':'top'});
+      }
+      NP.cy.elements(elem+'[id="'+e.id+'"]').style({'width':e.renderSize,'height':e.renderSize});});
+    };
+    setSize('node', NP.vertices, nodeFilter);
+    setSize('edge', NP.edges, edgeFilter);
     adjustEdgesWidth();
-
     renderElements();
-
-
   },
 
+  colorEdges : (filter) => {
+    var edges = NP.edges;
+    var colors = [NP.options.lowROBcolor,NP.options.unclearROBcolor,NP.options.highROBcolor];
+    _.map(NP.edges, e => {
+      var totalROB = 0;
+      switch(filter){
+        case 'majority':
+        totalROB = _.first(
+          _.sortBy(
+            _.sortBy(
+              _.groupBy(e.ROB, rob => {return rob}),
+              robs => {
+                return -robs[0];
+              }
+            ),
+            robs => {
+              return -robs.length;
+            }
+          )
+        )[0];
+        //console.log(e.ROB,totalROB);
+        e.ecolor = colors[totalROB-1];
+        break;
+        case 'mean':
+        totalROB = _.reduce(e.ROB, (memo,rob) => {
+          return memo + rob;
+        },0) / e.ROB.length;
+        totalROB = Math.round(totalROB);
+        e.ecolor = colors[totalROB-1];
+        //console.log(totalROB);
+        break;
+        case 'max':
+        totalROB = _.reduce(e.ROB, (memo,rob) => {
+          return memo > rob ? memo : rob;
+        },0);
+        //console.log(e.ROB,totalROB);
+        e.ecolor = colors[totalROB-1];
+        //console.log(totalROB);
+        break;
+        case 'noColor':
+        e.ecolor = NP.options.noROBcolor;
+        break;
+      }
+      NP.cy.elements('edge[id="'+e.id+'"]').style({'line-color':e.ecolor});
+    });
+  },
 
   cyIsReady : false,
   cy : {},
   cyInit : (containerId) => {
-    NetPlot.cy = cytoscape({
+    NP.cy = cytoscape({
     container: document.getElementById(containerId), // container to render in
     zoomingEnabled: 0,
     style: [
@@ -159,7 +209,7 @@ console.log('\'Allo \'Allo! netplot js here!');
         {
           selector: ':parent',
           style: {
-            'background-opacity': 0.9
+            'background-opacity': 1.0
           }
         }
       ]
@@ -171,51 +221,117 @@ console.log('\'Allo \'Allo! netplot js here!');
     $(controlContainer).append(tmplt);
   },
 
-  controls : {
-    vertices: [
-      {type: 'button', title: 'Vertex size by:', selections: [
+  controls : [
+    {
+      type: 'button',
+      title: 'Vertex size by:',
+      id: 'vertexWidthControls',
+      selections: [
+        {
+          label:'Sample Size',
+          value:'sampleSize',
+          isActive:true,
+          action: 'changeVertexSize'
+        },
+        {
+          label:'# of Studies',
+          value:'numStudies',
+          isActive:false,
+          action: 'changeVertexSize'
+        }
+      ]
+    },
+    {
+      type: 'button',
+      title: 'Edge width by:',
+      id: 'edgeWidthControls',
+      selections: [
         {
         label:'Sample Size',
         value:'sampleSize',
         isActive:true,
-        action: 'changeVertexSize'
+        action: 'changeEdgeSize'
         },
         {
         label:'# of Studies',
         value:'numStudies',
         isActive:false,
-        action: 'changeVertexSize'
-      }]}
-    ]
-  },
-
+        action: 'changeEdgeSize'
+        }
+      ]
+    },
+    {
+      type: 'button',
+      title: 'Edges Color',
+      id: 'edgeColorControls',
+      selections: [
+        {
+        label:'Majority ROB',
+        value:'majority',
+        isActive:true,
+        action: 'colorEdges'
+        },
+        {
+        label:'Mean ROB',
+        value:'mean',
+        isActive:false,
+        action: 'colorEdges',
+        },
+        {
+        label:'Maximum ROB',
+        value:'max',
+        isActive:false,
+        action: 'colorEdges',
+        },
+        {
+        label:'No Coloring',
+        value:'noColor',
+        isActive:false,
+        action: 'colorEdges'
+        },
+      ]
+    }
+  ],
   boundControls : () => {
-    $('a[data-type=changeVertexSize]').bind( 'click', function() {
-      var filter = $(this).attr('filter');
-    $('a[data-type=changeVertexSize]').parent().parent().children('li').removeClass('active');
-      $(this).parent().addClass('active');
-      NetPlot.resizeElements(filter,'sampleSize');
+    $('a.control').bind( 'click', function() {
+      if(!($(this).parent().hasClass('active'))){
+        var filter = $(this).attr('filter');
+        var action = $(this).attr('action');
+        $(this).parent().parent().children('li').removeClass('active');
+        $(this).parent().addClass('active');
+        switch (action){
+          case 'changeVertexSize':
+            NP.resizeElements(filter,NP.options.edgeSizeBy);
+            break;
+          case 'changeEdgeSize':
+            NP.resizeElements(NP.options.vertexSizeBy,filter);
+            break;
+          case 'colorEdges':
+            NP.colorEdges(filter);
+            break;
+        }
+      }
     });
   },
-
   init: (model, cyId) => {
-    NetPlot.cyInit(cyId);
-    NetPlot.makeVertices(model);
-    NetPlot.resizeElements('sampleSize','sampleSize');
-    NetPlot.cy.layout(NetPlot.cyOptions);
+    NP.cyInit(cyId);
+    NP.makeVertices(model);
+    NP.resizeElements(NP.options.vertexSizeBy,NP.options.edgeSizeBy);
+    NP.colorEdges('majority');
+    NP.cy.layout(NP.cyOptions);
   },
   cyOptions :{
     name: 'circle',
     ready: () => {
-      NetPlot.cyIsReady =true;
-      NetPlot.addControls('#cyContainer',cytmpl);
-      NetPlot.boundControls();
-      NetPlot.cy.center();
+      NP.cyIsReady =true;
+      NP.addControls('#cyContainer',cytmpl);
+      NP.boundControls();
+      NP.cy.center();
     }
   }
 }
 
 
 
-var cytmpl = Netplot.templates.netplot(NetPlot);
-NetPlot.init(middleton, 'cy');
+var cytmpl = Netplot.templates.netplot(NP);
+NP.init(middleton, 'cy');
