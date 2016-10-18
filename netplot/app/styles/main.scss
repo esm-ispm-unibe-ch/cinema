@@ -13,8 +13,9 @@ $icon-font-path: '../fonts/';
 
 /* Space out content a bit */
 body {
-  padding-top: 20px;
   padding-bottom: 20px;
+   min-width:768px; /* suppose you want minimun width of 1000px */
+   width: auto !important;  /* Firefox will set width as auto */
 }
 
 /* Everything but the jumbotron gets side spacing for mobile first views */
@@ -67,6 +68,9 @@ body {
   }
 }
 
+.button{
+  cursor:pointer;
+}
 a.control {
   cursor: pointer!important;
   -webkit-user-select: none; /* Chrome/Safari */
@@ -76,6 +80,14 @@ a.control {
 /* Rules below not implemented in browsers yet */
 -o-user-select: none;
 user-select: none;
+}
+.routed{
+  display: none;
+}
+
+#tools{
+  margin-top:50px;
+  margin-bottom:50px;
 }
 
 /* Responsive: Portrait tablets and up */

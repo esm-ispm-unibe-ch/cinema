@@ -1,0 +1,25 @@
+$icon-font-path: '../fonts/';
+// bower:scss
+@import "bower_components/bootstrap-sass/assets/stylesheets/_bootstrap.scss";
+// endbower
+#logo{
+  padding:5px;
+}
+
+.header{
+  padding:0!important;
+  background-color:#EEEEEE;
+}
+
+.header-title{
+  padding-top:31px;
+}
+
+.nav-header{
+  padding-top:34px;
+}
+
+.btn.routes{
+  margin-right:1px;
+  margin-left:2px;
+}

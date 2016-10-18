@@ -1,18 +1,23 @@
-<ul id="netplotControls">
-  {{#each controls}}
-  <li class='controls-container'>
-    <button class='controls-title' data-toggle="collapse" href="#{{id}}">{{title}}</button>
-    <div id={{id}} class="panel-collapse collapse">
-      <ul class="controls nav nav-pills pull-left">
-        {{#each selections}}
-          <li class={{#if isActive}}"active"{{/if}}>
-            <a  class='control' action={{action}} filter={{value}}>
-              {{label}}
-            </a>
-          </li>
-        {{/each}}
-      </ul>
+
+  <div class='well col-xs-5'>
+    <h4 class=''>
+      <span class="pull-left"> Controls </span>
+      <span class="pull-right glyphicon glyphicon-cog" aria-hidden="true"></span>
+    </h4>
+    <br>
+    <hr>
+    <div class=''>
+      {{#each controls}}
+        <h5 class='controls-title'>{{title}}</h5>
+        <select action="{{action}}" class='controls-container netplotControl form-control'>
+            {{#each selections}}
+              <option filter="{{value}}" {{#if isActive}}selected{{/if}}>
+                {{label}}
+              </option>
+            {{/each}}
+        </select>
+      {{/each}}
+      <hr/>
+      <a class='col-xs-12 np-redraw btn btn-default' action='np-redraw'>Redraw</a>
     </div>
-  </li>
-  {{/each}}
-</ul>
+  </div>

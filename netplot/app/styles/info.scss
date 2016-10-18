@@ -1,0 +1,18 @@
+$icon-font-path: '../fonts/';
+// bower:scss
+@import "bower_components/bootstrap-sass/assets/stylesheets/_bootstrap.scss";
+// endbower
+
+#info {
+  margin-bottom:20px;
+}
+
+.info-title {
+
+}
+
+.info-screen {
+  padding:15px 30px 15px 30px;
+  border-radius: 25px;
+  background-color:#EEEEEE;
+}

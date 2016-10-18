@@ -17,30 +17,45 @@
 
     <!-- build:css styles/main.css -->
     <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/header.css">
+    <link rel="stylesheet" href="styles/footer.css">
+    <link rel="stylesheet" href="styles/info.css">
     <link rel="stylesheet" href="styles/netplot.css">
     <!-- endbuild -->
   </head>
   <body>
 
-    <div class="container">
-      <div class="header">
-        <ul class="nav nav-pills pull-right">
-          <li class="active"><a href="#">Home</a></li>
-          <li><a href="#">About</a></li>
-          <li><a href="#">Contact</a></li>
-        </ul>
-        <h3 class="text-muted">netplot</h3>
-      </div>
 
-    <div id="cyContainer">
-      <div id="cy"></div>
+  <div class="container-fluid header"></div>
+
+  <div class="container-fluid " id='info'></div>
+
+  <div class="container-fluid routed" id='projects'>
+  </div>
+
+  <div class="container-fluid routed" id='tools'>
+    <div id="cyContainer" class='col-xs-12'>
+      <h4 id="cyTitle" class='well button tool-title col-xs-12'>NetPlot</h4>
+      <div id="cy" class='col-md-6 col-xs-12 col-sm-12'></div>
+      <div id="netplotControls" class='col-md-6 col-sm-12 col-xs-12'></div>
     </div>
-
-
-      <div class="footer">
-        <p>♥ from the GRADE team</p>
-      </div>
+    <div id="contMatContainer" class='col-xs-12'>
+      <h4 id="contMatTitle" class='well button  tool-title col-xs-12'>Contribution Matrix</h4>
     </div>
+    <div id="studyMatContainer" class='col-xs-12'>
+      <h4 id="studyContTitle" class='well button tool-title col-xs-12'>Study Contribution</h4>
+    </div>
+  </div>
+
+  <div id='about' class="container-fluid routed">
+  </div>
+
+
+  <div class="footerContainer container-fluid ">
+    <div class="footer col-xs-12">
+      <p>♥ from the GRADE team</p>
+    </div>
+  </div>
 
 
     <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
@@ -63,6 +78,22 @@
     <!-- endbower -->
     <!-- endbuild -->
 
+
+    <!-- build:js scripts/main.js -->
+    <script src="templates/header.js"></script>
+    <script src="templates/info.js"></script>
+    <script src="templates/projects.js"></script>
+    <script src="templates/netplot.js"></script>
+    <script src="templates/contMat.js"></script>
+    <script src="templates/studyMat.js"></script>
+    <script src="templates/about.js"></script>
+    <script src="scripts/Middleton.js"></script>
+    <script src="scripts/getJson.js"></script>
+    <script src="scripts/main.js"></script>
+    <script src="scripts/netplot.js"></script>
+    <!-- endbuild -->
+
+
     <!-- build:js scripts/plugins.js -->
     <script src="/bower_components/bootstrap-sass/assets/javascripts/bootstrap/affix.js"></script>
     <script src="/bower_components/bootstrap-sass/assets/javascripts/bootstrap/alert.js"></script>
@@ -77,21 +108,5 @@
     <script src="/bower_components/bootstrap-sass/assets/javascripts/bootstrap/collapse.js"></script>
     <script src="/bower_components/bootstrap-sass/assets/javascripts/bootstrap/tab.js"></script>
     <!-- endbuild -->
-
-    <!-- build:js scripts/main.js -->
-    <script src="templates/header.js"></script>
-    <script src="templates/netplot.js"></script>
-    <script src="scripts/Middleton.js"></script>
-    <script src="scripts/getJson.js"></script>
-    <script src="scripts/main.js"></script>
-    <script src="scripts/netplot.js"></script>
-    <!-- endbuild -->
-
-    <script>
-      var headertmpl = Netplot.templates.header();
-      $(document).ready(function () {
-        $(".header").html(headertmpl);
-      })
-    </script>
   </body>
 </html>

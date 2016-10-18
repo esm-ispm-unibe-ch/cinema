@@ -1,3 +1,29 @@
-<h1>
-  GRADE NETPLOT
-</h1>
+
+<a href='#home' id='logo' class='col-xs-2 col-sm-2 col-md-1'>
+  <img src="images/logo.png"/>
+</a>
+
+<h4 class="col-md-4 hidden-sm hidden-xs header-title">{{headerTitle}}</h4>
+
+<h4 class="col-xs-2 col-sm-1 visible-sm visible-xs header-title">{{headerTitleShort}}</h4>
+
+<div class="col-md-7 col-sm-9 col-md-offset-0 navbar-nav nav-header hidden-xs" role="group" aria-label="...">
+  {{#each router.routes}}
+    <a type="button" action="{{route}}" class="btn routes navbar-right btn-default {{route}}">
+      {{label}}
+    </a>
+  {{/each}}
+</div>
+
+<div class="dropdown col-xs-1 col-offset-xs-7 visible-xs nav navbar-nav navbar-right">
+    <div href="#" class="navbar-right dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" style='font-size:30px'>&#9776;<span class="caret"></span></div>
+    <ul class="dropdown-menu navbar-right">
+        {{#each router.routes}}
+          <li>
+            <a class="btn routes {{route}}"  action="{{route}}">
+              {{label}}
+            </a>
+          </li>
+        {{/each}}
+    </ul>
+</div>

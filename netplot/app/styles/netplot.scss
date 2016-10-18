@@ -4,13 +4,22 @@ $cySize: 600px;
 @import "bower_components/bootstrap-sass/assets/stylesheets/_bootstrap.scss";
 // endbower
 #cy{
+  padding:0!important;
   width:$cySize;
   height:$cySize;
   display:block;
-  border:2px grey solid;
+  -moz-box-shadow:    inset 0 0 8px grey;
+  -webkit-box-shadow: inset 0 0 8px grey;
+  box-shadow:         inset 0 0 8px grey;
+}
+
+#cyContainer {
+
 }
 
 #netplotControls{
-  padding:4px;
-  display:block;
+}
+
+.tool-title {
+  text-align:center;
 }
