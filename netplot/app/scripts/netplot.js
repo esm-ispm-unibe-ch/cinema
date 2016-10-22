@@ -1,6 +1,4 @@
 'use strict';
-console.log('\'Allo \'Allo! netplot js here!');
-
 
  var NP = {
   isRendered: false,

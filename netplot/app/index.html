@@ -12,6 +12,8 @@
 
     <!-- build:css styles/vendor.css -->
     <!-- bower:css -->
+    <link rel="stylesheet" href="/bower_components/pikaday/css/pikaday.css" />
+    <link rel="stylesheet" href="/bower_components/handsontable/dist/handsontable.css" />
     <!-- endbower -->
     <!-- endbuild -->
 
@@ -20,6 +22,7 @@
     <link rel="stylesheet" href="styles/header.css">
     <link rel="stylesheet" href="styles/footer.css">
     <link rel="stylesheet" href="styles/info.css">
+    <link rel="stylesheet" href="styles/projects.css">
     <link rel="stylesheet" href="styles/netplot.css">
     <!-- endbuild -->
   </head>
@@ -51,7 +54,7 @@
   </div>
 
 
-  <div class="footerContainer container-fluid ">
+  <div class="footerContainer container-fluid navbar-fixed-bottom">
     <div class="footer col-xs-12">
       <p>♥ from the GRADE team</p>
     </div>
@@ -75,6 +78,11 @@
     <script src="/bower_components/cytoscape/dist/cytoscape.js"></script>
     <script src="/bower_components/handlebars/handlebars.js"></script>
     <script src="/bower_components/underscore/underscore.js"></script>
+    <script src="/bower_components/moment/moment.js"></script>
+    <script src="/bower_components/numbro/numbro.js"></script>
+    <script src="/bower_components/pikaday/pikaday.js"></script>
+    <script src="/bower_components/zeroclipboard/dist/ZeroClipboard.js"></script>
+    <script src="/bower_components/handsontable/dist/handsontable.js"></script>
     <!-- endbower -->
     <!-- endbuild -->
 
@@ -82,16 +90,16 @@
     <!-- build:js scripts/main.js -->
     <script src="templates/header.js"></script>
     <script src="templates/info.js"></script>
-    <script src="templates/projects.js"></script>
     <script src="templates/netplot.js"></script>
+    <script src="templates/projects.js"></script>
     <script src="templates/contMat.js"></script>
     <script src="templates/studyMat.js"></script>
     <script src="templates/about.js"></script>
-    <script src="scripts/Middleton.js"></script>
-    <script src="scripts/getJson.js"></script>
-    <script src="scripts/main.js"></script>
+    <script src="scripts/projects.js"></script>
     <script src="scripts/netplot.js"></script>
+    <script src="scripts/main.js"></script>
     <!-- endbuild -->
+    <script src="scripts/Middleton.js"></script>
 
 
     <!-- build:js scripts/plugins.js -->

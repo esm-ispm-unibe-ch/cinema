@@ -1,7 +1,5 @@
-console.log('\'Allo \'Allo! main js here!');
-
 var GR = {
-  model: middleton,
+  savedProjects: {},
   headerTitle: 'GRADE NMA Visualization Tools',
   headerTitleShort: 'GRADE',
   router: {
@@ -47,9 +45,6 @@ var GR = {
     $('.routed').hide();
     $('#'+route).fadeIn(400);
     GR.updateInfo(GR.getCurrentRouteInfos());
-    if(route==='tools'){
-      NP.init(GR.model, 'cy');
-    }
   },
 
   getCurrentRouteInfos: () => {
@@ -58,20 +53,21 @@ var GR = {
 
   updateInfo: (infos) =>{
     var infotmpl = Netplot.templates.info(infos);
-    $("#info").html(infotmpl);
+    $('#info').html(infotmpl);
   },
 
-  init: () =>{
+  init: (model) =>{
     var headertmpl = Netplot.templates.header(GR);
     var projectstmpl = Netplot.templates.projects();
     var abouttmpl = Netplot.templates.about();
     var infotmpl = Netplot.templates.info(GR.getCurrentRouteInfos());
-    $(".header").html(headertmpl);
-    $("#projects").html(projectstmpl);
-    $("#about").html(abouttmpl);
-    $("#info").html(infotmpl);
+    $('.header').html(headertmpl);
+    $('#projects').html(projectstmpl);
+    $('#about').html(abouttmpl);
+    $('#info').html(infotmpl);
     GR.bindNavControls();
     GR.activateRoute();
+    //NP.init(model, 'cy');
   },
 
 };
@@ -79,5 +75,26 @@ var GR = {
 
 //Rendering functions
 $(document).ready(function () {
-  GR.init();
+  var fetchModel = new Promise(
+        // The resolver function is called with the ability to resolve or
+        // reject the promise
+        function(resolve, reject) {
+            resolve(PR.getModel());
+          }
+      );
+
+      // We define what to do when the promise is resolved/fulfilled with the then() call,
+      // and the catch() method defines what to do if the promise is rejected.
+      fetchModel.then(
+          // Log the fulfillment value
+        function(val) {
+            GR.savedProjects = val;
+            PR.init();
+            GR.init(val);
+      })
+    .catch(
+        // Log the rejection reason
+        function(reason) {
+            console.log('Handle rejected promise ('+reason+') here.');
+        });
 });

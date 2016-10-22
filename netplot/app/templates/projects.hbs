@@ -1,7 +1,35 @@
-<div class='projects-container col-xs-12'>
-  <div id='project-browser' class='col-md-6 col-sm-12 col-xs-12'>
+<div class='projects-container col-xs-offset-2 col-xs-8'>
+
+  <div class='well col-xs-12'>
+    <form class=''>
+      <h4 class=''>
+        <span class="prtitle">Upload a Project</span>
+        <span class="pull-left glyphicon glyphicon-floppy-open" aria-hidden="true"></span>
+        <span id='prinfo' class="info pull-right glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+      </h4>
+      <div class="form-group">
+        <label for="exampleInputPassword1">Project Name</label>
+        <input type="" class="form-control" id="exampleInputPassword1" placeholder="My Project">
+      </div>
+      <div class="form-group">
+        <div class="radio">
+          File Format
+          <label>
+            <input name='fileformat' type="radio">Long</label>
+          <label>
+            <input name='fileformat' type="radio">Wide</label>
+        </div>
+        <input type="file" id="files" name="file" />
+      <div id="progress_bar"><div class="percent">0%</div></div>
+      </div>
+    </form>
+    <div id="byte_content"></div>
+  </div>
+
+  <div id='project-browser' class='well col-xs-12'>
     <h4>
-      Saved Projects
+      <span class="pull-left glyphicon glyphicon-floppy-saved" aria-hidden="true"></span>
+      <span class="prtitle">Saved Projects</span>
     </h4>
     <ul class="list-group">
       <li class="list-group-item">Cras justo odio</li>
@@ -10,31 +38,7 @@
       <li class="list-group-item active">Middleton</li>
       <li class="list-group-item">Vestibulum at eros</li>
     </ul>
-  <button  action='tools' class="routes btn btn-default">Proceed</button>
+    <button  action='tools' class="routes btn btn-default">Proceed</button>
   </div>
-  <form class='well col-xs-12 col-sm-12 col-md-offset-2 col-md-3'>
-    <h4 class=''>
-      <span class="pull-left">Upload a Project</span>
-      <span class="pull-right glyphicon glyphicon-floppy-open" aria-hidden="true"></span>
-    </h4>
-    <br>
-    <hr>
-    <div class="form-group">
-      <label for="exampleInputPassword1">Project Name</label>
-      <input type="" class="form-control" id="exampleInputPassword1" placeholder="My Project">
-    </div>
-    <div class="form-group">
-      <label for="exampleInputFile">Upload a csv file</label>
-      <input type="file" id="exampleInputFile">
-      <p class="help-block">Example block-level help text here.</p>
-    </div>
-    <div class="radio">
-      File Format
-      <label>
-        <input type="radio">Long</label>
-      <label>
-        <input type="radio">Wide</label>
-    </div>
-    <button  action='tools' class="routes btn btn-default">Go!!</button>
-  </form>
+
 </div>
