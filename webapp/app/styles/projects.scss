@@ -8,6 +8,14 @@ $icon-font-path: '../fonts/';
   margin-bottom:40px;
 }
 
+.project-uploader{
+  overflow:auto;
+}
+
+#filePreview {
+  margin-bottom:23px;
+}
+
 #progress_bar {
   margin: 10px 0;
   padding: 3px;
@@ -30,4 +38,8 @@ $icon-font-path: '../fonts/';
 
 .prtitle{
   padding-left:8px;
+}
+
+#project-name{
+  width:400px;
 }

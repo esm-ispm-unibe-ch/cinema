@@ -1,3 +1,7 @@
+var Messages = require('./Messages.js')();
+var PR = require('./projects.js')();
+var NP = require('./netplot.js')();
+
 var GR = {
   savedProjects: {},
   headerTitle: 'GRADE NMA Visualization Tools',
@@ -6,25 +10,13 @@ var GR = {
     currentRoute: 'projects',
     routes:[
       {route: 'about', label: 'About', title: 'About',
-        infos: {
-          title: 'The GRADE NMA project',
-          cont: 'PLOS paper Abstract',
-          error: '',
-        },
+        infos: Messages.aboutRoute
       },
       {route: 'tools', label: 'Tools', title: 'Tools',
-        infos: {
-          title: 'Visualization Tools',
-          cont: 'You now can use the tools provided for your project!',
-          error: '',
-        },
+        infos: Messages.toolsRoute
       },
       {route: 'projects', label: 'My Projects', title: 'My Projects',
-        infos: {
-          title: 'My Projects',
-          cont: 'Welcome to our App, please browse your projects or upload a new one!',
-          error: '',
-        },
+        infos: Messages.projectRoute,
       },
   ]
   },

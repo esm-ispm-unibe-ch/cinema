@@ -1,34 +1,31 @@
-<div class='projects-container col-xs-offset-2 col-xs-8'>
+<div class='projects-container col-sm-12 col-md-offset-3 col-md-6'>
 
-  <div class='well col-xs-12'>
+  <div class='well col-xs-12 project-uploader'>
     <form class=''>
       <h4 class=''>
-        <span class="prtitle">Upload a Project</span>
-        <span class="pull-left glyphicon glyphicon-floppy-open" aria-hidden="true"></span>
+        <span class="prtitle">Upload Project</span>
+        <span class="pull-left glyphicon glyphicon-cloud-upload" aria-hidden="true"></span>
         <span id='prinfo' class="info pull-right glyphicon glyphicon-info-sign" aria-hidden="true"></span>
       </h4>
       <div class="form-group">
-        <label for="exampleInputPassword1">Project Name</label>
-        <input type="" class="form-control" id="exampleInputPassword1" placeholder="My Project">
+        <label for="project-name">Project Name</label>
+        <input size='250' type="text" class="form-control" id="project-name" placeholder="My Project's name">
       </div>
       <div class="form-group">
-        <div class="radio">
-          File Format
-          <label>
-            <input name='fileformat' type="radio">Long</label>
-          <label>
-            <input name='fileformat' type="radio">Wide</label>
-        </div>
-        <input type="file" id="files" name="file" />
-      <div id="progress_bar"><div class="percent">0%</div></div>
+        <input type="file" id="files" name="file" accept=".csv,.CSV" />
       </div>
     </form>
-    <div id="byte_content"></div>
+    <div id="filePreview"></div>
+    <button disabled action='saveFile' id='projectSave' class="btn control pull-left btn-default">
+      <span class=" glyphicon glyphicon-save" aria-hidden="true"></span>
+      Save
+    </button>
+    <a  action='clearFile' id='projectClear' class="btn pull-right control btn-default">Clear</a>
   </div>
 
   <div id='project-browser' class='well col-xs-12'>
     <h4>
-      <span class="pull-left glyphicon glyphicon-floppy-saved" aria-hidden="true"></span>
+      <span class="pull-left glyphicon glyphicon-hdd" aria-hidden="true"></span>
       <span class="prtitle">Saved Projects</span>
     </h4>
     <ul class="list-group">

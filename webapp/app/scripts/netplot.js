@@ -1,5 +1,3 @@
-'use strict';
-
  var NP = {
   isRendered: false,
    vertices : [],
@@ -336,4 +334,8 @@
       NP.cy.center();
     }
   }
+}
+
+module.exports = () => {
+  return NP;
 }
