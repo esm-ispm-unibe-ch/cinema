@@ -36,17 +36,13 @@ var GR = {
     $('.routes.'+route).addClass('active');
     $('.routed').hide();
     $('#'+route).fadeIn(400);
-    GR.updateInfo(GR.getCurrentRouteInfos());
+    Messages.updateInfo(GR.getCurrentRouteInfos());
   },
 
   getCurrentRouteInfos: () => {
     return _.find(GR.router.routes, (r) => {return r.route===GR.router.currentRoute}).infos;
   },
 
-  updateInfo: (infos) =>{
-    var infotmpl = Netplot.templates.info(infos);
-    $('#info').html(infotmpl);
-  },
 
   init: (model) =>{
     var headertmpl = Netplot.templates.header(GR);
