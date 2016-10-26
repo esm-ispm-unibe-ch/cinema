@@ -24,8 +24,8 @@ var Messages = {
     info: 'PLOS paper Abstract',
   },
   longFileUpload: {
-    title: 'File seem ok!',
-    success: 'Fill in a project name and click save to add it to your projects\' list',
+    title: 'File seems ok!',
+    success: 'Fill in a project name and click proceed to go to the tools.',
   },
   updateInfo : (infos,extra) =>{
     var aux = infos;

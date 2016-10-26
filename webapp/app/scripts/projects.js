@@ -28,11 +28,11 @@ var PR = {
      PR.getProject , false);
   },
   getProject: (evt) => {
-    model.getJSON(evt).then(json => {
-      Messages.updateInfo(Messages.longFileUpload);
+    model.getJSON(evt).then(project => {
+      Messages.updateInfo(Messages.longFileUpload,' csv format '+project.format);
       $('#files').attr('disabled',true);
-      console.log(json);
-      return json;
+      console.log(project);
+      return project;
     })
     .catch( err => {
       Messages.updateInfo(Messages.wrongFileFormat,err);
