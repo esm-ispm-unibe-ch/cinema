@@ -1,16 +1,10 @@
-var Messages = require('./Messages.js')();
-var model = require('./model.js')();
+var Messages = require('./messages.js').Messages;
+var Model = require('./model.js').Model;
+var Router = require('./router.js').Router;
 
 var PR = {
-  table: {},
-  getModel: () => {
-    return localStorage.projects;
-  },
   bindControls: () => {
     //uploader Info button
-    $('.control').bind('click', function () {
-      Messages.updateInfo(Messages.projectRoute);
-    });
     $('#prinfo').bind('click', function () {
       Messages.updateInfo(Messages.uploaderLong);
     });
@@ -18,9 +12,25 @@ var PR = {
     $('#projectClear').bind('click', function () {
       var file = $('#files');
       file.val('');
-      $('#filePreview').empty();
+      $('#filePreview').remove();
+      $('#previewContainer').append('<div id="filePreview"></div>');
+      document.getElementById('proceed-btn').setAttribute('disabled',true);
       $('#project-name').val('');
       $('#files').attr('disabled',false);
+      Model.clearProject();
+      Messages.update();
+    });
+    $('#project-name').on('change paste keyup', () =>{
+      PR.enableProceedBtn();
+    });
+    $('#proceed-btn').click(() => {
+      Model.setProjectName($('#project-name').val());
+      Router.gotoRoute('tools');
+    });
+    $('#project-name').keypress(function (e) {
+      if (e.which == 13) {
+        $('#proceed-btn').click();
+      }
     });
   },
   bindFileUploader: () => {
@@ -28,29 +38,41 @@ var PR = {
      PR.getProject , false);
   },
   getProject: (evt) => {
-    model.getJSON(evt).then(project => {
+    Model.getJSON(evt).then(project => {
       Messages.updateInfo(Messages.longFileUpload,' csv format '+project.format);
       $('#files').attr('disabled',true);
-      console.log(project);
-      return project;
+      PR.showPreview(Model.project);
+      PR.enableProceedBtn();
     })
     .catch( err => {
       Messages.updateInfo(Messages.wrongFileFormat,err);
     });
   },
-  showPreview: (data) => {
+  enableProceedBtn: () => {
+    let pb = $('#proceed-btn');
+    let modelOk = _.isEmpty(Model.project)?false:true;
+    let nameOk = $('#project-name').val()===''?false:true;
+    if(modelOk && nameOk){
+      pb.removeAttr('disabled');
+    }
+  },
+  showPreview: (project) => {
     var container = document.getElementById('filePreview');
     var hot = new Handsontable(container, {
-      table: data,
-      rowHeaders: true,
-      colHeaders: true
+      data: project.model,
+      renderAllRows:true,
+      rowHeights: 23,
+      colHeaders: Object.keys(project.model[0]),
+      columns: _.map(Object.keys(project.model[0]), k => {
+        return { data: k, readOnly: true}
+      })
     });
   },
   init: () => {
-    $(document).ready(function () {
-      PR.bindControls();
-      PR.bindFileUploader();
-    });
+    var projectstmpl = Netplot.templates.projects();
+    $('#projects').html(projectstmpl);
+    PR.bindControls();
+    PR.bindFileUploader();
   }
 };
 

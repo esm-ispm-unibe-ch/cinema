@@ -13,7 +13,7 @@ $icon-font-path: '../fonts/';
 
 /* Space out content a bit */
 body {
-  padding-bottom: 20px;
+  padding-bottom: 80px;
    min-width:768px; /* suppose you want minimun width of 1000px */
    width: auto !important;  /* Firefox will set width as auto */
 }
@@ -110,7 +110,6 @@ user-select: none;
 
   /* Space out the masthead */
   .header {
-    margin-bottom: 30px;
   }
 
   /* Remove the bottom border on the jumbotron for visual effect */

@@ -13,19 +13,28 @@ var Settings = {
 };
 
 var Model = {
-  projects: localStorage.projects,
-  createProject: (name, model, format) =>{
+  project: {},
+  createProject: (title, model, format) =>{
     var date = Number(new Date());
-    var id = md5(date+name+Math.random());
+    var id = md5(date+title+Math.random());
     return {
       id: id,
-      name: name,
+      title: title,
       model: model,
       format: format,
       creationDate: date,
       accessDate: date,
       state: {},
     };
+  },
+  clearProject: () => {
+    Model.project = {};
+  },
+  setProjectName: (title) =>{
+    Model.project.title = title;
+  },
+  getProjectName: () =>{
+    return Model.project.title;
   },
   fileReader: {
     reader: {},
@@ -61,7 +70,7 @@ var Model = {
   },
   convertCSVtoJSON: (stri) =>{
     return new Promise( (res, rej) => {
-      var converter = new Converter({delimiter:[",",";"],trim:true,checkColumn:true});
+      var converter = new Converter({delimiter:[',',';'],trim:true,checkColumn:true});
       converter.fromString(stri);
       converter.on('end_parsed', (jsonData) => {
         //trimming keys and values!!
@@ -93,10 +102,10 @@ var Model = {
     return new Promise ((resolve, reject) => {
       let titles = Object.keys(json[0]);
       if(checkNames(titles,longreq).length===0){
-        resolve(Model.createProject ('noname', json, 'long'));
+        resolve(Model.createProject ('', json, 'long'));
       }else{
         if(checkNames(titles,widereq).length===0){
-          resolve(Model.createProject ('noname', json, 'wide'));
+          resolve(Model.createProject ('', json, 'wide'));
         }
       }
       reject('Wrong column names or missing columns');
@@ -184,10 +193,14 @@ var Model = {
    .then(Model.checkColumnNames)
    .then(Model.checkTypes)
    .then(Model.checkMissingValues)
-   .then(Model.checkConsistency);
+   .then(Model.checkConsistency)
+   .then(project => {
+     Model.project = project;
+     return project;
+   });
   },
-}
+};
 
-module.exports = () => {
-  return Model;
-}
+module.exports = {
+  Model: Model
+};

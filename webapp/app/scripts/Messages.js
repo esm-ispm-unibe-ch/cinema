@@ -1,4 +1,8 @@
+var Model = require('./model.js').Model;
+
 var Messages = {
+  infos: {},
+  extra: {},
   uploaderShort:{
     title: 'Upload project',
     info: 'You can upload a project as a csv and save it in your saved collection bellow.',
@@ -25,18 +29,24 @@ var Messages = {
   },
   longFileUpload: {
     title: 'File seems ok!',
-    success: 'Fill in a project name and click proceed to go to the tools.',
+    success: 'Fill in a project name and click proceed to the tools.',
   },
-  updateInfo : (infos,extra) =>{
+  updateInfo : (infos,extra) => {
+    Messages.infos = infos;
+    Messages.extra = extra;
     var aux = infos;
+    aux.projectName = Model.getProjectName();
     if(extra){
       aux.extra = extra;
     }
-    var infotmpl = Netplot.templates.info(aux);
+    var infotmpl = Netplot.templates.messages(aux);
     $('#info').html(infotmpl);
+  },
+  update: () => {
+    Messages.updateInfo(Messages.infos,Messages.extra);
   },
 };
 
-module.exports = () => {
-  return Messages;
+module.exports =  {
+  Messages: Messages
 };

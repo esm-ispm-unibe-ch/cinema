@@ -12,8 +12,12 @@ $icon-font-path: '../fonts/';
   overflow:auto;
 }
 
+#previewContainer{
+  overflow:visible;
+  margin-bottom:24px;
+}
+
 #filePreview {
-  margin-bottom:23px;
 }
 
 #progress_bar {

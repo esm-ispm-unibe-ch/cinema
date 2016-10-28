@@ -1,3 +1,5 @@
+var Messages = require('./messages.js').Messages;
+
  var NP = {
   isRendered: false,
    vertices : [],
@@ -290,7 +292,7 @@
       NP.cy.layout();
     });
     $('#cyContainer').bind('click', function () {
-      GR.updateInfo({title:'Visualization Tools', cont:'NetPlot: representing the project as a graph'});
+      Messages.updateInfo({title:'Visualization Tools', cont:'NetPlot: representing the project as a graph'});
     });
     $('.netplotControl').bind( 'change', function() {
         var filter = $('option:selected', this).attr('filter');

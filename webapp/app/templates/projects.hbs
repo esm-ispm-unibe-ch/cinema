@@ -1,7 +1,11 @@
-<div class='projects-container col-sm-12 col-md-offset-3 col-md-6'>
+<div id='previewContainer' class='col-xs-12 col-md-offset-2 col-md-8'>
+  <!-- <h4 class='btn btn-default'> Preview Data</h4> -->
+  <div id="filePreview" class=''>
+  </div>
+</div>
+<div class='projects-container col-sm-12 col-md-offset-2 col-md-8'>
 
   <div class='well col-xs-12 project-uploader'>
-    <form class=''>
       <h4 class=''>
         <span class="prtitle">Upload Project</span>
         <span class="pull-left glyphicon glyphicon-cloud-upload" aria-hidden="true"></span>
@@ -14,15 +18,10 @@
       <div class="form-group">
         <input type="file" id="files" name="file" accept=".csv,.CSV" />
       </div>
-    </form>
-    <div id="filePreview"></div>
-    <button disabled action='saveFile' id='projectSave' class="btn control pull-left btn-default">
-      <span class=" glyphicon glyphicon-save" aria-hidden="true"></span>
-      Save
-    </button>
+    <button  disabled id='proceed-btn' action='tools' class="btn btn-default">Proceed</button>
     <a  action='clearFile' id='projectClear' class="btn pull-right control btn-default">Clear</a>
   </div>
-
+<!--
   <div id='project-browser' class='well col-xs-12'>
     <h4>
       <span class="pull-left glyphicon glyphicon-hdd" aria-hidden="true"></span>
@@ -36,6 +35,10 @@
       <li class="list-group-item">Vestibulum at eros</li>
     </ul>
     <button  action='tools' class="routes btn btn-default">Proceed</button>
-  </div>
+  </div> -->
 
+    <!-- <button disabled action='saveFile' id='projectSave' class="btn control pull-left btn-default">
+      <span class=" glyphicon glyphicon-save" aria-hidden="true"></span>
+      Save
+    </button> -->
 </div>
