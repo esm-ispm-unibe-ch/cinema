@@ -18,7 +18,7 @@ var PR = {
       $('#project-name').val('');
       $('#files').attr('disabled',false);
       Model.clearProject();
-      Messages.update();
+      Messages.updateInfo(Messages.projectRoute);
     });
     $('#project-name').on('change paste keyup', () =>{
       PR.enableProceedBtn();
@@ -39,7 +39,7 @@ var PR = {
   },
   getProject: (evt) => {
     Model.getJSON(evt).then(project => {
-      Messages.updateInfo(Messages.longFileUpload,' csv format '+project.format);
+      Messages.updateInfo(Messages.longFileUpload,' csv format '+project.format+" "+project.type);
       $('#files').attr('disabled',true);
       PR.showPreview(Model.project);
       PR.enableProceedBtn();
