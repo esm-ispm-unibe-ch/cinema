@@ -1,4 +1,5 @@
 var Model = require('./model.js').Model;
+var htmlEntities = require('./model.js').htmlEntities;
 
 var Messages = {
   uploaderShort:{
@@ -36,8 +37,38 @@ var Messages = {
     if(extra){
       aux.extra = extra;
     }
-    var infotmpl = Netplot.templates.messages(aux);
+    var infotmpl = GRADE.templates.messages(aux);
     $('#info').html(infotmpl);
+    if(aux.projectName){
+      Messages.bindNameEditor();
+    }
+  },
+  bindNameEditor: () => {
+    console.log('binding name');
+    $('.pn').unbind();
+    $('.project-name-edit').unbind();
+    $('.project-name').bind('click',() => {
+      $('.pn').toggle();
+      $('.project-name-edit').focus();
+    });
+    $('.project-name-edit').blur( () => {
+      let name = $('.project-name-edit').val().trim();
+      setName(name);
+    });
+    $('.project-name-edit').keyup(function(e){
+      if(e.keyCode == 13)
+      {
+        $(this).blur();
+      }
+    });
+    let setName = (name) => {
+      $('.pn').toggle();
+      if(name===''){
+        name = Model.getProjectFileName();
+      }
+      $('.project-name').text(name);
+      Model.setProjectName(name);
+    }
   },
 };
 

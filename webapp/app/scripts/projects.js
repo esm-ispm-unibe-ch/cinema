@@ -1,12 +1,20 @@
 var Messages = require('./messages.js').Messages;
 var Model = require('./model.js').Model;
-var Router = require('./router.js').Router;
+var htmlEntities = require('./model.js').htmlEntities;
 
 var PR = {
+  rendered:false,
+  getRouter: () => {
+    return PR.Router;
+  },
   bindControls: () => {
     //uploader Info button
+    $('#popoverData').popover({trigger:'hover',container:'body'});
     $('#prinfo').bind('click', function () {
       Messages.updateInfo(Messages.uploaderLong);
+      $('html, body').animate({
+        scrollTop: 0
+      }, 300);
     });
     //cancel uploader
     $('#projectClear').bind('click', function () {
@@ -14,24 +22,20 @@ var PR = {
       file.val('');
       $('#filePreview').remove();
       $('#previewContainer').append('<div id="filePreview"></div>');
-      document.getElementById('proceed-btn').setAttribute('disabled',true);
-      $('#project-name').val('');
-      $('#files').attr('disabled',false);
+      // $('#project-name').val('');
+      PR.enableUpload();
       Model.clearProject();
       Messages.updateInfo(Messages.projectRoute);
+      PR.getRouter().disableRoute('tools');
     });
-    $('#project-name').on('change paste keyup', () =>{
-      PR.enableProceedBtn();
-    });
-    $('#proceed-btn').click(() => {
-      Model.setProjectName($('#project-name').val());
-      Router.gotoRoute('tools');
-    });
-    $('#project-name').keypress(function (e) {
-      if (e.which == 13) {
-        $('#proceed-btn').click();
-      }
-    });
+    // $('#project-name').on('change paste', () =>{
+    //   PR.enableProceedBtn();
+    // });
+    // $('#project-name').keypress(function (e) {
+    //   if (e.which == 13) {
+    //     PR.getRouter().gotoRoute('tools');
+    //   }
+    // });
   },
   bindFileUploader: () => {
     document.getElementById('files').addEventListener('change',
@@ -39,22 +43,33 @@ var PR = {
   },
   getProject: (evt) => {
     Model.getJSON(evt).then(project => {
-      Messages.updateInfo(Messages.longFileUpload,' csv format '+project.format+" "+project.type);
       $('#files').attr('disabled',true);
-      PR.showPreview(Model.project);
-      PR.enableProceedBtn();
+      PR.showPreview(Model.getProject());
+      var filename = htmlEntities($('#files').val().replace(/C:\\fakepath\\/i, '')).slice(0, -4);
+      Model.setProjectName(filename);
+      Model.setProjectFileName(filename);
+      PR.enableProceedBtn(Model.getProjectName());
+      Messages.updateInfo(Messages.longFileUpload,' csv format '+project.format+' '+project.type);
     })
     .catch( err => {
       Messages.updateInfo(Messages.wrongFileFormat,err);
     });
   },
-  enableProceedBtn: () => {
-    let pb = $('#proceed-btn');
-    let modelOk = _.isEmpty(Model.project)?false:true;
-    let nameOk = $('#project-name').val()===''?false:true;
-    if(modelOk && nameOk){
-      pb.removeAttr('disabled');
-    }
+  enableProceedBtn: (filename) => {
+    let modelOk = Model.emptyProject()?false:true;
+    // let nameOk = $('#project-name').val()===''?false:true;
+    if(modelOk){
+      PR.Router.enableRoute('tools');
+      $('#popoverData').popover('disable');
+    };
+  },
+  disableUpload: () => {
+    $('#project-name').attr('disabled',true);
+    $('#files').attr('disabled',true);
+  },
+  enableUpload: () => {
+    $('#project-name').attr('disabled',false);
+    $('#files').attr('disabled',false);
   },
   showPreview: (project) => {
     var container = document.getElementById('filePreview');
@@ -68,11 +83,26 @@ var PR = {
       })
     });
   },
-  init: () => {
-    var projectstmpl = Netplot.templates.projects();
-    $('#projects').html(projectstmpl);
-    PR.bindControls();
-    PR.bindFileUploader();
+  init: (router) => {
+    if(!PR.rendered){
+      PR.Router = router;
+      var projectstmpl = GRADE.templates.projects();
+      $('#projects').html(projectstmpl);
+      PR.bindControls();
+      PR.bindFileUploader();
+      PR.rendered = true;
+      if(Model.emptyProject()===false){
+        PR.showPreview(Model.getProject());
+        PR.getRouter().enableRoute('tools');
+        $('#popoverData').popover('disable');
+      }
+    }
+    if(Model.emptyProject()===false){
+      PR.getRouter().enableRoute('tools');
+      PR.disableUpload();
+    }else{
+      PR.getRouter().disableRoute('tools');
+    }
   }
 };
 

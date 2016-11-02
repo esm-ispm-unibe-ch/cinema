@@ -11,15 +11,15 @@
         <span class="pull-left glyphicon glyphicon-cloud-upload" aria-hidden="true"></span>
         <span id='prinfo' class="info pull-right glyphicon glyphicon-info-sign" aria-hidden="true"></span>
       </h4>
-      <div class="form-group">
+      <!-- <div class="form-group">
         <label for="project-name">Project Name</label>
         <input size='250' type="text" class="form-control" id="project-name" placeholder="My Project's name">
-      </div>
+      </div> -->
       <div class="form-group">
         <input type="file" id="files" name="file" accept=".csv,.CSV" />
       </div>
-    <button  disabled id='proceed-btn' action='tools' class="btn btn-default">Proceed</button>
-    <a  action='clearFile' id='projectClear' class="btn pull-right control btn-default">Clear</a>
+     <a id="popoverData" action='tools' class="btn routes btn-default" data-content="Upload a valid csv file to proceed" rel="popover" data-placement="bottom" data-trigger="hover">Proceed</a>
+    <a  action='clearFile' id='projectClear' class="btn pull-right control btn-default">Reset</a>
   </div>
 <!--
   <div id='project-browser' class='well col-xs-12'>

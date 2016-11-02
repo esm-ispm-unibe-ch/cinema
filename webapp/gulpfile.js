@@ -18,7 +18,7 @@ gulp.task('templates', () => {
     .pipe($.handlebars())
     .pipe($.defineModule('plain'))
     .pipe($.declare({
-      namespace: 'Netplot.templates' // change this to whatever you want
+      namespace: 'GRADE.templates' // change this to whatever you want
     }))
     .pipe(gulp.dest('.tmp/templates'));
 });

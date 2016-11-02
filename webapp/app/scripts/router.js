@@ -1,49 +1,96 @@
 var Messages = require('./messages.js').Messages;
+var Model = require('./model.js').Model;
+var Netplot = require('./netplot.js')();
+var Projects = require('./projects.js')();
 
 var Router = {
-    currentRoute: 'projects',
+    currentRoute: '',
     routes:[
-      {route: 'about', label: 'About', title: 'About',
-        infos: Messages.aboutRoute
+      {
+        route: 'about',
+        label: 'About',
+        title: 'About',
+        infos: Messages.aboutRoute,
+        actions: []
       },
-      {route: 'tools', label: 'Tools', title: 'Tools',
-        infos: Messages.toolsRoute
+      {
+        route: 'tools',
+        label: 'Tools',
+        title: 'Tools',
+        infos: Messages.toolsRoute,
+        actions: [Model.saveProject, Netplot.init]
       },
-      {route: 'projects', label: 'My Projects', title: 'My Projects',
+      {
+        route: 'projects',
+        label: 'My Projects',
+        title: 'My Projects',
         infos: Messages.projectRoute,
+        actions: [Projects.init]
       },
   ],
   gotoRoute: (route) => {
-    Router.currentRoute = route;
-    $('.routes').removeClass('active');
-    $('.routes.'+route).addClass('active');
-    $('.routed').hide();
-    $('#'+route).fadeIn(400);
-    Messages.updateInfo(Router.getCurrentRouteInfos());
-    $("html, body").animate({
-      scrollTop: 0
-    }, 300);
+    if(Router.currentRoute!==route){
+      Router.currentRoute = route;
+      let routy = _.find(Router.routes, (r) => {return r.route===Router.currentRoute});
+      $('.routes').removeClass('active');
+      $('.routes.'+route).addClass('active');
+      $('.routed').hide();
+      $('#'+route).fadeIn(400);
+      Messages.updateInfo(routy.infos);
+      if(!(_.isEmpty(routy.actions))){
+        _.map(routy.actions, ra => {
+          if(route==='projects'){
+            ra(Router);
+          }else{
+            ra();
+          }
+        });
+      };
+      $('html, body').animate({
+        scrollTop: 0
+      }, 300);
+    }
   },
-  getCurrentRouteInfos: () => {
-    return _.find(Router.routes, (r) => {return r.route===Router.currentRoute}).infos;
+  enableRoute: (route) => {
+    $(document).ready( () => {
+      let btns = $('.routes[action='+route+']');
+      btns.attr('disabled', false);
+      Router.bindNavControls();
+    });
+  },
+  disableRoute: (route) => {
+    $(document).ready( () => {
+      let btns = $('.routes[action='+route+']');
+      btns.attr('disabled', true);
+    });
   },
   bindNavControls: () => {
-    $('.routes').bind( 'click', function() {
-      var route = $(this).attr('action');
-      var active = $(this).hasClass('active');
-      if(!(active)){
-        Router.gotoRoute(route);
-      }
+    $('.routes').unbind();
+    $(document).ready( () => {
+      $('.routes').bind( 'click', function() {
+        var route = $(this).attr('action');
+        var active = $(this).hasClass('active');
+        var disabled = $(this).attr('disabled')==='disabled';
+        if(!(disabled||active)){
+          Router.gotoRoute(route);
+        }
+      });
     });
   },
   init: () => {
     $(document).ready(function () {
       Router.bindNavControls();
-      Router.gotoRoute(Router.currentRoute);
+      Model.readLocalStorage();
+      if(Model.emptyProject()){
+        Router.disableRoute('tools');
+        Router.gotoRoute('projects');
+      }else{
+        Router.gotoRoute('tools');
+      }
     });
   },
 }
 
-module.exports =  {
+module.exports = {
   Router: Router
 };

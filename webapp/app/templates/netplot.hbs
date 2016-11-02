@@ -1,5 +1,7 @@
-
-  <div class='well col-xs-5'>
+<h4 id="cyTitle" class='well button tool-title col-xs-12'>NetPlot</h4>
+<div id="cy" class='col-md-6 col-xs-12 col-sm-12'></div>
+<div id="netplotControls" class='col-md-3 col-sm-12 col-xs-12'>
+  <div class='well pull-right col-xs-12'>
     <h4 class=''>
       <span class="pull-left"> Controls </span>
       <span class="pull-right glyphicon glyphicon-cog" aria-hidden="true"></span>
@@ -11,9 +13,11 @@
         <h5 class='controls-title'>{{title}}</h5>
         <select action="{{action}}" class='controls-container netplotControl form-control'>
             {{#each selections}}
-              <option filter="{{value}}" {{#if isActive}}selected{{/if}}>
-                {{label}}
-              </option>
+              {{#if isAvailable}}
+                <option filter="{{value}}" {{#if isActive}}selected{{/if}}>
+                  {{label}}
+                </option>
+              {{/if}}
             {{/each}}
         </select>
       {{/each}}
@@ -21,3 +25,4 @@
       <a class='col-xs-12 np-redraw btn btn-default' action='np-redraw'>Redraw</a>
     </div>
   </div>
+</div>

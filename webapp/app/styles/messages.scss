@@ -7,8 +7,21 @@ $icon-font-path: '../fonts/';
   margin-bottom:20px;
 }
 
-.info-title {
+.pn{
+  margin:0 0 4px 0;
+  text-align:center;
+}
 
+.project-name{
+  cursor:pointer;
+}
+.project-name-edit{
+  width:100%;
+  text-align:center!important;
+}
+
+.route-title {
+  margin:0 0 3px 0;
 }
 
 .info-screen {

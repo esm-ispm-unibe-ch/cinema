@@ -80,26 +80,26 @@ var fileChecker = {
             }
           }
         }
-        if(r.rob!=="l"&&r.rob!=="u"&&r.rob!=="h"&&r.rob!=="L"&&r.rob!=="U"&&r.rob!=="H"&&r.rob!==1&&r.rob!==2&&r.rob!==3){
+        if(r.rob!=='l'&&r.rob!=='u'&&r.rob!=='h'&&r.rob!=='L'&&r.rob!=='U'&&r.rob!=='H'&&r.rob!==1&&r.rob!==2&&r.rob!==3){
           reject('<strong>rob</strong> can be 1, 2, 3 or L, U, H')
         }else{
           switch(r.rob){
-            case "L":
+            case 'L':
             r.rob =1;
             break;
-            case "l":
+            case 'l':
             r.rob =1;
             break;
-            case "U":
+            case 'U':
             r.rob =2;
             break;
-            case "u":
+            case 'u':
             r.rob =2;
             break;
-            case "H":
+            case 'H':
             r.rob =3;
             break;
-            case "h":
+            case 'h':
             r.rob =3;
             break;
           }

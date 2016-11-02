@@ -9,8 +9,15 @@
   {{/if}}
 {{/if}}
 info-screen'>
-  <h3>{{projectName}}</h3>
-  <h4>{{{title}}}</h4>
+{{#if projectName}}
+  <h3 class='project-name pn'>
+    {{projectName}}
+  </h3>
+  <h3 class='pn' hidden >
+    <input width="100%" class='project-name-edit' type='text' value="{{projectName}}"></input>
+  </h3>
+{{/if}}
+  <h4 class='route-title'>{{{title}}}</h4>
   {{{info}}}
   {{{success}}}
   {{{error}}}
