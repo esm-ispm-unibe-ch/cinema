@@ -23,7 +23,7 @@
     <link rel="stylesheet" href="styles/footer.css">
     <link rel="stylesheet" href="styles/messages.css">
     <link rel="stylesheet" href="styles/projects.css">
-    <link rel="stylesheet" href="styles/netplot.css">
+    <link rel="stylesheet" href="styles/tools.css">
     <!-- endbuild -->
   </head>
   <body>
@@ -33,24 +33,17 @@
 
   <div class="container-fluid " id='info'></div>
 
-  <div class="container-fluid routed" id='projects'>
-  </div>
+  <div class="container-fluid routed" id='projects'></div>
 
   <div class="container-fluid routed" id='tools'>
+
     <div id="netplotContainer" class='col-xs-12'></div>
 
-    <div id="contMatContainer" class='col-xs-12'>
-      <h4 id="contMatTitle" class='well button  tool-title col-xs-12'>Contribution Matrix</h4>
-    </div>
-
-    <div id="studyMatContainer" class='col-xs-12'>
-      <h4 id="studyContTitle" class='well button tool-title col-xs-12'>Study Contribution</h4>
-    </div>
+    <div id="contMatContainer" class='col-xs-12'></div>
 
   </div>
 
-  <div id='about' class="container-fluid routed">
-  </div>
+  <div id='about' class="container-fluid routed"></div>
 
 
   <div class="footerContainer container-fluid navbar-fixed-bottom">
@@ -82,14 +75,17 @@
     <script src="/bower_components/pikaday/pikaday.js"></script>
     <script src="/bower_components/zeroclipboard/dist/ZeroClipboard.js"></script>
     <script src="/bower_components/handsontable/dist/handsontable.js"></script>
+    <script src="/bower_components/opencpu.js/opencpu-0.5.js"></script>
     <!-- endbower -->
     <!-- endbuild -->
 
 
     <!-- build:js scripts/main.js -->
+    <script src="scripts/helpers.js"></script>
     <script src="templates/header.js"></script>
     <script src="templates/messages.js"></script>
     <script src="templates/netplot.js"></script>
+    <script src="templates/conmatrix.js"></script>
     <script src="templates/about.js"></script>
     <script src="templates/projects.js"></script>
     <script src="scripts/bundle.js"></script>

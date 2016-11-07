@@ -5,8 +5,8 @@ var Reshaper = require('./reshaper.js').Reshaper;
 var htmlEntities = (str) => {
   return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 };
+
 var Model = {
-  reshaper: Reshaper,
   createProject: (pr) =>{
     var date = Number(new Date());
     var id = md5(date+Math.random());
@@ -59,16 +59,26 @@ var Model = {
     localStorage.setItem('project', JSON.stringify(Model.getProject()));
   },
   getJSON: (evt) => {
-   return FR.handleFileSelect(evt)
-   .then(FR.convertCSVtoJSON)
-   .then(Checker.checkColumnNames)
-   .then(Checker.checkTypes)
-   .then(Checker.checkMissingValues)
-   .then(Checker.checkConsistency)
-   .then(project => {
-     Model.setProject(Model.createProject(project));
-     return project;
-   });
+    return FR.handleFileSelect(evt)
+    .then(FR.convertCSVtoJSON)
+    .then(Checker.checkColumnNames)
+    .then(Checker.checkTypes)
+    .then(Checker.checkMissingValues)
+    .then(Checker.checkConsistency)
+    .then(project => {
+      let prj = project;
+      let mdl = {};
+      if(project.format === 'long'){
+        mdl.long = project.model;
+        mdl.wide = Reshaper.longToWide(project.model,project.type);
+      }else{
+        mdl.long = Reshaper.wideToLong(project.model,project.type);
+        mdl.wide = project.model;
+      }
+      prj.model = mdl;
+      Model.setProject(Model.createProject(prj));
+      return project;
+    });
   },
 };
 

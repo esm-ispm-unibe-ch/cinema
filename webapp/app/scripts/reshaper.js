@@ -27,7 +27,7 @@ var Reshaper = {
     let mold = [];
     switch(type){
       case 'binary':
-      mold = [['t','r','n'],[['t1','r1','n1'],['t2','r2','n2']]];
+      mold = [['t','tn','r','n'],[['t1','tn1','r1','n1'],['t2','tn2','r2','n2']]];
       break;
       case 'continuous':
       mold = [['t','y','sd','n'],[['t1','y1','sd1','n1'],['t2','y2','sd2','n2']]];
@@ -87,7 +87,11 @@ var Reshaper = {
       });
       return long.concat([nr]);
     },[]);
-    res = _.map(_.toArray(_.groupBy(_.flatten(res),a=>{return a.id+a.t})),b=>{return b[0]});
+    res = _.map(_.toArray(_.groupBy(_.flatten(res),a=>{
+      let aid = a.id.toString();
+      let at = a.t.toString();
+      return aid+at;
+    })),b=>{return b[0]});
     return res;
   }
 }

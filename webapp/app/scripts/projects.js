@@ -28,14 +28,6 @@ var PR = {
       Messages.updateInfo(Messages.projectRoute);
       PR.getRouter().disableRoute('tools');
     });
-    // $('#project-name').on('change paste', () =>{
-    //   PR.enableProceedBtn();
-    // });
-    // $('#project-name').keypress(function (e) {
-    //   if (e.which == 13) {
-    //     PR.getRouter().gotoRoute('tools');
-    //   }
-    // });
   },
   bindFileUploader: () => {
     document.getElementById('files').addEventListener('change',
@@ -50,6 +42,7 @@ var PR = {
       Model.setProjectFileName(filename);
       PR.enableProceedBtn(Model.getProjectName());
       Messages.updateInfo(Messages.longFileUpload,' csv format '+project.format+' '+project.type);
+      PR.Router.gotoRoute('tools');
     })
     .catch( err => {
       Messages.updateInfo(Messages.wrongFileFormat,err);
@@ -74,11 +67,13 @@ var PR = {
   showPreview: (project) => {
     var container = document.getElementById('filePreview');
     var hot = new Handsontable(container, {
-      data: project.model,
+      data: project.model.wide,
       renderAllRows:true,
       rowHeights: 23,
-      colHeaders: Object.keys(project.model[0]),
-      columns: _.map(Object.keys(project.model[0]), k => {
+      rowHeaders: true,
+      manualColumnMove: true,
+      colHeaders: Object.keys(project.model.wide[0]),
+      columns: _.map(Object.keys(project.model.wide[0]), k => {
         return { data: k, readOnly: true}
       })
     });

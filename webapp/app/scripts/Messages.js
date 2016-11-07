@@ -14,6 +14,10 @@ var Messages = {
     title:'Unable to Read File',
     error:'Wrong file format or missing values.'
   },
+  ocpuError: {
+    title:'Unable to process data',
+    error:'NMA function execution error.'
+  },
   projectRoute:{
     title: 'My Projects',
     info: 'Welcome to our App, please browse your projects or upload a new one!',
@@ -44,7 +48,6 @@ var Messages = {
     }
   },
   bindNameEditor: () => {
-    console.log('binding name');
     $('.pn').unbind();
     $('.project-name-edit').unbind();
     $('.project-name').bind('click',() => {

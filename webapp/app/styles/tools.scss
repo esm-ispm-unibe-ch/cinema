@@ -1,8 +1,4 @@
-$icon-font-path: '../fonts/';
 $cySize: 700px;
-// bower:scss
-@import "bower_components/bootstrap-sass/assets/stylesheets/_bootstrap.scss";
-// endbower
 #cy{
   padding:0!important;
   width:$cySize;
@@ -21,4 +17,12 @@ $cySize: 700px;
 
 .tool-title {
   text-align:center;
+  color:#282C34;
+}
+
+#wide-table, #cm-table{
+  margin-left:20px;
+  padding:0!important;
+  //  max-width:700px;
+  //  max-height:700px;
 }

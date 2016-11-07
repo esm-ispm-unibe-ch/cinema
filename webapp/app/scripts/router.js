@@ -1,32 +1,34 @@
 var Messages = require('./messages.js').Messages;
 var Model = require('./model.js').Model;
-var Netplot = require('./netplot.js')();
+var Tools = require('./tools.js')();
 var Projects = require('./projects.js')();
 
 var Router = {
-    currentRoute: '',
-    routes:[
-      {
-        route: 'about',
-        label: 'About',
-        title: 'About',
-        infos: Messages.aboutRoute,
-        actions: []
-      },
-      {
-        route: 'tools',
-        label: 'Tools',
-        title: 'Tools',
-        infos: Messages.toolsRoute,
-        actions: [Model.saveProject, Netplot.init]
-      },
-      {
-        route: 'projects',
-        label: 'My Projects',
-        title: 'My Projects',
-        infos: Messages.projectRoute,
-        actions: [Projects.init]
-      },
+  headerTitle: 'GRADE NMA Visualization Tools',
+  headerTitleShort: 'GRADE',
+  currentRoute: '',
+  routes:[
+    {
+      route: 'about',
+      label: 'About',
+      title: 'About',
+      infos: Messages.aboutRoute,
+      actions: []
+    },
+    {
+      route: 'tools',
+      label: 'Tools',
+      title: 'Tools',
+      infos: Messages.toolsRoute,
+      actions: [Model.saveProject, Tools.init]
+    },
+    {
+      route: 'projects',
+      label: 'My Projects',
+      title: 'My Projects',
+      infos: Messages.projectRoute,
+      actions: [Projects.init]
+    },
   ],
   gotoRoute: (route) => {
     if(Router.currentRoute!==route){
@@ -42,7 +44,7 @@ var Router = {
           if(route==='projects'){
             ra(Router);
           }else{
-            ra();
+            ra(Model);
           }
         });
       };
