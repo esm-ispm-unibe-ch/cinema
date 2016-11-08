@@ -4,7 +4,7 @@
   <form id="conMatControls" class='col-md-3 col-sm-12 col-xs-12'>
     <div class='well pull-right col-xs-12'>
       <h4 class=''>
-        <span class="pull-left"> Controls </span>
+        <span class="pull-left">Controls</span>
         <span class="pull-right glyphicon glyphicon-cog" aria-hidden="true"></span>
       </h4>
       <br>
@@ -40,7 +40,8 @@
         {{/each}}
       </div>
     </div>
-    <a id="popoverCM" action='makeConMatrix' class="btn btn-default" data-content="All fields should be filled" rel="popover" data-placement="bottom" data-trigger="hover" disabled>Create Matrix</a>
+    <a id="popoverCM" action='makeConMatrix' class="btn btn-default" data-content="All fields should be filled" rel="popover" data-placement="bottom" data-trigger="hover">Create Matrix</a>
+    <a id="clearCM" action='clearCM' class="btn btn-default" >Clear Matrix</a>
   </form>
+  <div id='cm-table' class='col-xs-12'></div>
 </div>
-<div id='cm-table' class='col-xs-12'></div>

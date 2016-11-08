@@ -1,4 +1,9 @@
 var Messages = require('./messages.js').Messages;
+var focusTo = (id) => {
+  jQuery('html,body').animate({
+  scrollTop: jQuery('#'+id).offset().top},
+  'fast');
+}
 
 var CM = {
   defaultControls: () => { return [
@@ -82,6 +87,7 @@ var CM = {
     });
   },
   bindActions: () => {
+    CM.removeTable();
     $('input[type=radio][name=MAModel]').bind('change', () =>{
       let val = $('input[type=radio][name=MAModel]:checked').val();
       if(val==='fixed'){
@@ -95,18 +101,35 @@ var CM = {
       CM.checkInputs();
     });
     $('a[action=makeConMatrix]').bind('click', () => {
-      let params = CM.params;
-      CM.checkInputs();
-      CM.createMatrix(params);
+      if(!($('a[action=makeConMatrix]').attr('disabled'))){
+        let params = CM.params;
+        CM.checkInputs();
+        CM.createMatrix(params);
+      }
     });
-    CM.removeTable();
+    $('a[action=clearCM]').bind('click', () => {
+      CM.removeTable();
+      CM.checkInputs();
+    });
+  },
+  disableCM: () => {
+    $('#conMatControls input').prop('disabled',true);
+    $('#conMatControls select').prop('disabled',true);
+    $('a[action=makeConMatrix]').attr('disabled',true);
+    $('#clearCM').attr('disabled',false);
+  },
+  enableCM: () => {
+    $('#conMatControls input').prop('disabled',false);
+    $('#conMatControls select').prop('disabled',false);
+    $('a[action=makeConMatrix]').attr('disabled',false);
   },
   checkInputs: () =>{
-      console.log('checking inputs');
       let mamodel =  $('input[type=radio][name=MAModel]:checked').val();
       if( typeof mamodel === 'undefined'){
         $('#popoverCM').attr('data-content','You must choose model');
+        CM.disableCM();
       }else{
+        CM.enableCM();
         CM.params.MAModel = mamodel;
         CM.params.sm = $('select[action=setSM]').val();
         $('#popoverCM').attr('disabled',false);
@@ -140,40 +163,73 @@ var CM = {
       resolve(output);
       });
       req.fail( () =>{
-        reject("R returned an error: " + req.responseText);
+        reject('R returned an error: ' + req.responseText);
       });
     });
   },
   createMatrix: (params) => {
     CM.removeTable();
     CM.fetchCM(params).then(cm => {
-      console.log(cm);
       let cont = document.getElementById('cm-table');
-      CM.showTable(cont,cm.percentageContr.concat(cm.impD),cm.colNames,cm.rowNames.concat('Net'));
+      CM.showTable(cont,cm.percentageContr.concat(cm.impD),cm.colNames,cm.rowNames.concat('Entire <br> Network'));
     }).catch( err => {
       Messages.updateInfo(Messages.ocpuError,err);
     });
   },
   showTable: (cont,studies,cols,rows) => {
+  var setBackground = (percentage) => {
+    return `
+      linear-gradient(
+      to right,
+      rgba(238,238,238,0.83) `+percentage+`%,
+      white `+percentage+`%
+    )`;
+  };
+    function makeBars(instance, td, row, col, prop, value, cellProperties) { Handsontable.renderers.TextRenderer.apply(this, arguments);
+      td.style.background = setBackground(value);
+    };
     // console.log(data);
+    let lastRow = rows.length;
+    var rendered = false;
     var hot = new Handsontable(cont, {
       data: studies,
-      renderAllRows:true,
+      // renderAllRows:true,
+      // renderAllColumns:true,
       rowHeights: 23,
+      columnWidth: 200,
       rowHeaders: rows,
       colHeaders: true,
       colHeaders: cols,
+      manualColumnResize: true,
+      strechH: 'all',
+      rendered: false,
+      afterRender: () => {
+        if(rendered===false){
+          console.log('rendered');
+          focusTo('contMatTitle');
+          CM.disableCM();
+          rendered=true;
+        }
+      },
+      cells: function (row, col, prop) {
+     }
+
     });
     hot.updateSettings({
      cells: function (row, col, prop) {
        var cellProperties = {};
+       cellProperties.renderer = makeBars;
        cellProperties.readOnly = true;
+       if(row===lastRow-1){
+         cellProperties.className = 'htMiddle h5';
+       }
        return cellProperties;
      }
     });
   },
   removeTable: () => {
     $('#cm-table').empty();
+    $('#clearCM').attr('disabled',true);
   },
   init: (project) => {
     CM.project = project;
@@ -181,7 +237,7 @@ var CM = {
     var tmpl = GRADE.templates.conmatrix(CM);
     $('#contMatContainer').html(tmpl);
     CM.bindActions();
-    $('a[action=makeConMatrix]').click();
+    // $('a[action=makeConMatrix]').click();
   }
 }
 

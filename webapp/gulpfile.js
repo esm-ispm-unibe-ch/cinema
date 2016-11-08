@@ -80,11 +80,20 @@ gulp.task('lint:test', () => {
 });
 
 gulp.task('html', ['styles', 'scripts', 'templates'], () => {
+  var inject = require('gulp-inject-string');
   return gulp.src('app/*.html')
     .pipe($.useref({searchPath: ['.tmp', 'app', '.']}))
     .pipe($.if('*.js', $.uglify()))
     .pipe($.if('*.css', $.cssnano({safe: true, autoprefixer: false})))
     .pipe($.if('*.html', $.htmlmin({collapseWhitespace: true})))
+    .pipe($.if('index.html', inject.after('<!-- inject:js -->',
+    `<script>
+      if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.register('/sw.js').then(function() {
+                  console.log("Service Worker Registered");
+                    });
+      }
+      </script>`)))
     .pipe(gulp.dest('dist'));
 });
 
@@ -101,7 +110,7 @@ gulp.task('fonts', () => {
     .pipe(gulp.dest('dist/fonts'));
 });
 
-gulp.task('extras', () => {
+gulp.task('extras',() => {
   return gulp.src([
     'app/*',
     '!app/*.html'
@@ -186,7 +195,19 @@ gulp.task('wiredep', () => {
     .pipe(gulp.dest('app'));
 });
 
-gulp.task('build', ['lint', 'html', 'images', 'fonts', 'extras'], () => {
+gulp.task('generate-service-worker', [ 'html', 'images', 'fonts'], function(callback) {
+  var path = require('path');
+  var swPrecache = require('sw-precache');
+  var rootDir = 'dist';
+
+  swPrecache.write(path.join(rootDir, 'sw.js'), {
+    staticFileGlobs: [rootDir + '/**/*.{js,html,css,png,jpg,gif,eot,svg,ttf,woff,woff2}'],
+    stripPrefix: rootDir
+  }, callback);
+});
+
+
+gulp.task('build', ['lint', 'generate-service-worker', 'extras'], () => {
   return gulp.src('dist/**/*').pipe($.size({title: 'build', gzip: true}));
 });
 

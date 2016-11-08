@@ -23,6 +23,8 @@
     "gulp-htmlmin": "^3.0.0",
     "gulp-if": "^2.0.0",
     "gulp-imagemin": "^3.0.1",
+    "gulp-inject": "^4.1.0",
+    "gulp-inject-string": "^1.1.0",
     "gulp-load-plugins": "^1.2.4",
     "gulp-plumber": "^1.0.1",
     "gulp-sass": "^2.0.0",
@@ -32,15 +34,16 @@
     "gulp-useref": "^3.0.0",
     "main-bower-files": "^2.5.0",
     "run-sequence": "^1.2.2",
+    "sw-precache": "^4.2.1",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",
     "wiredep": "^4.0.0"
   },
   "eslintConfig": {
     "parserOptions": {
-     "ecmaVersion": 6,
-     "sourceType": "module"
-   },
+      "ecmaVersion": 6,
+      "sourceType": "module"
+    },
     "env": {
       "es6": true,
       "node": true,

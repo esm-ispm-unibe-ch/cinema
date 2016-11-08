@@ -1,4 +1,7 @@
-$cySize: 700px;
+$cySize: 600px;
+$cmtw: 600px;
+$cmth: 600px;
+
 #cy{
   padding:0!important;
   width:$cySize;
@@ -20,9 +23,35 @@ $cySize: 700px;
   color:#282C34;
 }
 
+#contMatContainer .handsontable col.rowHeader {
+    width: 72px;
+}
+
+
 #wide-table, #cm-table{
   margin-left:20px;
   padding:0!important;
   //  max-width:700px;
   //  max-height:700px;
+}
+
+.ht_clone_left .htCore tbody tr:last-child{
+  th {
+    vertical-align: middle;
+  }
+  .rowHeader{
+    color: #777;
+    font-weight:bold;
+    line-height:100%;
+    display:block;
+  }
+}
+
+
+#cm-table{
+  // // width:$cmtw;
+  // // height:$cmth;
+  // // overflow:auto;
+  // // resize: vertical;
+  // resize: horizontal;
 }
