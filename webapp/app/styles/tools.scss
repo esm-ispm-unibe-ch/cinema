@@ -1,6 +1,6 @@
 $cySize: 600px;
-$cmtw: 600px;
-$cmth: 600px;
+$tablew: 400px;
+$tableh: 300px;
 
 #cy{
   padding:0!important;
@@ -11,47 +11,59 @@ $cmth: 600px;
   box-shadow:         inset 0 0 8px grey;
 }
 
-#cyContainer {
-
-}
-
-#netplotControls{
-}
-
 .tool-title {
   text-align:center;
   color:#282C34;
 }
 
-#contMatContainer .handsontable col.rowHeader {
-    width: 72px;
+col.rowHeader {
+    width: 72px!important;
 }
 
 
-#wide-table, #cm-table{
+#np-table, #cm-table{
   margin-left:20px;
   padding:0!important;
   //  max-width:700px;
   //  max-height:700px;
 }
 
-.ht_clone_left .htCore tbody tr:last-child{
-  th {
-    vertical-align: middle;
-  }
-  .rowHeader{
-    color: #777;
-    font-weight:bold;
-    line-height:100%;
-    display:block;
+#cm-table .ht_clone_left .htCore {
+  tr:last-child{
+    th {
+      vertical-align: middle;
+    }
+    .rowHeader{
+      color: #777;
+      font-weight:400;
+      line-height:100%;
+      display:block;
+    }
   }
 }
 
+.fullscreen{
+  width:100%!important;
+  height:90vh!important;
+}
 
-#cm-table{
-  // // width:$cmtw;
-  // // height:$cmth;
-  // // overflow:auto;
-  // // resize: vertical;
-  // resize: horizontal;
+.table-resizer{
+  width:100%;
+  // height:20px;
+  margin:10px 0 10px 0;
+  cursor:pointer;
+}
+
+.table-container{
+  width:$tablew;
+  height:$tableh;
+  overflow:hidden;
+  padding:10px 20px 50px 20px;
+  resize: both;
+}
+
+.table{
+  margin:0!important;
+  padding:0!important;
+  overflow:auto;
 }

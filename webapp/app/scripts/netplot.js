@@ -1,4 +1,5 @@
 var Messages = require('./messages.js').Messages;
+var View = require('./view.js')();
 var uniqId = (ids) => {
     return ids.sort();
 };
@@ -406,19 +407,28 @@ var accumulate = (list, key) => {
     });
   },
   bindElementSelection: (cy) => {
+    $('#m-table-container').click(()=>{
+      let hot = (()=>{return CM.hot})();
+      if(typeof hot !== 'undefined'){
+        CM.resizeTable(hot);
+      }
+    });
     cy.on('select', 'edge', () => {
       let e = cy.$('edge:selected');
       e.style({'line-color':NP.options.selectedColor});
       e.addClass('selectedEdge');
       let filteredModel = NP.filterModelByEdge(e.id(), ['t1','t2']);
-      NP.showTable('wide-table', filteredModel);
+      NP.showTable('np-table', filteredModel)
+        .then(hot => {
+          View.bindTableResize(hot, 'np-table-container');
+        });
     });
     cy.on('unselect', 'edge', () => {
       let e = cy.$('.selectedEdge');
       let ec = e.json().data.ecolor;
       e.style({'line-color': ec});
       e.removeClass('selectedEdge');
-      NP.removeTable('wide-table');
+      NP.removeTable('np-table');
     });
     cy.on('select', 'node', () => {
       let n = cy.$('node:selected');
@@ -429,7 +439,10 @@ var accumulate = (list, key) => {
       }),
       n.addClass('selectedNode');
       let filteredModel = NP.filterModelByNode(n.id(), ['t1','t2']);
-      NP.showTable('wide-table', filteredModel);
+      NP.showTable('np-table', filteredModel)
+        .then(hot => {
+          View.bindTableResize(hot, 'np-table-container');
+        });
     });
     cy.on('unselect', 'node', () => {
       let n = cy.$('.selectedNode');
@@ -438,7 +451,7 @@ var accumulate = (list, key) => {
         'background-color': NP.options.defaultVertexColor
       });
       n.removeClass('selectedNode');
-      NP.removeTable('wide-table');
+      NP.removeTable('np-table');
     });
   },
   bindActions: () => {
@@ -503,20 +516,31 @@ var accumulate = (list, key) => {
     }
   },
   showTable: (container, data) => {
-    let cont = document.getElementById(container);
-    var hot = new Handsontable(cont, {
-      data: data,
-      // height: 700,
-      // width: 700,
-      manualColumnMove: true,
-      renderAllRows:true,
-      rowHeights: 23,
-      rowHeaders: true,
-      colHeaders: true,
-      colHeaders: Object.keys(data[0]),
-      columns: _.map(Object.keys(data[0]), k => {
-        return { data: k, readOnly: true };
-      })
+    return new Promise((resolve, reject)=>{
+      let cont = document.getElementById(container);
+      var rendered = false;
+      var hot = new Handsontable(cont, {
+        data: data,
+        // height: 700,
+        // width: 700,
+        manualColumnMove: true,
+        renderAllRows:true,
+        rowHeights: 23,
+        rowHeaders: true,
+        colHeaders: true,
+        colHeaders: Object.keys(data[0]),
+        width: $('#np-table-container').width(),
+        height: $('#np-table-container').height(),
+        columns: _.map(Object.keys(data[0]), k => {
+          return { data: k, readOnly: true };
+        }),
+        afterRender: () => {
+          if(rendered===false){
+            rendered=true;
+          }
+        },
+      });
+      resolve(hot);
     });
   },
   removeTable: (container) => {

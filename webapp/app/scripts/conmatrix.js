@@ -1,9 +1,6 @@
 var Messages = require('./messages.js').Messages;
-var focusTo = (id) => {
-  jQuery('html,body').animate({
-  scrollTop: jQuery('#'+id).offset().top},
-  'fast');
-}
+var View = require('./view.js')();
+
 
 var CM = {
   defaultControls: () => { return [
@@ -87,7 +84,6 @@ var CM = {
     });
   },
   bindActions: () => {
-    CM.removeTable();
     $('input[type=radio][name=MAModel]').bind('change', () =>{
       let val = $('input[type=radio][name=MAModel]:checked').val();
       if(val==='fixed'){
@@ -96,7 +92,7 @@ var CM = {
         $('input[name="tau"]').attr('disabled', false);
       }
     });
-    $('#popoverCM').popover({trigger:'hover',container:'body'});
+    // $('#popoverCM').popover({trigger:'hover',container:'body'});
     $('#conMatControls').bind('change', () => {
       CM.checkInputs();
     });
@@ -123,17 +119,17 @@ var CM = {
     $('#conMatControls select').prop('disabled',false);
     $('a[action=makeConMatrix]').attr('disabled',false);
   },
-  checkInputs: () =>{
+  checkInputs: () => {
       let mamodel =  $('input[type=radio][name=MAModel]:checked').val();
       if( typeof mamodel === 'undefined'){
-        $('#popoverCM').attr('data-content','You must choose model');
+        // $('#popoverCM').attr('data-content','You must choose model');
         CM.disableCM();
       }else{
         CM.enableCM();
         CM.params.MAModel = mamodel;
         CM.params.sm = $('select[action=setSM]').val();
         $('#popoverCM').attr('disabled',false);
-        $('#popoverCM').popover('disable');
+        // $('#popoverCM').popover('disable');
       }
   },
   getProject:() =>{
@@ -169,62 +165,67 @@ var CM = {
   },
   createMatrix: (params) => {
     CM.removeTable();
-    CM.fetchCM(params).then(cm => {
-      let cont = document.getElementById('cm-table');
-      CM.showTable(cont,cm.percentageContr.concat(cm.impD),cm.colNames,cm.rowNames.concat('Entire <br> Network'));
-    }).catch( err => {
-      Messages.updateInfo(Messages.ocpuError,err);
+    CM.fetchCM(params)
+      .then(CM.showTable)
+      .then(hot => {
+        View.bindTableResize(hot, 'cm-table-container');
+      }).catch( err => {
+        Messages.updateInfo(Messages.ocpuError,err);
     });
   },
-  showTable: (cont,studies,cols,rows) => {
-  var setBackground = (percentage) => {
-    return `
-      linear-gradient(
-      to right,
-      rgba(238,238,238,0.83) `+percentage+`%,
-      white `+percentage+`%
-    )`;
-  };
-    function makeBars(instance, td, row, col, prop, value, cellProperties) { Handsontable.renderers.TextRenderer.apply(this, arguments);
-      td.style.background = setBackground(value);
-    };
-    // console.log(data);
-    let lastRow = rows.length;
-    var rendered = false;
-    var hot = new Handsontable(cont, {
-      data: studies,
-      // renderAllRows:true,
-      // renderAllColumns:true,
-      rowHeights: 23,
-      columnWidth: 200,
-      rowHeaders: rows,
-      colHeaders: true,
-      colHeaders: cols,
-      manualColumnResize: true,
-      strechH: 'all',
-      rendered: false,
-      afterRender: () => {
-        if(rendered===false){
-          console.log('rendered');
-          focusTo('contMatTitle');
-          CM.disableCM();
-          rendered=true;
+  showTable: (cm) => {
+    return new Promise((resolve,reject) => {
+      let cont = document.getElementById('cm-table');
+      let studies = cm.percentageContr.concat(cm.impD);
+      let cols = cm.colNames;
+      let rows = cm.rowNames.concat('Entire <br> Network');
+      var setBackground = (percentage) => {
+        return `
+          linear-gradient(
+          to right,
+          rgba(238,238,238,0.83) `+percentage+`%,
+          white `+percentage+`%
+        )`;
+      };
+      function makeBars(instance, td, row, col, prop, value, cellProperties) { Handsontable.renderers.TextRenderer.apply(this, arguments);
+        td.style.background = setBackground(value);
+      };
+      let lastRow = rows.length;
+      var rendered = false;
+      var hot = new Handsontable(cont, {
+        data: studies,
+        renderAllRows:true,
+        renderAllColumns:true,
+        rowHeights: 23,
+        columnWidth: 200,
+        rowHeaders: rows,
+        colHeaders: true,
+        colHeaders: cols,
+        manualColumnResize: true,
+        strechH: 'all',
+        rendered: false,
+        width: $('#cm-table-container').width(),
+        height: $('#cm-table-container').height(),
+        afterRender: () => {
+          if(rendered===false){
+            View.focusTo('cm-table');
+            CM.disableCM();
+            rendered=true;
+          }
+        },
+      });
+      hot.updateSettings({
+        cells: function (row, col, prop) {
+          var cellProperties = {};
+          cellProperties.renderer = makeBars;
+          cellProperties.readOnly = true;
+          if(row===lastRow-1){
+            cellProperties.className = 'htMiddle h5';
+          }
+          return cellProperties;
         }
-      },
-      cells: function (row, col, prop) {
-     }
-
-    });
-    hot.updateSettings({
-     cells: function (row, col, prop) {
-       var cellProperties = {};
-       cellProperties.renderer = makeBars;
-       cellProperties.readOnly = true;
-       if(row===lastRow-1){
-         cellProperties.className = 'htMiddle h5';
-       }
-       return cellProperties;
-     }
+      });
+      resolve(hot);
     });
   },
   removeTable: () => {
@@ -237,7 +238,6 @@ var CM = {
     var tmpl = GRADE.templates.conmatrix(CM);
     $('#contMatContainer').html(tmpl);
     CM.bindActions();
-    // $('a[action=makeConMatrix]').click();
   }
 }
 

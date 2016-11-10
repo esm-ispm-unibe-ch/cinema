@@ -43,5 +43,9 @@
     <a id="popoverCM" action='makeConMatrix' class="btn btn-default" data-content="All fields should be filled" rel="popover" data-placement="bottom" data-trigger="hover">Create Matrix</a>
     <a id="clearCM" action='clearCM' class="btn btn-default" >Clear Matrix</a>
   </form>
-  <div id='cm-table' class='col-xs-12'></div>
 </div>
+  <div id='cm-table-container' class='well table-container'>
+    <span class="btn-full-screen table-resizer pull-right glyphicon glyphicon-fullscreen" aria="fullscreen table" aria-hidden="true"></span>
+    <span style='display:none' class="btn-minimize table-resizer pull-right glyphicon glyphicon-resize-small" aria="minimize table" aria-hidden="true" ></span>
+    <div id='cm-table' class='table'></div>
+  </div>

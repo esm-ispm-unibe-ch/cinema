@@ -126,6 +126,7 @@ gulp.task('serve', () => {
     browserSync({
       notify: false,
       port: 9000,
+      browser: "google chrome canary",
       server: {
         baseDir: ['.tmp', 'app'],
         routes: {
@@ -152,7 +153,7 @@ gulp.task('serve', () => {
 gulp.task('serve:dist', () => {
   browserSync({
     notify: false,
-    port: 9000,
+    port: 9001,
     server: {
       baseDir: ['dist']
     }
