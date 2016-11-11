@@ -36,7 +36,6 @@ var PR = {
   getProject: (evt) => {
     Model.getJSON(evt).then(project => {
       $('#files').attr('disabled',true);
-      PR.showPreview(Model.getProject());
       var filename = htmlEntities($('#files').val().replace(/C:\\fakepath\\/i, '')).slice(0, -4);
       Model.setProjectName(filename);
       Model.setProjectFileName(filename);
@@ -87,7 +86,7 @@ var PR = {
       PR.bindFileUploader();
       PR.rendered = true;
       if(Model.emptyProject()===false){
-        PR.showPreview(Model.getProject());
+        // PR.showPreview(Model.getProject());
         PR.getRouter().enableRoute('tools');
         $('#popoverData').popover('disable');
       }

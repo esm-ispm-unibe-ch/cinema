@@ -400,11 +400,17 @@ var accumulate = (list, key) => {
   },
   filterModelByEdge: (filter,fields) => {
     let model = NP.project.model.wide;
-    return _.filter(model, r => {
-      let pred = _.map(fields, field => {return r[field]});
-      let lkj = pred.sort().toString()
-      return lkj=== filter;
-    });
+    let out= {};
+    if(filter===''){
+      out = model;
+    }else{
+      out = _.filter(model, r => {
+        let pred = _.map(fields, field => {return r[field]});
+        let lkj = pred.sort().toString()
+        return lkj=== filter;
+      });
+    }
+    return out;
   },
   bindElementSelection: (cy) => {
     $('#m-table-container').click(()=>{
@@ -428,7 +434,6 @@ var accumulate = (list, key) => {
       let ec = e.json().data.ecolor;
       e.style({'line-color': ec});
       e.removeClass('selectedEdge');
-      NP.removeTable('np-table');
     });
     cy.on('select', 'node', () => {
       let n = cy.$('node:selected');
@@ -451,8 +456,18 @@ var accumulate = (list, key) => {
         'background-color': NP.options.defaultVertexColor
       });
       n.removeClass('selectedNode');
-      NP.removeTable('np-table');
     });
+    cy.on('tap', function(event){
+    // cyTarget holds a reference to the originator
+    // of the event (core or element)
+    var evtTarget = event.cyTarget;
+    if( evtTarget === cy ){
+      console.log('tap on background');
+      NP.showWholeTable();
+    } else {
+      console.log('tap on some element');
+    }
+});
   },
   bindActions: () => {
     window.addEventListener('resize', ()=>{
@@ -511,11 +526,20 @@ var accumulate = (list, key) => {
         NP.colorVertices(NP.options.vertexColorBy);
         NP.cy.layout({name:'circle'});
         NP.bindElementSelection(NP.cy);
+        NP.showWholeTable();
         NP.isRendered = true;
       });
     }
   },
+  showWholeTable: () => {
+    NP.removeTable('np-table');
+    NP.showTable('np-table', NP.project.model.wide)
+      .then(hot => {
+      View.bindTableResize(hot, 'np-table-container');
+    });
+  },
   showTable: (container, data) => {
+    NP.removeTable('np-table');
     return new Promise((resolve, reject)=>{
       let cont = document.getElementById(container);
       var rendered = false;
