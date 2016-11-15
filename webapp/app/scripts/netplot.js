@@ -1,7 +1,7 @@
 var Messages = require('./messages.js').Messages;
-var View = require('./view.js')();
-var sumBy = require('./model.js').sumBy;
-var accumulate = require('./model.js').accumulate;
+var accumulate = require('./mixins.js').accumulate;
+var sumBy = require('./mixins.js').sumBy;
+var bindTableResize = require('./mixins.js').bindTableResize;
 
  var NP = {
   isRendered: false,
@@ -366,7 +366,7 @@ var accumulate = require('./model.js').accumulate;
       let filteredModel = NP.filterModelByEdge(e.id(), ['t1','t2']);
       NP.showTable('np-table', filteredModel)
         .then(hot => {
-          View.bindTableResize(hot, 'np-table-container');
+          bindTableResize(hot, 'np-table-container');
         });
     });
     cy.on('unselect', 'edge', () => {
@@ -386,7 +386,7 @@ var accumulate = require('./model.js').accumulate;
       let filteredModel = NP.filterModelByNode(n.id(), ['t1','t2']);
       NP.showTable('np-table', filteredModel)
         .then(hot => {
-          View.bindTableResize(hot, 'np-table-container');
+          bindTableResize(hot, 'np-table-container');
         });
     });
     cy.on('unselect', 'node', () => {
@@ -476,7 +476,7 @@ var accumulate = require('./model.js').accumulate;
     NP.removeTable('np-table');
     NP.showTable('np-table', NP.project.model.wide)
       .then(hot => {
-      View.bindTableResize(hot, 'np-table-container');
+      bindTableResize(hot, 'np-table-container');
     });
   },
   showTable: (container, data) => {

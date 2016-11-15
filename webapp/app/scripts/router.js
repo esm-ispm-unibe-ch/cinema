@@ -1,7 +1,5 @@
 var Messages = require('./messages.js').Messages;
-var Model = require('./model.js').Model;
-var Tools = require('./tools.js')();
-var Projects = require('./projects.js')();
+//maybe init in View
 
 var Router = {
   headerTitle: 'GRADE NMA Visualization Tools',
@@ -20,14 +18,12 @@ var Router = {
       label: 'Tools',
       title: 'Tools',
       infos: Messages.toolsRoute,
-      actions: [Model.saveProject, Tools.init]
     },
     {
       route: 'projects',
       label: 'My Projects',
       title: 'My Projects',
       infos: Messages.projectRoute,
-      actions: [Projects.init]
     },
   ],
   gotoRoute: (route) => {
@@ -39,15 +35,6 @@ var Router = {
       $('.routed').hide();
       $('#'+route).fadeIn(400);
       Messages.updateInfo(routy.infos);
-      if(!(_.isEmpty(routy.actions))){
-        _.map(routy.actions, ra => {
-          if(route==='projects'){
-            ra(Router);
-          }else{
-            ra(Model);
-          }
-        });
-      };
     }
   },
   enableRoute: (route) => {
@@ -74,18 +61,6 @@ var Router = {
           Router.gotoRoute(route);
         }
       });
-    });
-  },
-  init: () => {
-    $(document).ready(function () {
-      Router.bindNavControls();
-      Model.readLocalStorage();
-      if(Model.emptyProject()){
-        Router.disableRoute('tools');
-        Router.gotoRoute('projects');
-      }else{
-        Router.gotoRoute('tools');
-      }
     });
   },
 }

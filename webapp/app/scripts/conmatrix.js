@@ -1,6 +1,6 @@
 var Messages = require('./messages.js').Messages;
-var View = require('./view.js')();
-
+var focusTo = require('./mixins.js').focusTo;
+var bindTableResize = require('./mixins.js').bindTableResize;
 
 var CM = {
   defaultControls: () => { return [
@@ -168,7 +168,7 @@ var CM = {
     CM.fetchCM(params)
       .then(CM.showTable)
       .then(hot => {
-        View.bindTableResize(hot, 'cm-table-container');
+        bindTableResize(hot, 'cm-table-container');
       }).catch( err => {
         Messages.updateInfo(Messages.ocpuError,err);
     });
@@ -208,7 +208,7 @@ var CM = {
         height: $('#cm-table-container').height(),
         afterRender: () => {
           if(rendered===false){
-            View.focusTo('cm-table');
+            focusTo('cm-table');
             CM.disableCM();
             rendered=true;
           }

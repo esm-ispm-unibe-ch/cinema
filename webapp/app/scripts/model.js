@@ -1,25 +1,12 @@
+var View = require('./view.js').View;
 var md5 = require('../../bower_components/js-md5/js/md5.min.js');
 var FR = require('./readFile.js').FR;
 var Checker = require('./fileChecks.js').Checker;
 var Reshaper = require('./reshaper.js').Reshaper;
-var htmlEntities = (str) => {
-  return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-};
-var uniqId = (ids) => {
-    return ids.sort();
-};
-var sumBy = (list, keys) => {
-  let out = 0;
-  if (_.isArray(keys)){
-    out =  _.reduce(list, (memo, el) => {return memo + el[keys[0]]+el[keys[1]]}, 0);
-  }else{
-    out = _.reduce(list, (memo, el) => {return memo + el[keys]}, 0);
-  }
-  return out;
-};
-var accumulate = (list, key) => {
-  return _.reduce(list, (memo, el) => {return memo.concat([el[key]]);},[]);
-};
+var uniqId = require('./mixins.js').uniqId;
+var accumulate = require('./mixins.js').accumulate;
+var sumBy = require('./mixins.js').sumBy;
+
 
 var Model = {
   createProject: (pr) =>{
@@ -48,17 +35,16 @@ var Model = {
   clearProject: () => {
     Model.project = {};
     localStorage.clear();
+    View.gotoRoute('projects',false);
   },
   setProjectName: (title) =>{
     Model.project.title = title;
-    Model.saveProject();
   },
   getProjectName: () =>{
     return Model.project.title;
   },
   setProjectFileName: (filename) =>{
     Model.project.fileName = filename;
-    Model.saveProject();
   },
   getProjectFileName: () =>{
     return Model.project.fileName;
@@ -67,7 +53,9 @@ var Model = {
     return Model.project;
   },
   setProject: (project) => {
+    console.log('setting project');
     Model.project = project;
+    View.updateProject();
     Model.saveProject();
   },
   saveProject: () => {
@@ -133,7 +121,8 @@ var Model = {
       c.selectedrob = sels[c.id];
     });
     prj.hasSelectedRob = true;
-    Model.setProject(prj);
+    Model.saveProject();
+    View.updateSelections();
   },
   unselectRobs: () => {
     let prj = Model.getProject();
@@ -141,9 +130,10 @@ var Model = {
       c.selectedrob = '';
     });
     prj.hasSelectedRob = false;
-    Model.setProject(prj);
+    Model.saveProject();
+    View.updateSelections();
   },
-  getJSON: (evt) => {
+  getJSON: (evt, filename) => {
     return FR.handleFileSelect(evt)
     .then(FR.convertCSVtoJSON)
     .then(Checker.checkColumnNames)
@@ -162,16 +152,18 @@ var Model = {
       }
       mdl.directComparisons = Model.makeDirectComparisons(project.type, mdl.wide);
       prj.model = mdl;
+      prj.title = filename;
+      prj.filenmae = filename;
       Model.setProject(Model.createProject(prj));
       return prj;
     });
   },
+  init: () => {
+    View.init(Model);
+    Model.readLocalStorage();
+  }
 };
 
 module.exports = {
   Model: Model,
-  htmlEntities: htmlEntities,
-  uniqId: uniqId,
-  sumBy: sumBy,
-  accumulate: accumulate
 };

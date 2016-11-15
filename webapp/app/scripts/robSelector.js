@@ -1,5 +1,5 @@
 var Msg = require('./messages.js').Messages;
-var View = require('./view.js')();
+var focusTo = require('./mixins.js').focusTo;
 
 var RS = {
   initControls:() =>{
@@ -117,7 +117,7 @@ var RS = {
     console.log(model.project);
     var rstmpl = GRADE.templates.robSelector(RS);
     $('#robSelectorContainer').html(rstmpl);
-    View.focusTo('robSelectorTitle');
+    focusTo('robSelectorTitle');
     RS.initControls();
     RS.bindControls();
   }

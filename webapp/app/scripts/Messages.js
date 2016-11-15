@@ -90,7 +90,7 @@ var Messages = {
   updateInfo : (infos,extra) => {
     Messages.extra = extra;
     let aux = infos;
-    aux.projectName = Model.getProjectName();
+    // aux.projectName = Model.getProjectName();
     if(extra){
       aux.extra = extra;
     }
