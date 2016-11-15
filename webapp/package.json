@@ -55,5 +55,8 @@
         "single"
       ]
     }
+  },
+  "dependencies": {
+    "alertifyjs": "^1.8.0"
   }
 }

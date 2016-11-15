@@ -1,20 +1,7 @@
 var Messages = require('./messages.js').Messages;
 var View = require('./view.js')();
-var uniqId = (ids) => {
-    return ids.sort();
-};
-var sumBy = (list, keys) => {
-  let out = 0;
-  if (_.isArray(keys)){
-    out =  _.reduce(list, (memo, el) => {return memo + el[keys[0]]+el[keys[1]]}, 0);
-  }else{
-    out = _.reduce(list, (memo, el) => {return memo + el[keys]}, 0);
-  }
-  return out;
-};
-var accumulate = (list, key) => {
-  return _.reduce(list, (memo, el) => {return memo.concat([el[key]]);},[]);
-};
+var sumBy = require('./model.js').sumBy;
+var accumulate = require('./model.js').accumulate;
 
  var NP = {
   isRendered: false,
@@ -23,9 +10,9 @@ var accumulate = (list, key) => {
    etovRatio : 0.5,
    options: {
      vertexSizeBy: 'numStudies',
-     vertexColorBy: 'rob',
+     vertexColorBy: 'noColor',
      edgeSizeBy: 'sampleSize',
-     edgeColorBy: 'majority',
+     edgeColorBy: 'noColor',
      defaultVertexColor: '#61AFD1',
      norobcolor: '#282C34',
      lowrobcolor: '#7CC9AE',
@@ -38,7 +25,7 @@ var accumulate = (list, key) => {
 
    addElementsToGraph : (model) => {
     NP.vertices = NP.makeNodes(model.long);
-    NP.edges = NP.makeEdges(model.wide);
+    NP.edges = NP.makeEdges(NP.project);
     var elements = [NP.vertices, NP.edges];
     NP.cy.batch( () => {
       NP.cy.add(_.reduce(_.flatten(elements),
@@ -70,8 +57,6 @@ var accumulate = (list, key) => {
       vertex.numStudies = group.length;
       if(type!=='iv'){
       vertex.sampleSize = sumBy(group,'n');
-      }else{
-      vertex.sampleSize = group.length;
       }
       //vertex.rSum = _.reduce(group, function (memo, row){ return memo + row.r},0);
       vertex.rob = accumulate(group,'rob');
@@ -84,31 +69,8 @@ var accumulate = (list, key) => {
     return res;
   },
 
-  makeEdges: (model) => {
-    let type = NP.project.type;
-    let comparisons = _.groupBy(model, row => {
-        return uniqId([row.t1, row.t2]).toString();
-      });
-    var edges = _.map( _.toArray(comparisons), comp => {
-      let row = {
-        type:'edge',
-        id: uniqId([comp[0].t1,comp[0].t2]).toString(),
-        studies: accumulate(comp,'id'),
-        source: uniqId([comp[0].t1,comp[0].t2])[0],
-        target: uniqId([comp[0].t1,comp[0].t2])[1],
-        numStudies: comp.length,
-        rob: accumulate(comp,'rob'),
-      };
-      if(type !== 'iv'){
-        row.sampleSize = sumBy(comp,['n1','n2']);
-      }else{
-        row.sampleSize = _.reduce(comp, (iv,s) => {
-          let au = Math.pow(1/s.se,2);
-          return iv + au;
-        },0);
-      }
-      return row;
-      });
+  makeEdges: (project) => {
+    let edges = project.model.directComparisons;
     return edges;
   },
 
@@ -155,6 +117,8 @@ var accumulate = (list, key) => {
           var elem = e.type;
           if(e.renderSize<40){
             NP.cy.elements(elem+'[id="'+e.id+'"]').style({'text-valign':'top'});
+          }else{
+            NP.cy.elements(elem+'[id="'+e.id+'"]').style({'text-valign':'center'});
           }
           NP.cy.elements(elem+'[id="'+e.id+'"]').style({'width':e.renderSize,'height':e.renderSize});
         });
@@ -193,37 +157,13 @@ var accumulate = (list, key) => {
         var totalrob = 0;
         switch(filter){
           case 'majority':
-          totalrob = _.first(
-            _.sortBy(
-              _.sortBy(
-                _.groupBy(e.rob, rob => {return rob}),
-                robs => {
-                  return -robs[0];
-                }
-              ),
-              robs => {
-                return -robs.length;
-              }
-            )
-          )[0];
-          //console.log(e.rob,totalrob);
-          e.ecolor = colors[totalrob-1];
+          e.ecolor = colors[e.majrob-1];
           break;
           case 'mean':
-          totalrob = _.reduce(e.rob, (memo,rob) => {
-            return memo + rob;
-          },0) / e.rob.length;
-          totalrob = Math.round(totalrob);
-          e.ecolor = colors[totalrob-1];
-          //console.log(totalrob);
+          e.ecolor = colors[e.meanrob-1];
           break;
           case 'max':
-          totalrob = _.reduce(e.rob, (memo,rob) => {
-            return memo > rob ? memo : rob;
-          },0);
-          //console.log(e.rob,totalrob);
-          e.ecolor = colors[totalrob-1];
-          //console.log(totalrob);
+          e.ecolor = colors[e.maxrob-1];
           break;
           case 'noColor':
           e.ecolor = NP.options.norobcolor;
@@ -334,7 +274,7 @@ var accumulate = (list, key) => {
       },
         {
         label:'Inverse variance',
-        value:'sampleSize',
+        value:'iv',
         isAvailable:false,
         }
       ]
@@ -507,7 +447,8 @@ var accumulate = (list, key) => {
   },
   project: {}
   ,
-  init: (project) => {
+  init: (model) => {
+    let project = model.getProject();
     if(NP.project.id!==project.id){
       NP.project = project;
       NP.isRendered = false;

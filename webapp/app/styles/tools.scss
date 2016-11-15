@@ -67,3 +67,32 @@ col.rowHeader {
   padding:0!important;
   overflow:auto;
 }
+
+//ROB selector
+
+.compRobSelector {
+  width:210px;
+  margin: 6px;
+  padding:5px 11px 5px 11px!important;
+  border-radius: 8px 8px 8px 8px;
+  border-width:2px;
+  background-color: white;
+  ul{
+    list-style-type: none;
+    padding-left: 0!important;
+    hr{
+      margin-top:2px!important;
+      margin-bottom:2px!important;
+    }
+  }
+  .robLabel{
+    color:grey;
+  }
+  .isSelected{
+    color:black;
+  }
+}
+
+.compRobSelector.customized {
+  background-color:rgba(225,225,225,0.5);
+}

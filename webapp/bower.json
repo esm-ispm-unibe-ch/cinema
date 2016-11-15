@@ -11,8 +11,7 @@
     "csvtojson": "^0.5.0",
     "jquery": "^3.1.1",
     "js-md5": "^2.4.0",
-    "opencpu.js": "opencpu#*",
-    "notifyjs": "^0.4.2"
+    "opencpu.js": "opencpu#*"
   },
   "overrides": {
     "bootstrap-sass": {

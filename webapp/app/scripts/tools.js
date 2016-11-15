@@ -1,5 +1,6 @@
 var Messages = require('./messages.js').Messages;
 var Netplot = require('./netplot.js')();
+var RobSelect = require('./robSelector.js')();
 var ConMat = require('./conmatrix.js')();
 
 var Tools = {
@@ -12,8 +13,9 @@ var Tools = {
       Tools.projectId=project.id;
     }
     if (!(Tools.areRendered)){
-      Netplot.init(project);
-      ConMat.init(project);
+      Netplot.init(model);
+      RobSelect.init(model);
+      ConMat.init(model.project);
       Tools.areRendered=true;
     }
   }
