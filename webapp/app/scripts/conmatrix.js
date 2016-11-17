@@ -70,17 +70,32 @@ var CM = {
       ]
     }
   ]},
-  params: {
-    MAModel: '',
-    sm: '',
-    tau: -1,
+  params:{},
+  getParams: () => {
+    return CM.params;
   },
-  setControls: (type) => {
+  setParams: (k,v) => {
+    CM.params[k] = v;
+  },
+  setControls: () => {
+    let type = CM.model.getProject().type;
     CM.controls = CM.defaultControls();
-      _.map(CM.controls[1].selections, c => {
-        if(_.find(c.validTypes, t => {return t===type;})){
-          c.isAvailable = true;
-        }
+    CM.currentCM = CM.model.getProject().currentCM;
+    if(! _.isEmpty(CM.currentCM)){
+      _.map(CM.controls, cn => {
+        _.map(cn.selections, s => {
+          if(CM.currentCM[cn.id]===s.value){
+            s.isSelected = true;
+          }else{
+            s.isSelected = false;
+          }
+        })
+      });
+    }
+    _.map(CM.controls[1].selections, c => {
+      if(_.find(c.validTypes, t => {return t===type;})){
+        c.isAvailable = true;
+      }
     });
   },
   bindActions: () => {
@@ -98,9 +113,8 @@ var CM = {
     });
     $('a[action=makeConMatrix]').bind('click', () => {
       if(!($('a[action=makeConMatrix]').attr('disabled'))){
-        let params = CM.params;
         CM.checkInputs();
-        CM.createMatrix(params);
+        CM.createMatrix();
       }
     });
     $('a[action=clearCM]').bind('click', () => {
@@ -126,46 +140,22 @@ var CM = {
         CM.disableCM();
       }else{
         CM.enableCM();
-        CM.params.MAModel = mamodel;
-        CM.params.sm = $('select[action=setSM]').val();
+        CM.setParams('MAModel', mamodel);
+        CM.setParams('sm', $('select[action=setSM]').val());
+        CM.setParams('tau', 1);
         $('#popoverCM').attr('disabled',false);
-        // $('#popoverCM').popover('disable');
       }
   },
   getProject:() =>{
     return CM.project;
   },
   fetchCM: (params) => {
-    return new Promise((resolve, reject) => {
-      let project = CM.getProject();
-      let rtype = '';
-      switch(project.type){
-        case 'binary':
-        rtype = 'netwide_binary';
-        break;
-        case 'continuous':
-        rtype = 'netwide_continuous';
-        break;
-        case 'iv':
-        rtype = 'iv';
-        break;
-      }
-      var req = ocpu.rpc('twobu',{
-        json: JSON.stringify(project.model.wide),
-        type: rtype,
-        model: params.MAModel,
-        sm: params.sm,
-        }, (output) => {
-      resolve(output);
-      });
-      req.fail( () =>{
-        reject('R returned an error: ' + req.responseText);
-      });
-    });
+    return CM.model.fetchContributionMatrix(params);
   },
-  createMatrix: (params) => {
+  createMatrix: () => {
+    let params = (CM.getParams)();
     CM.removeTable();
-    CM.fetchCM(params)
+    CM.fetchCM([params.MAModel,params.sm,params.tau])
       .then(CM.showTable)
       .then(hot => {
         bindTableResize(hot, 'cm-table-container');
@@ -173,8 +163,9 @@ var CM = {
         Messages.updateInfo(Messages.ocpuError,err);
     });
   },
-  showTable: (cm) => {
+  showTable: (res) => {
     return new Promise((resolve,reject) => {
+      let cm = res.matrix;
       let cont = document.getElementById('cm-table');
       let studies = cm.percentageContr.concat(cm.impD);
       let cols = cm.colNames;
@@ -231,13 +222,19 @@ var CM = {
   removeTable: () => {
     $('#cm-table').empty();
     $('#clearCM').attr('disabled',true);
+    CM.model.clearCurrentCM();
   },
-  init: (project) => {
-    CM.project = project;
-    CM.setControls(project.type);
+  init: (model) => {
+    CM.model = model;
+    CM.project = CM.model.project;
+    CM.setControls();
     var tmpl = GRADE.templates.conmatrix(CM);
     $('#contMatContainer').html(tmpl);
     CM.bindActions();
+    if(! _.isEmpty(CM.project.currentCM)){
+      CM.params = CM.project.currentCM;
+      CM.createMatrix();
+    }
   }
 }
 

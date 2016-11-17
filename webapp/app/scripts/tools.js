@@ -14,7 +14,7 @@ var Tools = {
     //to be moved to View
     Netplot.init(model);
     RobSelect.init(model);
-    ConMat.init(model.project);
+    ConMat.init(model);
   }
 }
 

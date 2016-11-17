@@ -1,5 +1,19 @@
-  {{#if model.project.hasSelectedRob}}
+  <!-- <ul>
+  {{#each model.project.contributionMatrices}}
+  <li>
+    {{MAModel}}
+    {{sm}}
+    {{matrix}}
+    {{isDefault}}
+  </li>
+  {{/each}}
+</ul> -->
   OUR beautiful con chart!
+  {{model.project.currentCM.MAModel}}
+  {{model.project.currentCM.sm}}
+  {{model.project.currentCM.matrix}}
+  {{#if model.project.hasSelectedRob}}
+  Rob selected!
   {{else}}
     <h4>
       Chart not available!<br>

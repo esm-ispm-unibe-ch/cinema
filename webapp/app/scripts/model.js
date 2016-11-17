@@ -19,6 +19,8 @@ var Model = {
       type: pr.type,
       creationDate: date,
       accessDate: date,
+      currentCM: {},
+      contributionMatrices: [],
       state: {},
     };
   },
@@ -35,7 +37,7 @@ var Model = {
   clearProject: () => {
     Model.project = {};
     localStorage.clear();
-    View.gotoRoute('projects',false);
+    View.updateProjects();
   },
   setProjectName: (title) =>{
     Model.project.title = title;
@@ -53,14 +55,96 @@ var Model = {
     return Model.project;
   },
   setProject: (project) => {
-    console.log('setting project');
+    // console.log('setting project');
     Model.project = project;
-    View.updateProject();
+    View.updateProjects();
     Model.saveProject();
   },
   saveProject: () => {
     localStorage.clear();
     localStorage.setItem('project', JSON.stringify(Model.getProject()));
+  },
+  pushToContributionMatrix: (connma) => {
+    let prj = Model.getProject();
+    let cms = prj.contributionMatrices;
+    cms.push(connma);
+    // console.log('pushing to contributionMatrices',cms,'conma',connma);
+  },
+  clearCurrentCM: () =>{
+    Model.getProject().currentCM = {};
+    Model.saveProject();
+    View.updateConChart();
+  },
+  makeCurrentCM: (cm) =>{
+    let cms = Model.getProject().contributionMatrices;
+    _.map(cms, c => {
+      let fit = _.isMatch(c,_.omit(cm,'isCurrent'));
+      if(fit){
+        c.isDefault = true;
+        Model.getProject().currentCM = c;
+      }else{
+        c.isDefault = false;
+      }
+    });
+    Model.saveProject();
+    View.updateConChart();
+  },
+  fetchContributionMatrix: ([MAModel,sm,tau]) => {
+    return new Promise((resolve, reject) => {
+      let project = Model.getProject();
+      let cms = project.contributionMatrices;
+      let result = {};
+      let foundCM = {};
+      let params = {
+        MAModel: MAModel,
+        sm: sm,
+        tau: tau
+      }
+      // console.log('cmss',cms,'params',params);
+      //check if the matrix is in the model;
+      if(! _.isEmpty(cms)){
+        // console.log('check to find matrix in cms',cms,'params',params);
+        foundCM = _.find(cms, cm => {
+           return _.isMatch(cm, params);
+          });
+      }
+      if(! _.isEmpty(foundCM)){
+        console.log('foundcM', foundCM);
+        Model.makeCurrentCM(foundCM);
+        resolve(foundCM);
+      }else{
+        console.log('CM not found in model');
+        let rtype = '';
+        switch(project.type){
+          case 'binary':
+          rtype = 'netwide_binary';
+          break;
+          case 'continuous':
+          rtype = 'netwide_continuous';
+          break;
+          case 'iv':
+          rtype = 'iv';
+          break;
+        }
+        var req = ocpu.rpc('twobu',{
+          json: JSON.stringify(project.model.wide),
+          type: rtype,
+          model: params.MAModel,
+          sm: params.sm,
+          }, (output) => {
+            let connma = params;
+            connma.matrix = output;
+            // console.log('the ocpu result',connma,'pushing to project');
+            Model.pushToContributionMatrix(connma);
+            Model.makeCurrentCM(connma);
+            resolve(connma);
+        });
+        req.fail( () =>{
+          reject('R returned an error: ' + req.responseText);
+        });
+      }
+    });
+
   },
   makeDirectComparisons: (type,model) => {
     let comparisons = _.groupBy(model, row => {

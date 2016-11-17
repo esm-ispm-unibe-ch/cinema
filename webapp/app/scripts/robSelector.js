@@ -4,7 +4,6 @@ var focusTo = require('./mixins.js').focusTo;
 var RS = {
   initControls:() =>{
     //initialize controls
-    console.log('init rs controls');
     if(RS.model.project.hasSelectedRob){
       $('.custom-selector').attr('disabled',true);
       $('.custom-none').hide();

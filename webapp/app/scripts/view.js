@@ -30,7 +30,10 @@ var View = {
     Router.bindNavControls();
     //Projects
     PR.setModel(model);
-    View.renderProjects(model.emptyProject());
+    var projectstmpl = GRADE.templates.projects();
+    $('#projects').html(projectstmpl);
+    PR.bindControls();
+    PR.bindFileUploader();
   },
   gotoRoute:(route,hasModel)=>{
     if(hasModel){
@@ -41,25 +44,20 @@ var View = {
       Router.disableRoute('tools');
     }
   },
-  renderProjects: (hasModel) => {
-    var projectstmpl = GRADE.templates.projects();
-    $('#projects').html(projectstmpl);
-    PR.bindControls();
-    PR.bindFileUploader();
-    PR.rendered = true;
-    if(! hasModel){
-      PR.disableUpload();
-    }
-  },
-  updateProject:()=>{
+  updateProjects: () => {
     let m = View.getModel();
     let hasModel = ! m.emptyProject();
-    if(hasModel){
+    PR.rendered = true;
+    if(! hasModel){
+      console.log('no model');
+      PR.enableUpload();
+      View.gotoRoute('projects', hasModel);
+    }else{
+      console.log('exei monterlo');
+      PR.disableUpload();
       Tools.init(m);
       View.renderConChart();
       View.gotoRoute('tools', hasModel);
-    }else{
-      View.gotoRoute('projects', hasModel);
     }
   },
   renderConChart:() =>{
@@ -75,6 +73,9 @@ var View = {
   },
   updateSelections:()=>{
     View.updateConChart();
+  },
+  updateConMat:() =>{
+    console.log('con mat changed');
   },
 };
 

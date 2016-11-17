@@ -11,18 +11,6 @@
       <hr>
       <div class=''>
         {{#each controls}}
-          {{#if_eq type "select"}}
-            <h4 class='controls-title'>{{title}}</h4>
-            <select action="{{action}}" class='controls-container form-control' required>
-                {{#each selections}}
-                  {{#if isAvailable}}
-                    <option filter="{{value}}" {{#if isActive}} selected {{/if}}>
-                      {{label}}
-                    </option>
-                  {{/if}}
-                {{/each}}
-            </select>
-          {{/if_eq}}
           {{#if_eq type "radio"}}
             <h4 class='controls-title'>{{title}}</h4>
               {{#each selections}}
@@ -36,6 +24,18 @@
                   {{/each}} -->
                 {{/if}}
               {{/each}}
+          {{/if_eq}}
+          {{#if_eq type "select"}}
+            <h4 class='controls-title'>{{title}}</h4>
+            <select action="{{action}}" class='controls-container form-control' required>
+                {{#each selections}}
+                  {{#if isAvailable}}
+                    <option filter="{{value}}" {{#if isSelected}} selected {{/if}}>
+                      {{label}}
+                    </option>
+                  {{/if}}
+                {{/each}}
+            </select>
           {{/if_eq}}
         {{/each}}
       </div>

@@ -19,13 +19,16 @@ var PR = {
     });
     //cancel uploader
     $('#projectClear').bind('click', function () {
-      var file = $('#files');
-      file.val('');
-      $('#filePreview').remove();
-      $('#previewContainer').append('<div id="filePreview"></div>');
-      // $('#project-name').val('');
-      PR.enableUpload();
-      PR.Model.clearProject();
+      let isdisabled = $('#projectClear').attr('disabled');
+      console.log('project clear is disabled',isdisabled);
+      if(isdisabled !== 'disabled'){
+        Messages.alertify().confirm('Clear Project?','All changes will be lost',
+          () => {
+            $('#project-name').val('');
+            Messages.alertify().message('Project cleared');
+            PR.Model.clearProject();
+        },()=>{});
+      }
     });
   },
   bindFileUploader: () => {
@@ -33,26 +36,26 @@ var PR = {
      PR.getProject , false);
   },
   getProject: (evt) => {
-      $('#files').attr('disabled',true);
       var filename = htmlEntities($('#files').val().replace(/C:\\fakepath\\/i, '')).slice(0, -4);
     PR.Model.getJSON(evt,filename).then(project => {
-      // alertify.success(Messages.longFileUpload,' csv format '+project.format+' '+project.type);
+      Messages.alertify().success(Messages.longFileUpload,' csv format '+project.format+' '+project.type);
     })
     .catch( err => {
       Messages.updateInfo(Messages.wrongFileFormat,err);
     });
   },
   disableUpload: () => {
-    $('#project-name').attr('disabled',true);
+    console.log('disabling upload');
+    $('#projectClear').attr('disabled',false);
     $('#files').attr('disabled',true);
   },
   enableUpload: () => {
-    $('#project-name').attr('disabled',false);
+    console.log('enabling upload');
+    $('#projectClear').attr('disabled', 'disabled');
     $('#files').attr('disabled',false);
+    $('#files').val('');
   }
 };
-
-
 
 module.exports = {
   PR: PR
