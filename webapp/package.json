@@ -57,6 +57,7 @@
     }
   },
   "dependencies": {
-    "alertifyjs": "^1.8.0"
+    "alertifyjs": "^1.8.0",
+    "json2csv": "^3.7.1"
   }
 }

@@ -84,7 +84,7 @@ var Messages = {
     info: 'PLOS paper Abstract',
   },
   longFileUpload: {
-    title: 'File seems ok!',
+    title: 'File upload success',
     success: 'Fill in a project name and click proceed to the tools.',
   },
   updateInfo : (infos,extra) => {

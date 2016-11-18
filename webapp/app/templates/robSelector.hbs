@@ -1,6 +1,6 @@
 <a id="robSelectorTitle" data-toggle="collapse" href="#robSelector" class='well btn  tool-title col-xs-12'><h4>Direct Comparison ROB Selection</h4></a>
 
-<div id="robSelector" class='col-xs-12 well collapse'>
+<div id="robSelector" class='col-xs-12 well collapse in'>
   <div>
     <ul class='list-inline'>
       {{#each model.project.model.directComparisons}}
@@ -12,7 +12,7 @@
                   <li>
                     <strong>{{tn1}}</strong>
                    </li><li>
-                    vs
+                    :
                     </li><li>
                     <strong>{{tn2}}</strong>
                   </li>
@@ -21,7 +21,7 @@
               </li>
             {{else}}
               <li>
-              Comparison: <span class='pull-right'><strong>{{t1}}</strong> vs <strong>{{t2}}</strong></span>
+              Comparison: <span class='pull-right'><strong>{{t1}}</strong> : <strong>{{t2}}</strong></span>
                 <hr>
               </li>
               {{/if}}

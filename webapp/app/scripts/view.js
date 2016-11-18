@@ -46,6 +46,7 @@ var View = {
   },
   updateProjects: () => {
     let m = View.getModel();
+    console.log(m);
     let hasModel = ! m.emptyProject();
     PR.rendered = true;
     if(! hasModel){
@@ -56,26 +57,19 @@ var View = {
       console.log('exei monterlo');
       PR.disableUpload();
       Tools.init(m);
-      View.renderConChart();
+      View.updateConChart();
       View.gotoRoute('tools', hasModel);
     }
   },
-  renderConChart:() =>{
-    let m = View.getModel();
-    Tools.CC.model = m;
-    View.updateConChart();
-    Tools.CC.bindActions();
-  },
   updateConChart:()=>{
     let m = View.getModel();
-    var tmpl = GRADE.templates.conchart(Tools.CC);
-    $('#conChart').html(tmpl);
+    Tools.CC.updateChart(m);
   },
   updateSelections:()=>{
     View.updateConChart();
   },
   updateConMat:() =>{
-    console.log('con mat changed');
+    // console.log('con mat changed');
   },
 };
 

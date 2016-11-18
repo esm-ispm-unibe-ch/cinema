@@ -113,7 +113,7 @@ var RS = {
   },
   init:(model)=>{
     RS.model = model;
-    console.log(model.project);
+    // console.log(model.project);
     var rstmpl = GRADE.templates.robSelector(RS);
     $('#robSelectorContainer').html(rstmpl);
     focusTo('robSelectorTitle');

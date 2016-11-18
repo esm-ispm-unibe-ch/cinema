@@ -1,6 +1,8 @@
 $cySize: 600px;
 $tablew: 400px;
 $tableh: 300px;
+$chartw: 700px;
+$charth: 700px;
 
 #cy{
   padding:0!important;
@@ -98,7 +100,10 @@ col.rowHeader {
 }
 
 //Contribution Chart
-#conChart{
-  min-height:300px;
-  margin-bottom:50px;
+#chartContainer{
+  width:$chartw;
+  height:$charth;
+  overflow:auto;
+  padding:10px 20px 50px 20px;
+  resize: both;
 }

@@ -4,6 +4,7 @@ var sumBy = require('./mixins.js').sumBy;
 var bindTableResize = require('./mixins.js').bindTableResize;
 
  var NP = {
+  model:{},
   isRendered: false,
    vertices : [],
    edges : [],
@@ -15,9 +16,9 @@ var bindTableResize = require('./mixins.js').bindTableResize;
      edgeColorBy: 'noColor',
      defaultVertexColor: '#61AFD1',
      norobcolor: '#282C34',
-     lowrobcolor: '#7CC9AE',
-     unclearrobcolor: '#FBBC05',
-     highrobcolor: '#E0685C',
+     lowrobcolor: ()=>{return NP.model.lowrobcolor},
+     unclearrobcolor: ()=>{return NP.model.unclearrobcolor},
+     highrobcolor: ()=>{return NP.model.highrobcolor},
      selectedColor: '#C678D7',
      minSize: 30,
      maxSize: 130,
@@ -402,10 +403,10 @@ var bindTableResize = require('./mixins.js').bindTableResize;
     // of the event (core or element)
     var evtTarget = event.cyTarget;
     if( evtTarget === cy ){
-      console.log('tap on background');
+      // console.log('tap on background');
       NP.showWholeTable();
     } else {
-      console.log('tap on some element');
+      // console.log('tap on some element');
     }
 });
   },
@@ -448,6 +449,7 @@ var bindTableResize = require('./mixins.js').bindTableResize;
   project: {}
   ,
   init: (model) => {
+    NP.model = model;
     let project = model.getProject();
     if(NP.project.id!==project.id){
       NP.project = project;

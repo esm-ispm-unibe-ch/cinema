@@ -9,11 +9,16 @@ var sumBy = require('./mixins.js').sumBy;
 
 
 var Model = {
+  lowrobcolor: '#7CC9AE',
+  unclearrobcolor: '#FBBC05',
+  highrobcolor: '#E0685C',
   createProject: (pr) =>{
     var date = Number(new Date());
     var id = md5(date+Math.random());
     return {
       id: id,
+      title: pr.title,
+      filename: pr.filename,
       model: pr.model,
       format: pr.format,
       type: pr.type,
@@ -109,11 +114,11 @@ var Model = {
           });
       }
       if(! _.isEmpty(foundCM)){
-        console.log('foundcM', foundCM);
+        // console.log('foundcM', foundCM);
         Model.makeCurrentCM(foundCM);
         resolve(foundCM);
       }else{
-        console.log('CM not found in model');
+        // console.log('CM not found in model');
         let rtype = '';
         switch(project.type){
           case 'binary':
@@ -237,7 +242,8 @@ var Model = {
       mdl.directComparisons = Model.makeDirectComparisons(project.type, mdl.wide);
       prj.model = mdl;
       prj.title = filename;
-      prj.filenmae = filename;
+      prj.filename = filename;
+      console.log('model filename',filename);
       Model.setProject(Model.createProject(prj));
       return prj;
     });

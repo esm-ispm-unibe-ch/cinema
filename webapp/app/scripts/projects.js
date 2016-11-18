@@ -20,7 +20,7 @@ var PR = {
     //cancel uploader
     $('#projectClear').bind('click', function () {
       let isdisabled = $('#projectClear').attr('disabled');
-      console.log('project clear is disabled',isdisabled);
+      // console.log('project clear is disabled',isdisabled);
       if(isdisabled !== 'disabled'){
         Messages.alertify().confirm('Clear Project?','All changes will be lost',
           () => {
@@ -38,19 +38,19 @@ var PR = {
   getProject: (evt) => {
       var filename = htmlEntities($('#files').val().replace(/C:\\fakepath\\/i, '')).slice(0, -4);
     PR.Model.getJSON(evt,filename).then(project => {
-      Messages.alertify().success(Messages.longFileUpload,' csv format '+project.format+' '+project.type);
+      Messages.alertify().success(Messages.longFileUpload.title,' csv format '+project.format+' '+project.type);
     })
     .catch( err => {
       Messages.updateInfo(Messages.wrongFileFormat,err);
     });
   },
   disableUpload: () => {
-    console.log('disabling upload');
+    // console.log('disabling upload');
     $('#projectClear').attr('disabled',false);
     $('#files').attr('disabled',true);
   },
   enableUpload: () => {
-    console.log('enabling upload');
+    // console.log('enabling upload');
     $('#projectClear').attr('disabled', 'disabled');
     $('#files').attr('disabled',false);
     $('#files').val('');

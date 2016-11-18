@@ -1,6 +1,7 @@
 var Messages = require('./messages.js').Messages;
 var focusTo = require('./mixins.js').focusTo;
 var bindTableResize = require('./mixins.js').bindTableResize;
+var json2csv = require('json2csv');
 
 var CM = {
   defaultControls: () => { return [
@@ -156,11 +157,37 @@ var CM = {
     let params = (CM.getParams)();
     CM.removeTable();
     CM.fetchCM([params.MAModel,params.sm,params.tau])
+      .then(CM.makeDownloader)
       .then(CM.showTable)
       .then(hot => {
         bindTableResize(hot, 'cm-table-container');
       }).catch( err => {
         Messages.updateInfo(Messages.ocpuError,err);
+    });
+  },
+  makeDownloader: (res) => {
+    return new Promise((resolve,reject) => {
+      let cm = res.matrix;
+      let studies = cm.percentageContr.concat(cm.impD);
+      let cols = cm.colNames;
+      let rows = cm.rowNames.concat('Entire <br> Network');
+      let fcols = ["comparison"].concat(cols);
+      let fstudies = _.map(_.zip(cm.rowNames.concat('Entire Network'),studies), r=>{
+        return [r[0]].concat(r[1]);
+      });
+      fstudies = _.map(fstudies,st=>{return _.object(fcols,st);});
+      let csvTable = json2csv({
+        data: fstudies,
+        fields: fcols,
+      });
+      let csvContent = "data:text/csv;charset=utf-8,"+csvTable;
+      var encodedUri = encodeURI(csvContent);
+      let cmfilename = CM.project.title+"_"+_.pairs(_.omit(CM.params,['matrix','tau','isDefault'])).toString().replace(/\,/g,"_")+".csv";
+      $('#conMatControls').append('<a class= "btn btn-default" id="downloadAnchorElem">Download csv</a>');
+      var dlAnchorElem = document.getElementById('downloadAnchorElem');
+      dlAnchorElem.setAttribute("href", encodedUri);
+      dlAnchorElem.setAttribute("download", cmfilename);
+      resolve(res);
     });
   },
   showTable: (res) => {
@@ -222,6 +249,7 @@ var CM = {
   removeTable: () => {
     $('#cm-table').empty();
     $('#clearCM').attr('disabled',true);
+    $('#downloadAnchorElem').remove();
     CM.model.clearCurrentCM();
   },
   init: (model) => {
