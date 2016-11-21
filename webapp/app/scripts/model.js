@@ -6,6 +6,7 @@ var Reshaper = require('./reshaper.js').Reshaper;
 var uniqId = require('./mixins.js').uniqId;
 var accumulate = require('./mixins.js').accumulate;
 var sumBy = require('./mixins.js').sumBy;
+var getCombinations = require('./combinations.js').getCombinations;
 
 
 var Model = {
@@ -73,6 +74,7 @@ var Model = {
     let prj = Model.getProject();
     let cms = prj.contributionMatrices;
     cms.push(connma);
+    Model.makeCurrentCM(connma);
     // console.log('pushing to contributionMatrices',cms,'conma',connma);
   },
   clearCurrentCM: () =>{
@@ -141,7 +143,6 @@ var Model = {
             connma.matrix = output;
             // console.log('the ocpu result',connma,'pushing to project');
             Model.pushToContributionMatrix(connma);
-            Model.makeCurrentCM(connma);
             resolve(connma);
         });
         req.fail( () =>{
@@ -150,6 +151,43 @@ var Model = {
       }
     });
 
+  },
+  makeNodes: (type, model) => {
+    var grouped = _.groupBy(model, tr => {return tr.t});
+    var verticeFromGroup = (group) =>{
+      var vertex = {id:'', name:'', numStudies:0, sampleSize:0, rSum:0};
+      vertex.type='node';
+      vertex.id = group[0].t;
+      vertex.label = _.isEmpty(group[0]['tn'])?group[0]['t']:group[0]['tn'];
+      vertex.studies = accumulate(group,'id');
+      vertex.numStudies = group.length;
+      if(type!=='iv'){
+      vertex.sampleSize = sumBy(group,'n');
+      }
+      //vertex.rSum = _.reduce(group, function (memo, row){ return memo + row.r},0);
+      vertex.rob = accumulate(group,'rob');
+      vertex.low = _.filter(vertex.rob, r => {return r===1}).length/vertex.numStudies*100;
+      vertex.unclear = _.filter(vertex.rob, r => {return r===2}).length/vertex.numStudies*100;
+      vertex.high = _.filter(vertex.rob, r => {return r===3}).length/vertex.numStudies*100;
+      return vertex;
+    };
+    let res = _.map(_.toArray(grouped),(grp)=>verticeFromGroup(grp));
+    return res;
+  },
+  makeIndirectComparisons: (nodes,directComparisons) => {
+    let lind = _.filter(getCombinations(nodes,2), c=> {
+      let uid = uniqId([_.first(c).id,_.last(c).id]).toString();
+        let found = _.find(directComparisons, dc => {
+          return dc.id === uid;
+        });
+        return typeof found === 'undefined';
+    });
+    lind = _.map(lind, c => {
+      let uid = uniqId([_.first(c).id,_.last(c).id]).toString();
+      return uid;
+    });
+    console.log('lind',lind);
+    return lind;
   },
   makeDirectComparisons: (type,model) => {
     let comparisons = _.groupBy(model, row => {
@@ -239,11 +277,15 @@ var Model = {
         mdl.long = Reshaper.wideToLong(project.model,project.type);
         mdl.wide = project.model;
       }
+      //nodes are the combined treatments (which corresponts to netplot nodes)
+      mdl.nodes = Model.makeNodes(project.type, mdl.long);
+      //directComparisons corresponts to netplot edges
       mdl.directComparisons = Model.makeDirectComparisons(project.type, mdl.wide);
+      //indirectComparisons are the complement of the netplot edges
+      mdl.indirectComparisons = Model.makeIndirectComparisons(mdl.nodes,mdl.directComparisons);
       prj.model = mdl;
       prj.title = filename;
       prj.filename = filename;
-      console.log('model filename',filename);
       Model.setProject(Model.createProject(prj));
       return prj;
     });

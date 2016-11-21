@@ -39,13 +39,13 @@ var bindTableResize = (hot,container) => {
   });
 };
 
-
 var focusTo = (id) => {
   jQuery('html,body').animate({
   scrollTop: jQuery('#'+id).offset().top,
   scrollLeft:jQuery('#'+id).offset().left},
   'fast');
 };
+
 
 module.exports = {
   focusTo: focusTo,

@@ -24,8 +24,8 @@ var bindTableResize = require('./mixins.js').bindTableResize;
      maxSize: 130,
    },
 
-   addElementsToGraph : (model) => {
-    NP.vertices = NP.makeNodes(model.long);
+   addElementsToGraph : () => {
+    NP.vertices = NP.makeNodes(NP.project);
     NP.edges = NP.makeEdges(NP.project);
     var elements = [NP.vertices, NP.edges];
     NP.cy.batch( () => {
@@ -46,31 +46,12 @@ var bindTableResize = require('./mixins.js').bindTableResize;
     });
   },
 
-  makeNodes: (model) => {
-    let type = NP.project.type;
-    var grouped = _.groupBy(model, tr => {return tr.t});
-    var verticeFromGroup = (group) =>{
-      var vertex = {id:'', name:'', numStudies:0, sampleSize:0, rSum:0};
-      vertex.type='node';
-      vertex.id = group[0].t;
-      vertex.label = _.isEmpty(group[0]['tn'])?group[0]['t']:group[0]['tn'];
-      vertex.studies = accumulate(group,'id');
-      vertex.numStudies = group.length;
-      if(type!=='iv'){
-      vertex.sampleSize = sumBy(group,'n');
-      }
-      //vertex.rSum = _.reduce(group, function (memo, row){ return memo + row.r},0);
-      vertex.rob = accumulate(group,'rob');
-      vertex.low = _.filter(vertex.rob, r => {return r===1}).length/vertex.numStudies*100;
-      vertex.unclear = _.filter(vertex.rob, r => {return r===2}).length/vertex.numStudies*100;
-      vertex.high = _.filter(vertex.rob, r => {return r===3}).length/vertex.numStudies*100;
-      return vertex;
-    };
-    let res = _.map(_.toArray(grouped),(grp)=>verticeFromGroup(grp));
-    return res;
+  makeNodes: project => {
+    let nodes = project.model.nodes;
+    return nodes;
   },
 
-  makeEdges: (project) => {
+  makeEdges: project => {
     let edges = project.model.directComparisons;
     return edges;
   },
@@ -463,7 +444,7 @@ var bindTableResize = require('./mixins.js').bindTableResize;
         $('#netplotContainer').html(cytmpl);
         NP.bindActions();
         NP.cyInit('cy');
-        NP.addElementsToGraph(NP.project.model);
+        NP.addElementsToGraph();
         NP.resizeElements(NP.options.vertexSizeBy,NP.options.edgeSizeBy);
         NP.colorEdges(NP.options.edgeColorBy);
         NP.colorVertices(NP.options.vertexColorBy);

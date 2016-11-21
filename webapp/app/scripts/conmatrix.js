@@ -157,6 +157,7 @@ var CM = {
     let params = (CM.getParams)();
     CM.removeTable();
     CM.fetchCM([params.MAModel,params.sm,params.tau])
+      .then(CM.shortIndirect)
       .then(CM.makeDownloader)
       .then(CM.showTable)
       .then(hot => {
@@ -165,14 +166,52 @@ var CM = {
         Messages.updateInfo(Messages.ocpuError,err);
     });
   },
+  shortIndirect(res){
+    return new Promise((resolve,reject) => {
+      let indirects = CM.project.model.indirectComparisons;
+      let directs = CM.project.model.directComparisons;
+      let cm = res.matrix;
+      let studies = cm.percentageContr;
+      let entireNet = cm.impD;
+      let rownames = cm.rowNames;
+      let cw = cm.colNames.length;
+      let rows = _.zip(rownames,studies);
+      let directRows = _.filter(rows, r=>{
+        return _.find(directs, d=>{
+          return r[0].replace(":",",")===d.id});
+      });
+      let indirectRows = _.filter(rows, r=>{
+        return _.find(indirects, d=>{
+          return r[0].replace(":",",")===d});
+      });
+      res.matrix.directRowNames = _.unzip(directRows)[0];
+      res.matrix.directStudies = _.unzip(directRows)[1];
+      res.matrix.indirectRowNames = _.unzip(indirectRows)[0];
+      res.matrix.indirectStudies = _.unzip(indirectRows)[1];
+      res.matrix.sortedStudies =
+      [Array(cw).fill()]
+      .concat(res.matrix.directStudies)
+      .concat([Array(cw).fill()])
+      .concat(res.matrix.indirectStudies)
+      .concat([Array(cw).fill()])
+      .concat(cm.impD);
+      res.matrix.sortedRowNames =
+      ['Mixed estimates']
+      .concat(cm.directRowNames)
+      .concat(['Indirect estimates'])
+      .concat(cm.indirectRowNames)
+      .concat(['',"Entire network"]);
+      resolve(res);
+    });
+  },
   makeDownloader: (res) => {
     return new Promise((resolve,reject) => {
       let cm = res.matrix;
-      let studies = cm.percentageContr.concat(cm.impD);
+      let studies = cm.sortedStudies;
       let cols = cm.colNames;
-      let rows = cm.rowNames.concat('Entire <br> Network');
-      let fcols = ["comparison"].concat(cols);
-      let fstudies = _.map(_.zip(cm.rowNames.concat('Entire Network'),studies), r=>{
+      let rows = cm.sortedRowNames;
+      let fcols = ["<->"].concat(cols);
+      let fstudies = _.map(_.zip(rows, studies), r=>{
         return [r[0]].concat(r[1]);
       });
       fstudies = _.map(fstudies,st=>{return _.object(fcols,st);});
@@ -194,9 +233,27 @@ var CM = {
     return new Promise((resolve,reject) => {
       let cm = res.matrix;
       let cont = document.getElementById('cm-table');
-      let studies = cm.percentageContr.concat(cm.impD);
+      let cw = cm.colNames.length;
+      let numDirects = cm.directStudies.length;
+      let numIndirects = cm.indirectStudies.length;
+      let studies = cm.sortedStudies;
+      // studies[numDirects][0]='Indirect Comparisons';
       let cols = cm.colNames;
-      let rows = cm.rowNames.concat('Entire <br> Network');
+      let rows = _.map(cm.sortedRowNames, r => {
+        let out = r;
+        switch(r){
+          case 'Mixed estimates':
+          out = 'Mixed <br> estimates';
+          break;
+          case 'Entire network':
+          out = 'Entire <br> network';
+          break;
+          case 'Indirect estimates':
+          out = 'Indirect <br> estimates';
+          break;
+        }
+        return out;
+      });
       var setBackground = (percentage) => {
         return `
           linear-gradient(
@@ -219,6 +276,11 @@ var CM = {
         rowHeaders: rows,
         colHeaders: true,
         colHeaders: cols,
+        mergeCells: [
+          {row: 0, col: 0, rowspan: 1, colspan: cw},
+          {row: numDirects+1, col: 0, rowspan: 1, colspan: cw},
+          {row: numDirects+numIndirects+2, col: 0, rowspan: 1, colspan: cw},
+        ],
         manualColumnResize: true,
         strechH: 'all',
         rendered: false,
@@ -229,6 +291,7 @@ var CM = {
             focusTo('cm-table');
             CM.disableCM();
             rendered=true;
+            // $(`.ht_master tr:nth-child('+numDirects+') > td`).style('horizontal-align','middle');
           }
         },
       });
