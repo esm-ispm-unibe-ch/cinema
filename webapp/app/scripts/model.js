@@ -133,8 +133,13 @@ var Model = {
           rtype = 'iv';
           break;
         }
-        var req = ocpu.rpc('twobu',{
-          json: JSON.stringify(project.model.wide),
+        ocpu.seturl('//localhost:8004/ocpu/library/jsonlite/R');
+        var req = ocpu.rpc('fromJSON',{
+          txt:JSON.stringify(project.model.wide)
+        }, jdata => {
+          ocpu.seturl('//localhost:8004/ocpu/library/contribution/R');
+          ocpu.rpc('contributionMatrix',{
+          data: jdata,
           type: rtype,
           model: params.MAModel,
           sm: params.sm,
@@ -145,12 +150,12 @@ var Model = {
             Model.pushToContributionMatrix(connma);
             resolve(connma);
         });
-        req.fail( () =>{
-          reject('R returned an error: ' + req.responseText);
-        });
-      }
-    });
-
+      });
+      req.fail( () =>{
+        reject('R returned an error: ' + req.responseText);
+      })
+    }
+    })
   },
   makeNodes: (type, model) => {
     var grouped = _.groupBy(model, tr => {return tr.t});

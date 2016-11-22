@@ -6,3 +6,4 @@ lib/
 */bower_components
 */test/bower_components
 model/
+.Rproj.user

@@ -267,8 +267,36 @@ var CM = {
       };
       let lastRow = rows.length;
       var rendered = false;
+      //show only 1 decimal in matrix
+      let hotStudies = studies.map( r => {
+        return r.map( c => {
+          let out = '';
+          if (isNaN(c)|| c===100){
+            out = c;
+          }else{
+            if(c<0.1){
+              if(c<0.05){
+                out = 0.0;
+              }else{
+                out = 0.1;
+              }
+            }else{
+              if(c<1){
+                out = c.toPrecision(1);
+              }else{
+                if(c<10){
+                  out = c.toPrecision(2);
+                }else{
+                  out = c.toPrecision(3);
+                }
+              }
+            }
+          }
+          return out;
+        })
+      });
       var hot = new Handsontable(cont, {
-        data: studies,
+        data: hotStudies,
         renderAllRows:true,
         renderAllColumns:true,
         rowHeights: 23,
