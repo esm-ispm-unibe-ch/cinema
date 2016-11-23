@@ -37,13 +37,24 @@
                 {{/each}}
             </select>
           {{/if_eq}}
+          {{#if_eq type "checkbox"}}
+            <div class="{{tag}}">
+              <h4 class='controls-title'>{{title}}</h4>
+              {{#each selections}}
+                <label class="checkbox-inline" for="{{value}}">
+                  <input type="checkbox" value="{{value}}" {{#if isChecked}} checked {{/if}}>
+                  {{label}}
+                </label>
+              {{/each}}
+            </div>
+          {{/if_eq}}
         {{/each}}
       </div>
     </div>
     <a id="popoverCM" action='makeConMatrix' class="btn btn-default" data-content="All fields should be filled" rel="popover" data-placement="bottom" data-trigger="hover">Create Matrix</a>
     <a id="clearCM" action='clearCM' class="btn btn-default" >Clear Matrix</a>
   </form>
-  <div id='cm-table-container' class='well table-container'>
+  <div id='cm-table-container' class='well table-container col-md-9 col-sm-12 col-xs-12'>
     <span class="btn-full-screen table-resizer pull-right glyphicon glyphicon-fullscreen" aria="fullscreen table" aria-hidden="true"></span>
     <span style='display:none' class="btn-minimize table-resizer pull-right glyphicon glyphicon-resize-small" aria="minimize table" aria-hidden="true" ></span>
     <div id='cm-table' class='table'></div>

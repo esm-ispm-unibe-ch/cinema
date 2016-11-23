@@ -69,6 +69,14 @@ var CM = {
           validTypes:['continuous','iv'],
         },
       ]
+    },
+    {
+      type: 'checkbox',
+      title: 'Intervensions:',
+      id: 'ints',
+      tag: 'ints',
+      action: 'setInts',
+      selections: []
     }
   ]},
   params:{},
@@ -98,6 +106,26 @@ var CM = {
         c.isAvailable = true;
       }
     });
+    let intvs = _.map(CM.project.model.nodes, pn => {
+      return {
+        label: pn.name?pn.name:pn.id,
+        value: pn.id,
+        isAvailable: true,
+      };
+    });
+    if(! _.isEmpty(CM.currentCM)){
+      _.map(intvs, intv => {
+        if(_.find(CM.currentCM.intvs, cint => {return cint === intv.value})){
+          intv.isChecked = true;
+        }
+      });
+    }else{
+      _.map(intvs, intv => {
+        intv.isChecked = true;
+      });
+    }
+    let intselect = _.first(_.filter(CM.controls, c=> {return c.id ==='ints'}));
+    intselect.selections = intvs;
   },
   bindActions: () => {
     $('input[type=radio][name=MAModel]').bind('change', () =>{
@@ -144,7 +172,20 @@ var CM = {
         CM.setParams('MAModel', mamodel);
         CM.setParams('sm', $('select[action=setSM]').val());
         CM.setParams('tau', 1);
-        $('#popoverCM').attr('disabled',false);
+        let intvs = _.reduce($('div.ints').find('input[type="checkbox"]'),
+        (memo, intv) => {
+          let out = memo;
+          if ($(intv).is(':checked')){
+            out = memo.concat([$(intv).val()]);
+          }
+          return out;
+        },[]);
+        CM.setParams('intvs', intvs);
+        if(intvs.length!==0){
+          $('#popoverCM').attr('disabled',false);
+        }else{
+          $('#popoverCM').attr('disabled',true);
+        }
       }
   },
   getProject:() =>{
@@ -156,14 +197,14 @@ var CM = {
   createMatrix: () => {
     let params = (CM.getParams)();
     CM.removeTable();
-    CM.fetchCM([params.MAModel,params.sm,params.tau])
+    CM.fetchCM([params.MAModel,params.sm,params.tau,params.intvs])
       .then(CM.shortIndirect)
       .then(CM.makeDownloader)
       .then(CM.showTable)
       .then(hot => {
         bindTableResize(hot, 'cm-table-container');
       }).catch( err => {
-        Messages.updateInfo(Messages.ocpuError,err);
+        Messages.alertify().error(Messages.ocpuError+err);
     });
   },
   shortIndirect(res){
@@ -178,11 +219,11 @@ var CM = {
       let rows = _.zip(rownames,studies);
       let directRows = _.filter(rows, r=>{
         return _.find(directs, d=>{
-          return r[0].replace(":",",")===d.id});
+          return r[0].replace(':',',')===d.id});
       });
       let indirectRows = _.filter(rows, r=>{
         return _.find(indirects, d=>{
-          return r[0].replace(":",",")===d});
+          return r[0].replace(':',',')===d});
       });
       res.matrix.directRowNames = _.unzip(directRows)[0];
       res.matrix.directStudies = _.unzip(directRows)[1];
@@ -200,7 +241,7 @@ var CM = {
       .concat(cm.directRowNames)
       .concat(['Indirect estimates'])
       .concat(cm.indirectRowNames)
-      .concat(['',"Entire network"]);
+      .concat(['','Entire network']);
       resolve(res);
     });
   },
@@ -210,7 +251,7 @@ var CM = {
       let studies = cm.sortedStudies;
       let cols = cm.colNames;
       let rows = cm.sortedRowNames;
-      let fcols = ["<->"].concat(cols);
+      let fcols = ['<->'].concat(cols);
       let fstudies = _.map(_.zip(rows, studies), r=>{
         return [r[0]].concat(r[1]);
       });
@@ -219,41 +260,71 @@ var CM = {
         data: fstudies,
         fields: fcols,
       });
-      let csvContent = "data:text/csv;charset=utf-8,"+csvTable;
+      let csvContent = 'data:text/csv;charset=utf-8,'+csvTable;
       var encodedUri = encodeURI(csvContent);
-      let cmfilename = CM.project.title+"_"+_.pairs(_.omit(CM.params,['matrix','tau','isDefault'])).toString().replace(/\,/g,"_")+".csv";
+      let cmfilename = CM.project.title+'_'+_.pairs(_.omit(CM.params,['matrix','tau','isDefault'])).toString().replace(/\,/g,'_')+'.csv';
       $('#conMatControls').append('<a class= "btn btn-default" id="downloadAnchorElem">Download csv</a>');
       var dlAnchorElem = document.getElementById('downloadAnchorElem');
-      dlAnchorElem.setAttribute("href", encodedUri);
-      dlAnchorElem.setAttribute("download", cmfilename);
+      dlAnchorElem.setAttribute('href', encodedUri);
+      dlAnchorElem.setAttribute('download', cmfilename);
       resolve(res);
     });
   },
   showTable: (res) => {
     return new Promise((resolve,reject) => {
+      let params = CM.getParams();
       let cm = res.matrix;
       let cont = document.getElementById('cm-table');
       let cw = cm.colNames.length;
-      let numDirects = cm.directStudies.length;
-      let numIndirects = cm.indirectStudies.length;
-      let studies = cm.sortedStudies;
-      // studies[numDirects][0]='Indirect Comparisons';
-      let cols = cm.colNames;
-      let rows = _.map(cm.sortedRowNames, r => {
-        let out = r;
-        switch(r){
-          case 'Mixed estimates':
-          out = 'Mixed <br> estimates';
-          break;
-          case 'Entire network':
-          out = 'Entire <br> network';
-          break;
-          case 'Indirect estimates':
-          out = 'Indirect <br> estimates';
-          break;
-        }
-        return out;
+      //Filter rows
+      let directRowStudies = _.zip(cm.directRowNames,cm.directStudies);
+      let directFilteredRows = _.filter(directRowStudies, r => {
+        return _.find(params.intvs, intv => {
+          return _.find(r[0].split(':'), ri => {
+            return ri === intv;
+          })
+        })
       });
+      let indirectRowStudies = _.zip(cm.indirectRowNames,cm.indirectStudies);
+      let indirectFilteredRows = _.filter(indirectRowStudies, r => {
+        return _.find(params.intvs, intv => {
+          return _.find(r[0].split(':'), ri => {
+            return ri === intv;
+          })
+        })
+      });
+      let directRowNames = _.unzip(directFilteredRows)[0];
+      let directStudies = _.unzip(directFilteredRows)[1];
+      let indirectRowNames = _.unzip(indirectFilteredRows)[0];
+      let indirectStudies = _.unzip(indirectFilteredRows)[1];
+      let numDirects = directFilteredRows.length;
+      let numIndirects = indirectFilteredRows.length;
+      let studies = [Array(cw).fill()]
+      .concat(directStudies);
+      let rowNames = ['Mixed <br> estimates']
+      .concat(directRowNames);
+      let mergeCells = [
+        {row: 0, col: 0, rowspan: 1, colspan: cw}
+      ]
+      if(numIndirects!==0){
+        studies = studies
+        .concat([Array(cw).fill()])
+        .concat(indirectStudies)
+        .concat([Array(cw).fill()]);
+        rowNames = rowNames
+        .concat(['Indirect <br> estimates'])
+        .concat(indirectRowNames)
+        .concat('');
+        mergeCells.concat(
+          {row: numDirects+1, col: 0, rowspan: 1, colspan: cw}
+        )
+      }
+      mergeCells.concat(
+        {row: numDirects+numIndirects+2, col: 0, rowspan: 1, colspan: cw}
+      );
+      studies = studies.concat(cm.impD);
+      rowNames = rowNames.concat('Entire <br> network');
+      let cols = cm.colNames;
       var setBackground = (percentage) => {
         return `
           linear-gradient(
@@ -265,13 +336,13 @@ var CM = {
       function makeBars(instance, td, row, col, prop, value, cellProperties) { Handsontable.renderers.TextRenderer.apply(this, arguments);
         td.style.background = setBackground(value);
       };
-      let lastRow = rows.length;
+      let lastRow = rowNames.length;
       var rendered = false;
       //show only 1 decimal in matrix
       let hotStudies = studies.map( r => {
         return r.map( c => {
           let out = '';
-          if (isNaN(c)|| c===100){
+          if (isNaN(c) || c===100){
             out = c;
           }else{
             if(c<0.1){
@@ -301,15 +372,11 @@ var CM = {
         renderAllColumns:true,
         rowHeights: 23,
         columnWidth: 200,
-        rowHeaders: rows,
+        rowHeaders: rowNames,
         colHeaders: true,
         colHeaders: cols,
-        mergeCells: [
-          {row: 0, col: 0, rowspan: 1, colspan: cw},
-          {row: numDirects+1, col: 0, rowspan: 1, colspan: cw},
-          {row: numDirects+numIndirects+2, col: 0, rowspan: 1, colspan: cw},
-        ],
-        manualColumnResize: true,
+        mergeCells: mergeCells,
+                manualColumnResize: true,
         strechH: 'all',
         rendered: false,
         width: $('#cm-table-container').width(),

@@ -1,7 +1,7 @@
 # Use builds from launchpad
 FROM opencpu/base:latest
 
-RUN  apt-get install -y vim
+#RUN  apt-get install -y vim
 
 #copying contribution package and installation scripts
 ADD toRoot /root

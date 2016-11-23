@@ -1,6 +1,6 @@
 $cySize: 600px;
 $tablew: 400px;
-$tableh: 300px;
+$tableh: 700px;
 $chartw: 700px;
 $charth: 700px;
 
@@ -56,12 +56,15 @@ col.rowHeader {
   cursor:pointer;
 }
 
+#conMatControls{
+  height:$tableh;
+}
 .table-container{
-  width:$tablew;
+  // width:$tablew;
   height:$tableh;
   overflow:hidden;
   padding:10px 20px 50px 20px;
-  resize: both;
+  resize: vertical;
 }
 
 .table{

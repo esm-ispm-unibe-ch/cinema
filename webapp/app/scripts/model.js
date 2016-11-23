@@ -85,9 +85,10 @@ var Model = {
   makeCurrentCM: (cm) =>{
     let cms = Model.getProject().contributionMatrices;
     _.map(cms, c => {
-      let fit = _.isMatch(c,_.omit(cm,'isCurrent'));
+      let fit = _.isMatch(c,_.omit(cm,['isCurrent','intvs']));
       if(fit){
         c.isDefault = true;
+        c.intvs = cm.intvs;
         Model.getProject().currentCM = c;
       }else{
         c.isDefault = false;
@@ -96,7 +97,7 @@ var Model = {
     Model.saveProject();
     View.updateConChart();
   },
-  fetchContributionMatrix: ([MAModel,sm,tau]) => {
+  fetchContributionMatrix: ([MAModel,sm,tau,intvs]) => {
     return new Promise((resolve, reject) => {
       let project = Model.getProject();
       let cms = project.contributionMatrices;
@@ -105,20 +106,23 @@ var Model = {
       let params = {
         MAModel: MAModel,
         sm: sm,
-        tau: tau
+        tau: tau,
+        intvs: intvs
       }
       // console.log('cmss',cms,'params',params);
       //check if the matrix is in the model;
       if(! _.isEmpty(cms)){
         // console.log('check to find matrix in cms',cms,'params',params);
         foundCM = _.find(cms, cm => {
-           return _.isMatch(cm, params);
+           return _.isMatch(cm, _.omit(params, 'intvs'));
           });
       }
       if(! _.isEmpty(foundCM)){
-        // console.log('foundcM', foundCM);
-        Model.makeCurrentCM(foundCM);
-        resolve(foundCM);
+        let newCM = foundCM;
+        newCM.intvs = intvs;
+        // console.log('foundcM', newCM);
+        Model.makeCurrentCM(newCM);
+        resolve(newCM);
       }else{
         // console.log('CM not found in model');
         let rtype = '';
@@ -163,6 +167,7 @@ var Model = {
       var vertex = {id:'', name:'', numStudies:0, sampleSize:0, rSum:0};
       vertex.type='node';
       vertex.id = group[0].t;
+      vertex.name = group[0].tn;
       vertex.label = _.isEmpty(group[0]['tn'])?group[0]['t']:group[0]['tn'];
       vertex.studies = accumulate(group,'id');
       vertex.numStudies = group.length;
@@ -176,7 +181,7 @@ var Model = {
       vertex.high = _.filter(vertex.rob, r => {return r===3}).length/vertex.numStudies*100;
       return vertex;
     };
-    let res = _.map(_.toArray(grouped),(grp)=>verticeFromGroup(grp));
+    let res = _.map(_.toArray(grouped), (grp) => verticeFromGroup(grp));
     return res;
   },
   makeIndirectComparisons: (nodes,directComparisons) => {
@@ -191,7 +196,6 @@ var Model = {
       let uid = uniqId([_.first(c).id,_.last(c).id]).toString();
       return uid;
     });
-    console.log('lind',lind);
     return lind;
   },
   makeDirectComparisons: (type,model) => {
