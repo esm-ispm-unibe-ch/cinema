@@ -14,5 +14,5 @@ RUN chmod +x /root/installContribution -R && \
 Rscript /root/installContribution/rgrade.batch
 
 
-#restarting opencput service
-CMD sh -c 'service opencpu restart && /bin/bash'
+#restarting opencpu service
+RUN sh -c 'service opencpu restart'

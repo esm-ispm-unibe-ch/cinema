@@ -2,8 +2,8 @@ var Messages = require('./messages.js').Messages;
 //maybe init in View
 
 var Router = {
-  headerTitle: 'GRADE NMA Visualization Tools',
-  headerTitleShort: 'GRADE',
+  headerTitle: 'Evaluating NMA Evidence Visualization Suite - DEVELOPMENT VERSION',
+  headerTitleShort: 'Evaluating NMA Evidence',
   currentRoute: '',
   routes:[
     {

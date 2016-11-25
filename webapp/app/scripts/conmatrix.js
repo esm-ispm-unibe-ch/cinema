@@ -72,7 +72,7 @@ var CM = {
     },
     {
       type: 'checkbox',
-      title: 'Intervensions:',
+      title: 'Interventions:',
       id: 'ints',
       tag: 'ints',
       action: 'setInts',

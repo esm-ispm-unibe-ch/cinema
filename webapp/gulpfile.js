@@ -9,6 +9,7 @@ const browserify = require('browserify');
 const babelify = require('babelify');
 const buffer = require('vinyl-buffer');
 const source = require('vinyl-source-stream');
+const dockerPath = '../RServer/toRoot/installContribution/contribution/inst/www';
 
 const $ = gulpLoadPlugins();
 const reload = browserSync.reload;
@@ -207,10 +208,23 @@ gulp.task('generate-service-worker', [ 'html', 'images', 'fonts'], function(call
   }, callback);
 });
 
-
-gulp.task('build', ['lint', 'generate-service-worker', 'extras'], () => {
+gulp.task('buildWithServiceWorker', ['lint','generate-service-worker', 'extras'], () => {
   return gulp.src('dist/**/*').pipe($.size({title: 'build', gzip: true}));
 });
+
+// gulp.task('buildToDocker', ['build'], () => {
+gulp.task('buildToDocker', () => {
+  del([dockerPath]);
+  // var cptd = () => {
+  //   gulp.src('./dist/**/*')
+  //     .pipe(gulp.dest(dockerPath));
+  // }()
+});
+
+gulp.task('build', ['lint','html', 'images', 'fonts', 'extras'], () => {
+  return gulp.src('dist/**/*').pipe($.size({title: 'build', gzip: true}));
+});
+
 
 gulp.task('default', () => {
   runSequence(['clean', 'wiredep'], 'build');

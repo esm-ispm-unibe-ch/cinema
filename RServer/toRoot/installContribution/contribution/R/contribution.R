@@ -20,8 +20,9 @@ contributionMatrix <- function(data,type,model="fixed",tau=NA, sm){
 
 library(netmeta)
 library(meta)
-  
-D=data
+library(jsonlite)
+
+D=fromJSON(data)
 
 #pairwise meta-analysis
 
@@ -856,6 +857,3 @@ percentageContrStudies=round(perc.H.st*100,4)
 
 print(list(percentageContr=percentageContr,impD=impD,colNames=colnames(percentageContr),rowNames=rownames(percentageContr)))
 }
-
-
-
