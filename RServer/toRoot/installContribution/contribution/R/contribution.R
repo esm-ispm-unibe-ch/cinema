@@ -17,11 +17,10 @@
 
 contributionMatrix <- function(data,type,model="fixed",tau=NA, sm){
 
-
 library(netmeta)
 library(meta)
 library(jsonlite)
-
+  
 D=fromJSON(data)
 
 #pairwise meta-analysis
@@ -855,5 +854,30 @@ percentageContr=round(perc.H*100,4)
 impD=round(impD/sum(impD)*100,4)
 percentageContrStudies=round(perc.H.st*100,4)
 
-print(list(percentageContr=percentageContr,impD=impD,colNames=colnames(percentageContr),rowNames=rownames(percentageContr)))
+#heterogeneity and inconsistency results
+heterVarPairwise=matrix(c(metaPairw$tau.w^2),nrow=length(c(metaPairw$tau.w^2)),ncol=1)
+rownames(heterVarPairwise) <- metaPairw$bylevs
+heterVarNtw=metaNetw$tau^2
+Qmeasures=matrix(c(metaNetw$Q,metaNetw$Q.heterogeneity,metaNetw$Q.inconsistency),nrow=1,ncol=3)
+colnames(Qmeasures) <- c("Q overall", "Q heterogeneity", "Q inconsistency")
+
+#treatment effects
+z=qnorm(1-0.05/2,0,1)
+rownames(krahn1$direct) <- krahn1$comparisons
+TreatEffPairw <-cbind(krahn1$direct[,"TE"],krahn1$direct[,"TE"]-z*krahn1$direct[,"seTE"],
+                      krahn1$direct[,"TE"]+z*krahn1$direct[,"seTE"])
+colnames(TreatEffPairw) <- c("Direct Effect", "Lower", "Upper")
+rownames(TreatEffPairw) <- krahn1$comparisons
+
+TreatEffNtw <- cbind(krahn1$network[,"TE"],krahn1$network[,"TE"]-z*krahn1$network[,"seTE"],
+                     krahn1$network[,"TE"]+z*krahn1$network[,"seTE"])
+colnames(TreatEffNtw) <- c("NMA Effect", "Lower", "Upper")
+rownames(TreatEffNtw) <- rownames(krahn1$network)
+
+print(list(colNames=colnames(percentageContr),rowNames=rownames(percentageContr),percentageContr=percentageContr,impD=impD, percentageContrStudies=percentageContrStudies,
+           heterVarPairwise=heterVarPairwise,heterVarNtw=heterVarNtw, Qmeasures=Qmeasures,
+           TreatEffPairw=TreatEffPairw, TreatEffNtw=TreatEffNtw))
 }
+
+
+
