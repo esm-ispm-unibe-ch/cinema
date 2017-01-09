@@ -64,9 +64,14 @@ var View = {
   updateConChart:()=>{
     let m = View.getModel();
     Tools.CC.updateChart(m);
+    View.updateRobs();
   },
   updateSelections:()=>{
     View.updateConChart();
+  },
+  //show / hide Indirect rob selections 
+  updateRobs: () => {
+    Tools.EV.updateRobs();
   },
   updateConMat:() =>{
     // console.log('con mat changed');

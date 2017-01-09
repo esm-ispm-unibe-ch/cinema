@@ -1,0 +1,158 @@
+
+<div id="incSelector" class='col-xs-12 well collapse in'>
+  <div>
+    <ul class='list-inline'>
+      {{#each model.project.model.directComparisons}}
+        <li class='well compRobSelector' id="comp-{{id}}">
+          <ul>
+            {{#if tn1}}
+              <li>
+                <ul>
+                  <li>
+                    <strong>{{tn1}}</strong>
+                   </li><li>
+                    vs
+                    </li><li>
+                    <strong>{{tn2}}</strong>
+                  </li>
+                </ul>
+                <hr>
+              </li>
+            {{else}}
+              <li>
+              Comparison: <span class='pull-right'><strong>{{t1}}</strong> : <strong>{{t2}}</strong></span>
+                <hr>
+              </li>
+              {{/if}}
+            <li>
+              Number of studies: <strong class='pull-right'>{{numStudies}}</strong>
+              {{#if sampleSize}}
+            </li><li>
+              Sample size: <strong class='pull-right'>{{sampleSize}}</strong>
+              {{/if}}
+                <hr>
+            </li><li>
+              τ: <strong class='pull-right'>--</strong>
+            </li>
+            <li>
+              Ι<sup>2</sup>: <strong class='pull-right'>--</strong>
+                <hr>
+            </li>
+          </ul>
+          <h5>NMA</h5>
+          <ul class='nma indirects'>
+            <em>
+              <li class="wavg ">
+                τ: <strong class='pull-right'> -- </strong>
+              </li>
+              <li class="wavg ">
+                CI: <strong class='pull-right'> -- </strong>
+              </li>
+              <li class="wavg ">
+                PrI: <strong class='pull-right'> -- </strong>
+              </li>
+              <li class="wavg ">
+                Node Splitting: <strong class='pull-right'> -- </strong>
+              </li>
+              <li class="">
+                NMA ROB:
+                <select class="pull-right custom-selector" data-id="nma-{{id}}">
+                  <option class="custom-none" value="-1">--</option>
+                  <option value="1" {{#if_eq nmarob "1"}} selected ="selected"{{/if_eq}}>low</option>
+                  <option value="2" {{#if_eq nmarob "2"}} selected = "selected"{{/if_eq}}>unclear</option>
+                  <option value="3" {{#if_eq nmarob "3"}} selected = "selected" {{/if_eq}}>high</option>
+                </select>
+              </li>
+            </em>
+          </ul>
+        </li>
+      {{/each}}
+    </ul>
+    <ul class='list-inline indirects'>
+      <h4>
+        Indirect Comparisons
+      </h4>
+      {{#each inds}}
+        <li class='well compRobSelector' id="indirect-{{id}}">
+          <ul class='nma'>
+            {{#if tn1}}
+              <li>
+                <ul class='nma'>
+                  <li>
+                    <strong>{{tn1}}</strong>
+                   </li><li>
+                    vs
+                    </li><li>
+                    <strong>{{tn2}}</strong>
+                  </li>
+                </ul>
+                <hr>
+              </li>
+            {{else}}
+              <li>
+              Comparison: <span class='pull-right'><strong>{{t1}}</strong> : <strong>{{t2}}</strong></span>
+                <hr>
+              </li>
+              {{/if}}
+            <em>
+              <li class="wavg">
+                Weighted Average: <strong class='pull-right'> -- </strong>
+              </li>
+              <li class="">
+                NMA ROB:
+                <select class="pull-right custom-selector" data-id="nma-{{id}}">
+                  <option class="custom-none" value="-1">--</option>
+                  <option value="1">low</option>
+                  <option value="2" selected>unclear</option>
+                  <option value="3">high</option>
+                </select>
+              </li>
+            </em>
+          </ul>
+        </li>
+      {{/each}}
+    </ul>
+  </div>
+  <hr>
+
+  <div>
+    <h5>Choose outcome type:</h5>
+    <select id='RSRule'>
+      <option value='majrob'>
+        Objective
+      </option>
+      <option value='meanrob'>
+        Semiobjective
+      </option>
+      <option value='maxrob'>
+        Subjective
+      </option>
+    </select>
+    <button id="editRS" action='editRS' class="btn btn-default">Save</button>
+    <button id="resetRS" action='resetRS' class="btn btn-default" >Reset</button>
+  </div>
+
+  <div>
+    <h5>Choose intervention comparison type:</h5>
+    <select id='RSRule'>
+      <option value='majrob'>
+        Pharmacological vs Pharmacological
+      </option>
+      <option value='meanrob'>
+        Pharmacological vs Placebo
+      </option>
+      <option value='maxrob'>
+       Non Pharmacological vs Any
+      </option>
+    </select>
+    <button id="editRS" action='editRS' class="btn btn-default">Save</button>
+    <button id="resetRS" action='resetRS' class="btn btn-default" >Reset</button>
+  </div>
+
+  <div>
+    <h5>
+      Heterogeneity and Inconsistency Measures: ...
+    </h5>
+  </div>
+
+</div>

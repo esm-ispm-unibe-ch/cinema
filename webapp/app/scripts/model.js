@@ -137,14 +137,11 @@ var Model = {
           rtype = 'iv';
           break;
         }
-        //comment form here
-        ocpu.seturl('//localhost:8004/ocpu/library/jsonlite/R');
-        var req = ocpu.rpc('fromJSON',{
-          txt:JSON.stringify(project.model.wide)
-        }, jdata => {
-          ocpu.seturl('//localhost:8004/ocpu/library/contribution/R');
-          ocpu.rpc('contributionMatrix',{
-          data: jdata,
+        //comment to deploy just for dev
+        ocpu.seturl('//localhost:8004/ocpu/library/contribution/R');
+        //
+        var req = ocpu.rpc('contributionMatrix',{
+          data: JSON.stringify(project.model.wide),
           type: rtype,
           model: params.MAModel,
           sm: params.sm,
@@ -155,20 +152,6 @@ var Model = {
             Model.pushToContributionMatrix(connma);
             resolve(connma);
           });
-        });
-        //to here
-        // var req = ocpu.rpc('contributionMatrix',{
-        //   data: JSON.stringify(project.model.wide),
-        //   type: rtype,
-        //   model: params.MAModel,
-        //   sm: params.sm,
-        //   }, (output) => {
-        //     let connma = params;
-        //     connma.matrix = output;
-        //     // console.log('the ocpu result',connma,'pushing to project');
-        //     Model.pushToContributionMatrix(connma);
-        //     resolve(connma);
-        //   });
         req.fail( () =>{
           reject('R returned an error: ' + req.responseText);
         })
@@ -300,9 +283,9 @@ var Model = {
         mdl.long = Reshaper.wideToLong(project.model,project.type);
         mdl.wide = project.model;
       }
-      //nodes are the combined treatments (which corresponts to netplot nodes)
+      //nodes are the combined treatments (which correspond to netplot nodes)
       mdl.nodes = Model.makeNodes(project.type, mdl.long);
-      //directComparisons corresponts to netplot edges
+      //directComparisons correspond to netplot edges
       mdl.directComparisons = Model.makeDirectComparisons(project.type, mdl.wide);
       //indirectComparisons are the complement of the netplot edges
       mdl.indirectComparisons = Model.makeIndirectComparisons(mdl.nodes,mdl.directComparisons);

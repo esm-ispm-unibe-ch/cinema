@@ -1,10 +1,10 @@
 var Msg = require('./messages.js').Messages;
 var focusTo = require('./mixins.js').focusTo;
 
-var RS = {
+var EV = {
   initControls:() =>{
     //initialize controls
-    if(RS.model.project.hasSelectedRob){
+    if(EV.model.project.hasSelectedRob){
       $('.custom-selector').attr('disabled',true);
       $('.custom-none').hide();
       $('#RSRule').val('none');
@@ -23,9 +23,9 @@ var RS = {
     }
   },
   bindControls:()=>{
-    RS.bindRule();
-    RS.bindEdit();
-    RS.bindReset();
+    EV.bindRule();
+    EV.bindEdit();
+    EV.bindReset();
   },
   bindRule: () => {
     $('#RSRule').unbind();
@@ -36,8 +36,8 @@ var RS = {
       $('#editRS').attr('disabled',false);
       $('#editRS').removeClass('active');
       $('#editRS').click();
-      RS.setRule(rule);
-      RS.bindCustom(rule);
+      EV.setRule(rule);
+      EV.bindCustom(rule);
     });
   },
   saveSelections: () =>{
@@ -52,11 +52,11 @@ var RS = {
     $('.custom-selector').attr('disabled',true);
     $('#editRS').attr('disabled',false);
     $('#editRS').removeClass('active');
-    RS.model.selectRobs(sels);
+    EV.model.selectRobs(sels);
   },
   resetSelections: () => {
-    RS.model.unselectRobs();
-    RS.initControls();
+    EV.model.unselectRobs();
+    EV.initControls();
   },
   bindEdit: () => {
     $('#editRS').on('click',()=>{
@@ -65,7 +65,7 @@ var RS = {
         $('#editRS').removeClass('active');
         $('#editRS').text('Edit');
         $('#editRS').blur();
-        RS.saveSelections();
+        EV.saveSelections();
         Msg.alertify().success('Your selections are saved!');
       }else{
         $('.custom-none').hide();
@@ -80,7 +80,7 @@ var RS = {
     $('#resetRS').on('click',()=>{
       Msg.alertify().confirm('Clear selections?','All changes will be lost',
         () => {
-          RS.resetSelections();
+          EV.resetSelections();
           Msg.alertify().warning('selections cleared');
         },
         () => {
@@ -100,7 +100,7 @@ var RS = {
     });
   },
   setRule:(rule)=>{
-    let comps = RS.model.project.model.directComparisons;
+    let comps = EV.model.project.model.directComparisons;
     $(document).ready(() => {
       _.map(comps, c => {
         let s = $('.custom-selector[data-id="'+c.id+'"]');
@@ -111,17 +111,45 @@ var RS = {
       });
     });
   },
+  setIndirectComps: () => {
+    let minds = EV.model.project.model.indirectComparisons;
+    let inds = _.map(minds, ind => {
+      let [t1,t2] = ind.split(',');
+      return {t1:t1, t2:t2};
+    });
+    EV.inds = inds;
+  },
+  updateRobs: () => {
+    let m = EV.model;
+    if(m.project.hasSelectedRob && !_.isEmpty(m.project.currentCM)){
+      $('.indirects').show();
+      console.log('updating robs');
+    }else{
+      $('.indirects').hide();
+    }
+  },
   init:(model)=>{
-    RS.model = model;
+    EV.model = model;
+    EV.setIndirectComps();
     // console.log(model.project);
-    var rstmpl = GRADE.templates.robSelector(RS);
-    $('#robSelectorContainer').html(rstmpl);
-    focusTo('robSelectorTitle');
-    RS.initControls();
-    RS.bindControls();
+    var evtmpl = GRADE.templates.evaluator(EV);
+    var robs = GRADE.templates.studyLimitations(EV);
+    var inds = GRADE.templates.indirectness(EV);
+    var incs = GRADE.templates.inconsistency(EV);
+    var imps = GRADE.templates.imprecision(EV);
+    var pubBias = GRADE.templates.pubBias(EV);
+    $('#evaluator').html(evtmpl);
+    $('#limitations').html(robs);
+    $('#indirectness').html(inds);
+    $('#inconsistency').html(incs);
+    $('#imprecision').html(imps);
+    $('#pubBias').html(pubBias);
+    // focusTo('robSelectorTitle');
+    EV.initControls();
+    EV.bindControls();
   }
 }
 
 module.exports = () => {
-  return RS;
+  return EV;
 }

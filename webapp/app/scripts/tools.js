@@ -1,19 +1,19 @@
 var Netplot = require('./netplot.js')();
-var RobSelect = require('./robSelector.js')();
+var Evaluator = require('./evaluator.js')();
 var ConMat = require('./conmatrix.js')();
 var ConChart = require('./conchart.js')();
 
 var Tools = {
   NP : Netplot,
-  RS : RobSelect,
   CM : ConMat,
   CC : ConChart,
+  EV : Evaluator,
   projectId:0,
   init: (model) => {
     let project = model.getProject();
     //to be moved to View
     Netplot.init(model);
-    RobSelect.init(model);
+    Evaluator.init(model);
     ConMat.init(model);
   }
 }

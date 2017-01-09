@@ -7,3 +7,5 @@ lib/
 */test/bower_components
 model/
 .Rproj.user
+ispm/*
+*.swp
