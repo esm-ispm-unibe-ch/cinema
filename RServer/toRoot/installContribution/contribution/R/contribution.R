@@ -15,13 +15,14 @@
 #' @return impD The percentages contributions of each direct to the entire network.
 #' @export
 
-contributionMatrix <- function(data,type,model="fixed",tau=NA, sm){
+getHatMatrix <- function(indata,type,model="fixed",tau=NA, sm){
 
 library(netmeta)
 library(meta)
 library(jsonlite)
-  
-D=fromJSON(data)
+library(plyr)
+
+D<-fromJSON(indata)
 
 #pairwise meta-analysis
 
@@ -850,7 +851,8 @@ tot.w.st<-apply(abs(krahn1$H.studies),1,sum)
 perc.H.st<-apply(abs(krahn1$H.studies),2,"/",tot.w.st)
 
 #final results
-percentageContr=round(perc.H*100,4)
+ percentageContr=round(perc.H*100,4)
+#percentageContr=getContributionMatrix(H2bu)
 impD=round(impD/sum(impD)*100,4)
 percentageContrStudies=round(perc.H.st*100,4)
 
@@ -876,8 +878,153 @@ rownames(TreatEffNtw) <- rownames(krahn1$network)
 
 print(list(colNames=colnames(percentageContr),rowNames=rownames(percentageContr),percentageContr=percentageContr,impD=impD, percentageContrStudies=percentageContrStudies,
            heterVarPairwise=heterVarPairwise,heterVarNtw=heterVarNtw, Qmeasures=Qmeasures,
-           TreatEffPairw=TreatEffPairw, TreatEffNtw=TreatEffNtw))
+           TreatEffPairw=TreatEffPairw, TreatEffNtw=TreatEffNtw, H2bu=H2bu))
 }
 
 
+getContributionMatrix <- function(indata,type,model="fixed",tau=NA, sm){
 
+  library(contribution)
+  library(igraph)
+
+  c1 <- getHatMatrix (indata,type,model,tau, sm)
+  hatMatrix <- c1$H2bu
+
+  split <- function (dir) {strsplit(dir,":")}
+
+  directs <- c1$colNames
+
+  dims <- dim(hatMatrix)
+
+#rows of comparison matrix 
+  comparisons <- unlist(lapply(rownames(hatMatrix),unlist))
+
+  comparisonToEdge <- function (comp) unlist (split(comp))
+
+  directlist <- unlist(lapply(lapply(directs,split),unlist))
+  # print(c("dir",directs))
+
+  edgeList <- matrix( directlist, nc = 2, byrow = TRUE)
+  print(c("Edgelist"))
+  print(edgeList)
+
+  g <- graph_from_edgelist(edgeList , directed=FALSE)
+  g <- set.vertex.attribute(g,'label',value = V(g))
+  g <- set.edge.attribute(g,'label',value = E(g))
+  # print(V(g)$label)
+  # print(E(g)$label)
+
+  setFlow <- function (g,comparison,conMat) {
+    flows<-abs(conMat[comparison,])
+    set.edge.attribute(g,"flow",value=flows)
+  }
+
+  setWeights <- function (g,comparison,conMat) {
+    set.edge.attribute(g,"weight",value=rep(0,dims[2]))
+  }
+
+  initRowGraph <- function(comparison) {
+    gg <- setFlow(g,comparison,hatMatrix)
+    E(gg)$weight <- rep(0,dims[2])
+    gg
+  }
+
+  getFlow <- function(g,edge) {
+    fl<-E(g)[edge]$flow
+    # print(c("edge",edge,"flow",fl))
+    fl
+  }
+
+  sv <- function (comparison) {
+    split(comparison)[[1]][1][1]
+  }
+
+  tv <- function (comparison) {
+    split(comparison)[[1]][2][1]
+  }
+
+
+  spath <- function(g,comparison) {
+    shortest_paths(g, sv(comparison), tv(comparison) ,output="epath",weights=NA)$epath
+  }
+
+#test1 outbound contribution from source should add up to 1
+# test1 <- Reduce(function(w, e) {w+getFlow(rowgraph,e[])},incident(rowgraph,sv(row)),0)
+
+#contribution Matrix dimensions
+
+  hs <- c()
+  weights <- matrix (
+                     rep(0,dims[2]*dims[1]),
+                     nrow=dims[1],
+                     ncol=dims[2],
+                     byrow=TRUE
+                 )
+  rownames(weights) <- rownames(hatMatrix)
+  colnames(weights) <- c(1:dims[2])
+
+
+
+
+  reduceGraph <- function (g,comparison) {
+    if(edge_connectivity(g,sv(comparison),tv(comparison))>0){
+      spl <- spath(g, comparison)
+      pl <- length(spl[[1]])
+      flow <- min(unlist(lapply(spl[[1]], function(e){
+        fl <- as.numeric(E(g)[e[]]$flow[])
+        fl
+      })))
+      hs <<- c(flow, hs)
+      # print(c("to shortest path einai :",spl))
+      gg <- Reduce(function(g, e){
+        elabel <- E(g)[e[]]$label
+        # print(c("pame plevra:",e,"dld",E(g)[e[]]$label))
+        pfl <- E(g)[e[]]$flow[]
+        g <- set.edge.attribute(g,"flow",e, pfl-flow)
+        afl <- E(g)[e[]]$flow[]
+        # print(c("h e",e,"einai pragmatika h ",g))
+        prw <- E(g)[e[]]$weight[]
+        # print(c("prw",prw))
+        addedWeight <- (flow[1]/pl)
+        # print(c("prw",prw,"pfl",pfl,"afl",afl))
+        cw <-  prw + addedWeight 
+        g <- set.edge.attribute(g,"weight",e, cw)
+        weights[comparison,elabel] <<- cw
+        g
+      },spl[[1]], g)
+      # print(c("graph before deleting edges", E(gg)$label))
+      emptyEdges <- Reduce(function(removedEdges, e){
+        fl <- getFlow(gg, e[])[[1]][[1]]
+        weight <- E(gg)[e[]]$weight[]
+        # print(c("flow of ",e," is ",fl))
+        if(fl==0){
+          # print(c("stacking edge for removal",e))
+          # print(c("the weight of ",E(gg)[e[]]$label,weight))
+          # print(c("flow",fl))
+          removedEdges <- c(removedEdges, e)
+        }
+        removedEdges
+      },spl[[1]], c())
+      # print(c("edges to be removed",emptyEdges))
+      gg <- delete_edges(gg, emptyEdges)
+      # print(c("graph after deleting edges", E(gg)$label))
+      gg
+      reduceGraph(gg,comparison)
+    }else{
+      print("teleiwse")
+      g
+    }
+  }
+
+  ptm <- proc.time()
+# E(rowgraph)$weight <- rep(0,dims[2])
+  lapply (comparisons, function (comp) {
+    reduceGraph (initRowGraph(comp), comp)
+  })
+  executionTime <- proc.time() - ptm
+  print(c("execution time",executionTime))
+  colnames(weights) <- directs
+  weights <- 100 * weights
+
+  print(list(hatMatrix=c1,contributionMatrix=weights))
+}

@@ -3,7 +3,9 @@ Type: Package
 Title: What the Package Does (Title Case)
 Version: 0.1.0
 Author: Who wrote it
-Maintainer: Who to complain to <yourfault@somewhere.net>
+Maintainer: The package maintainer <yourself@somewhere.net>
 Description: More about what it does (maybe more than one line)
+    Use four spaces when indenting paragraphs within the Description.
 License: What license is it under?
-LazyData: TRUE
+Encoding: UTF-8
+LazyData: true

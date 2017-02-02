@@ -112,6 +112,7 @@ var Model = {
       // console.log('cmss',cms,'params',params);
       //check if the matrix is in the model;
       if(! _.isEmpty(cms)){
+
         // console.log('check to find matrix in cms',cms,'params',params);
         foundCM = _.find(cms, cm => {
            return _.isMatch(cm, _.omit(params, 'intvs'));
@@ -138,17 +139,20 @@ var Model = {
           break;
         }
         //comment to deploy just for dev
-        ocpu.seturl('//localhost:8004/ocpu/library/contribution/R');
+        // ocpu.seturl('//localhost:8004/ocpu/library/contribution/R');
         //
-        var req = ocpu.rpc('contributionMatrix',{
-          data: JSON.stringify(project.model.wide),
+        var req = ocpu.rpc('getContributionMatrix',{
+          indata: JSON.stringify(project.model.wide),
           type: rtype,
           model: params.MAModel,
           sm: params.sm,
           }, (output) => {
             let connma = params;
-            connma.matrix = output;
+            connma.matrix = output.hatMatrix;
+            connma.matrix.contributionMatrix = output.contributionMatrix
+            connma.matrix.percentageContr = output.contributionMatrix
             // console.log('the ocpu result',connma,'pushing to project');
+            console.log('RESULTS FROM SERVER',connma.matrix);
             Model.pushToContributionMatrix(connma);
             resolve(connma);
           });

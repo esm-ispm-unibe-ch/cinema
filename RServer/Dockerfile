@@ -6,6 +6,14 @@ FROM opencpu/base:latest
 #copying contribution package and installation scripts
 ADD toRoot /root
 
+RUN mv /root/server.conf /etc/opencpu/
+
+RUN apt-get update
+
+RUN apt-get install -y vim 
+
+RUN apt-get install -y tmux 
+
 #dependency for netmeta r package
 RUN apt-get install -y r-cran-rgl
 
