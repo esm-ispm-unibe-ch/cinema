@@ -212,6 +212,7 @@ var CM = {
       let indirects = CM.project.model.indirectComparisons;
       let directs = CM.project.model.directComparisons;
       let cm = res.matrix;
+      console.log('cm',cm);
       let studies = cm.percentageContr;
       let entireNet = cm.impD;
       let rownames = cm.rowNames;
@@ -322,6 +323,7 @@ var CM = {
       mergeCells.concat(
         {row: numDirects+numIndirects+2, col: 0, rowspan: 1, colspan: cw}
       );
+      console.log(cm.impD);
       studies = studies.concat(cm.impD);
       rowNames = rowNames.concat('Entire <br> network');
       let cols = cm.colNames;
