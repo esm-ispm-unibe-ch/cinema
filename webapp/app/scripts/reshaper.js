@@ -31,6 +31,7 @@ var Reshaper = {
       });
     });
     // console.log('perid',perId,'comps',comps,'res',res);
+    // console.log(_.flatten(res));
     return _.flatten(res);
   },
   wideToLong: (model,type) => {

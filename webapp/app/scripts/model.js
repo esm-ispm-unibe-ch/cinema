@@ -148,15 +148,17 @@ var Model = {
           sm: params.sm,
           }, (output) => {
             let connma = params;
+            console.log('Server response', output);
             connma.matrix = output.hatMatrix;
-            connma.matrix.contributionMatrix = output.contributionMatrix
-            connma.matrix.percentageContr = output.contributionMatrix
+            connma.matrix.contributionMatrix = output.contributionMatrix;
+            connma.matrix.percentageContr = output.contributionMatrix;
+             connma.matrix.impD = [output.totalWeights];
             // console.log('the ocpu result',connma,'pushing to project');
             console.log('RESULTS FROM SERVER',connma.matrix);
             Model.pushToContributionMatrix(connma);
             resolve(connma);
           });
-        req.fail( () =>{
+        req.fail( () => {
           reject('R returned an error: ' + req.responseText);
         })
       }
