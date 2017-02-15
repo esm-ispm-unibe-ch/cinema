@@ -109,6 +109,7 @@ col.rowHeader {
   overflow:auto;
   padding:10px 20px 50px 20px;
   resize: both;
+  background:white;
 }
 
 a.btn{
@@ -122,4 +123,65 @@ a.btn{
 }
 .nma {
   color: #1B809E;
+}
+.disabled{
+  pointer-events: none;
+  cursor: default;
+}
+#conMatloader {
+  height:700px;
+  margin-top:300px;
+}
+#conMatloader i {
+  width: 100%;
+  margin: 0 auto; 
+}
+.gly-spin {
+-webkit-animation: spin 5s infinite linear;
+-moz-animation: spin 5s infinite linear;
+-o-animation: spin 5s infinite linear;
+animation: spin 5s infinite linear;
+}
+@-moz-keyframes spin {
+0% {
+-moz-transform: rotate(0deg);
+}
+100% {
+-moz-transform: rotate(359deg);
+}
+}
+@-webkit-keyframes spin {
+0% {
+-webkit-transform: rotate(0deg);
+}
+100% {
+-webkit-transform:
+rotate(359deg);
+}
+}
+@-o-keyframes spin {
+0% {
+-o-transform:
+rotate(0deg);
+}
+100% {
+-o-transform:
+rotate(359deg);
+}
+}
+@keyframes
+spin {
+0% {
+-webkit-transform:
+rotate(0deg);
+transform:
+rotate(0deg);
+}
+100%
+{
+-webkit-transform:
+rotate(359deg);
+transform:
+rotate(359deg);
+}
 }

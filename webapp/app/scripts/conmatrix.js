@@ -140,15 +140,25 @@ var CM = {
     $('#conMatControls').bind('change', () => {
       CM.checkInputs();
     });
-    $('a[action=makeConMatrix]').bind('click', () => {
-      if(!($('a[action=makeConMatrix]').attr('disabled'))){
+    $('#createMatrixButton').bind('click', () => {
+      let cmb = $('#createMatrixButton');
+      console.log(cmb.attr('id'),'no can do');
+      if(cmb.hasClass('disabled')==false){
         CM.checkInputs();
+        cmb.addClass('disabled');
         CM.createMatrix();
+        $('#conMatControls input').prop('disabled',true);
+        $('#conMatControls select').prop('disabled',true);
       }
     });
     $('a[action=clearCM]').bind('click', () => {
-      CM.removeTable();
-      CM.checkInputs();
+      let cmb = $('a[action=clearCM]');
+      if(cmb.hasClass('disabled')==false){
+        console.log('clearing table');
+        CM.removeTable();
+        cmb.addClass('disabled');
+        CM.checkInputs();
+      }
     });
   },
   disableCM: () => {
@@ -156,16 +166,17 @@ var CM = {
     $('#conMatControls select').prop('disabled',true);
     $('a[action=makeConMatrix]').attr('disabled',true);
     $('#clearCM').attr('disabled',false);
+    $('#clearCM').removeClass('disabled');
   },
   enableCM: () => {
     $('#conMatControls input').prop('disabled',false);
     $('#conMatControls select').prop('disabled',false);
     $('a[action=makeConMatrix]').attr('disabled',false);
+    $('#createMatrixButton').removeClass('disabled');
   },
   checkInputs: () => {
       let mamodel =  $('input[type=radio][name=MAModel]:checked').val();
       if( typeof mamodel === 'undefined'){
-        // $('#popoverCM').attr('data-content','You must choose model');
         CM.disableCM();
       }else{
         CM.enableCM();
@@ -182,9 +193,11 @@ var CM = {
         },[]);
         CM.setParams('intvs', intvs);
         if(intvs.length!==0){
-          $('#popoverCM').attr('disabled',false);
+          $('#createMatrixButton').attr('disabled',false);
+          $('#createMatrixButton').removeClass('disabled');
         }else{
-          $('#popoverCM').attr('disabled',true);
+          $('#createMatrixButton').attr('disabled',true);
+          $('#createMatrixButton').addClass('disabled');
         }
       }
   },
@@ -192,7 +205,15 @@ var CM = {
     return CM.project;
   },
   fetchCM: (params) => {
+    CM.showLoader();
     return CM.model.fetchContributionMatrix(params);
+  },
+  showLoader: () => {
+    $('#conMatloader').show();
+  },
+  removeLoader: (tbl) => {
+    $('#conMatloader').hide();
+    return tbl;
   },
   createMatrix: () => {
     let params = (CM.getParams)();
@@ -200,11 +221,14 @@ var CM = {
     CM.fetchCM([params.MAModel,params.sm,params.tau,params.intvs])
       .then(CM.shortIndirect)
       .then(CM.makeDownloader)
+      .then(CM.removeLoader)
       .then(CM.showTable)
       .then(hot => {
         bindTableResize(hot, 'cm-table-container');
       }).catch( err => {
+        CM.removeLoader();
         Messages.alertify().error(Messages.ocpuError+err);
+        CM.checkInputs();
     });
   },
   shortIndirect(res){
@@ -212,7 +236,6 @@ var CM = {
       let indirects = CM.project.model.indirectComparisons;
       let directs = CM.project.model.directComparisons;
       let cm = res.matrix;
-      console.log('cm',cm);
       let studies = cm.percentageContr;
       let entireNet = cm.impD;
       let rownames = cm.rowNames;

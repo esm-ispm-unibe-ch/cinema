@@ -139,7 +139,7 @@ var Model = {
           break;
         }
         //comment to deploy just for dev
-        ocpu.seturl('//localhost:8004/ocpu/library/contribution/R');
+        // ocpu.seturl('//localhost:8004/ocpu/library/contribution/R');
         //
         var req = ocpu.rpc('getContributionMatrix',{
           indata: JSON.stringify(project.model.wide),
@@ -152,13 +152,9 @@ var Model = {
             connma.matrix = output.hatMatrix;
             connma.matrix.contributionMatrix = output.contributionMatrix;
             connma.matrix.percentageContr = output.contributionMatrix;
-<<<<<<< HEAD
              connma.matrix.impD = [output.totalWeights];
-=======
-            connma.matrix.impD = [output.totalWeights];
->>>>>>> 2f06fb0472da5971b2bb1733e8ca1d7953d8daaa
             // console.log('the ocpu result',connma,'pushing to project');
-            // console.log('RESULTS FROM SERVER',connma.matrix);
+            console.log('RESULTS FROM SERVER',connma.matrix);
             Model.pushToContributionMatrix(connma);
             resolve(connma);
           });
