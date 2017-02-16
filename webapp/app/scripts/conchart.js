@@ -3,7 +3,16 @@ var uniqId = require('./mixins.js').uniqId;
 
 
 var CC = {
+  init: (model) =>{
+    console.log(model);
+    CC.project = model.project;
+  },
   bindActions: () => {
+    $('button#barChartsavebtn').bind('click', () => {
+      $("#barChart").get(0).toBlob(function(blob) {
+        saveAs(blob, CC.project.filename+"_chart.png");
+      });
+    });
   },
   updateChart: (m) => {
     if(m.project.hasSelectedRob && !_.isEmpty(m.project.currentCM)){
@@ -13,6 +22,7 @@ var CC = {
     }
     var tmpl = GRADE.templates.conchart(m.project);
     $('#conChart').html(tmpl);
+    CC.bindActions();
       if(m.project.chartReady){
         $(document).ready( () => {
           CC.createMatrix(m);

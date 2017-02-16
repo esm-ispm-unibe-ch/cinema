@@ -15,6 +15,7 @@ var Tools = {
     Netplot.init(model);
     Evaluator.init(model);
     ConMat.init(model);
+    ConChart.init(model);
   }
 }
 
