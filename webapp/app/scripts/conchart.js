@@ -9,8 +9,8 @@ var CC = {
   },
   bindActions: () => {
     $('button#barChartsavebtn').bind('click', () => {
-      $("#barChart").get(0).toBlob(function(blob) {
-        saveAs(blob, CC.project.filename+"_chart.png");
+      $('#barChart').get(0).toBlob(function(blob) {
+        saveAs(blob, CC.project.filename+'_chart.png');
       });
     });
   },

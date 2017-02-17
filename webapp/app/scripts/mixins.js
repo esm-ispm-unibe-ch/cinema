@@ -32,11 +32,11 @@ var bindTableResize = (hot,container) => {
     }
   });
   $('#'+container+' .table-resizer').unbind();
-  $('#'+container+' .table-resizer').on('mouseup',(e)=>{
-    let t = $(e.target).parent();
-    t.toggleClass('fullscreen');
-    $(e.target).parent().find('.table-resizer').toggle();
-  });
+  // $('#'+container+' .table-resizer').on('mouseup',(e)=>{
+  //   let t = $(e.target).parent();
+  //   t.toggleClass('fullscreen');
+  //   $(e.target).parent().find('.table-resizer').toggle();
+  // });
 };
 
 var focusTo = (id) => {

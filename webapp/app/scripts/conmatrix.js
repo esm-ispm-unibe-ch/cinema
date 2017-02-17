@@ -140,9 +140,9 @@ var CM = {
     $('#conMatControls').bind('change', () => {
       CM.checkInputs();
     });
-    $("#createMatrixButton").bind('click', () => {
-      let cmb = $("#createMatrixButton");
-      console.log(cmb.attr("id"),"no can do");
+    $('#createMatrixButton').bind('click', () => {
+      let cmb = $('#createMatrixButton');
+      console.log(cmb.attr('id'),'no can do');
       if(cmb.hasClass('disabled')==false){
         CM.checkInputs();
         cmb.addClass('disabled');
@@ -172,7 +172,7 @@ var CM = {
     $('#conMatControls input').prop('disabled',false);
     $('#conMatControls select').prop('disabled',false);
     $('a[action=makeConMatrix]').attr('disabled',false);
-    $("#createMatrixButton").removeClass('disabled');
+    $('#createMatrixButton').removeClass('disabled');
   },
   checkInputs: () => {
       let mamodel =  $('input[type=radio][name=MAModel]:checked').val();
@@ -194,10 +194,10 @@ var CM = {
         CM.setParams('intvs', intvs);
         if(intvs.length!==0){
           $('#createMatrixButton').attr('disabled',false);
-          $("#createMatrixButton").removeClass('disabled');
+          $('#createMatrixButton').removeClass('disabled');
         }else{
           $('#createMatrixButton').attr('disabled',true);
-          $("#createMatrixButton").addClass('disabled');
+          $('#createMatrixButton').addClass('disabled');
         }
       }
   },
@@ -250,10 +250,10 @@ var CM = {
       let indirectRows = _.filter(rows, r=>{
         return _.find(indirects, d=>{
           let aresame = (
-            ( (r[0].split(':')[0]===d.split(",")[0]) &&
-            (r[0].split(':')[1]===d.split(",")[1])) || 
-            ( (r[0].split(':')[1]===d.split(",")[0]) &&
-            (r[0].split(':')[0]===d.split(",")[1]))
+            ( (r[0].split(':')[0]===d.split(',')[0]) &&
+            (r[0].split(':')[1]===d.split(',')[1])) || 
+            ( (r[0].split(':')[1]===d.split(',')[0]) &&
+            (r[0].split(':')[0]===d.split(',')[1]))
           );
           return aresame});
           // return r[0].replace(':',',')===d});

@@ -139,7 +139,7 @@ var Model = {
           break;
         }
         //comment to deploy just for dev
-        ocpu.seturl('//localhost:8004/ocpu/library/contribution/R');
+        // ocpu.seturl('//localhost:8004/ocpu/library/contribution/R');
         //
         var req = ocpu.rpc('getContributionMatrix',{
           indata: JSON.stringify(project.model.wide),

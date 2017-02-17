@@ -10,9 +10,9 @@ var bindTableResize = require('./mixins.js').bindTableResize;
    edges : [],
    etovRatio : 0.5,
    options: {
-     vertexSizeBy: 'numStudies',
+     vertexSizeBy: 'equal',
      vertexColorBy: 'noColor',
-     edgeSizeBy: 'sampleSize',
+     edgeSizeBy: 'equal',
      edgeColorBy: 'noColor',
      defaultVertexColor: '#61AFD1',
      norobcolor: '#282C34',
@@ -57,17 +57,26 @@ var bindTableResize = require('./mixins.js').bindTableResize;
   },
 
   resizeElements : (nodeFilter, edgeFilter) => {
+    let nFilter = nodeFilter;
+    let eFilter = edgeFilter;
     var setSize = (elem, elements, key, minSize=NP.options.minSize, maxSize=NP.options.maxSize, ratio=1) => {
-      var minVertexSize = (elements, key) => {return _.reduce(elements, (memo, e)=>{return memo<e[key]&&memo!==-1?memo:e[key];},-1)};
-      var maxVertexSize = (elements, key) => {return _.reduce(elements, (memo, e)=>{return memo>e[key]?memo:e[key];},0)};
-      var aggregate = (elements, key) => {return  _.reduce(elements, (memo, e)=>{return memo+e[key]},0)};
-      var minRuleRatio = minSize / minVertexSize(elements,key);
-      var maxRuleRatio = maxSize / maxVertexSize(elements,key);
-      var ratio = maxVertexSize(elements,key)*minRuleRatio>maxSize?maxRuleRatio:minRuleRatio;
-      _.reduce(elements, (memo,e) => {
-        e.renderSize = e[key]*ratio;
-        //console.log(e.renderSize);
-        return memo.concat(e);},[])
+      if(key!=='equal'){
+        var minVertexSize = (elements, key) => {return _.reduce(elements, (memo, e)=>{return memo<e[key]&&memo!==-1?memo:e[key];},-1)};
+        var maxVertexSize = (elements, key) => {return _.reduce(elements, (memo, e)=>{return memo>e[key]?memo:e[key];},0)};
+        var aggregate = (elements, key) => {return  _.reduce(elements, (memo, e)=>{return memo+e[key]},0)};
+        var minRuleRatio = minSize / minVertexSize(elements,key);
+        var maxRuleRatio = maxSize / maxVertexSize(elements,key);
+        var ratio = maxVertexSize(elements,key)*minRuleRatio>maxSize?maxRuleRatio:minRuleRatio;
+        _.reduce(elements, (memo,e) => {
+          e.renderSize = e[key]*ratio;
+          //console.log(e.renderSize);
+          return memo.concat(e);},[])
+      }else{
+        _.reduce(elements, (memo,e) => {
+          e.renderSize = NP.etovRatio * maxSize;
+          //console.log(e.renderSize);
+          return memo.concat(e);},[])
+      }
     };
     var adjustEdgesWidth = () => {
       var edges = NP.edges;
@@ -87,9 +96,12 @@ var bindTableResize = require('./mixins.js').bindTableResize;
         return memo.diff/memo.vsize>=d.diff/d.vsize?d:memo;
       },{diff:0,vsize:1});
       var sizeFactor = NP.etovRatio * maxDiff.vsize / (-maxDiff.diff+maxDiff.vsize);
-      // console.log('adjusting edge size',maxDiff,sizeFactor);
-      if(maxDiff.diff<0){
+      console.log('adjusting edge size',maxDiff,sizeFactor);
+      if(maxDiff.diff<=0){
         _.map(edges, e =>{e.renderSize *= sizeFactor});
+      }
+      if(nFilter==='equal'&&eFilter==='equal'){
+        _.map(edges, e =>{e.renderSize = 10;});
       }
     };
     var renderElements = () =>{
@@ -197,7 +209,6 @@ var bindTableResize = require('./mixins.js').bindTableResize;
       })
     });
   },
-
   defaultControls: () => {return [
     {
       type: 'button',
@@ -207,7 +218,12 @@ var bindTableResize = require('./mixins.js').bindTableResize;
       action: 'changeVertexSize',
       selections: [
         {
-          label:'Sample Size',
+          label:'Equal size',
+          value:'equal',
+          isAvailable:true,
+        },
+        {
+          label:'Sample size',
           value:'sampleSize',
           isAvailable:true,
         },
@@ -215,7 +231,7 @@ var bindTableResize = require('./mixins.js').bindTableResize;
           label:'Number of studies',
           value:'numStudies',
           isAvailable:true,
-        }
+        },
       ]
     },
     {
@@ -244,6 +260,11 @@ var bindTableResize = require('./mixins.js').bindTableResize;
       id: 'edgeWidthControls',
       action: 'changeEdgeSize',
       selections: [
+        {
+          label:'Equal size',
+          value:'equal',
+          isAvailable:true,
+        },
         {
         label:'Sample Size',
         value:'sampleSize',
@@ -297,7 +318,7 @@ var bindTableResize = require('./mixins.js').bindTableResize;
       controls[0].selections[0].isAvailable = false;
       controls[2].selections[0].isAvailable = false;
       controls[2].selections[2].isAvailable = true;
-      NP.options.vertexSizeBy = 'numStudies';
+      NP.options.vertexSizeBy = 'equal';
       NP.options.edgeSizeBy = 'numStudies';
     }
     _.map(controls, c => {
@@ -425,6 +446,12 @@ var bindTableResize = require('./mixins.js').bindTableResize;
             NP.colorEdges(filter);
             break;
       }
+    });
+    $('#np-save').bind('click', () => {
+      let img = NP.cy.png();
+      var download = document.getElementById('np-save');
+      download.href = img;
+      download.download = NP.model.getProject().filename+'_netplot.png';
     });
   },
   project: {}
