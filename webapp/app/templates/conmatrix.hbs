@@ -46,6 +46,8 @@
                   {{label}}
                 </label>
               {{/each}}
+              <a id="checkAllInt" action='checkAllInt' class="ints btn btn-default">Check All</a>
+              <a id="uncheckAllInt" action='uncheckAllInt' class="ints btn btn-default">Uncheck All</a>
             </div>
           {{/if_eq}}
         {{/each}}
@@ -53,13 +55,22 @@
     </div>
     <a id="createMatrixButton" action='makeConMatrix' class="btn btn-default" data-content="All fields should be filled" rel="popover" data-placement="bottom" data-trigger="hover">Create Matrix</a>
     <a id="clearCM" action='clearCM' class="btn btn-default" >Clear Matrix</a>
+    <a id="cancelCM" action='cancelCM' class="btn btn-default"
+    style="display:none">Cancel!</a>
   </form>
   <div id='cm-table-container' class='well table-container col-md-9 col-sm-12
     col-xs-12'>
-    <div id="conMatloader" class="col-md-offset-5 col-md-2"
-      style="font-size:40px;display:none"  aria="waiting for server response"
+    <div id="conMatloader" class="col-md-offset-2 col-md-8 col-xs-12"
+      style="display:none"  aria="downloading contribution matrix"
       aria-hidden="false">
-      <i class="glyphicon glyphicon-cog gly-spin"></i>
+      <!-- <div id="conMatSpinner" style="font-size:40px"> -->
+      <!--   <i class="glyphicon glyphicon-cog gly-spin"></i> -->
+      <!-- </div> -->
+        <div class="progress">
+            <div id="conMatProgressBar" class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width:0%">
+                  0%
+          </div>
+      </div>   
     </div>
     <!-- <span class="btn-full-screen table-resizer pull-right glyphicon glyphicon-fullscreen" aria="fullscreen table" aria-hidden="true"></span> -->
     <span style='display:none' class="btn-minimize table-resizer pull-right glyphicon glyphicon-resize-small" aria="minimize table" aria-hidden="true" ></span>

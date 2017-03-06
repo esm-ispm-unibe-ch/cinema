@@ -142,13 +142,15 @@ var CM = {
     });
     $('#createMatrixButton').bind('click', () => {
       let cmb = $('#createMatrixButton');
-      console.log(cmb.attr('id'),'no can do');
+      console.log('Downloading Matrix');
       if(cmb.hasClass('disabled')==false){
         CM.checkInputs();
         cmb.addClass('disabled');
         CM.createMatrix();
         $('#conMatControls input').prop('disabled',true);
         $('#conMatControls select').prop('disabled',true);
+        $('#conMatControls a.ints').attr('disabled',true);
+        $('#conMatControls a.ints').addClass('disabled');
       }
     });
     $('a[action=clearCM]').bind('click', () => {
@@ -160,19 +162,49 @@ var CM = {
         CM.checkInputs();
       }
     });
+    $('a[action=checkAllInt]').bind('click', () => {
+      console.log('checking All');
+      let lkj = $('#chekcAllInt');
+      if(! ($('#checkAllInt').hasClass('disabled'))){
+        $('#conMatControls .ints input').prop('checked',true);
+      }
+      CM.checkInputs();
+    });
+    $('a[action=uncheckAllInt]').bind('click', () => {
+      console.log('Unchecking All');
+      if(! ($('#uncheckAllInt').hasClass('disabled'))){
+        $('#conMatControls .ints input').prop('checked',false);
+      }
+      CM.checkInputs();
+    });
+    $('a[action=cancelCM]').bind('click', () => {
+      console.log('Cancelling computing contribution matrix');
+      CM.model.cancelCM();
+    });
   },
   disableCM: () => {
     $('#conMatControls input').prop('disabled',true);
     $('#conMatControls select').prop('disabled',true);
+    $('#conMatControls a.ints').attr('disabled',true);
     $('a[action=makeConMatrix]').attr('disabled',true);
+    $('#uncheckAllInt').addClass('disabled');
+    $('#checkAllInt').addClass('disabled');
     $('#clearCM').attr('disabled',false);
     $('#clearCM').removeClass('disabled');
   },
   enableCM: () => {
     $('#conMatControls input').prop('disabled',false);
     $('#conMatControls select').prop('disabled',false);
+    $('#conMatControls a.ints').attr('disabled',false);
     $('a[action=makeConMatrix]').attr('disabled',false);
     $('#createMatrixButton').removeClass('disabled');
+    $('#uncheckAllInt').removeClass('disabled');
+    $('#checkAllInt').removeClass('disabled');
+  },
+  updateCMLoader: (done) => {
+    $('#conMatProgressBar').text(done+'%');
+    $('#conMatProgressBar').attr('style','width:'+done+'%');
+    $('#conMatProgressBar').attr('aria-valuenow',done);
   },
   checkInputs: () => {
       let mamodel =  $('input[type=radio][name=MAModel]:checked').val();
@@ -206,15 +238,27 @@ var CM = {
   },
   fetchCM: (params) => {
     CM.showLoader();
-    return CM.model.fetchContributionMatrix(params);
+    return new Promise ((resolve,reject) => {
+       resolve(CM.model.fetchContributionMatrix(params));
+    })
   },
   showLoader: () => {
+    $('#cancelCM').show();
     $('#conMatloader').show();
+    $('#conMatProgressBar').attr('style','width:0');
+    $('#conMatProgressBar').text('0%');
+    $('#conMatProgressBar').attr('aria-valuenow',0);
   },
   removeLoader: (tbl) => {
+    $('#cancelCM').hide();
     $('#conMatloader').hide();
     return tbl;
   },
+  // cancelCM: () => {
+  //   CM.removeLoader();
+  //   Messages.alertify().error(Messages.ocpuError+err);
+  //       CM.checkInputs();
+  // },
   createMatrix: () => {
     let params = (CM.getParams)();
     CM.removeTable();
@@ -227,7 +271,7 @@ var CM = {
         bindTableResize(hot, 'cm-table-container');
       }).catch( err => {
         CM.removeLoader();
-        Messages.alertify().error(Messages.ocpuError+err);
+        Messages.alertify().error(Messages.ocpuError + err);
         CM.checkInputs();
     });
   },
@@ -239,7 +283,7 @@ var CM = {
           console.log('indirects',indirects);
       let cm = res.matrix;
       let studies = cm.percentageContr;
-      let entireNet = cm.impD;
+      // let entireNet = cm.impD;
       let rownames = cm.rowNames;
       let cw = cm.colNames.length;
       let rows = _.zip(rownames,studies);
@@ -268,13 +312,13 @@ var CM = {
       .concat([Array(cw).fill()])
       .concat(res.matrix.indirectStudies)
       .concat([Array(cw).fill()])
-      .concat(cm.impD);
+      // .concat(cm.impD);
       res.matrix.sortedRowNames =
       ['Mixed estimates']
       .concat(cm.directRowNames)
       .concat(['Indirect estimates'])
       .concat(cm.indirectRowNames)
-      .concat(['','Entire network']);
+      // .concat(['','Entire network']);
       resolve(res);
     });
   },
@@ -355,9 +399,8 @@ var CM = {
       mergeCells.concat(
         {row: numDirects+numIndirects+2, col: 0, rowspan: 1, colspan: cw}
       );
-      console.log(cm.impD);
-      studies = studies.concat(cm.impD);
-      rowNames = rowNames.concat('Entire <br> network');
+      // studies = studies.concat(cm.impD);
+      // rowNames = rowNames.concat('Entire <br> network');
       let cols = cm.colNames;
       var setBackground = (percentage) => {
         return `
@@ -417,7 +460,7 @@ var CM = {
         height: $('#cm-table-container').height(),
         afterRender: () => {
           if(rendered===false){
-            focusTo('cm-table');
+            // focusTo('cm-table');
             CM.disableCM();
             rendered=true;
             // $(`.ht_master tr:nth-child('+numDirects+') > td`).style('horizontal-align','middle');
@@ -429,9 +472,9 @@ var CM = {
           var cellProperties = {};
           cellProperties.renderer = makeBars;
           cellProperties.readOnly = true;
-          if(row===lastRow-1){
-            cellProperties.className = 'htMiddle h5';
-          }
+          // if(row===lastRow-1){
+            // cellProperties.className = 'htMiddle h5';
+          // }
           return cellProperties;
         }
       });

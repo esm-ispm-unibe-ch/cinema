@@ -100,6 +100,8 @@ var Model = {
   fetchContributionMatrix: ([MAModel,sm,tau,intvs]) => {
     return new Promise((resolve, reject) => {
       let project = Model.getProject();
+      project.cancelCM = false;
+      console.log('intervensions',intvs);
       let cms = project.contributionMatrices;
       let result = {};
       let foundCM = {};
@@ -140,29 +142,77 @@ var Model = {
         }
         //comment to deploy just for dev
         // ocpu.seturl('//localhost:8004/ocpu/library/contribution/R');
-        //
-        var req = ocpu.rpc('getContributionMatrix',{
-          indata: JSON.stringify(project.model.wide),
-          type: rtype,
-          model: params.MAModel,
-          sm: params.sm,
-          }, (output) => {
-            let connma = params;
-            console.log('Server response', output);
-            connma.matrix = output.hatMatrix;
-            connma.matrix.contributionMatrix = output.contributionMatrix;
-            connma.matrix.percentageContr = output.contributionMatrix;
-             connma.matrix.impD = [output.totalWeights];
-            // console.log('the ocpu result',connma,'pushing to project');
-            console.log('RESULTS FROM SERVER',connma.matrix);
-            Model.pushToContributionMatrix(connma);
-            resolve(connma);
-          });
-        req.fail( () => {
-          reject('R returned an error: ' + req.responseText);
-        })
-      }
-    })
+        let hmc = ocpu.call('getHatMatrix',{
+            indata: project.model.wide,
+            type: rtype,
+            model: params.MAModel,
+            sm: params.sm,
+          }, (sessionh) => {
+          sessionh.getObject( (hatmatrix) => {
+            let comparisons = hatmatrix.rowNames;
+            let sequencePromises = (rows) => {
+              return new Promise((resolve, rjct) => {
+                if (Model.getProject().cancelCM !== true) {
+                  if (rows.length !== 0){
+                    let row = _.first(rows);
+                    let rest = _.rest(rows);
+                    let done = Math.round(100 * (1 - (rest.length / comparisons.length)));
+                    View.updateCMLoader(done);
+                      let gmr = ocpu.call('getComparisonContribution',{
+                        c1: hatmatrix,
+                        comparison: row
+                      }, (sessionr) => {
+                        sessionr.getObject( (rowback) => {
+                          console.log('row ',row,' came back ',rowback);
+                          rowback.row = row;
+                          sequencePromises(rest).then( nextrow => {
+                            resolve(_.flatten([_.flatten(nextrow)].concat(rowback)));
+                          });
+                        });
+                      });
+                      gmr.fail( () => {
+                        reject('R returned an error: ' + gmr.responseText);
+                      });
+                  }else{
+                    resolve([]);
+                  }
+                }else{
+                  reject('Computation canceled');
+                }
+              });
+            };
+           return sequencePromises(comparisons).then(output => {
+              console.log('Server response', output);
+              let connma = params;
+              connma.matrix = {};
+              connma.matrix.colNames = output[0].names;
+              connma.matrix.percentageContr = [];
+              let rownames = _.reduceRight(output, (mem ,row) => {
+                return mem.concat(row.row);
+              },[]);
+              connma.matrix.rowNames = rownames;
+              let contributionMatrix = _.reduceRight(output, (mem ,row) => {
+                return mem.concat([row.contribution]);
+              },[]);
+              connma.matrix.percentageContr = contributionMatrix;
+              // connma.matrix.impD = [output[0].contribution];
+              // console.log('the ocpu result',connma,'pushing to project');
+              console.log('RESULTS FROM SERVER',connma.matrix);
+              Model.pushToContributionMatrix(connma);
+              resolve(connma);
+           });
+         });
+       });
+       hmc.fail( () => {
+         reject('R returned an error: ' + hmc.responseText);
+       });
+     }
+   })
+  },
+  cancelCM : () => {
+    let project = Model.getProject();
+    project.cancelCM = true;
+    // View.cancelCM();
   },
   makeNodes: (type, model) => {
     var grouped = _.groupBy(model, tr => {return tr.t});

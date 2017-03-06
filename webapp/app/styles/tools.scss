@@ -66,7 +66,8 @@ col.rowHeader {
   // width:$tablew;
   height:$cySize;
   overflow:hidden;
-  padding:10px 20px 50px 20px;
+  padding:5px 10px 50px 10px;
+  background-color: white;
   // resize: vertical;
 }
 
@@ -133,11 +134,15 @@ a.btn{
 }
 #conMatloader {
   height:700px;
-  margin-top:300px;
+  margin-top:250px;
 }
-#conMatloader i {
-  width: 100%;
-  margin: 0 auto; 
+.progress {
+  height:50px;
+  #conMatProgressBar{
+    color:#EEEEE6;
+    text-shadow: 2px 2px 4px #1C1C1C;
+    padding-top:17px;
+  }
 }
 .gly-spin {
 -webkit-animation: spin 5s infinite linear;

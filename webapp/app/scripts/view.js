@@ -76,6 +76,12 @@ var View = {
   updateConMat:() =>{
     // console.log('con mat changed');
   },
+  cancelCM: () => {
+    Tools.CM.cancelCM();
+  },
+  updateCMLoader: (done) => {
+    Tools.CM.updateCMLoader(done);
+  },
 };
 
 module.exports = {

@@ -100,7 +100,7 @@ var bindTableResize = require('./mixins.js').bindTableResize;
       if(maxDiff.diff<=0){
         _.map(edges, e =>{e.renderSize *= sizeFactor});
       }
-      if(nFilter==="equal"&&eFilter==="equal"){
+      if(nFilter==='equal'&&eFilter==='equal'){
         _.map(edges, e =>{e.renderSize = 10;});
       }
     };
@@ -451,7 +451,7 @@ var bindTableResize = require('./mixins.js').bindTableResize;
       let img = NP.cy.png();
       var download = document.getElementById('np-save');
       download.href = img;
-      download.download = NP.model.getProject().filename+"_netplot.png";
+      download.download = NP.model.getProject().filename+'_netplot.png';
     });
   },
   project: {}

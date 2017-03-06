@@ -22,7 +22,7 @@ library(meta)
 library(jsonlite)
 library(plyr)
 
-D<-fromJSON(indata)
+D <- indata
 
 #pairwise meta-analysis
 

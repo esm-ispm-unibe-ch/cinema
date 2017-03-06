@@ -20,9 +20,7 @@ ADD toRoot /root
 # RUN apt-get install -y r-cran-rgl
 
 #Install contribution package in image
-RUN chmod +x /root/installContribution -R && \
-Rscript /root/installContribution/rgrade.batch
-
+RUN chmod +x /root/installContribution -R 
 
 #restarting opencpu service
-RUN sh -c 'service opencpu restart'
+RUN sh -c 'Rscript /root/installContribution/rgrade.batch && service opencpu restart'
