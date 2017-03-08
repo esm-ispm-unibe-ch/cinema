@@ -166,15 +166,15 @@ var Model = {
       let filterRows = (rows,intvs,rule) =>{
         let res = [];
         switch(rule){
-          case 'every':
+          case "every":
             res = _.filter(rows, r =>{
-              let [t1,t2] = r.split(':');
+              let [t1,t2] = r.split(":");
               return (_.contains(intvs,t1)||_.contains(intvs,t2));
             });
             break;
-          case 'between':
+          case "between":
             res = _.filter(rows, r =>{
-              let [t1,t2] = r.split(':');
+              let [t1,t2] = r.split(":");
               return (_.contains(intvs,t1)&&_.contains(intvs,t2));
             });
             break;
@@ -194,7 +194,7 @@ var Model = {
                   let row = _.first(rows);
                   let rest = _.rest(rows);
                   let done = Math.round(100 * (1 - (rest.length / comparisons.length)));
-                  View.updateCMLoader([row,done.toString()+'%']);
+                  View.updateCMLoader([row,done.toString()+"%"]);
                   let foundComp = _.find(savedComparisons, sc => {
                     return (sc.rowname === row);
                   });
@@ -225,7 +225,7 @@ var Model = {
                   reslve([]);
                 }
               }else{
-                reject('Computation canceled');
+                reject("Computation canceled");
               }
             });
           };
@@ -261,7 +261,7 @@ var Model = {
         });
       };
       if(_.isEmpty(params.hatmatrix)){
-        View.updateCMLoader(['Hat Matrix','']);
+        View.updateCMLoader(["Hat Matrix",'']);
         let hmc = ocpu.call('getHatMatrix',{
             indata: project.model.wide,
             type: rtype,
