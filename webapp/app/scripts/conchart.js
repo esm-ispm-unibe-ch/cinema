@@ -4,7 +4,6 @@ var uniqId = require('./mixins.js').uniqId;
 
 var CC = {
   init: (model) =>{
-    console.log(model);
     CC.project = model.project;
   },
   bindActions: () => {
@@ -30,43 +29,22 @@ var CC = {
       }
   },
   createMatrix: (m) => {
-    let params = m.project.currentCM;
-    let cm = m.project.currentCM.matrix;
-    let cw = cm.colNames.length;
+    let cm = m.project.currentCM;
+    let colNames = cm.colNames;
+    let cw = colNames.length;
       //Filter rows
-      let directRowStudies = _.zip(cm.directRowNames,cm.directStudies);
-      let directFilteredRows = _.filter(directRowStudies, r => {
-        return _.find(params.intvs, intv => {
-          return _.find(r[0].split(':'), ri => {
-            return ri === intv;
-          })
-        })
-      });
-      let indirectRowStudies = _.zip(cm.indirectRowNames,cm.indirectStudies);
-      let indirectFilteredRows = _.filter(indirectRowStudies, r => {
-        return _.find(params.intvs, intv => {
-          return _.find(r[0].split(':'), ri => {
-            return ri === intv;
-          })
-        })
-      });
-      let directRowNames = _.unzip(directFilteredRows)[0];
-      let directStudies = _.unzip(directFilteredRows)[1];
-      let indirectRowNames = _.unzip(indirectFilteredRows)[0];
-      let indirectStudies = _.unzip(indirectFilteredRows)[1];
-      let numDirects = directFilteredRows.length;
-      let numIndirects = indirectFilteredRows.length;
-      let pers = directStudies;
+      let numDirects = cm.directStudies.length;
+      let numIndirects = cm.indirectStudies.length;
+      let pers = cm.directStudies;
       if(numIndirects!==0){
-        pers = pers.concat(indirectStudies);
+        pers = pers.concat(cm.indirectStudies);
       }
-      pers = pers.concat(cm.impD);
-      let rowNames = directRowNames;
+      // pers = pers.concat(cm.impD);
+      let rowNames = cm.directRowNames;
       if(numIndirects!==0){
-        rowNames = rowNames.concat(indirectRowNames);
+        rowNames = rowNames.concat(cm.indirectRowNames);
       }
-      rowNames = rowNames.concat('Entire network');
-    let colNames = m.project.currentCM.matrix.colNames;
+      // rowNames = rowNames.concat('Entire network');
     let comps = m.project.model.directComparisons;
     let cc = _.map(colNames, cn =>{
       let dc = _.find(comps, c => {

@@ -97,10 +97,8 @@ var Model = {
     let cms = prj.contributionMatrices;
     let foundCM = Model.findConMatInCache(connma);
     if ( foundCM !== false ){
-      console.log("removing",connma," from cache");
       Model.getProject().contributionMatrices = _.reject(cms, cm => {return Model.compareCM(cm,connma);})
     }
-    console.log("pushing",connma," to cache");
     Model.getProject().contributionMatrices.push(connma);
     Model.makeCurrentCM(connma);
   },
@@ -111,7 +109,7 @@ var Model = {
   },
   makeCurrentCM: (cm) =>{
     let cms = Model.getProject().contributionMatrices;
-    console.log('making current cms', cms);
+    // console.log('making current cms', cms);
     _.map(cms, c => {
       if(Model.compareCM(c,cm)){
         c.isDefault = true;
@@ -127,7 +125,6 @@ var Model = {
   setCMParams: (params) => {
     let project = Model.getProject();
     project.CMparams = params;
-    console.log('cms after parameter change',project.contributionMatrices);
   },
   getCMParams: () => {
     let project = Model.getProject();
@@ -148,14 +145,12 @@ var Model = {
         foundCM = Model.findConMatInCache(params);
       }
       if(foundCM !== false){
-        console.log("found params",params,"foundcm",foundCM,"in cms",cms);
         params.savedComparisons = clone(foundCM.savedComparisons);
         params.hatmatrix = foundCM.hatmatrix;
       }else{
         params.hatmatrix = {};
         params.savedComparisons = {};
       }
-      // console.log('CM not found in model');
       let rtype = '';
       switch(project.type){
         case 'binary':
@@ -191,9 +186,7 @@ var Model = {
       let fetchRows = (hatmatrix, prams) => {
           return new Promise((rslv, rjc) => {
           // var prams = (Model.getCMParams();
-          console.log('prams',prams);
           let comparisons = filterRows(hatmatrix.rowNames,prams.intvs,prams.rule);
-          console.log('prams',prams,'comparisons',comparisons);
           let sequencePromises = (rows, savedComparisons) => {
             return new Promise((reslve, rjct) => {
               if (Model.getProject().cancelCM !== true) {
@@ -206,7 +199,7 @@ var Model = {
                     return (sc.rowname === row);
                   });
                   if(typeof foundComp != 'undefined'){
-                    console.log("found row ",row," in saved");
+                    // console.log("found row ",row," in saved");
                     let savedRow = {names: hatmatrix.colNames, row:foundComp.rowname, contribution:foundComp.contributions};
                     sequencePromises(rest,savedComparisons).then( nextrow => {
                       reslve(_.flatten([_.flatten(nextrow)].concat([savedRow])));
@@ -217,7 +210,7 @@ var Model = {
                       comparison: row
                     }, (sessionr) => {
                       sessionr.getObject( (rowback) => {
-                        console.log("row ",row," came back ",rowback);
+                        // console.log("row ",row," came back ",rowback);
                         rowback.row = row;
                         sequencePromises(rest,savedComparisons).then( nextrow => {
                           reslve(_.flatten([_.flatten(nextrow)].concat(rowback)));
@@ -237,9 +230,8 @@ var Model = {
             });
           };
          return sequencePromises(comparisons, prams.savedComparisons).then(output => {
-            console.log('Server response', output);
+            // console.log('Server response', output);
             let connma = prams;
-            console.log("prams",connma);
             connma.savedComparisons = prams.savedComparisons;
             connma.colNames = output[0].names;
             let rows = _.reduceRight(output, (mem ,row) => {
@@ -258,13 +250,11 @@ var Model = {
               },[]);
               return _.union(uniqSaved, rows);
             }
-            console.log("saved comparisons before", connma.savedComparisons, " rows ", rows);
             connma.savedComparisons = updateSavedComparisons(connma.savedComparisons,rows);
-            console.log("saved comparisons after", connma.savedComparisons, " rows ", rows);
             connma.selectedComparisons = _.map(rows, row => {return row.rowname});
             // console.log('the ocpu result',connma,'pushing to project');
             let result = Model.formatMatrix(connma);
-            console.log('RESULTS FROM SERVER',result);
+            // console.log('RESULTS FROM SERVER',result);
             Model.updateContributionCache(result);
             resolve(result);
          });
@@ -280,7 +270,6 @@ var Model = {
           }, (sessionh) => {
         sessionh.getObject( (hatmatrix) => {
           params.hatmatrix = hatmatrix;
-          console.log("saving hatmatrix", params.hatmatrix);
           fetchRows(hatmatrix,params);
         })
        });
@@ -288,7 +277,7 @@ var Model = {
          reject('R returned an error: ' + hmc.responseText);
       });
       }else{
-        console.log("found hatmatrix", params.hatmatrix);
+        // console.log("found hatmatrix", params.hatmatrix);
         fetchRows(params.hatmatrix,params);
      }
    })

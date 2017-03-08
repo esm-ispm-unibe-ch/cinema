@@ -171,7 +171,7 @@ var CM = {
     });
     $('#createMatrixButton').bind('click', () => {
       let cmb = $('#createMatrixButton');
-      console.log("Downloading Matrix");
+      // console.log("Downloading Matrix");
       if(cmb.hasClass('disabled')==false){
         CM.checkInputs();
         cmb.addClass('disabled');
@@ -185,14 +185,14 @@ var CM = {
     $('a[action=clearCM]').bind('click', () => {
       let cmb = $('a[action=clearCM]');
       if(cmb.hasClass('disabled')==false){
-        console.log('clearing table');
+        // console.log('clearing table');
         CM.removeTable();
         cmb.addClass('disabled');
         CM.checkInputs();
       }
     });
     $('a[action=checkAllInt]').bind('click', () => {
-      console.log("checking All");
+      // console.log("checking All");
       let lkj = $('#chekcAllInt');
       if(! ($('#checkAllInt').hasClass("disabled"))){
         $('#conMatControls .ints input').prop('checked',true);
@@ -200,14 +200,14 @@ var CM = {
       CM.checkInputs();
     });
     $('a[action=uncheckAllInt]').bind('click', () => {
-      console.log("Unchecking All");
+      // console.log("Unchecking All");
       if(! ($('#uncheckAllInt').hasClass("disabled"))){
         $('#conMatControls .ints input').prop('checked',false);
       }
       CM.checkInputs();
     });
     $('a[action=cancelCM]').bind('click', () => {
-      console.log("Cancelling computing contribution matrix");
+      // console.log("Cancelling computing contribution matrix");
       CM.model.cancelCM();
     });
   },
@@ -361,7 +361,7 @@ var CM = {
       var dlAnchorElem = document.getElementById('downloadAnchorElem');
       dlAnchorElem.setAttribute('href', encodedUri);
       dlAnchorElem.setAttribute('download', cmfilename);
-      console.log("res",res);
+      // console.log("res",res);
       resolve(res);
     });
   },
@@ -494,7 +494,7 @@ var CM = {
     CM.bindActions();
     if(! _.isEmpty(project.currentCM)){
       CM.params = clone(project.currentCM);
-      console.log("found default cm",CM.params);
+      // console.log("found default cm",CM.params);
       CM.createMatrix();
     }
   }
