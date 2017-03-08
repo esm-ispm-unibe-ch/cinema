@@ -83,7 +83,7 @@ var CM = {
     },
     {
       type: 'radio',
-      title: "Selection rule",
+      title: 'Selection rule',
       id: 'rule',
       tag: 'rule',
       action: 'setComps',
@@ -194,14 +194,14 @@ var CM = {
     $('a[action=checkAllInt]').bind('click', () => {
       // console.log("checking All");
       let lkj = $('#chekcAllInt');
-      if(! ($('#checkAllInt').hasClass("disabled"))){
+      if(! ($('#checkAllInt').hasClass('disabled'))){
         $('#conMatControls .ints input').prop('checked',true);
       }
       CM.checkInputs();
     });
     $('a[action=uncheckAllInt]').bind('click', () => {
       // console.log("Unchecking All");
-      if(! ($('#uncheckAllInt').hasClass("disabled"))){
+      if(! ($('#uncheckAllInt').hasClass('disabled'))){
         $('#conMatControls .ints input').prop('checked',false);
       }
       CM.checkInputs();
@@ -216,8 +216,8 @@ var CM = {
     $('#conMatControls select').prop('disabled',true);
     $('#conMatControls a.ints').attr('disabled',true);
     $('a[action=makeConMatrix]').attr('disabled',true);
-    $('#uncheckAllInt').addClass("disabled");
-    $('#checkAllInt').addClass("disabled");
+    $('#uncheckAllInt').addClass('disabled');
+    $('#checkAllInt').addClass('disabled');
     $('#clearCM').attr('disabled',false);
     $('#clearCM').removeClass('disabled');
   },
@@ -227,14 +227,14 @@ var CM = {
     $('#conMatControls a.ints').attr('disabled',false);
     $('a[action=makeConMatrix]').attr('disabled',false);
     $('#createMatrixButton').removeClass('disabled');
-    $('#uncheckAllInt').removeClass("disabled");
-    $('#checkAllInt').removeClass("disabled");
+    $('#uncheckAllInt').removeClass('disabled');
+    $('#checkAllInt').removeClass('disabled');
   },
   updateCMLoader: ([title,done]) => {
-    $("#conMatProgressBar").text(done);
-    $("#loaderTitle").html(title);
-    $("#conMatProgressBar").attr("aria-valuenow",done);
-    $("#conMatProgressBar").attr("style","width:"+done);
+    $('#conMatProgressBar').text(done);
+    $('#loaderTitle').html(title);
+    $('#conMatProgressBar').attr('aria-valuenow',done);
+    $('#conMatProgressBar').attr('style','width:'+done);
   },
   checkInputs: () => {
       let mamodel = $('input[type=radio][name=MAModel]:checked').val();
@@ -258,7 +258,7 @@ var CM = {
         CM.setParams('rule', rule);
         if(intvs.length!==0){
           if((intvs.length<2)){
-            if(rule==="between"){
+            if(rule==='between'){
               $('#createMatrixButton').attr('disabled',true);
               $('#createMatrixButton').addClass('disabled');
             }
@@ -284,9 +284,9 @@ var CM = {
   showLoader: () => {
     $('#cancelCM').show();
     $('#conMatloader').show();
-    $("#conMatProgressBar").attr("style","width:0");
-    $("#conMatProgressBar").text("0%");
-    $("#conMatProgressBar").attr("aria-valuenow",0);
+    $('#conMatProgressBar').attr('style','width:0');
+    $('#conMatProgressBar').text('0%');
+    $('#conMatProgressBar').attr('aria-valuenow',0);
   },
   removeLoader: (tbl) => {
     $('#cancelCM').hide();
@@ -345,7 +345,7 @@ var CM = {
       let studies = cm.sortedStudies;
       let cols = cm.colNames;
       let rows = cm.sortedRowNames;
-      let fcols = [cm.MAModel+" "+cm.sm].concat(cols);
+      let fcols = [cm.MAModel+' '+cm.sm].concat(cols);
       let fstudies = _.map(_.zip(rows, studies), r=>{
         return [r[0]].concat(r[1]);
       });
@@ -356,7 +356,7 @@ var CM = {
       });
       let csvContent = 'data:text/csv;charset=utf-8,'+csvTable;
       var encodedUri = encodeURI(csvContent);
-      let cmfilename = (CM.getProject().title+'_'+CM.params.MAModel+"_"+CM.params.sm).replace(/\,/g,'_')+'.csv';
+      let cmfilename = (CM.getProject().title+'_'+CM.params.MAModel+'_'+CM.params.sm).replace(/\,/g,'_')+'.csv';
       $('#conMatControls').append('<a class= "btn btn-default" id="downloadAnchorElem">Download csv</a>');
       var dlAnchorElem = document.getElementById('downloadAnchorElem');
       dlAnchorElem.setAttribute('href', encodedUri);

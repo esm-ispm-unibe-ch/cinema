@@ -49,7 +49,7 @@ var focusTo = (id) => {
 var clone = (obj) =>{
   var copy;
   // Handle the 3 simple types, and null or undefined
-  if (null == obj || "object" != typeof obj) return obj;
+  if (null == obj || 'object' != typeof obj) return obj;
    // Handle Array
   if (obj instanceof Array) {
     copy = [];
@@ -72,7 +72,7 @@ var clone = (obj) =>{
     }
     return copy;
   }
-  throw new Error("Unable to copy obj! Its type isn't supported.");
+  throw new Error('Unable to copy obj! Its type isn\'t supported.');
 };
 
 
