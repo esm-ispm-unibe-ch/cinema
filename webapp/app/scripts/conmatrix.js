@@ -2,6 +2,7 @@ var Messages = require('./messages.js').Messages;
 var focusTo = require('./mixins.js').focusTo;
 var bindTableResize = require('./mixins.js').bindTableResize;
 var json2csv = require('json2csv');
+var clone = require('./mixins.js').clone;
 
 var CM = {
   defaultControls: () => { return [
@@ -13,12 +14,14 @@ var CM = {
       action: 'setMAModel',
       selections: [
         {
+          name: 'MAModel',
           label:'Fixed',
           value:'fixed',
           isAvailable:true,
           isSelected:true,
         },
         {
+          name: 'MAModel',
           label:'Random',
           value:'random',
           isAvailable:true,
@@ -77,17 +80,43 @@ var CM = {
       tag: 'ints',
       action: 'setInts',
       selections: []
-    }
+    },
+    {
+      type: 'radio',
+      title: "Selection rule",
+      id: 'rule',
+      tag: 'rule',
+      action: 'setComps',
+      selections: [
+        {
+          name:'rule',
+          label:'Containing',
+          value:'every',
+          isAvailable:true,
+          isSelected:true,
+        },
+        {
+          name:'rule',
+          label:'Between',
+          value:'between',
+          isAvailable:true,
+          isSelected:false,
+        },
+      ],
+    },
   ]},
   params:{},
   getParams: () => {
-    return CM.params;
+    return CM.model.getCMParams();
   },
   setParams: (k,v) => {
     CM.params[k] = v;
+    CM.model.setCMParams(CM.params);
   },
+  //ξανγράψιμο να ενημερώνεται από το model τα control.
   setControls: () => {
-    let type = CM.model.getProject().type;
+    let project = CM.model.getProject();
+    let type = project.type;
     CM.controls = CM.defaultControls();
     CM.currentCM = CM.model.getProject().currentCM;
     if(! _.isEmpty(CM.currentCM)){
@@ -106,7 +135,7 @@ var CM = {
         c.isAvailable = true;
       }
     });
-    let intvs = _.map(CM.project.model.nodes, pn => {
+    let intvs = _.map(project.model.nodes, pn => {
       return {
         label: pn.name?pn.name:pn.id,
         value: pn.id,
@@ -142,7 +171,7 @@ var CM = {
     });
     $('#createMatrixButton').bind('click', () => {
       let cmb = $('#createMatrixButton');
-      console.log('Downloading Matrix');
+      console.log("Downloading Matrix");
       if(cmb.hasClass('disabled')==false){
         CM.checkInputs();
         cmb.addClass('disabled');
@@ -163,22 +192,22 @@ var CM = {
       }
     });
     $('a[action=checkAllInt]').bind('click', () => {
-      console.log('checking All');
+      console.log("checking All");
       let lkj = $('#chekcAllInt');
-      if(! ($('#checkAllInt').hasClass('disabled'))){
+      if(! ($('#checkAllInt').hasClass("disabled"))){
         $('#conMatControls .ints input').prop('checked',true);
       }
       CM.checkInputs();
     });
     $('a[action=uncheckAllInt]').bind('click', () => {
-      console.log('Unchecking All');
-      if(! ($('#uncheckAllInt').hasClass('disabled'))){
+      console.log("Unchecking All");
+      if(! ($('#uncheckAllInt').hasClass("disabled"))){
         $('#conMatControls .ints input').prop('checked',false);
       }
       CM.checkInputs();
     });
     $('a[action=cancelCM]').bind('click', () => {
-      console.log('Cancelling computing contribution matrix');
+      console.log("Cancelling computing contribution matrix");
       CM.model.cancelCM();
     });
   },
@@ -187,8 +216,8 @@ var CM = {
     $('#conMatControls select').prop('disabled',true);
     $('#conMatControls a.ints').attr('disabled',true);
     $('a[action=makeConMatrix]').attr('disabled',true);
-    $('#uncheckAllInt').addClass('disabled');
-    $('#checkAllInt').addClass('disabled');
+    $('#uncheckAllInt').addClass("disabled");
+    $('#checkAllInt').addClass("disabled");
     $('#clearCM').attr('disabled',false);
     $('#clearCM').removeClass('disabled');
   },
@@ -198,16 +227,18 @@ var CM = {
     $('#conMatControls a.ints').attr('disabled',false);
     $('a[action=makeConMatrix]').attr('disabled',false);
     $('#createMatrixButton').removeClass('disabled');
-    $('#uncheckAllInt').removeClass('disabled');
-    $('#checkAllInt').removeClass('disabled');
+    $('#uncheckAllInt').removeClass("disabled");
+    $('#checkAllInt').removeClass("disabled");
   },
-  updateCMLoader: (done) => {
-    $('#conMatProgressBar').text(done+'%');
-    $('#conMatProgressBar').attr('style','width:'+done+'%');
-    $('#conMatProgressBar').attr('aria-valuenow',done);
+  updateCMLoader: ([title,done]) => {
+    $("#conMatProgressBar").text(done);
+    $("#loaderTitle").html(title);
+    $("#conMatProgressBar").attr("aria-valuenow",done);
+    $("#conMatProgressBar").attr("style","width:"+done);
   },
   checkInputs: () => {
-      let mamodel =  $('input[type=radio][name=MAModel]:checked').val();
+      let mamodel = $('input[type=radio][name=MAModel]:checked').val();
+      let rule = $('input[type=radio][name=rule]:checked').val();
       if( typeof mamodel === 'undefined'){
         CM.disableCM();
       }else{
@@ -224,9 +255,17 @@ var CM = {
           return out;
         },[]);
         CM.setParams('intvs', intvs);
+        CM.setParams('rule', rule);
         if(intvs.length!==0){
-          $('#createMatrixButton').attr('disabled',false);
-          $('#createMatrixButton').removeClass('disabled');
+          if((intvs.length<2)){
+            if(rule==="between"){
+              $('#createMatrixButton').attr('disabled',true);
+              $('#createMatrixButton').addClass('disabled');
+            }
+          }else{
+            $('#createMatrixButton').attr('disabled',false);
+            $('#createMatrixButton').removeClass('disabled');
+          }
         }else{
           $('#createMatrixButton').attr('disabled',true);
           $('#createMatrixButton').addClass('disabled');
@@ -234,20 +273,20 @@ var CM = {
       }
   },
   getProject:() =>{
-    return CM.project;
+    return CM.model.getProject();
   },
-  fetchCM: (params) => {
+  fetchCM: () => {
     CM.showLoader();
     return new Promise ((resolve,reject) => {
-       resolve(CM.model.fetchContributionMatrix(params));
+       resolve(CM.model.fetchContributionMatrix());
     })
   },
   showLoader: () => {
     $('#cancelCM').show();
     $('#conMatloader').show();
-    $('#conMatProgressBar').attr('style','width:0');
-    $('#conMatProgressBar').text('0%');
-    $('#conMatProgressBar').attr('aria-valuenow',0);
+    $("#conMatProgressBar").attr("style","width:0");
+    $("#conMatProgressBar").text("0%");
+    $("#conMatProgressBar").attr("aria-valuenow",0);
   },
   removeLoader: (tbl) => {
     $('#cancelCM').hide();
@@ -262,10 +301,9 @@ var CM = {
   createMatrix: () => {
     let params = (CM.getParams)();
     CM.removeTable();
-    CM.fetchCM([params.MAModel,params.sm,params.tau,params.intvs])
-      .then(CM.shortIndirect)
-      .then(CM.makeDownloader)
+    CM.fetchCM()
       .then(CM.removeLoader)
+      .then(CM.makeDownloader)
       .then(CM.showTable)
       .then(hot => {
         bindTableResize(hot, 'cm-table-container');
@@ -275,60 +313,39 @@ var CM = {
         CM.checkInputs();
     });
   },
-  shortIndirect(res){
-    return new Promise((resolve,reject) => {
-      let directs = CM.project.model.directComparisons;
-      let indirects = CM.project.model.indirectComparisons;
-          console.log('directs',directs);
-          console.log('indirects',indirects);
-      let cm = res.matrix;
-      let studies = cm.percentageContr;
-      // let entireNet = cm.impD;
-      let rownames = cm.rowNames;
-      let cw = cm.colNames.length;
-      let rows = _.zip(rownames,studies);
-      let directRows = _.filter(rows, r=>{
-        return _.find(directs, d=>{
-          return r[0].replace(':',',')===d.id});
-      });
-      let indirectRows = _.filter(rows, r=>{
-        return _.find(indirects, d=>{
-          let aresame = (
-            ( (r[0].split(':')[0]===d.split(',')[0]) &&
-            (r[0].split(':')[1]===d.split(',')[1])) || 
-            ( (r[0].split(':')[1]===d.split(',')[0]) &&
-            (r[0].split(':')[0]===d.split(',')[1]))
-          );
-          return aresame});
-          // return r[0].replace(':',',')===d});
-      });
-      res.matrix.directRowNames = _.unzip(directRows)[0];
-      res.matrix.directStudies = _.unzip(directRows)[1];
-      res.matrix.indirectRowNames = _.unzip(indirectRows)[0];
-      res.matrix.indirectStudies = _.unzip(indirectRows)[1];
-      res.matrix.sortedStudies =
-      [Array(cw).fill()]
-      .concat(res.matrix.directStudies)
-      .concat([Array(cw).fill()])
-      .concat(res.matrix.indirectStudies)
-      .concat([Array(cw).fill()])
-      // .concat(cm.impD);
-      res.matrix.sortedRowNames =
-      ['Mixed estimates']
-      .concat(cm.directRowNames)
-      .concat(['Indirect estimates'])
-      .concat(cm.indirectRowNames)
-      // .concat(['','Entire network']);
-      resolve(res);
-    });
-  },
   makeDownloader: (res) => {
     return new Promise((resolve,reject) => {
-      let cm = res.matrix;
+      let cm = res;
+      let cw = cm.colNames.length;
+      cm.sortedStudies = [];
+      if(res.directStudies.length !== 0){
+        cm.sortedStudies = 
+        cm.sortedStudies.concat([Array(cw).fill()])
+        .concat(res.directStudies);
+      }
+      if(res.indirectStudies.length !== 0){
+        cm.sortedStudies = 
+        cm.sortedStudies.concat([Array(cw).fill()])
+        .concat(res.indirectStudies);
+      }
+      // .concat(cm.impD);
+      cm.sortedRowNames = [];
+      if(res.directStudies.length !== 0){
+        cm.sortedRowNames =
+        cm.sortedRowNames.concat(['Mixed estimates'])
+        .concat(cm.directRowNames);
+      }
+      if(res.indirectStudies.length !== 0){
+        cm.sortedRowNames =
+        cm.sortedRowNames
+        .concat(['Indirect estimates'])
+        .concat(cm.indirectRowNames);
+      }
+      // .concat(['','Entire network']);
       let studies = cm.sortedStudies;
       let cols = cm.colNames;
       let rows = cm.sortedRowNames;
-      let fcols = ['<->'].concat(cols);
+      let fcols = [cm.MAModel+" "+cm.sm].concat(cols);
       let fstudies = _.map(_.zip(rows, studies), r=>{
         return [r[0]].concat(r[1]);
       });
@@ -339,66 +356,47 @@ var CM = {
       });
       let csvContent = 'data:text/csv;charset=utf-8,'+csvTable;
       var encodedUri = encodeURI(csvContent);
-      let cmfilename = CM.project.title+'_'+_.pairs(_.omit(CM.params,['matrix','tau','isDefault'])).toString().replace(/\,/g,'_')+'.csv';
+      let cmfilename = (CM.getProject().title+'_'+CM.params.MAModel+"_"+CM.params.sm).replace(/\,/g,'_')+'.csv';
       $('#conMatControls').append('<a class= "btn btn-default" id="downloadAnchorElem">Download csv</a>');
       var dlAnchorElem = document.getElementById('downloadAnchorElem');
       dlAnchorElem.setAttribute('href', encodedUri);
       dlAnchorElem.setAttribute('download', cmfilename);
+      console.log("res",res);
       resolve(res);
     });
   },
   showTable: (res) => {
     return new Promise((resolve,reject) => {
       let params = CM.getParams();
-      let cm = res.matrix;
+      let cm = res;
       let cont = document.getElementById('cm-table');
       let cw = cm.colNames.length;
       //Filter rows
-      let directRowStudies = _.zip(cm.directRowNames,cm.directStudies);
-      let directFilteredRows = _.filter(directRowStudies, r => {
-        return _.find(params.intvs, intv => {
-          return _.find(r[0].split(':'), ri => {
-            return ri === intv;
-          })
-        })
-      });
-      let indirectRowStudies = _.zip(cm.indirectRowNames,cm.indirectStudies);
-      let indirectFilteredRows = _.filter(indirectRowStudies, r => {
-        return _.find(params.intvs, intv => {
-          return _.find(r[0].split(':'), ri => {
-            return ri === intv;
-          })
-        })
-      });
-      let directRowNames = _.unzip(directFilteredRows)[0];
-      let directStudies = _.unzip(directFilteredRows)[1];
-      let indirectRowNames = _.unzip(indirectFilteredRows)[0];
-      let indirectStudies = _.unzip(indirectFilteredRows)[1];
-      let numDirects = directFilteredRows.length;
-      let numIndirects = indirectFilteredRows.length;
-      let studies = [Array(cw).fill()]
-      .concat(directStudies);
-      let rowNames = ['Mixed <br> estimates']
-      .concat(directRowNames);
-      let mergeCells = [
-        {row: 0, col: 0, rowspan: 1, colspan: cw}
-      ]
+      let numDirects = cm.directStudies.length;
+      let numIndirects = cm.indirectStudies.length;
+      let studies = [];
+      let rowNames = [];
+      let mergeCells = [];
+      mergeCells = mergeCells.concat({row: 0, col: 0, rowspan: 1, colspan: cw});
+      if (numDirects !== 0){
+        studies = 
+        studies.concat([Array(cw).fill()])
+          .concat(cm.directStudies);
+        rowNames = rowNames.concat(['Mixed <br> estimates'])
+          .concat(cm.directRowNames);
+      }
       if(numIndirects!==0){
         studies = studies
-        .concat([Array(cw).fill()])
-        .concat(indirectStudies)
-        .concat([Array(cw).fill()]);
+          .concat([Array(cw).fill()])
+          .concat(cm.indirectStudies);
         rowNames = rowNames
-        .concat(['Indirect <br> estimates'])
-        .concat(indirectRowNames)
-        .concat('');
-        mergeCells.concat(
-          {row: numDirects+1, col: 0, rowspan: 1, colspan: cw}
-        )
+          .concat(['Indirect <br> estimates'])
+          .concat(cm.indirectRowNames);
+        mergeCells = numDirects===0?mergeCells:mergeCells.concat({row: numDirects+1, col: 0, rowspan: 1, colspan: cw});
       }
-      mergeCells.concat(
-        {row: numDirects+numIndirects+2, col: 0, rowspan: 1, colspan: cw}
-      );
+      // mergeCells.concat(
+      //   {row: numDirects+numIndirects+2, col: 0, rowspan: 1, colspan: cw}
+      // );
       // studies = studies.concat(cm.impD);
       // rowNames = rowNames.concat('Entire <br> network');
       let cols = cm.colNames;
@@ -489,13 +487,14 @@ var CM = {
   },
   init: (model) => {
     CM.model = model;
-    CM.project = CM.model.project;
+    let project = CM.model.getProject();
     CM.setControls();
     var tmpl = GRADE.templates.conmatrix(CM);
     $('#contMatContainer').html(tmpl);
     CM.bindActions();
-    if(! _.isEmpty(CM.project.currentCM)){
-      CM.params = CM.project.currentCM;
+    if(! _.isEmpty(project.currentCM)){
+      CM.params = clone(project.currentCM);
+      console.log("found default cm",CM.params);
       CM.createMatrix();
     }
   }

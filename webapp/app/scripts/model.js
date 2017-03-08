@@ -4,6 +4,7 @@ var FR = require('./readFile.js').FR;
 var Checker = require('./fileChecks.js').Checker;
 var Reshaper = require('./reshaper.js').Reshaper;
 var uniqId = require('./mixins.js').uniqId;
+var clone = require('./mixins.js').clone;
 var accumulate = require('./mixins.js').accumulate;
 var sumBy = require('./mixins.js').sumBy;
 var getCombinations = require('./combinations.js').getCombinations;
@@ -25,6 +26,7 @@ var Model = {
       type: pr.type,
       creationDate: date,
       accessDate: date,
+      CMparams: {},
       currentCM: {},
       contributionMatrices: [],
       state: {},
@@ -70,12 +72,37 @@ var Model = {
     localStorage.clear();
     localStorage.setItem('project', JSON.stringify(Model.getProject()));
   },
-  pushToContributionMatrix: (connma) => {
+  compareCM: (cm1, cm2) =>{
+    if ((cm1.MAModel === cm2.MAModel)&&(cm1.sm===cm2.sm)&&(cm1.tau===cm2.tau)){
+      return true;
+    }else{
+      return false;
+    }
+  },
+  findConMatInCache: (params) => {
     let prj = Model.getProject();
     let cms = prj.contributionMatrices;
-    cms.push(connma);
+    let foundCM = _.find(cms, cm => {
+        return Model.compareCM(cm,params);
+    });
+    if (typeof foundCM === 'undefined'){
+      return false;
+    }else{
+      return foundCM;
+    }
+  },
+  updateContributionCache: (inconnma) => {
+    let connma = clone(inconnma);
+    let prj = Model.getProject();
+    let cms = prj.contributionMatrices;
+    let foundCM = Model.findConMatInCache(connma);
+    if ( foundCM !== false ){
+      console.log("removing",connma," from cache");
+      Model.getProject().contributionMatrices = _.reject(cms, cm => {return Model.compareCM(cm,connma);})
+    }
+    console.log("pushing",connma," to cache");
+    Model.getProject().contributionMatrices.push(connma);
     Model.makeCurrentCM(connma);
-    // console.log('pushing to contributionMatrices',cms,'conma',connma);
   },
   clearCurrentCM: () =>{
     Model.getProject().currentCM = {};
@@ -84,11 +111,11 @@ var Model = {
   },
   makeCurrentCM: (cm) =>{
     let cms = Model.getProject().contributionMatrices;
+    console.log('making current cms', cms);
     _.map(cms, c => {
-      let fit = _.isMatch(c,_.omit(cm,['isCurrent','intvs']));
-      if(fit){
+      if(Model.compareCM(c,cm)){
         c.isDefault = true;
-        c.intvs = cm.intvs;
+        c = cm;
         Model.getProject().currentCM = c;
       }else{
         c.isDefault = false;
@@ -97,117 +124,201 @@ var Model = {
     Model.saveProject();
     View.updateConChart();
   },
-  fetchContributionMatrix: ([MAModel,sm,tau,intvs]) => {
+  setCMParams: (params) => {
+    let project = Model.getProject();
+    project.CMparams = params;
+    console.log('cms after parameter change',project.contributionMatrices);
+  },
+  getCMParams: () => {
+    let project = Model.getProject();
+    return project.CMparams;
+  },
+  fetchContributionMatrix: () => {
     return new Promise((resolve, reject) => {
-      let project = Model.getProject();
+    // ocpu.seturl('//localhost:8004/ocpu/library/contribution/R');
+      var project = Model.getProject();
       project.cancelCM = false;
-      console.log('intervensions',intvs);
-      let cms = project.contributionMatrices;
-      let result = {};
-      let foundCM = {};
-      let params = {
-        MAModel: MAModel,
-        sm: sm,
-        tau: tau,
-        intvs: intvs
-      }
-      // console.log('cmss',cms,'params',params);
+      var cms = project.contributionMatrices;
+      var result = {};
+      var foundCM = {};
+      // Important params being a variable not a link to params
+      let params = (Model.getCMParams)();
       //check if the matrix is in the model;
       if(! _.isEmpty(cms)){
-
-        // console.log('check to find matrix in cms',cms,'params',params);
-        foundCM = _.find(cms, cm => {
-           return _.isMatch(cm, _.omit(params, 'intvs'));
-          });
+        foundCM = Model.findConMatInCache(params);
       }
-      if(! _.isEmpty(foundCM)){
-        let newCM = foundCM;
-        newCM.intvs = intvs;
-        // console.log('foundcM', newCM);
-        Model.makeCurrentCM(newCM);
-        resolve(newCM);
+      if(foundCM !== false){
+        console.log("found params",params,"foundcm",foundCM,"in cms",cms);
+        params.savedComparisons = clone(foundCM.savedComparisons);
+        params.hatmatrix = foundCM.hatmatrix;
       }else{
-        // console.log('CM not found in model');
-        let rtype = '';
-        switch(project.type){
-          case 'binary':
-          rtype = 'netwide_binary';
-          break;
-          case 'continuous':
-          rtype = 'netwide_continuous';
-          break;
-          case 'iv':
-          rtype = 'iv';
-          break;
+        params.hatmatrix = {};
+        params.savedComparisons = {};
+      }
+      // console.log('CM not found in model');
+      let rtype = '';
+      switch(project.type){
+        case 'binary':
+        rtype = 'netwide_binary';
+        break;
+        case 'continuous':
+        rtype = 'netwide_continuous';
+        break;
+        case 'iv':
+        rtype = 'iv';
+        break;
+      }
+      let filterRows = (rows,intvs,rule) =>{
+        let res = [];
+        switch(rule){
+          case "every":
+            res = _.filter(rows, r =>{
+              let [t1,t2] = r.split(":");
+              return (_.contains(intvs,t1)||_.contains(intvs,t2));
+            });
+            break;
+          case "between":
+            res = _.filter(rows, r =>{
+              let [t1,t2] = r.split(":");
+              return (_.contains(intvs,t1)&&_.contains(intvs,t2));
+            });
+            break;
         }
-        //comment to deploy just for dev
-        // ocpu.seturl('//localhost:8004/ocpu/library/contribution/R');
+        return res;
+      };
+      //comment to deploy just for dev
+
+      let fetchRows = (hatmatrix, prams) => {
+          return new Promise((rslv, rjc) => {
+          // var prams = (Model.getCMParams();
+          console.log('prams',prams);
+          let comparisons = filterRows(hatmatrix.rowNames,prams.intvs,prams.rule);
+          console.log('prams',prams,'comparisons',comparisons);
+          let sequencePromises = (rows, savedComparisons) => {
+            return new Promise((reslve, rjct) => {
+              if (Model.getProject().cancelCM !== true) {
+                if (rows.length !== 0){
+                  let row = _.first(rows);
+                  let rest = _.rest(rows);
+                  let done = Math.round(100 * (1 - (rest.length / comparisons.length)));
+                  View.updateCMLoader([row,done.toString()+"%"]);
+                  let foundComp = _.find(savedComparisons, sc => {
+                    return (sc.rowname === row);
+                  });
+                  if(typeof foundComp != 'undefined'){
+                    console.log("found row ",row," in saved");
+                    let savedRow = {names: hatmatrix.colNames, row:foundComp.rowname, contribution:foundComp.contributions};
+                    sequencePromises(rest,savedComparisons).then( nextrow => {
+                      reslve(_.flatten([_.flatten(nextrow)].concat([savedRow])));
+                    });
+                  }else{
+                    let gmr = ocpu.call('getComparisonContribution',{
+                      c1: hatmatrix,
+                      comparison: row
+                    }, (sessionr) => {
+                      sessionr.getObject( (rowback) => {
+                        console.log("row ",row," came back ",rowback);
+                        rowback.row = row;
+                        sequencePromises(rest,savedComparisons).then( nextrow => {
+                          reslve(_.flatten([_.flatten(nextrow)].concat(rowback)));
+                        });
+                      });
+                    });
+                    gmr.fail( () => {
+                      reject('R returned an error: ' + gmr.responseText);
+                    });
+                  }
+                }else{
+                  reslve([]);
+                }
+              }else{
+                reject("Computation canceled");
+              }
+            });
+          };
+         return sequencePromises(comparisons, prams.savedComparisons).then(output => {
+            console.log('Server response', output);
+            let connma = prams;
+            console.log("prams",connma);
+            connma.savedComparisons = prams.savedComparisons;
+            connma.colNames = output[0].names;
+            let rows = _.reduceRight(output, (mem ,row) => {
+              return mem.concat(
+                { rowname: row.row, 
+                  contributions: row.contribution
+                });
+            },[]);
+            let updateSavedComparisons = (saved, rows) => {
+              let uniqSaved = _.reduce(saved, (memo, comp) => {
+                let out = memo;
+                if(typeof _.find(rows,r=>{return r.rowname === comp.rowname;}) === 'undefined'){
+                  return memo.concat(comp);
+                }
+                return memo;
+              },[]);
+              return _.union(uniqSaved, rows);
+            }
+            console.log("saved comparisons before", connma.savedComparisons, " rows ", rows);
+            connma.savedComparisons = updateSavedComparisons(connma.savedComparisons,rows);
+            console.log("saved comparisons after", connma.savedComparisons, " rows ", rows);
+            connma.selectedComparisons = _.map(rows, row => {return row.rowname});
+            // console.log('the ocpu result',connma,'pushing to project');
+            let result = Model.formatMatrix(connma);
+            console.log('RESULTS FROM SERVER',result);
+            Model.updateContributionCache(result);
+            resolve(result);
+         });
+        });
+      };
+      if(_.isEmpty(params.hatmatrix)){
+        View.updateCMLoader(["Hat Matrix",'']);
         let hmc = ocpu.call('getHatMatrix',{
             indata: project.model.wide,
             type: rtype,
             model: params.MAModel,
             sm: params.sm,
           }, (sessionh) => {
-          sessionh.getObject( (hatmatrix) => {
-            let comparisons = hatmatrix.rowNames;
-            let sequencePromises = (rows) => {
-              return new Promise((resolve, rjct) => {
-                if (Model.getProject().cancelCM !== true) {
-                  if (rows.length !== 0){
-                    let row = _.first(rows);
-                    let rest = _.rest(rows);
-                    let done = Math.round(100 * (1 - (rest.length / comparisons.length)));
-                    View.updateCMLoader(done);
-                      let gmr = ocpu.call('getComparisonContribution',{
-                        c1: hatmatrix,
-                        comparison: row
-                      }, (sessionr) => {
-                        sessionr.getObject( (rowback) => {
-                          console.log('row ',row,' came back ',rowback);
-                          rowback.row = row;
-                          sequencePromises(rest).then( nextrow => {
-                            resolve(_.flatten([_.flatten(nextrow)].concat(rowback)));
-                          });
-                        });
-                      });
-                      gmr.fail( () => {
-                        reject('R returned an error: ' + gmr.responseText);
-                      });
-                  }else{
-                    resolve([]);
-                  }
-                }else{
-                  reject('Computation canceled');
-                }
-              });
-            };
-           return sequencePromises(comparisons).then(output => {
-              console.log('Server response', output);
-              let connma = params;
-              connma.matrix = {};
-              connma.matrix.colNames = output[0].names;
-              connma.matrix.percentageContr = [];
-              let rownames = _.reduceRight(output, (mem ,row) => {
-                return mem.concat(row.row);
-              },[]);
-              connma.matrix.rowNames = rownames;
-              let contributionMatrix = _.reduceRight(output, (mem ,row) => {
-                return mem.concat([row.contribution]);
-              },[]);
-              connma.matrix.percentageContr = contributionMatrix;
-              // connma.matrix.impD = [output[0].contribution];
-              // console.log('the ocpu result',connma,'pushing to project');
-              console.log('RESULTS FROM SERVER',connma.matrix);
-              Model.pushToContributionMatrix(connma);
-              resolve(connma);
-           });
-         });
+        sessionh.getObject( (hatmatrix) => {
+          params.hatmatrix = hatmatrix;
+          console.log("saving hatmatrix", params.hatmatrix);
+          fetchRows(hatmatrix,params);
+        })
        });
        hmc.fail( () => {
          reject('R returned an error: ' + hmc.responseText);
-       });
+      });
+      }else{
+        console.log("found hatmatrix", params.hatmatrix);
+        fetchRows(params.hatmatrix,params);
      }
    })
+  },
+  formatMatrix(res){
+    let directs = Model.project.model.directComparisons;
+    let indirects = Model.project.model.indirectComparisons;
+    let cm = res;
+    let cw = cm.colNames.length;
+    let rows = _.filter(cm.savedComparisons, sr => {return _.contains(cm.selectedComparisons, sr.rowname)});
+    let directRows = _.filter(rows, r=>{
+      return _.find(directs, d=>{
+        return r.rowname.replace(':',',')===d.id});
+    });
+    let indirectRows = _.filter(rows, r=>{
+      return _.find(indirects, d=>{
+        let aresame = (
+          ( (r.rowname.split(':')[0]===d.split(',')[0]) &&
+          (r.rowname.split(':')[1]===d.split(',')[1])) || 
+          ( (r.rowname.split(':')[1]===d.split(',')[0]) &&
+          (r.rowname.split(':')[0]===d.split(',')[1]))
+        );
+        return aresame});
+        // return r[0].replace(':',',')===d});
+    });
+    res.directRowNames = _.map(directRows,row=>{return row.rowname});
+    res.directStudies = _.map(directRows,row=>{return row.contributions});
+    res.indirectRowNames = _.map(indirectRows,row=>{return row.rowname});
+    res.indirectStudies = _.map(indirectRows,row=>{return row.contributions});
+    return (res);
   },
   cancelCM : () => {
     let project = Model.getProject();
