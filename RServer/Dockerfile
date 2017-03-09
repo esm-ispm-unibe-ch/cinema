@@ -25,15 +25,15 @@ ADD toRoot /root
 
 #Install contribution package in image
 RUN chmod +x /root/installContribution -R 
-RUN sh -c 'Rscript /root/installContribution/rgrade.batch'
 
+RUN sh -c 'rm -rf /root/cinema'
 RUN sh -c 'git clone https://github.com/tpapak/cinema.git /root/cinema'
-
 RUN sh -c 'cd /root/cinema/webapp/ && npm install gulp -g && npm install bower -g'
 RUN sh -c 'cd /root/cinema/webapp/ && npm install'
 RUN sh -c 'cd /root/cinema/webapp/ && bower install --allow-root'
-# RUN sh -c 'cd /root/cinema/webapp/ && gulp'
-# RUN sh -c 'rm -rf /usr/local/lib/R/site-library/contribution/www'
-# RUN sh -c 'mv /root/cinema/webapp/dist /usr/local/lib/R/site-library/contribution/www'
+RUN sh -c 'cd /root/cinema/webapp/ && gulp'
+RUN sh -c 'rm -rf /usr/local/lib/R/site-library/contribution/www'
+RUN sh -c 'mv /root/cinema/webapp/dist /usr/local/lib/R/site-library/contribution/www'
+RUN sh -c 'Rscript /root/installContribution/rgrade.batch'
 #restarting opencpu service
 RUN sh -c 'service opencpu restart'

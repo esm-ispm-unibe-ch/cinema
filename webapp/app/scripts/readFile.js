@@ -1,4 +1,5 @@
-var Converter = require('csvtojson').Converter;
+// var Converter = require('csvtojson').Converter;
+const Converter = require('csvtojson');
 
 var FR = {
   reader: {},
@@ -33,10 +34,10 @@ var FR = {
   },
   convertCSVtoJSON: (stri) =>{
     return new Promise( (res, rej) => {
-      var converter = new Converter({delimiter:[',',';'],trim:true,checkColumn:true});
-      converter.fromString(stri);
-      converter.on('end_parsed', (jsonData) => {
-        //trimming keys and values!!
+      Converter({delimiter:[',',';'],trim:true,checkColumn:true,checkType:true})
+      .fromString(stri)
+      .on('end_parsed', (jsonData) => {
+//        trimming keys and values!!
         let newjson = _.reduce(jsonData,(memo, json)=> {
           let keys = Object.keys(json);
           let nkv = _.map(keys,k=>{
@@ -47,8 +48,8 @@ var FR = {
           return memo.concat([nrow]);
         },[]);
         res(newjson);
-      });
-      converter.on('error',function(errMsg,errData){
+      })
+      .on('error',function(errMsg,errData){
         rej(errMsg+errData);
       });
     });
