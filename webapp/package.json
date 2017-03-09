@@ -10,6 +10,7 @@
     "babelify": "^7.3.0",
     "browser-sync": "^2.2.1",
     "browserify": "^13.1.1",
+    "csvtojson": "^1.1.4",
     "del": "^2.2.0",
     "gulp": "^3.9.0",
     "gulp-autoprefixer": "^3.0.1",
