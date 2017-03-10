@@ -133,6 +133,7 @@ var Model = {
   fetchContributionMatrix: () => {
     return new Promise((resolve, reject) => {
     // ocpu.seturl('//localhost:8004/ocpu/library/contribution/R');
+    ocpu.seturl('http://ec2-35-156-97-18.eu-central-1.compute.amazonaws.com:8004/ocpu/library/contribution/R');
       var project = Model.getProject();
       project.cancelCM = false;
       var cms = project.contributionMatrices;

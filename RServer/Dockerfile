@@ -1,15 +1,15 @@
 # Use builds from launchpad
 # FROM opencpu/base:latest
-FROM tosku/evnma:0.2
+FROM tosku/cinema:0.1.1
 
-RUN apt-get update
+# RUN apt-get update
 
 # RUN  apt-get install -y vim
 
-RUN  apt-get install -y git
+# RUN  apt-get install -y git
 
-RUN sh -c 'curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -'
-RUN sh -c 'apt-get install -y nodejs'
+# RUN sh -c 'curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -'
+# RUN sh -c 'apt-get install -y nodejs'
 #copying contribution package and installation scripts
 ADD toRoot /root
 
@@ -24,11 +24,11 @@ ADD toRoot /root
 # RUN apt-get install -y r-cran-rgl
 
 #Install contribution package in image
-RUN chmod +x /root/installContribution -R 
+# RUN chmod +x /root/installContribution -R 
 
-RUN sh -c 'rm -rf /root/cinema'
-RUN sh -c 'git clone https://github.com/tpapak/cinema.git /root/cinema'
-RUN sh -c 'cd /root/cinema/webapp/ && npm install gulp -g && npm install bower -g'
+# RUN sh -c 'rm -rf /root/cinema'
+RUN sh -c 'cd /root/cinema/webapp/ && git pull'
+# RUN sh -c 'cd /root/cinema/webapp/ && npm install gulp -g && npm install bower -g'
 RUN sh -c 'cd /root/cinema/webapp/ && npm install'
 RUN sh -c 'cd /root/cinema/webapp/ && bower install --allow-root'
 RUN sh -c 'cd /root/cinema/webapp/ && gulp'
