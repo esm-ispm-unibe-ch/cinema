@@ -16,6 +16,11 @@ var Tools = {
     Evaluator.init(model);
     ConMat.init(model);
     ConChart.init(model);
+  },
+  bindAction: () => {
+    NP.bindActions();
+    CM.bindActions();
+    CC.bindActions();
   }
 }
 

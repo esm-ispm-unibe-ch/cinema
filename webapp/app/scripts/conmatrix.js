@@ -113,7 +113,7 @@ var CM = {
     CM.params[k] = v;
     CM.model.setCMParams(CM.params);
   },
-  //ξανγράψιμο να ενημερώνεται από το model τα control.
+  //ξανγράψιμο να ενημερώνεται από το model τα control. αυτό κάνω τώρα
   setControls: () => {
     let project = CM.model.getProject();
     let type = project.type;
@@ -157,40 +157,58 @@ var CM = {
     intselect.selections = intvs;
   },
   bindActions: () => {
-    $('input[type=radio][name=MAModel]').bind('change', () =>{
-      let val = $('input[type=radio][name=MAModel]:checked').val();
-      if(val==='fixed'){
-        $('input[name="tau"]').attr('disabled', true);
-      }else{
-        $('input[name="tau"]').attr('disabled', false);
-      }
-    });
+    // $('input[type=radio][name=MAModel]').bind('change', () =>{
+    //   let val = $('input[type=radio][name=MAModel]:checked').val();
+    //   if(val==='fixed'){
+    //     $('input[name="tau"]').attr('disabled', true);
+    //   }else{
+    //     $('input[name="tau"]').attr('disabled', false);
+    //   }
+    // });
     // $('#popoverCM').popover({trigger:'hover',container:'body'});
-    $('#conMatControls').bind('change', () => {
-      CM.checkInputs();
+    $(document).on('change','#conMatControls', {} ,
+        e=>{
+          CM.checkInputs();
     });
-    $('#createMatrixButton').bind('click', () => {
-      let cmb = $('#createMatrixButton');
-      // console.log("Downloading Matrix");
-      if(cmb.hasClass('disabled')==false){
-        CM.checkInputs();
-        cmb.addClass('disabled');
-        CM.createMatrix();
-        $('#conMatControls input').prop('disabled',true);
-        $('#conMatControls select').prop('disabled',true);
-        $('#conMatControls a.ints').attr('disabled',true);
-        $('#conMatControls a.ints').addClass('disabled');
-      }
+    // $('#conMatControls').bind('change', () => {
+      // CM.checkInputs();
+    // });
+    $(document).on('click','#createMatrixButton', {} ,
+        e=>{
+          let cmb = $(e.currentTarget);
+          CM.checkInputs();
+          CM.createMatrix();
     });
-    $('a[action=clearCM]').bind('click', () => {
-      let cmb = $('a[action=clearCM]');
-      if(cmb.hasClass('disabled')==false){
-        // console.log('clearing table');
+    // $('#createMatrixButton').bind('click', () => {
+    //   let cmb = $('#createMatrixButton');
+    //   // console.log("Downloading Matrix");
+    //   if(cmb.hasClass('disabled')==false){
+    //     CM.checkInputs();
+    //     cmb.addClass('disabled');
+    //     CM.createMatrix();
+    //     $('#conMatControls input').prop('disabled',true);
+    //     $('#conMatControls select').prop('disabled',true);
+    //     $('#conMatControls a.ints').attr('disabled',true);
+    //     $('#conMatControls a.ints').addClass('disabled');
+    //   }
+    // });
+    $(document).on('click','a[action=clearCM]', {} ,
+      e=>{
+        let cmb = $(e.currentTarget);
         CM.removeTable();
         cmb.addClass('disabled');
         CM.checkInputs();
       }
-    });
+    );
+    // $('a[action=clearCM]').bind('click', () => {
+    //   let cmb = $('a[action=clearCM]');
+    //   if(cmb.hasClass('disabled')==false){
+    //     // console.log('clearing table');
+    //     CM.removeTable();
+    //     cmb.addClass('disabled');
+    //     CM.checkInputs();
+    //   }
+    // });
     $('a[action=checkAllInt]').bind('click', () => {
       // console.log("checking All");
       let lkj = $('#chekcAllInt');
@@ -365,139 +383,168 @@ var CM = {
       resolve(res);
     });
   },
-  showTable: (res) => {
-    return new Promise((resolve,reject) => {
-      let params = CM.getParams();
-      let cm = res;
-      let cont = document.getElementById('cm-table');
-      let cw = cm.colNames.length;
-      //Filter rows
-      let numDirects = cm.directStudies.length;
-      let numIndirects = cm.indirectStudies.length;
-      let studies = [];
-      let rowNames = [];
-      let mergeCells = [];
-      mergeCells = mergeCells.concat({row: 0, col: 0, rowspan: 1, colspan: cw});
-      if (numDirects !== 0){
-        studies = 
-        studies.concat([Array(cw).fill()])
-          .concat(cm.directStudies);
-        rowNames = rowNames.concat(['Mixed <br> estimates'])
-          .concat(cm.directRowNames);
+  update: {
+    updateState: () => {
+      if ( typeof CM.model.getState().project.CM === 'undefined'){
+        CM.model.getState().project.CM = {
+          CMparams: {},
+          currentCM: {},
+          contributionMatrices: [],
+        }
       }
-      if(numIndirects!==0){
-        studies = studies
-          .concat([Array(cw).fill()])
-          .concat(cm.indirectStudies);
-        rowNames = rowNames
-          .concat(['Indirect <br> estimates'])
-          .concat(cm.indirectRowNames);
-        mergeCells = numDirects===0?mergeCells:mergeCells.concat({row: numDirects+1, col: 0, rowspan: 1, colspan: cw});
-      }
-      // mergeCells.concat(
-      //   {row: numDirects+numIndirects+2, col: 0, rowspan: 1, colspan: cw}
-      // );
-      // studies = studies.concat(cm.impD);
-      // rowNames = rowNames.concat('Entire <br> network');
-      let cols = cm.colNames;
-      var setBackground = (percentage) => {
-        return `
-          linear-gradient(
-          to right,
-          rgba(238,238,238,0.83) `+percentage+`%,
-          white `+percentage+`%
-        )`;
-      };
-      function makeBars(instance, td, row, col, prop, value, cellProperties) { Handsontable.renderers.TextRenderer.apply(this, arguments);
-        td.style.background = setBackground(value);
-      };
-      let lastRow = rowNames.length;
-      var rendered = false;
-      //show only 1 decimal in matrix
-      let hotStudies = studies.map( r => {
-        return r.map( c => {
-          let out = '';
-          if (isNaN(c) || c===100){
-            out = c;
-          }else{
-            if(c<0.1){
-              if(c<0.05){
-                out = 0.0;
-              }else{
-                out = 0.1;
-              }
+    },
+    saveState: () => {
+      CM.model.saveState();
+      CM.update.updateChildren();
+    },
+    updateChildren: () => {
+      _.map(CM.children, c => {c.update.updateState()});
+    }
+  },
+  view: {
+    register: (model) => {
+      CM.model = model;
+      CM.bindActions();
+    },
+    showTable: (res) => {
+      return new Promise((resolve,reject) => {
+        let params = CM.getParams();
+        let cm = res;
+        let cont = document.getElementById('cm-table');
+        let cw = cm.colNames.length;
+        //Filter rows
+        let numDirects = cm.directStudies.length;
+        let numIndirects = cm.indirectStudies.length;
+        let studies = [];
+        let rowNames = [];
+        let mergeCells = [];
+        mergeCells = mergeCells.concat({row: 0, col: 0, rowspan: 1, colspan: cw});
+        if (numDirects !== 0){
+          studies = 
+          studies.concat([Array(cw).fill()])
+            .concat(cm.directStudies);
+          rowNames = rowNames.concat(['Mixed <br> estimates'])
+            .concat(cm.directRowNames);
+        }
+        if(numIndirects!==0){
+          studies = studies
+            .concat([Array(cw).fill()])
+            .concat(cm.indirectStudies);
+          rowNames = rowNames
+            .concat(['Indirect <br> estimates'])
+            .concat(cm.indirectRowNames);
+          mergeCells = numDirects===0?mergeCells:mergeCells.concat({row: numDirects+1, col: 0, rowspan: 1, colspan: cw});
+        }
+        // mergeCells.concat(
+        //   {row: numDirects+numIndirects+2, col: 0, rowspan: 1, colspan: cw}
+        // );
+        // studies = studies.concat(cm.impD);
+        // rowNames = rowNames.concat('Entire <br> network');
+        let cols = cm.colNames;
+        var setBackground = (percentage) => {
+          return `
+            linear-gradient(
+            to right,
+            rgba(238,238,238,0.83) `+percentage+`%,
+            white `+percentage+`%
+          )`;
+        };
+        function makeBars(instance, td, row, col, prop, value, cellProperties) { Handsontable.renderers.TextRenderer.apply(this, arguments);
+          td.style.background = setBackground(value);
+        };
+        let lastRow = rowNames.length;
+        var rendered = false;
+        //show only 1 decimal in matrix
+        let hotStudies = studies.map( r => {
+          return r.map( c => {
+            let out = '';
+            if (isNaN(c) || c===100){
+              out = c;
             }else{
-              if(c<1){
-                out = c.toPrecision(1);
-              }else{
-                if(c<10){
-                  out = c.toPrecision(2);
+              if(c<0.1){
+                if(c<0.05){
+                  out = 0.0;
                 }else{
-                  out = c.toPrecision(3);
+                  out = 0.1;
+                }
+              }else{
+                if(c<1){
+                  out = c.toPrecision(1);
+                }else{
+                  if(c<10){
+                    out = c.toPrecision(2);
+                  }else{
+                    out = c.toPrecision(3);
+                  }
                 }
               }
             }
+            return out;
+          })
+        });
+        var hot = new Handsontable(cont, {
+          data: hotStudies,
+          renderAllRows:true,
+          renderAllColumns:true,
+          rowHeights: 23,
+          columnWidth: 200,
+          rowHeaders: rowNames,
+          colHeaders: true,
+          colHeaders: cols,
+          mergeCells: mergeCells,
+          manualColumnResize: true,
+          strechH: 'all',
+          rendered: false,
+          width: $('#cm-table-container').width(),
+          height: $('#cm-table-container').height(),
+          afterRender: () => {
+            if(rendered===false){
+              CM.disableCM();
+              rendered=true;
+              // $(`.ht_master tr:nth-child('+numDirects+') > td`).style('horizontal-align','middle');
+            }
+          },
+        });
+        hot.updateSettings({
+          cells: function (row, col, prop) {
+            var cellProperties = {};
+            cellProperties.renderer = makeBars;
+            cellProperties.readOnly = true;
+            // if(row===lastRow-1){
+              // cellProperties.className = 'htMiddle h5';
+            // }
+            return cellProperties;
           }
-          return out;
-        })
+        });
+        resolve(hot);
       });
-      var hot = new Handsontable(cont, {
-        data: hotStudies,
-        renderAllRows:true,
-        renderAllColumns:true,
-        rowHeights: 23,
-        columnWidth: 200,
-        rowHeaders: rowNames,
-        colHeaders: true,
-        colHeaders: cols,
-        mergeCells: mergeCells,
-                manualColumnResize: true,
-        strechH: 'all',
-        rendered: false,
-        width: $('#cm-table-container').width(),
-        height: $('#cm-table-container').height(),
-        afterRender: () => {
-          if(rendered===false){
-            // focusTo('cm-table');
-            CM.disableCM();
-            rendered=true;
-            // $(`.ht_master tr:nth-child('+numDirects+') > td`).style('horizontal-align','middle');
-          }
-        },
-      });
-      hot.updateSettings({
-        cells: function (row, col, prop) {
-          var cellProperties = {};
-          cellProperties.renderer = makeBars;
-          cellProperties.readOnly = true;
-          // if(row===lastRow-1){
-            // cellProperties.className = 'htMiddle h5';
-          // }
-          return cellProperties;
-        }
-      });
-      resolve(hot);
-    });
+    },
+    removeTable: () => {
+      $('#cm-table').empty();
+      $('#clearCM').attr('disabled',true);
+      $('#downloadAnchorElem').remove();
+      CM.model.clearCurrentCM();
+    },
+    isReady: () => {
+      return (! _.isUndefined(CM.model.getState().project.CM));
+    },
   },
-  removeTable: () => {
-    $('#cm-table').empty();
-    $('#clearCM').attr('disabled',true);
-    $('#downloadAnchorElem').remove();
-    CM.model.clearCurrentCM();
-  },
-  init: (model) => {
-    CM.model = model;
-    let project = CM.model.getProject();
-    CM.setControls();
-    var tmpl = GRADE.templates.conmatrix(CM);
-    $('#contMatContainer').html(tmpl);
-    CM.bindActions();
-    if(! _.isEmpty(project.currentCM)){
-      CM.params = clone(project.currentCM);
-      // console.log("found default cm",CM.params);
-      CM.createMatrix();
+  render: (model) => {
+    if(CM.view.isReady()){
+      var tmpl = GRADE.templates.conmatrix(CM);
+      $('#contMatContainer').html(tmpl);
     }
-  }
+  },
+  // init: (model) => {
+  //   // _.mapObject(NP.actions, (f,n) => {f();});
+  //   // if(! _.isEmpty(project.currentCM)){
+  //   //   CM.params = clone(project.currentCM);
+  //   //   // console.log("found default cm",CM.params);
+  //   //   CM.createMatrix();
+  //   // }
+  // }
+  children:[
+  ]
 }
 
 module.exports = () => {

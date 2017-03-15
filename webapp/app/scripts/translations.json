@@ -1,0 +1,88 @@
+{
+  "EN":{
+    "headerTitle": "Confidence In Network Meta Analysis - CINeMA- DEVELOPMENT VERSION",
+    "headerTitleShort": "CINeMA",
+    "uploaderShort":{
+      "title": "Upload project",
+      "info": "You can upload a project as a csv and save it in your saved collection bellow."
+    },
+    "uploaderLong":{
+      "title": "Instructions for uploading a project",
+      "info": "Only .csv files are supported <br> The column names should follow the following naming convension <br> For a Long formated file the .... lskf"
+    },
+    "wrongFileFormat": {
+      "title":"Unable to Read File",
+      "error":"Wrong file format or missing values."
+    },
+    "ocpuError": {
+      "title":"Unable to process data",
+      "error":"NMA function execution error."
+    },
+    "routes" : {
+      "welcome":{
+        "label": "CINeMA",
+        "title": "Welcome",
+        "info": "Welcome to our App, CINeMA app helps you evaluate NMAs"
+      },
+      "project":{
+        "label": "My Projects",
+        "title": "My Projects",
+        "info": "Browse through your projects or upload a new one!"
+      },
+      "doc":{
+        "label": "Documentation",
+        "title": "Documentation",
+        "info": "Howtos, FAQs and Demo material."
+      },
+      "general": {
+        "label": "General",
+        "title": "General Info",
+        "info": "NetPlot and Contribution page"
+      },
+      "rob": {
+        "label": "Study Limitations",
+        "title": "Study Limitations",
+        "info": "Study Limitations evaluation"
+      },
+      "imprecision": {
+        "label": "Imprecision",
+        "title": "Imprecision",
+        "info": "Imprecision evaluation"
+      },
+      "inconsistency": {
+        "label": "Inconsistency",
+        "title": "Inconsistency",
+        "info": "Inconsistency evaluation"
+      },
+      "indirectness": {
+        "label": "Indirectness",
+        "title": "Indirectness",
+        "info": "Indirectness evaluation"
+      },
+      "pubBias": {
+        "label": "Publication Bias",
+        "title": "Publication Bias",
+        "info": "Publication Bias evaluation page"
+      },
+      "report": {
+        "label": "Report",
+        "title": "Report",
+        "info": "Report table"
+      },
+      "about": {
+        "label": "About",
+        "title": "The CINeMA Visualization app",
+        "info": "PLOS paper Abstract"
+      }
+    },
+    "uploadProject": "Upload Project",
+    "clearCurrentProject": "Clear Project",
+    "longFileUpload": {
+      "title": "File upload success",
+      "success": "Fill in a project name and click proceed to the tools."
+    },
+   "docPage": "Documentation goes here...",
+   "aboutPage": "Systematic reviews that collate data about the relative effects of multiple interventions via network meta-analysis are highly informative for decision-making purposes. A network meta-analysis provides two types of findings for a specific outcome: the relative treatment effect for all pairwise comparisons, and a ranking of the treatments. It is important to consider the confidence with which these two types of results can enable clinicians, policy makers and patients to make informed decisions. We propose an approach to determining confidence in the output of a network meta-analysis. Our proposed approach is based on methodology developed by the Grading of Recommendations Assessment, Development and Evaluation (GRADE) Working Group for pairwise meta-analyses. The suggested framework for evaluating a network meta-analysis acknowledges (i) the key role of indirect comparisons (ii) the contributions of each piece of direct evidence to the network meta-analysis estimates of effect size; (iii) the importance of the transitivity assumption to the validity of network meta-analysis; and (iv) the possibility of disagreement between direct evidence and indirect evidence. We apply our proposed strategy to a systematic review comparing topical antibiotics without steroids for chronically discharging ears with underlying eardrum perforations. The proposed framework can be used to determine confidence in the results from a network meta-analysis. Judgements about evidence from a network meta-analysis can be different from those made about evidence from pairwise meta-analyses.",
+   "errorPage": "<blockquote class='blockquote-danger'><p>Ooops Looks like something went wrong! <br> Let's try another link.</p><div><i class='glyphicon glyphicon-alert' aria-hidden='true'></i><p class='' id='errormsg'></p></div></blockquote>"
+        }
+}

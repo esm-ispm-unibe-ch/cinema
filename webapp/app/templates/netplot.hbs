@@ -1,19 +1,15 @@
-<a id="cyTitle" data-toggle="collapse" href="#NetPlot" class='well btn tool-title col-xs-12'>
-  <h4>Network Plot</h4>
-</a>
+<!-- <a id="cyTitle" data-toggle="collapse" href="#NetPlot" class='well btn tool-title col-xs-12'> -->
+  <!-- <h4>Network Plot</h4> -->
+<!-- </a> -->
 
 <div id="NetPlot" class='collapse in'>
-  <div id="netplotControls" class='col-xs-12'>
-    <div class='well pull-right col-xs-12'>
-      <!-- <h4 class=''> -->
-      <!--   <span class="pull-left"> Controls </span> -->
-      <!--   <span class="pull-right glyphicon glyphicon-cog" aria-hidden="true"></span> -->
-      <!-- </h4> -->
-      <!-- <hr> -->
+  <blockquote id="netplotControls" class='col-xs-12'>
+    <div class='pull-right col-xs-12'>
+    <h4>Network Plot</h4>
       <div class='form-inline'>
-        {{#each controls}}
-          <label class=' np-control controls-title mr-sm-2'>{{title}}</label>
-          <select action="{{action}}" class='mr-sm-2 controls-container
+        {{#each view.controls}}
+          <label class='np-control controls-title mr-sm-2'>{{title}}</label>
+          <select data-option="{{tag}}" action="{{action}}" class='mr-sm-2 controls-container
             netplotControl form-control'>
               {{#each selections}}
                 {{#if isAvailable}}
@@ -29,7 +25,7 @@
           np-control' action='np-redraw'>Redraw</a>
       </div>
     </div>
-  </div>
+  </blockquote>
   <div id="cy" class='col-sm-12 col-md-6'></div>
   <div id="np-table-container" class='col-sm-12 col-md-6 table-container well'>
     <span class="btn-full-screen table-resizer pull-right glyphicon glyphicon-fullscreen" aria="fullscreen table" aria-hidden="true"></span>

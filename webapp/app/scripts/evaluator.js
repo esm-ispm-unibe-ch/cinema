@@ -1,5 +1,4 @@
 var Msg = require('./messages.js').Messages;
-var focusTo = require('./mixins.js').focusTo;
 
 var EV = {
   initControls:() =>{
@@ -144,7 +143,6 @@ var EV = {
     $('#inconsistency').html(incs);
     $('#imprecision').html(imps);
     $('#pubBias').html(pubBias);
-    // focusTo('robSelectorTitle');
     EV.initControls();
     EV.bindControls();
   }

@@ -1,76 +1,49 @@
+var Locales = require('./translations.json');
 var View = require('./view.js').View;
-var md5 = require('../../bower_components/js-md5/js/md5.min.js');
-var FR = require('./readFile.js').FR;
-var Checker = require('./fileChecks.js').Checker;
-var Reshaper = require('./reshaper.js').Reshaper;
-var uniqId = require('./mixins.js').uniqId;
 var clone = require('./mixins.js').clone;
 var accumulate = require('./mixins.js').accumulate;
 var sumBy = require('./mixins.js').sumBy;
-var getCombinations = require('./combinations.js').getCombinations;
-
+var Router = require('./router.js').Router;
+var Project = require('./project.js')();
 
 var Model = {
-  lowrobcolor: '#7CC9AE',
-  unclearrobcolor: '#FBBC05',
-  highrobcolor: '#E0685C',
-  createProject: (pr) =>{
-    var date = Number(new Date());
-    var id = md5(date+Math.random());
-    return {
-      id: id,
-      title: pr.title,
-      filename: pr.filename,
-      model: pr.model,
-      format: pr.format,
-      type: pr.type,
-      creationDate: date,
-      accessDate: date,
-      CMparams: {},
-      currentCM: {},
-      contributionMatrices: [],
-      state: {},
-    };
+  defaults: {
+    lowrobcolor: '#7CC9AE',
+    unclearrobcolor: '#FBBC05',
+    highrobcolor: '#E0685C',
+    locale: 'EN',
   },
-  readLocalStorage: () => {
-    if (_.isEmpty(localStorage.project)){
-      Model.setProject({});
+  initState: () => {
+    if (typeof localStorage.state === 'undefined'){
+      console.log('no cached state');
+      Model.setState({
+        text : Locales[Model.defaults.locale],
+        defaults: Model.defaults,
+      });
     }else{
-      Model.setProject(JSON.parse(localStorage.project));
+      Model.setState(JSON.parse(localStorage.state));
+      console.log("found cache state",Model.getState());
     }
+    _.map(Model.children, c => {c.update.updateState()});
   },
-  emptyProject: () => {
-    return _.isEmpty(Model.project);
+  setState: (state) => {
+    Model.state = state;
+    Model.saveState();
   },
-  clearProject: () => {
-    Model.project = {};
+  saveState: () => {
     localStorage.clear();
-    View.updateProjects();
+    localStorage.setItem('state', JSON.stringify(Model.getState()));
+    console.log('saving state');
+    console.log('rendering');
+    View.render(Model).then(
+      out =>{console.log("rendered success!!",out);}
+    ).catch(err =>{
+      $("#errormsg").text(err);
+      console.log('error rendering view',err);
+    });
   },
-  setProjectName: (title) =>{
-    Model.project.title = title;
-  },
-  getProjectName: () =>{
-    return Model.project.title;
-  },
-  setProjectFileName: (filename) =>{
-    Model.project.fileName = filename;
-  },
-  getProjectFileName: () =>{
-    return Model.project.fileName;
-  },
-  getProject: () => {
-    return Model.project;
-  },
-  setProject: (project) => {
-    // console.log('setting project');
-    Model.project = project;
-    View.updateProjects();
-    Model.saveProject();
-  },
-  saveProject: () => {
-    localStorage.clear();
-    localStorage.setItem('project', JSON.stringify(Model.getProject()));
+  getState: () => {
+    return Model.state;
   },
   compareCM: (cm1, cm2) =>{
     if ((cm1.MAModel === cm2.MAModel)&&(cm1.sm===cm2.sm)&&(cm1.tau===cm2.tau)){
@@ -80,7 +53,7 @@ var Model = {
     }
   },
   findConMatInCache: (params) => {
-    let prj = Model.getProject();
+    let prj = Model.getState().project;
     let cms = prj.contributionMatrices;
     let foundCM = _.find(cms, cm => {
         return Model.compareCM(cm,params);
@@ -93,48 +66,48 @@ var Model = {
   },
   updateContributionCache: (inconnma) => {
     let connma = clone(inconnma);
-    let prj = Model.getProject();
+    let prj = Model.getState().project;
     let cms = prj.contributionMatrices;
     let foundCM = Model.findConMatInCache(connma);
     if ( foundCM !== false ){
-      Model.getProject().contributionMatrices = _.reject(cms, cm => {return Model.compareCM(cm,connma);})
+      Model.getState().project.contributionMatrices = _.reject(cms, cm => {return Model.compareCM(cm,connma);})
     }
-    Model.getProject().contributionMatrices.push(connma);
+    Model.getState().project.contributionMatrices.push(connma);
     Model.makeCurrentCM(connma);
   },
   clearCurrentCM: () =>{
-    Model.getProject().currentCM = {};
-    Model.saveProject();
+    Model.getState().project.currentCM = {};
+    Model.saveState();
     View.updateConChart();
   },
   makeCurrentCM: (cm) =>{
-    let cms = Model.getProject().contributionMatrices;
+    let cms = Model.getState().project.contributionMatrices;
     // console.log('making current cms', cms);
     _.map(cms, c => {
       if(Model.compareCM(c,cm)){
         c.isDefault = true;
         c = cm;
-        Model.getProject().currentCM = c;
+        Model.getState().project.currentCM = c;
       }else{
         c.isDefault = false;
       }
     });
-    Model.saveProject();
+    Model.saveState();
     View.updateConChart();
   },
   setCMParams: (params) => {
-    let project = Model.getProject();
+    let project = Model.geState().project;
     project.CMparams = params;
   },
   getCMParams: () => {
-    let project = Model.getProject();
+    let project = Model.getState().project;
     return project.CMparams;
   },
   fetchContributionMatrix: () => {
     return new Promise((resolve, reject) => {
     // ocpu.seturl('//localhost:8004/ocpu/library/contribution/R');
     ocpu.seturl('http://ec2-35-156-97-18.eu-central-1.compute.amazonaws.com:8004/ocpu/library/contribution/R');
-      var project = Model.getProject();
+      var project = Model.getState().project;
       project.cancelCM = false;
       var cms = project.contributionMatrices;
       var result = {};
@@ -167,15 +140,15 @@ var Model = {
       let filterRows = (rows,intvs,rule) =>{
         let res = [];
         switch(rule){
-          case "every":
+          case 'every':
             res = _.filter(rows, r =>{
-              let [t1,t2] = r.split(":");
+              let [t1,t2] = r.split(':');
               return (_.contains(intvs,t1)||_.contains(intvs,t2));
             });
             break;
-          case "between":
+          case 'between':
             res = _.filter(rows, r =>{
-              let [t1,t2] = r.split(":");
+              let [t1,t2] = r.split(':');
               return (_.contains(intvs,t1)&&_.contains(intvs,t2));
             });
             break;
@@ -190,12 +163,12 @@ var Model = {
           let comparisons = filterRows(hatmatrix.rowNames,prams.intvs,prams.rule);
           let sequencePromises = (rows, savedComparisons) => {
             return new Promise((reslve, rjct) => {
-              if (Model.getProject().cancelCM !== true) {
+              if (Model.getState().project.cancelCM !== true) {
                 if (rows.length !== 0){
                   let row = _.first(rows);
                   let rest = _.rest(rows);
                   let done = Math.round(100 * (1 - (rest.length / comparisons.length)));
-                  View.updateCMLoader([row,done.toString()+"%"]);
+                  View.updateCMLoader([row,done.toString()+'%']);
                   let foundComp = _.find(savedComparisons, sc => {
                     return (sc.rowname === row);
                   });
@@ -226,7 +199,7 @@ var Model = {
                   reslve([]);
                 }
               }else{
-                reject("Computation canceled");
+                reject('Computation canceled');
               }
             });
           };
@@ -262,7 +235,7 @@ var Model = {
         });
       };
       if(_.isEmpty(params.hatmatrix)){
-        View.updateCMLoader(["Hat Matrix",'']);
+        View.updateCMLoader(['Hat Matrix','']);
         let hmc = ocpu.call('getHatMatrix',{
             indata: project.model.wide,
             type: rtype,
@@ -311,7 +284,7 @@ var Model = {
     return (res);
   },
   cancelCM : () => {
-    let project = Model.getProject();
+    let project = Model.getState().project;
     project.cancelCM = true;
     // View.cancelCM();
   },
@@ -338,125 +311,33 @@ var Model = {
     let res = _.map(_.toArray(grouped), (grp) => verticeFromGroup(grp));
     return res;
   },
-  makeIndirectComparisons: (nodes,directComparisons) => {
-    let lind = _.filter(getCombinations(nodes,2), c=> {
-      let uid = uniqId([_.first(c).id,_.last(c).id]).toString();
-        let found = _.find(directComparisons, dc => {
-          return dc.id === uid;
-        });
-        return typeof found === 'undefined';
-    });
-    lind = _.map(lind, c => {
-      let uid = uniqId([_.first(c).id,_.last(c).id]).toString();
-      return uid;
-    });
-    return lind;
-  },
-  makeDirectComparisons: (type,model) => {
-    let comparisons = _.groupBy(model, row => {
-        return uniqId([row.t1, row.t2]).toString();
-      });
-    var edges = _.map( _.toArray(comparisons), comp => {
-      let row = {
-        type:'edge',
-        id: uniqId([comp[0].t1,comp[0].t2]).toString(),
-        studies: accumulate(comp,'id'),
-        t1: uniqId([comp[0].t1,comp[0].t2])[0],
-        t2: uniqId([comp[0].t1,comp[0].t2])[1],
-        source: uniqId([comp[0].t1,comp[0].t2])[0],
-        target: uniqId([comp[0].t1,comp[0].t2])[1],
-        numStudies: comp.length,
-        rob: accumulate(comp,'rob'),
-      };
-      row.tn1 = row.t1===comp[0].t1?comp[0].tn1:comp[0].tn2;
-      row.tn2 = row.t2===comp[0].t2?comp[0].tn2:comp[0].tn1;
-      let majrob = _.first(
-          _.sortBy(
-            _.sortBy(
-              _.groupBy(row.rob, rob => {return rob}),
-              robs => {
-                return -robs[0];
-              }
-            ),
-            robs => {
-              return -robs.length;
-            }
-          )
-        )[0];
-      row.majrob = majrob;
-      let meanrob = _.reduce(row.rob, (memo,rob) => {
-        return memo + rob;
-      },0) / row.rob.length;
-      meanrob = Math.round(meanrob);
-      row.meanrob = meanrob;
-      let maxrob = _.reduce(row.rob, (memo,rob) => {
-        return memo > rob ? memo : rob;
-      },0);
-      row.maxrob = maxrob;
-      if(type !== 'iv'){
-        row.sampleSize = sumBy(comp,['n1','n2']);
-      }else{
-        row.iv = _.reduce(comp, (iv,s) => {
-          let au = Math.pow(1/s.se,2);
-          return iv + au;
-        },0);
-      }
-      return row;
-      });
-    return _.sortBy(edges,e =>{return e.id});
-  },
   selectRobs: (sels) => {
-    let prj = Model.getProject();
+    let prj = Model.getState().project;
     _.map(prj.model.directComparisons, c => {
       c.selectedrob = sels[c.id];
     });
     prj.hasSelectedRob = true;
-    Model.saveProject();
-    View.updateSelections();
+    Model.saveState();
+    // View.updateSelections();
   },
   unselectRobs: () => {
-    let prj = Model.getProject();
+    let prj = Model.getState().project;
     _.map(prj.model.directComparisons, c => {
       c.selectedrob = '';
     });
     prj.hasSelectedRob = false;
-    Model.saveProject();
-    View.updateSelections();
-  },
-  getJSON: (evt, filename) => {
-    return FR.handleFileSelect(evt)
-    .then(FR.convertCSVtoJSON)
-    .then(Checker.checkColumnNames)
-    .then(Checker.checkTypes)
-    .then(Checker.checkMissingValues)
-    .then(Checker.checkConsistency)
-    .then(project => {
-      let prj = project;
-      let mdl = {};
-      if(project.format === 'long'){
-        mdl.long = project.model;
-        mdl.wide = Reshaper.longToWide(project.model,project.type);
-      }else{
-        mdl.long = Reshaper.wideToLong(project.model,project.type);
-        mdl.wide = project.model;
-      }
-      //nodes are the combined treatments (which correspond to netplot nodes)
-      mdl.nodes = Model.makeNodes(project.type, mdl.long);
-      //directComparisons correspond to netplot edges
-      mdl.directComparisons = Model.makeDirectComparisons(project.type, mdl.wide);
-      //indirectComparisons are the complement of the netplot edges
-      mdl.indirectComparisons = Model.makeIndirectComparisons(mdl.nodes,mdl.directComparisons);
-      prj.model = mdl;
-      prj.title = filename;
-      prj.filename = filename;
-      Model.setProject(Model.createProject(prj));
-      return prj;
-    });
+    Model.saveState();
+    // View.updateSelections();
   },
   init: () => {
-    View.init(Model);
-    Model.readLocalStorage();
-  }
+    Router.view.register(Model);
+    Router.init(Model);
+    Model.initState();
+  },
+  children: [
+    Router,
+    Project,
+  ],
 };
 
 module.exports = {

@@ -12,14 +12,28 @@ $icon-font-path: '../fonts/';
 }
 
 .header-title{
-  padding-top:31px;
+  // padding:10px;
 }
 
 .nav-header{
-  padding-top:34px;
+  // padding-top:34px;
 }
 
 .btn.routes{
-  margin-right:1px;
-  margin-left:2px;
+  // margin-right:1px;
+  // margin-left:2px;
+}
+
+.evaluation-menu{
+  float:right!important;
+  a{
+    color:#006592;
+  }
+  a.disabled{
+    color:#D0CFD3!important;
+  }
+}
+
+ul.mainMenu > :first-child a{
+  font-weight: bold;
 }

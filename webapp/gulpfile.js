@@ -140,6 +140,7 @@ gulp.task('serve', () => {
       'app/*.html',
       'app/images/**/*',
       '.tmp/templates/**/*.js',
+      '.tmp/templates/**/*.json',
       '.tmp/fonts/**/*'
     ]).on('change', reload);
 

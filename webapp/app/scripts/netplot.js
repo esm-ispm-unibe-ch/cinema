@@ -3,33 +3,44 @@ var accumulate = require('./mixins.js').accumulate;
 var sumBy = require('./mixins.js').sumBy;
 var bindTableResize = require('./mixins.js').bindTableResize;
 
- var NP = {
-  model:{},
-  isRendered: false,
-   vertices : [],
-   edges : [],
-   etovRatio : 0.5,
-   options: {
-     vertexSizeBy: 'equal',
-     vertexColorBy: 'noColor',
-     edgeSizeBy: 'equal',
-     edgeColorBy: 'noColor',
-     defaultVertexColor: '#61AFD1',
-     norobcolor: '#282C34',
-     lowrobcolor: ()=>{return NP.model.lowrobcolor},
-     unclearrobcolor: ()=>{return NP.model.unclearrobcolor},
-     highrobcolor: ()=>{return NP.model.highrobcolor},
-     selectedColor: '#C678D7',
-     minSize: 30,
-     maxSize: 130,
-   },
-
-   addElementsToGraph : () => {
-    NP.vertices = NP.makeNodes(NP.project);
-    NP.edges = NP.makeEdges(NP.project);
-    var elements = [NP.vertices, NP.edges];
-    NP.cy.batch( () => {
-      NP.cy.add(_.reduce(_.flatten(elements),
+var NP = {
+  actions: {
+    selectOption: () => {
+      $(document).on('change','select.netplotControl', {} ,e=>{
+          var key = $(e.currentTarget).attr('data-option');
+          var value = $(e.currentTarget).children('option:selected').attr('filter');
+        console.log('new options', key,value);
+          NP.update.selectOption(key,value);
+      });
+    },
+    redrawNP: () => {
+      $(document).on('click','.np-redraw', {} ,e=>{
+        NP.view.cy.layout({name:'circle'});
+      });
+    },
+    exportNP: () => {
+      $(document).on('click','#np-save', {} ,
+        e=>{
+          let img = NP.view.cy.png();
+          var download = document.getElementById('np-save');
+          download.href = img;
+          download.download = NP.view.getProject().filename+'_netplot.png';
+      });
+    },
+  },
+  view: {
+    getProject: () => {
+      return NP.model.getState().project;
+    },
+    vertices : [],
+    edges : [],
+    etovRatio : 0.5,
+    addElementsToGraph : () => {
+    NP.view.vertices = NP.view.getProject().studies.nodes;
+    NP.view.edges = NP.view.getProject().studies.directComparisons;
+    var elements = [NP.view.vertices, NP.view.edges];
+    NP.view.cy.batch( () => {
+      NP.view.cy.add(_.reduce(_.flatten(elements),
         function(memo, nd){
           nd.width = nd.sampleSize;
           var keyList = Object.keys(nd);
@@ -44,484 +55,460 @@ var bindTableResize = require('./mixins.js').bindTableResize;
         )
       )
     });
-  },
+    },
+    resizeElements : (nodeFilter, edgeFilter) => {
+      let nFilter = nodeFilter;
+      let eFilter = edgeFilter;
+      var setSize = (elem, elements, key, minSize=NP.view.getOptions().minSize, maxSize=NP.view.getOptions().maxSize, ratio=1) => {
+        if(key!=='equal'){
+          var minVertexSize = (elements, key) => {return _.reduce(elements, (memo, e)=>{return memo<e[key]&&memo!==-1?memo:e[key];},-1)};
+          var maxVertexSize = (elements, key) => {return _.reduce(elements, (memo, e)=>{return memo>e[key]?memo:e[key];},0)};
+          var aggregate = (elements, key) => {return  _.reduce(elements, (memo, e)=>{return memo+e[key]},0)};
+          var minRuleRatio = minSize / minVertexSize(elements,key);
+          var maxRuleRatio = maxSize / maxVertexSize(elements,key);
+          var ratio = maxVertexSize(elements,key)*minRuleRatio>maxSize?maxRuleRatio:minRuleRatio;
+          _.reduce(elements, (memo,e) => {
+            e.renderSize = e[key]*ratio;
+            //console.log(e.renderSize);
+            return memo.concat(e);},[])
+        }else{
+          _.reduce(elements, (memo,e) => {
+            e.renderSize = NP.view.etovRatio * maxSize;
+            //console.log(e.renderSize);
+            return memo.concat(e);},[])
+        }
+      };
+      var adjustEdgesWidth = () => {
+        var edges = NP.view.edges;
+        var vertices = NP.view.vertices;
+        var connectedNodes = (edge) => {
+          var st =[edge.source,edge.target];
+          var out =  _.map(st,(n)=>{return _.find(vertices,v=>{return v.id==n})});
+          return out;
+        }
+        var sizeDiff = e => _.map(connectedNodes(e), n=>{
+          var diff=n.renderSize - e.renderSize;
+          return {diff:diff,vsize:n.renderSize}; });
+        var diffs =_.reduce(edges, (memo,e) => {
+          return memo.concat(sizeDiff(e));
+        },[]);
+        var maxDiff = _.reduce(diffs, (memo, d) => {
+          return memo.diff/memo.vsize>=d.diff/d.vsize?d:memo;
+        },{diff:0,vsize:1});
+        var sizeFactor = NP.view.etovRatio * maxDiff.vsize / (-maxDiff.diff+maxDiff.vsize);
+        // console.log('adjusting edge size',maxDiff,sizeFactor);
+        if(maxDiff.diff<=0){
+          _.map(edges, e =>{e.renderSize *= sizeFactor});
+        }
+        if(nFilter==='equal'&&eFilter==='equal'){
+          _.map(edges, e =>{e.renderSize = 10;});
+        }
+      };
+      var renderElements = () =>{
+        var elements = NP.view.vertices.concat(NP.view.edges);
+        NP.view.cy.batch( () => {
+          _.map(elements, (e) => {
+            var elem = e.type;
+            if(e.renderSize<40){
+              NP.view.cy.elements(elem+'[id="'+e.id+'"]').style({'text-valign':'top'});
+            }else{
+              NP.view.cy.elements(elem+'[id="'+e.id+'"]').style({'text-valign':'center'});
+            }
+            NP.view.cy.elements(elem+'[id="'+e.id+'"]').style({'width':e.renderSize,'height':e.renderSize});
+          });
+        });
+      };
+      setSize('node', NP.view.vertices, nodeFilter);
+      setSize('edge', NP.view.edges, edgeFilter);
+      adjustEdgesWidth();
+      renderElements();
+    },
 
-  makeNodes: project => {
-    let nodes = project.model.nodes;
-    return nodes;
-  },
+    colorVertices : (filter) => {
+      let vertices = NP.view.vertices;
+        NP.view.cy.batch( () => {
+        if(filter === 'noColor'){
+          _.map(vertices, n => {
+            NP.view.cy.elements('node[id="'+n.id+'"]').style({
+              'pie-size': 0,
+            });
+          });
+        }else{
+          _.map(vertices, n => {
+            NP.view.cy.elements('node[id="'+n.id+'"]').style({
+              'pie-size': '87%',
+            });
+          });
+        }
+      });
+    },
 
-  makeEdges: project => {
-    let edges = project.model.directComparisons;
-    return edges;
-  },
-
-  resizeElements : (nodeFilter, edgeFilter) => {
-    let nFilter = nodeFilter;
-    let eFilter = edgeFilter;
-    var setSize = (elem, elements, key, minSize=NP.options.minSize, maxSize=NP.options.maxSize, ratio=1) => {
-      if(key!=='equal'){
-        var minVertexSize = (elements, key) => {return _.reduce(elements, (memo, e)=>{return memo<e[key]&&memo!==-1?memo:e[key];},-1)};
-        var maxVertexSize = (elements, key) => {return _.reduce(elements, (memo, e)=>{return memo>e[key]?memo:e[key];},0)};
-        var aggregate = (elements, key) => {return  _.reduce(elements, (memo, e)=>{return memo+e[key]},0)};
-        var minRuleRatio = minSize / minVertexSize(elements,key);
-        var maxRuleRatio = maxSize / maxVertexSize(elements,key);
-        var ratio = maxVertexSize(elements,key)*minRuleRatio>maxSize?maxRuleRatio:minRuleRatio;
-        _.reduce(elements, (memo,e) => {
-          e.renderSize = e[key]*ratio;
-          //console.log(e.renderSize);
-          return memo.concat(e);},[])
-      }else{
-        _.reduce(elements, (memo,e) => {
-          e.renderSize = NP.etovRatio * maxSize;
-          //console.log(e.renderSize);
-          return memo.concat(e);},[])
-      }
-    };
-    var adjustEdgesWidth = () => {
-      var edges = NP.edges;
-      var vertices = NP.vertices;
-      var connectedNodes = (edge) => {
-        var st =[edge.source,edge.target];
-        var out =  _.map(st,(n)=>{return _.find(vertices,v=>{return v.id==n})});
-        return out;
-      }
-      var sizeDiff = e => _.map(connectedNodes(e), n=>{
-        var diff=n.renderSize - e.renderSize;
-        return {diff:diff,vsize:n.renderSize}; });
-      var diffs =_.reduce(edges, (memo,e) => {
-        return memo.concat(sizeDiff(e));
-      },[]);
-      var maxDiff = _.reduce(diffs, (memo, d) => {
-        return memo.diff/memo.vsize>=d.diff/d.vsize?d:memo;
-      },{diff:0,vsize:1});
-      var sizeFactor = NP.etovRatio * maxDiff.vsize / (-maxDiff.diff+maxDiff.vsize);
-      console.log('adjusting edge size',maxDiff,sizeFactor);
-      if(maxDiff.diff<=0){
-        _.map(edges, e =>{e.renderSize *= sizeFactor});
-      }
-      if(nFilter==='equal'&&eFilter==='equal'){
-        _.map(edges, e =>{e.renderSize = 10;});
-      }
-    };
-    var renderElements = () =>{
-      var elements = NP.vertices.concat(NP.edges);
-      NP.cy.batch( () => {
-        _.map(elements, (e) => {
-          var elem = e.type;
-          if(e.renderSize<40){
-            NP.cy.elements(elem+'[id="'+e.id+'"]').style({'text-valign':'top'});
-          }else{
-            NP.cy.elements(elem+'[id="'+e.id+'"]').style({'text-valign':'center'});
+    colorEdges : (filter) => {
+      var edges = NP.view.edges;
+      var colors = [NP.view.getOptions().lowrobcolor,NP.view.getOptions().unclearrobcolor,NP.view.getOptions().highrobcolor];
+      console.log("colors",colors);
+      NP.view.cy.batch( () => {
+        _.map(NP.view.edges, e => {
+          var totalrob = 0;
+          switch(filter){
+            case 'majority':
+            e.ecolor = colors[e.majrob-1];
+            break;
+            case 'mean':
+            e.ecolor = colors[e.meanrob-1];
+            break;
+            case 'max':
+            e.ecolor = colors[e.maxrob-1];
+            break;
+            case 'noColor':
+            e.ecolor = NP.view.getOptions().norobcolor;
+            break;
           }
-          NP.cy.elements(elem+'[id="'+e.id+'"]').style({'width':e.renderSize,'height':e.renderSize});
+            NP.view.cy.elements('edge[id="'+e.id+'"]')
+            .style({'line-color':e.ecolor});
         });
       });
-    };
-    setSize('node', NP.vertices, nodeFilter);
-    setSize('edge', NP.edges, edgeFilter);
-    adjustEdgesWidth();
-    renderElements();
-  },
-
-  colorVertices : (filter) => {
-    let vertices = NP.vertices;
-      NP.cy.batch( () => {
-      if(filter === 'noColor'){
-        _.map(vertices, n => {
-          NP.cy.elements('node[id="'+n.id+'"]').style({
-            'pie-size': 0,
-          });
-        });
-      }else{
-        _.map(vertices, n => {
-          NP.cy.elements('node[id="'+n.id+'"]').style({
-            'pie-size': '87%',
-          });
-        });
-      }
-    });
-  },
-
-  colorEdges : (filter) => {
-    var edges = NP.edges;
-    var colors = [NP.options.lowrobcolor,NP.options.unclearrobcolor,NP.options.highrobcolor];
-    NP.cy.batch( () => {
-      _.map(NP.edges, e => {
-        var totalrob = 0;
-        switch(filter){
-          case 'majority':
-          e.ecolor = colors[e.majrob-1];
-          break;
-          case 'mean':
-          e.ecolor = colors[e.meanrob-1];
-          break;
-          case 'max':
-          e.ecolor = colors[e.maxrob-1];
-          break;
-          case 'noColor':
-          e.ecolor = NP.options.norobcolor;
-          break;
-        }
-          NP.cy.elements('edge[id="'+e.id+'"]')
-          .style({'line-color':e.ecolor});
-      });
-    });
-  },
-  cyInit : (containerId) => {
-    if(typeof NP.cy !== 'undefined'){
-      NP.cy.destroy();
-    }
-    NP.cy = cytoscape({
-      container: document.getElementById(containerId), // container to render in
-      zoomingEnabled: 1,
-      avoidOverlap: true,
-      zoomingEnabled: true,
-      userZoomingEnabled: false,
-      fit:true,
-      layout :{
-        name: 'circle',
-        ready: () => {
-          // NP.cyIsReady = true;
-          // NP.cy.center();
-        }
-      },
-      style: cytoscape.stylesheet()
-      .selector('node')
-      .style({
-        'content': 'data(label)',
-        'text-valign': 'center',
-        'text-halign': 'center',
-        'node-text-rotation': 'autorotate',
-        'color': NP.options.norobcolor,
-        'text-outline-color': NP.options.defaultVertexColor,
-        'text-outline-width':'1px',
-        'background-color': NP.options.defaultVertexColor,
-        'width': '60px',
-        'height': '60px',
-        'pie-size': '87%',
-        'pie-1-background-color':NP.options.lowrobcolor,
-        'pie-2-background-color':NP.options.unclearrobcolor,
-        'pie-3-background-color':NP.options.highrobcolor,
-        'pie-1-background-size': 'mapData(low, 0, 100, 0, 100)',
-        'pie-2-background-size': 'mapData(unclear, 0, 100, 0, 100)',
-        'pie-3-background-size': 'mapData(high, 0, 100, 0, 100)'
-      })
-    });
-  },
-  defaultControls: () => {return [
-    {
-      type: 'button',
-      title: 'Node size by:',
-      id: 'vertexWidthControls',
-      tag: 'vertexSizeBy',
-      action: 'changeVertexSize',
-      selections: [
-        {
-          label:'Equal size',
-          value:'equal',
-          isAvailable:true,
+    },
+    cyInit : (containerId) => {
+      NP.view.cy = cytoscape({
+        container: document.getElementById(containerId), // container to render in
+        zoomingEnabled: 1,
+        avoidOverlap: true,
+        zoomingEnabled: true,
+        userZoomingEnabled: false,
+        fit:true,
+        layout :{
+          name: 'circle',
+          ready: () => {
+            // NP.cyIsReady = true;
+            // NP.cy.center();
+          }
         },
-        {
-          label:'Sample size',
+        style: cytoscape.stylesheet()
+        .selector('node')
+        .style({
+          'content': 'data(label)',
+          'text-valign': 'center',
+          'text-halign': 'center',
+          'node-text-rotation': 'autorotate',
+          'color': NP.view.getOptions().norobcolor,
+          'text-outline-color': NP.view.getOptions().defaultVertexColor,
+          'text-outline-width':'1px',
+          'background-color': NP.view.getOptions().defaultVertexColor,
+          'width': '60px',
+          'height': '60px',
+          'pie-size': '87%',
+          'pie-1-background-color':NP.view.getOptions().lowrobcolor,
+          'pie-2-background-color':NP.view.getOptions().unclearrobcolor,
+          'pie-3-background-color':NP.view.getOptions().highrobcolor,
+          'pie-1-background-size': 'mapData(low, 0, 100, 0, 100)',
+          'pie-2-background-size': 'mapData(unclear, 0, 100, 0, 100)',
+          'pie-3-background-size': 'mapData(high, 0, 100, 0, 100)'
+        })
+      });
+    },
+    defaultControls: () => {return [
+      {
+        type: 'button',
+        title: 'Node size by:',
+        id: 'vertexWidthControls',
+        tag: 'vertexSizeBy',
+        action: 'changeVertexSize',
+        selections: [
+          {
+            label:'Equal size',
+            value:'equal',
+            isAvailable:true,
+          },
+          {
+            label:'Sample size',
+            value:'sampleSize',
+            isAvailable:true,
+          },
+          {
+            label:'Number of studies',
+            value:'numStudies',
+            isAvailable:true,
+          },
+        ]
+      },
+      {
+        type: 'button',
+        title: 'Node color by:',
+        id: 'vertexColorControls',
+        tag: 'vertexColorBy',
+        action: 'colorVertices',
+        selections: [
+          {
+            label:'ROB',
+            value:'rob',
+            isAvailable:true,
+          },
+          {
+            label:'No color',
+            value:'noColor',
+            isAvailable:true,
+          }
+        ]
+      },
+      {
+        type: 'button',
+        tag: 'edgeSizeBy',
+        title: 'Edge width by:',
+        id: 'edgeWidthControls',
+        action: 'changeEdgeSize',
+        selections: [
+          {
+            label:'Equal size',
+            value:'equal',
+            isAvailable:true,
+          },
+          {
+          label:'Sample Size',
           value:'sampleSize',
           isAvailable:true,
-        },
-        {
+          },
+          {
           label:'Number of studies',
           value:'numStudies',
           isAvailable:true,
         },
-      ]
-    },
-    {
-      type: 'button',
-      title: 'Node color by:',
-      id: 'vertexColorControls',
-      tag: 'vertexColorBy',
-      action: 'colorVertices',
-      selections: [
-        {
-          label:'ROB',
-          value:'rob',
+          {
+          label:'Inverse variance',
+          value:'iv',
+          isAvailable:false,
+          }
+        ]
+      },
+      {
+        type: 'button',
+        title: 'Edge color by:',
+        id: 'edgeColorControls',
+        tag: 'edgeColorBy',
+        action: 'colorEdges',
+        selections: [
+          {
+          label:'Majority ROB',
+          value:'majority',
           isAvailable:true,
-        },
-        {
+          },
+          {
+          label:'Mean ROB',
+          value:'mean',
+          isAvailable:true,
+          },
+          {
+          label:'Maximum ROB',
+          value:'max',
+          isAvailable:true,
+          },
+          {
           label:'No color',
           value:'noColor',
           isAvailable:true,
-        }
-      ]
-    },
-    {
-      type: 'button',
-      tag: 'edgeSizeBy',
-      title: 'Edge width by:',
-      id: 'edgeWidthControls',
-      action: 'changeEdgeSize',
-      selections: [
-        {
-          label:'Equal size',
-          value:'equal',
-          isAvailable:true,
-        },
-        {
-        label:'Sample Size',
-        value:'sampleSize',
-        isAvailable:true,
-        },
-        {
-        label:'Number of studies',
-        value:'numStudies',
-        isAvailable:true,
-      },
-        {
-        label:'Inverse variance',
-        value:'iv',
-        isAvailable:false,
-        }
-      ]
-    },
-    {
-      type: 'button',
-      title: 'Edge color by:',
-      id: 'edgeColorControls',
-      tag: 'edgeColorBy',
-      action: 'colorEdges',
-      selections: [
-        {
-        label:'Majority ROB',
-        value:'majority',
-        isAvailable:true,
-        },
-        {
-        label:'Mean ROB',
-        value:'mean',
-        isAvailable:true,
-        },
-        {
-        label:'Maximum ROB',
-        value:'max',
-        isAvailable:true,
-        },
-        {
-        label:'No color',
-        value:'noColor',
-        isAvailable:true,
-        },
-      ]
-    }
-  ]},
-  getControls: (type) => {
-    let controls =  NP.defaultControls();
-      if(type === 'iv'){
-      controls[0].selections[1].isAvailable = false;
-      controls[2].selections[1].isAvailable = false;
-      controls[2].selections[3].isAvailable = true;
-      NP.options.vertexSizeBy = 'equal';
-      NP.options.edgeSizeBy = 'numStudies';
-    }
-    _.map(controls, c => {
-      let def = NP.options[c.tag];
-      _.map(c.selections, sl => {
-        if(sl.value === def ){
-          sl.isActive = true;
-        }else{
-          sl.isActive = false;
-        }
-      });
-    });
-    return controls;
-  },
-  filterModelByNode: (filter,fields) => {
-    let model = NP.project.model.wide;
-    return _.filter(model, r => {
-      return _.some(_.map(fields, field => {
-        return filter === r[field].toString();
-      }))
-    });
-  },
-  filterModelByEdge: (filter,fields) => {
-    let model = NP.project.model.wide;
-    let out= {};
-    if(filter===''){
-      out = model;
-    }else{
-      out = _.filter(model, r => {
-        let pred = _.map(fields, field => {return r[field]});
-        let lkj = pred.sort().toString()
-        return lkj=== filter;
-      });
-    }
-    return out;
-  },
-  bindElementSelection: (cy) => {
-    $('#m-table-container').click(()=>{
-      let hot = (()=>{return CM.hot})();
-      if(typeof hot !== 'undefined'){
-        CM.resizeTable(hot);
+          },
+        ]
       }
-    });
-    cy.on('select', 'edge', () => {
-      let e = cy.$('edge:selected');
-      e.style({'line-color':NP.options.selectedColor});
-      e.addClass('selectedEdge');
-      let filteredModel = NP.filterModelByEdge(e.id(), ['t1','t2']);
-      NP.showTable('np-table', filteredModel)
-        .then(hot => {
-          bindTableResize(hot, 'np-table-container');
-        });
-    });
-    cy.on('unselect', 'edge', () => {
-      let e = cy.$('.selectedEdge');
-      let ec = e.json().data.ecolor;
-      e.style({'line-color': ec});
-      e.removeClass('selectedEdge');
-    });
-    cy.on('select', 'node', () => {
-      let n = cy.$('node:selected');
-      let ndata = n.json().data;
-      n.style({
-        'text-outline-color': NP.options.selectedColor,
-        'background-color': NP.options.selectedColor,
-      }),
-      n.addClass('selectedNode');
-      let filteredModel = NP.filterModelByNode(n.id(), ['t1','t2']);
-      NP.showTable('np-table', filteredModel)
-        .then(hot => {
-          bindTableResize(hot, 'np-table-container');
-        });
-    });
-    cy.on('unselect', 'node', () => {
-      let n = cy.$('.selectedNode');
-      n.style({
-        'text-outline-color': NP.options.defaultVertexColor,
-        'background-color': NP.options.defaultVertexColor
-      });
-      n.removeClass('selectedNode');
-    });
-    cy.on('tap', function(event){
-    // cyTarget holds a reference to the originator
-    // of the event (core or element)
-    var evtTarget = event.cyTarget;
-    if( evtTarget === cy ){
-      // console.log('tap on background');
-      NP.showWholeTable();
-    } else {
-      // console.log('tap on some element');
-    }
-});
-  },
-  bindActions: () => {
-    window.addEventListener('resize', ()=>{
-      NP.isRendered=false;
-    });
-    $('.np-redraw').bind('click', () =>{
-      NP.cy.layout({name:'circle'});
-    });
-    $('#cyContainer').bind('click', function () {
-      Messages.updateInfo({title:'Visualization Tools', cont:'NetPlot: representing the project as a graph'});
-    });
-    $('.netplotControl').bind('change', function() {
-        var filter = $('option:selected', this).attr('filter');
-        var action = $(this).attr('action');
-        var controls = _.find(NP.controls, c => {return c.action == action});
-        _.map(controls.selections, (sel) => {sel.isActive = sel.value===filter? true: false;});
-        var action = $(this).attr('action');
-        switch (action){
-          case 'changeVertexSize':
-            NP.options.vertexSizeBy = filter;
-            NP.resizeElements(filter,NP.options.edgeSizeBy);
-            break;
-          case 'colorVertices':
-            NP.options.vertexColorBy = filter;
-            NP.colorVertices(filter);
-            break;
-          case 'changeEdgeSize':
-            NP.options.edgeSizeBy = filter;
-            NP.resizeElements(NP.options.vertexSizeBy,filter);
-            break;
-          case 'colorEdges':
-            NP.options.edgeColorBy = filter;
-            NP.colorEdges(filter);
-            break;
+    ]},
+    getControls: (type) => { let controls =  NP.view.defaultControls(); if(type === 'iv'){
+        controls[0].selections[1].isAvailable = false;
+        controls[2].selections[1].isAvailable = false;
+        controls[2].selections[3].isAvailable = true;
       }
-    });
-    $('#np-save').bind('click', () => {
-      let img = NP.cy.png();
-      var download = document.getElementById('np-save');
-      download.href = img;
-      download.download = NP.model.getProject().filename+'_netplot.png';
-    });
-  },
-  project: {}
-  ,
-  init: (model) => {
-    NP.model = model;
-    let project = model.getProject();
-    if(NP.project.id!==project.id){
-      NP.project = project;
-      NP.isRendered = false;
-    }
-    if (!(NP.isRendered)){
-      $('#cy').empty();
-      $(document).ready( () => {
-        NP.controls = NP.getControls(NP.project.type);
-        var cytmpl = GRADE.templates.netplot(NP);
-        $('#netplotContainer').html(cytmpl);
-        NP.bindActions();
-        NP.cyInit('cy');
-        NP.addElementsToGraph();
-        NP.resizeElements(NP.options.vertexSizeBy,NP.options.edgeSizeBy);
-        NP.colorEdges(NP.options.edgeColorBy);
-        NP.colorVertices(NP.options.vertexColorBy);
-        NP.cy.layout({name:'circle'});
-        NP.bindElementSelection(NP.cy);
-        NP.showWholeTable();
-        NP.isRendered = true;
-      });
-    }
-  },
-  showWholeTable: () => {
-    NP.removeTable('np-table');
-    NP.showTable('np-table', NP.project.model.wide)
-      .then(hot => {
-      bindTableResize(hot, 'np-table-container');
-    });
-  },
-  showTable: (container, data) => {
-    NP.removeTable('np-table');
-    return new Promise((resolve, reject)=>{
-      let cont = document.getElementById(container);
-      var rendered = false;
-      var hot = new Handsontable(cont, {
-        data: data,
-        // height: 700,
-        // width: 700,
-        manualColumnMove: true,
-        renderAllRows:true,
-        rowHeights: 23,
-        rowHeaders: true,
-        colHeaders: true,
-        colHeaders: Object.keys(data[0]),
-        width: $('#np-table-container').width(),
-        height: $('#np-table-container').height(),
-        columns: _.map(Object.keys(data[0]), k => {
-          return { data: k, readOnly: true };
-        }),
-        afterRender: () => {
-          if(rendered===false){
-            rendered=true;
+      _.map(controls, c => {
+        let def = NP.view.getOptions()[c.tag];
+        _.map(c.selections, sl => {
+          if(sl.value === def ){
+            sl.isActive = true;
+          }else{
+            sl.isActive = false;
           }
-        },
+        });
       });
-      resolve(hot);
-    });
+      return controls;
+    },
+    filterStudiesByNode: (filter,fields) => {
+      let model = NP.view.getProject().studies.wide;
+      return _.filter(model, r => {
+        return _.some(_.map(fields, field => {
+          return filter === r[field].toString();
+        }))
+      });
+    },
+    filterStudiesByEdge: (filter,fields) => {
+      let model = NP.view.getProject().studies.wide;
+      let out= {};
+      if(filter===''){
+        out = model;
+      }else{
+        out = _.filter(model, r => {
+          let pred = _.map(fields, field => {return r[field]});
+          let lkj = pred.sort().toString()
+          return lkj=== filter;
+        });
+      }
+      return out;
+    },
+    bindElementSelection: (cy) => {
+      cy.on('select', 'edge', () => {
+        let e = cy.$('edge:selected');
+        e.style({'line-color':NP.view.getOptions().selectedColor});
+        e.addClass('selectedEdge');
+        let filteredStudies = NP.view.filterStudiesByEdge(e.id(), ['t1','t2']);
+        NP.view.showTable('np-table', filteredStudies)
+          .then(hot => {
+            bindTableResize(hot, 'np-table-container');
+          });
+      });
+      cy.on('unselect', 'edge', () => {
+        let e = cy.$('.selectedEdge');
+        let ec = e.json().data.ecolor;
+        e.style({'line-color': ec});
+        e.removeClass('selectedEdge');
+      });
+      cy.on('select', 'node', () => {
+        let n = cy.$('node:selected');
+        let ndata = n.json().data;
+        n.style({
+          'text-outline-color': NP.view.getOptions().selectedColor,
+          'background-color': NP.view.getOptions().selectedColor,
+        }),
+        n.addClass('selectedNode');
+        let filteredStudies = NP.view.filterStudiesByNode(n.id(), ['t1','t2']);
+        NP.view.showTable('np-table', filteredStudies)
+          .then(hot => {
+            bindTableResize(hot, 'np-table-container');
+          });
+      });
+      cy.on('unselect', 'node', () => {
+        let n = cy.$('.selectedNode');
+        n.style({
+          'text-outline-color': NP.view.getOptions().defaultVertexColor,
+          'background-color': NP.view.getOptions().defaultVertexColor
+        });
+        n.removeClass('selectedNode');
+      });
+      cy.on('tap', function(event){
+      // cyTarget holds a reference to the originator
+      // of the event (core or element)
+      var evtTarget = event.cyTarget;
+      if( evtTarget === cy ){
+        // console.log('tap on background');
+        NP.view.showWholeTable();
+      } else {
+        // console.log('tap on some element');
+      }
+      });
+    },
+    showWholeTable: () => {
+      NP.view.removeTable('np-table');
+      NP.view.showTable('np-table', NP.view.getProject().studies.wide)
+        .then(hot => {
+        bindTableResize(hot, 'np-table-container');
+      });
+    },
+    showTable: (container, data) => {
+      NP.view.removeTable('np-table');
+      return new Promise((resolve, reject)=>{
+        let cont = document.getElementById(container);
+        var rendered = false;
+        var hot = new Handsontable(cont, {
+          data: data,
+          // height: 700,
+          // width: 700,
+          manualColumnMove: true,
+          renderAllRows:true,
+          rowHeights: 23,
+          rowHeaders: true,
+          colHeaders: true,
+          colHeaders: Object.keys(data[0]),
+          width: $('#np-table-container').width(),
+          height: $('#np-table-container').height(),
+          columns: _.map(Object.keys(data[0]), k => {
+            return { data: k, readOnly: true };
+          }),
+          afterRender: () => {
+            if(rendered===false){
+              rendered=true;
+            }
+          },
+        });
+        resolve(hot);
+      });
+    },
+    removeTable: (container) => {
+      $('#'+container).empty();
+    },
+    getOptions: () => {
+      return NP.model.getState().project.NP.options;
+    },
+    register: (model) => {
+      NP.model = model;
+      _.mapObject(NP.actions, (f,n) => {f();});
+    },
+    isReady: () => {
+      return (! _.isUndefined(NP.model.getState().project.NP));
+    }, 
   },
-  removeTable: (container) => {
-    $('#'+container).empty();
+  update: {
+    updateState: () => {
+      if ( typeof NP.model.getState().project.NP === 'undefined'){
+        let lowrobcolor = NP.model.getState().defaults.lowrobcolor;
+        let unclearrobcolor = NP.model.getState().defaults.unclearrobcolor;
+        let highrobcolor = NP.model.getState().defaults.highrobcolor;
+        NP.model.getState().project.NP = {
+          options: {
+            vertexSizeBy: 'equal',
+            vertexColorBy: 'noColor',
+            edgeSizeBy: 'equal',
+            edgeColorBy: 'noColor',
+            defaultVertexColor: '#61AFD1',
+            lowrobcolor: lowrobcolor,
+            unclearrobcolor: unclearrobcolor,
+            highrobcolor: highrobcolor, 
+            norobcolor: '#282C34',
+            selectedColor: '#C678D7',
+            minSize: 30,
+            maxSize: 130,
+          },
+        }
+        NP.update.saveState();
+      }else{
+        console.log('init state netplot already initiated');
+      }
+    },
+    selectOption:(key,value) => {
+      NP.model.getState().project.NP.options[key] = value;
+      NP.update.saveState();
+    },
+    saveState: () => {
+      NP.model.saveState();
+      NP.update.updateChildren();
+    },
+    updateChildren: () => {
+      _.map(NP.children, c => {c.update.updateState()});
+    }
   },
-
+  render: (model) => {
+    if (NP.view.isReady()){
+      let project = NP.view.getProject();
+      NP.view.controls = NP.view.getControls(project.type);
+      var cytmpl = GRADE.templates.netplot({text:NP.model.state,view:NP.view});
+      $('#netplotContainer').html(cytmpl);
+      NP.view.cyInit('cy');
+      NP.view.addElementsToGraph();
+      NP.view.resizeElements(NP.view.getOptions().vertexSizeBy,NP.view.getOptions().edgeSizeBy);
+      NP.view.colorEdges(NP.view.getOptions().edgeColorBy);
+      NP.view.colorVertices(NP.view.getOptions().vertexColorBy);
+      NP.view.cy.layout({name:'circle'});
+      NP.view.showWholeTable();
+      NP.view.bindElementSelection(NP.view.cy);
+    }else{
+      console.log('netplot not ready');
+    }
+  },
+  children: [
+  ],
 }
 
 module.exports = () => {
