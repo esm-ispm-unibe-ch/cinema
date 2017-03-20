@@ -35,9 +35,9 @@ var PR = {
   update: {
     updateState: () => {
       if (typeof PR.model.getState().project === 'undefined'){
-        PR.model.getState().project = {};
+        PR.update.setProject({});
       }else{
-        console.log('changing project state');
+        _.map(PR.children, c => { c.update.updateState();});
       }
     },
     setProject: (pr) => {
@@ -206,12 +206,12 @@ var PR = {
   render: (model) => {
     if (PR.view.isReady()){
       var tmpl = GRADE.templates.project({model:model.state,view:PR.view});
-      return h("div#content.row",convertHTML(tmpl));
+      return h('div#content.row',convertHTML(tmpl));
     }
   },
   children: [
-    // Netplot,
-    // ConMat,
+    Netplot,
+    ConMat,
   ],
 };
 

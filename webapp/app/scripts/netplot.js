@@ -1,5 +1,12 @@
-var h = require('virtual-dom');
-var vbars = require('virtual-dom-handlebars/compile');
+var deepSeek = require('safe-access');
+var h = require('virtual-dom/h');
+var VNode = require('virtual-dom/vnode/vnode');
+var VText = require('virtual-dom/vnode/vtext');
+var convertHTML = require('html-to-vdom')({
+     VNode: VNode,
+     VText: VText
+});
+var clone = require('./mixins.js').clone;
 var Messages = require('./messages.js').Messages;
 var accumulate = require('./mixins.js').accumulate;
 var sumBy = require('./mixins.js').sumBy;
@@ -312,7 +319,9 @@ var NP = {
         ]
       }
     ]},
-    getControls: (type) => { let controls =  NP.view.defaultControls(); if(type === 'iv'){
+    controls: () => {
+      let type = NP.model.getState().project.type;
+      let controls =  NP.view.defaultControls(); if(type === 'iv'){
         controls[0].selections[1].isAvailable = false;
         controls[2].selections[1].isAvailable = false;
         controls[2].selections[3].isAvailable = true;
@@ -446,11 +455,31 @@ var NP = {
     },
     register: (model) => {
       NP.model = model;
+      model.Actions.Netplot = NP.update;
       _.mapObject(NP.actions, (f,n) => {f();});
     },
     isReady: () => {
-      return (! _.isUndefined(NP.model.getState().project.NP));
+      let isReady = false;
+      if (! _.isUndefined(deepSeek(NP,'model.getState().project.NP'))){
+        isReady = true;
+      }
+      return isReady;
     }, 
+    hasChanged: () => {
+      let np = NP.model.getState().project.NP;
+     console.log('old',NP.npstate,'new',np);
+      if ( _.isUndefined(NP.npstate)||$('#cy').is(':empty') ){
+        NP.npstate = clone(np);
+        return true;
+      }else{
+        if(_.isEqual(NP.npstate,np)) {
+          return false;
+        }else{
+          NP.npstate = clone(np);
+          return true;
+        }
+      }
+    }
   },
   update: {
     updateState: () => {
@@ -458,7 +487,7 @@ var NP = {
         let lowrobcolor = NP.model.getState().defaults.lowrobcolor;
         let unclearrobcolor = NP.model.getState().defaults.unclearrobcolor;
         let highrobcolor = NP.model.getState().defaults.highrobcolor;
-        NP.model.getState().project.NP = {
+        NP.update.setState({
           options: {
             vertexSizeBy: 'equal',
             vertexColorBy: 'noColor',
@@ -472,31 +501,35 @@ var NP = {
             selectedColor: '#C678D7',
             minSize: 30,
             maxSize: 130,
-          },
-        }
-        NP.update.saveState();
+          }
+        });
+        NP.hasChanged = true;
       }else{
         console.log('init state netplot already initiated');
       }
     },
+    setState: (np) => {
+      NP.model.getState().project.NP = np;
+      console.log('npstate',NP.hasChanged);
+      _.map(NP.children, c => {c.update.updateState()});
+      NP.model.saveState();
+    },
     selectOption:(key,value) => {
       NP.model.getState().project.NP.options[key] = value;
-      NP.update.saveState();
-    },
-    saveState: () => {
       NP.model.saveState();
-      NP.update.updateChildren();
     },
-    updateChildren: () => {
-      _.map(NP.children, c => {c.update.updateState()});
-    }
   },
   render: (model) => {
     if (NP.view.isReady()){
-      let project = NP.view.getProject();
-      NP.view.controls = NP.view.getControls(project.type);
-      var cytmpl = GRADE.templates.netplot({text:NP.model.state,view:NP.view});
-      $('#netplotContainer').html(cytmpl);
+      var tmpl = GRADE.templates.netplot({text:NP.model.state,view:NP.view});
+      return h('div#netplotContainer.col-xs-12',convertHTML(tmpl));
+    }else{
+      console.log('netplot not ready');
+    }
+  },
+  afterRender: () => {
+    if (NP.view.hasChanged()) {
+      if (! _.isUndefined(deepSeek(NP,'view.cy'))){NP.view.cy.destroy()};
       NP.view.cyInit('cy');
       NP.view.addElementsToGraph();
       NP.view.resizeElements(NP.view.getOptions().vertexSizeBy,NP.view.getOptions().edgeSizeBy);
@@ -505,8 +538,6 @@ var NP = {
       NP.view.cy.layout({name:'circle'});
       NP.view.showWholeTable();
       NP.view.bindElementSelection(NP.view.cy);
-    }else{
-      console.log('netplot not ready');
     }
   },
   children: [

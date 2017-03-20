@@ -1,3 +1,11 @@
+var deepSeek = require('safe-access');
+var h = require('virtual-dom/h');
+var VNode = require('virtual-dom/vnode/vnode');
+var VText = require('virtual-dom/vnode/vtext');
+var convertHTML = require('html-to-vdom')({
+     VNode: VNode,
+     VText: VText
+});
 var Messages = require('../messages.js').Messages;
 var focusTo = require('../mixins.js').focusTo;
 var bindTableResize = require('../mixins.js').bindTableResize;
@@ -23,8 +31,8 @@ var CM = {
                 param:$(this).attr('data-param'),
                 value:$(this).attr('data-value')
                 };
-            })),"param");
-            let newparams = _.groupBy(_.toArray(params),"param");
+            })),'param');
+            let newparams = _.groupBy(_.toArray(params),'param');
             newparams = _.extend(newparams,sels);
             newparams = _.mapObject(newparams, (v,k) => {
               let vals = _.map(v, vv => {return vv.value});
@@ -57,32 +65,45 @@ var CM = {
   view: {
     register: (model) => {
       CM.model = model;
+      model.Actions.ConMat = CM.update;
       _.mapObject(CM.actions, (f,n) => {f();});
     },
   },
   //has to be incorporated to update module rewrite netplot nad project
   update: {
     updateState: () => {
+      console.log('updatingState in conmat');
       if ( typeof CM.model.getState().project.CM === 'undefined'){
-        CM.model.getState().project.CM = {
+        Update(CM.model).setState({
+          contributionMatrices: [],
           currentCM: {
             params: {
+              MAModel: {},
+              sm: {},
+              intvs: [],
+              rule: {}
             },
-            status: "empty",
+            status: 'empty',
           },
-          contributionMatrices: [],
-        }
+        });
+      }else{
+        Update(CM.model).updateChildren();
       }
-      Update(CM.model).saveState();
     },
   },
   render: (model) => {
     if(View(model).isReady()){
-      console.log("going to render model",model);
       var tmpl = GRADE.templates.conmatrix(View(model));
-      $('#contMatContainer').html(tmpl);
+      return h('div#contMatContainer.col-xs-12',convertHTML(tmpl));
+    }else{
+      console.log('conMat not ready');
     }
   },
+  afterRender: () => {
+    console.log('after render conmat');
+  },
+  children: [
+  ],
 }
 
 module.exports = () => {

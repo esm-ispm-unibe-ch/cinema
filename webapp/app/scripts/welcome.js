@@ -15,7 +15,7 @@ var Welcome = {
   init: () => {},
   render: (model) => {
     var tmpl = GRADE.templates.welcome(model.state.text);
-    return h("div#content.row",convertHTML(tmpl));
+    return h('div#content.row',convertHTML(tmpl));
   }
 }
 

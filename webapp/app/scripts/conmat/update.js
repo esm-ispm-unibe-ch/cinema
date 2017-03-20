@@ -1,10 +1,14 @@
+var deepSeek = require('safe-access');
 var Update = (model) => {
-  let cm = model.getState().project.CM;
-  let cmc = cm.currentCM;
-  let params = cmc.params;
+  let cm = deepSeek(model,'getState().project.CM');
+  let cmc = deepSeek(cm,'currentCM');
+  let params = deepSeek(cmc,'params');
   let updaters = {
+    setState: (incm) => {
+      model.getState().project.CM = incm;
+      updaters.saveState();
+    },
     createMatrix: () => {
-      // CM.view.removeTable();
       updaters.update.fetchCM()
         .then(updaters.removeLoader)
         .then(updaters.makeDownloader)

@@ -125,15 +125,24 @@ var Router = {
           cnode = child.module.render(model);
         }
         let ptree = [
-                     h("div#header.row",hnode),
+                     h('div#header.row',hnode),
                      cnode,
-                     h("nav.row.footerContainer.navbar-fixed-bottom",fnode)
+                     h('nav.row.footerContainer.navbar-fixed-bottom',fnode)
                    ];
           resolve(ptree);
         }else{
-        reject("not ready");
+        reject('not ready');
       }
     });
+  },
+  afterRender: () => {
+    let child = _.find(Router.renderChildren, c => {
+      return c.route === Router.view.currentRoute();
+    });
+    if(child.route === 'general'){
+      General.afterRender();
+    }else{
+    }
   },
   register:(model) => {
     Router.model = model;

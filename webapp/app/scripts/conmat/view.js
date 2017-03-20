@@ -1,10 +1,12 @@
+var deepSeek = require('safe-access');
 var View = (model) => {
-  let cm = model.getState().project.CM;
-  let cmc = cm.currentCM;
-  let params = cmc.params;
+  let cm = deepSeek(model,'getState().project.CM');
+  let cmc = deepSeek(cm,'currentCM');
+  let params = deepSeek(cmc,'params');
   let viewers = {
     canCreateMatrix: () => {
-      let musthaves = ['MAModel',"sm","rule",'intvs'];
+      console.log('params',params);
+      let musthaves = ['MAModel','sm','rule','intvs'];
       if(_.isEmpty(params)){
         return false;
       }
@@ -20,7 +22,11 @@ var View = (model) => {
       return true;
     },
     isReady: () => {
-      return (! _.isUndefined(cm));
+      let isReady = false;
+      if (! _.isUndefined(deepSeek(model,'getState().project.CM.currentCM'))){
+        isReady = true;
+      }
+      return isReady;
     },
     status: () => {
       return cmc.status;
@@ -33,9 +39,12 @@ var View = (model) => {
     },
     controls: () => {
       let project = model.getState().project;
+      let cm = model.getState().project.CM;
+      let cmc = cm.currentCM;
+      let currentCM = cmc;
       let type = project.type;
       let cntrs = viewers.defaultControls();
-      let currentCM = cmc;
+      console.log('cmc',cmc);
       _.map(cntrs, cn => {
         _.map(cn.selections, s => {
           if(currentCM.params[cn.id]===s.value){

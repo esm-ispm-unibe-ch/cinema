@@ -1,7 +1,4 @@
 var h = require('virtual-dom/h');
-var diff = require('virtual-dom/diff');
-var patch = require('virtual-dom/patch');
-var createElement = require('virtual-dom/create-element');
 var Netplot = require('./netplot.js')();
 var Evaluator = require('./evaluator.js')();
 var ConMat = require('./conmat/conmat.js')();
@@ -15,11 +12,17 @@ var General = {
       });
     }
   },
-  render: (model,container) => {
-    var tmpl = GRADE.templates.general();
-    $(container).html(tmpl);
+  render: (model) => {
+    return h('div#content.row',
+      [
+      _.map(General.renderChildren, c => {
+         return c.render(model);
+        })
+      ]);
+  },
+  afterRender: () => {
     _.map(General.renderChildren, c => {
-      c.render(model);
+      c.afterRender();
     });
   },
   renderChildren: [
