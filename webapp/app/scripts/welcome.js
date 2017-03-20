@@ -1,3 +1,11 @@
+var h = require('virtual-dom/h');
+var VNode = require('virtual-dom/vnode/vnode');
+var VText = require('virtual-dom/vnode/vtext');
+var convertHTML = require('html-to-vdom')({
+     VNode: VNode,
+     VText: VText
+});
+
 var Welcome = {
   view: {
     register: (model) => {
@@ -5,9 +13,9 @@ var Welcome = {
     },
   },
   init: () => {},
-  render: (model,container) => {
+  render: (model) => {
     var tmpl = GRADE.templates.welcome(model.state.text);
-    $(container).html(tmpl);
+    return h("div#content.row",convertHTML(tmpl));
   }
 }
 

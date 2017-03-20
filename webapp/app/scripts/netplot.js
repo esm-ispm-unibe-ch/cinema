@@ -1,3 +1,5 @@
+var h = require('virtual-dom');
+var vbars = require('virtual-dom-handlebars/compile');
 var Messages = require('./messages.js').Messages;
 var accumulate = require('./mixins.js').accumulate;
 var sumBy = require('./mixins.js').sumBy;
@@ -146,7 +148,7 @@ var NP = {
     colorEdges : (filter) => {
       var edges = NP.view.edges;
       var colors = [NP.view.getOptions().lowrobcolor,NP.view.getOptions().unclearrobcolor,NP.view.getOptions().highrobcolor];
-      console.log("colors",colors);
+      console.log('colors',colors);
       NP.view.cy.batch( () => {
         _.map(NP.view.edges, e => {
           var totalrob = 0;

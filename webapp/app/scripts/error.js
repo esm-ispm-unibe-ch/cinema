@@ -1,8 +1,16 @@
+var h = require('virtual-dom/h');
+var VNode = require('virtual-dom/vnode/vnode');
+var VText = require('virtual-dom/vnode/vtext');
+var convertHTML = require('html-to-vdom')({
+     VNode: VNode,
+     VText: VText
+});
+
 var Error = {
   init: () => {},
-  render: (model,container) => {
+  render: (model) => {
     var tmpl = GRADE.templates.error(model.text);
-    $(container).html(tmpl);
+    return convertHTML(tmpl);
   }
 }
 

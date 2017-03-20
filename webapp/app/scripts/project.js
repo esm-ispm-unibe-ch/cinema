@@ -1,3 +1,11 @@
+var deepSeek = require('safe-access');
+var h = require('virtual-dom/h');
+var VNode = require('virtual-dom/vnode/vnode');
+var VText = require('virtual-dom/vnode/vtext');
+var convertHTML = require('html-to-vdom')({
+     VNode: VNode,
+     VText: VText
+});
 var Messages = require('./messages.js').Messages;
 var htmlEntities = require('./mixins.js').htmlEntities;
 var FR = require('./readFile.js').FR;
@@ -9,16 +17,10 @@ var sumBy = require('./mixins.js').sumBy;
 var getCombinations = require('./combinations.js').getCombinations;
 var accumulate = require('./mixins.js').accumulate;
 var Netplot = require('./netplot.js')();
-var ConMat = require('./conmatrix.js')();
+var ConMat = require('./conmat/conmat.js')();
 
 var PR = {
   actions: {
-    bindFileUploader: () => {
-      $(document).on('change','#files', {} ,
-        e=>{
-             PR.update.fetchProject(e);
-      });
-    },
     bindControls: () => {
       $(document).on('click','#projectClear', {} ,
         e=>{
@@ -37,12 +39,11 @@ var PR = {
       }else{
         console.log('changing project state');
       }
-        PR.model.saveState();
-        _.map(PR.children, c => { c.update.updateState();});
     },
     setProject: (pr) => {
       PR.model.getState().project = pr;
-      PR.update.updateState();
+      _.map(PR.children, c => { c.update.updateState();});
+      PR.model.saveState();
     },
     makeIndirectComparisons: (nodes,directComparisons) => {
       let lind = _.filter(getCombinations(nodes,2), c=> {
@@ -115,8 +116,8 @@ var PR = {
       PR.model.getState().project = {};
       PR.model.saveState();
     },
-    getJSON: (evt, filename) => {
-      return FR.handleFileSelect(evt)
+    getJSON: (infile, filename) => {
+      return FR.handleFileSelect(infile)
       .then(FR.convertCSVtoJSON)
       .then(Checker.checkColumnNames)
       .then(Checker.checkTypes)
@@ -180,7 +181,7 @@ var PR = {
       return PR.view.getProject().title;
     },
     numStudies: () => {
-      let studies = _.toArray(_.groupBy(PR.view.getProject().studies.long,"id"));
+      let studies = _.toArray(_.groupBy(PR.view.getProject().studies.long,'id'));
       return studies.length;
     },
     interventions: () => {
@@ -190,24 +191,27 @@ var PR = {
       return PR.view.getProject().studies.directComparisons.length;
     },
     isReady: () => {
-      return (! _.isUndefined(PR.view.getProject()));
+      let isReady = false;
+      if (! _.isUndefined(deepSeek(PR,'model.getState().project'))){
+        isReady = true;
+      }
+      return isReady;
     },
     register: (model) => {
+      model.Actions.Project = PR.update;
       PR.model = model;
+      _.mapObject(PR.actions, (f,n) => {f();});
     },
   },
-  render: (model, container) => {
-    if(PR.view.isReady()){
+  render: (model) => {
+    if (PR.view.isReady()){
       var tmpl = GRADE.templates.project({model:model.state,view:PR.view});
-      $(container).html(tmpl);
+      return h("div#content.row",convertHTML(tmpl));
     }
   },
-  init: (model) => {
-    _.mapObject(PR.actions, (f,n) => {f();});
-  },
   children: [
-    Netplot,
-    ConMat,
+    // Netplot,
+    // ConMat,
   ],
 };
 

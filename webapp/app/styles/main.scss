@@ -11,19 +11,35 @@ $icon-font-path: '../fonts/';
   padding: 0.2em 0;
 }
 
+.welcome-title {
+  background-image: url("../images/welcome.png");
+  height: 109px;
+  padding: 23px;
+  color: #FFFFFF;
+  margin-bottom: 20px;
+  font-family: serif;
+  text-align: end;
+}
+
 /* Space out content a bit */
 body {
-  padding-bottom: 80px;
    min-width:768px; /* suppose you want minimun width of 1000px */
    width: auto !important;  /* Firefox will set width as auto */
+   padding-bottom:52px;
 }
 
 /* Everything but the jumbotron gets side spacing for mobile first views */
 .header,
 .marketing,
+.footerContainer {
+  bottom:0;
+}
 .footer {
-  padding-left: 15px;
-  padding-right: 15px;
+  padding-top:13px!important;
+  p {
+    padding-left: 33px;
+    padding-right: 15px;
+  }
 }
 
 /* Custom page header */

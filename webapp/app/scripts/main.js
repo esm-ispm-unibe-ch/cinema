@@ -1,6 +1,7 @@
 var Model = require('./model.js').Model;
 
-//Rendering functions
-$(document).ready(function () {
-  Model.init();
-});
+Model.init();
+window.Actions = Model.Actions;
+module.export = () => {
+  return Model;
+}

@@ -1,3 +1,11 @@
+var deepSeek = require('safe-access');
+var h = require('virtual-dom/h');
+var VNode = require('virtual-dom/vnode/vnode');
+var VText = require('virtual-dom/vnode/vtext');
+var convertHTML = require('html-to-vdom')({
+     VNode: VNode,
+     VText: VText
+});
 var Messages = require('./messages.js').Messages;
 var Welcome = require('./welcome.js')();
 var Project = require('./project.js')();
@@ -12,19 +20,25 @@ var Router = {
         return true;
       }else{
         switch(route) {
-          case "general":
+          case 'general':
             if(Router.model.getState().project && typeof Router.model.getState().project.studies !== 'undefined'){
               return true;
             }else{ 
               return false;
             }
             break;
+          case 'rob':
+            return true;
+            break;
+          case 'inconsistency':
+            return true;
+            break;
         }
         return false;
       }
     },
-    menuRoutes: ["welcome","project","doc"],
-    evalRoutes: ["general","rob", "imprecision","inconsistency", "indirectness",  "pubBias","report"],
+    menuRoutes: ['welcome','project','doc'],
+    evalRoutes: ['general','rob', 'imprecision','inconsistency', 'indirectness',  'pubBias','report'],
     dependencies: {
       project: [],
       general: ['projectName'],
@@ -52,31 +66,27 @@ var Router = {
     currentRoute : () =>{
       return Router.model.getState().router.currentRoute;
     },
-    register:(model) => {
-      _.map(Router.renderChildren, c => {
-        c.module.view.register(model);
-      });
-      Router.model = model;
-    },
     isReady: () => {
       let isReady = false;
-      if(! _.isUndefined(Router.model.getState().router)){
+      if (! _.isUndefined(deepSeek(Router,'model.getState().router.currentRoute'))){
         isReady = true;
       }
       return isReady;
     },
   },
   update: {
-    updateState: () => {
-      if (typeof Router.model.getState().router === 'undefined'){
-        Router.model.getState().router = {
+    updateState: (model) => {
+      if (_.isUndefined(deepSeek(model,'getState().router'))){
+          model.getState().router = {
           currentRoute: 'welcome'
         }
-        Router.model.saveState();
+        model.saveState();
       }else{
+        console.log('found cached route', Router.view.currentRoute());
       }
     },
     gotoRoute: (route) => {
+      console.log('routing to ', route);
       if((Router.view.currentRoute()!==route)){
         if(Router.view.checkAvailability(route)){
         Router.model.getState().router.currentRoute = route;
@@ -92,50 +102,58 @@ var Router = {
       $(document).on('click','a.routes', {} ,
         e=>{
           var route = $(e.currentTarget).attr('action');
-          Router.update.gotoRoute(route);
+          // console.log(e,'going to route',route);
+          // Router.update.gotoRoute(route);
       });
     },
   },
-  init: (model) => {
-    //bind actions
-    Router.actions.bindNavControls();
-    //bind children actions
-    _.map(Router.renderChildren, c => {
-        c.module.init(model);
-    });
-  },
-  render: (model) => {
+  render:(model) => {
     return new Promise((resolve,reject) => {
       if (Router.view.isReady()){
         var headertmpl = GRADE.templates.header({model:model.state,view:Router.view});
-        $('#header').html(headertmpl);
-        let currentRoute = Router.view.currentRoute();
+        var footertmpl = GRADE.templates.footer({model:model.state,view:Router.view});
+        var hnode = convertHTML(headertmpl);
+        var fnode = convertHTML(footertmpl);
+        let cnode = {};
         let child = _.find(Router.renderChildren, c => {
-          return c.route === currentRoute;
+          return c.route === Router.view.currentRoute();
         });
         if(typeof child === 'undefined'){
-          Error.render(model,"#content");
-          reject("didn't find route");
+          cnode = Error.render(model);
+          // reject('didn\'t find route');
         }else{
-          child.module.render(model,"#content");
+          cnode = child.module.render(model);
         }
+        let ptree = [
+                     h("div#header.row",hnode),
+                     cnode,
+                     h("nav.row.footerContainer.navbar-fixed-bottom",fnode)
+                   ];
+          resolve(ptree);
+        }else{
+        reject("not ready");
       }
-      var footertmpl = GRADE.templates.footer({model:model.state,view:Router.view});
-      $('.footer').html(footertmpl);
-      resolve('rendered route');
+    });
+  },
+  register:(model) => {
+    Router.model = model;
+    Router.model.Actions.Router = Router.update;
+    Router.actions.bindNavControls();
+    _.map(Router.renderChildren, c => {
+      c.module.view.register(model);
     });
   },
   renderChildren: [
-    { route: "welcome",
+    { route: 'welcome',
       module: Welcome
     },
-    { route: "doc",
+    { route: 'doc',
       module: Doc
     },
-    { route: "project",
+    { route: 'project',
       module: Project
     },
-    { route: "general",
+    { route: 'general',
       module: General
     },
   ],

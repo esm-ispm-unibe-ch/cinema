@@ -17,19 +17,13 @@ var FR = {
         alert('An error occurred reading this file.');
     };
   },
-  handleFileSelect: (evt) => {
-      var reader = FR.reader;
-      reader = new FileReader();
-      reader.onerror = FR.errorHandler;
-      return new Promise( (resolve, reject ) => {
-          reader.onloadend = function(evt) {
-            if (evt.target.readyState == FileReader.DONE) { // DONE == 2
-              resolve(evt.target.result);
-              }else{
-              reject(evt.target.error);
-            }
+  handleFileSelect: (file) => {
+    return new Promise((resolve,reject) => {
+    var reader = new FileReader();
+      reader.onload = function(progressEvent){
+        resolve(this.result);
       };
-      reader.readAsBinaryString(evt.target.files[0]);
+      reader.readAsText(file.files[0]);
     });
   },
   convertCSVtoJSON: (stri) =>{
