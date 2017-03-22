@@ -1,6 +1,8 @@
 var deepSeek = require('safe-access');
 var Messages = require('../messages.js').Messages;
 var clone = require('../mixins.js').clone;
+var json2csv = require('json2csv');
+var download = require('downloadjs');
 
 var Update = (model) => {
   let project = deepSeek(model,'getState().project');
@@ -45,7 +47,8 @@ var Update = (model) => {
       })
       .catch(err => {
         updaters.updateContributionCache();
-        Messages.alertify().error(Messages.ocpuError + err);
+        let msg = _.isUndefined(err)?'':" "+err;
+        Messages.alertify().error(model.getState().text.CM.downloadError + msg);
         updaters.clearMatrix();
       });
     },
@@ -433,6 +436,59 @@ var Update = (model) => {
           resolve(hot);
         });
       }
+    },
+    makeDownloader: (res) => {
+      return new Promise((resolve,reject) => {
+        let cm = res;
+        let cw = cm.colNames.length;
+        cm.sortedStudies = [];
+        if(res.directStudies.length !== 0){
+          cm.sortedStudies = 
+          cm.sortedStudies.concat([Array(cw).fill()])
+          .concat(res.directStudies);
+        }
+        if(res.indirectStudies.length !== 0){
+          cm.sortedStudies = 
+          cm.sortedStudies.concat([Array(cw).fill()])
+          .concat(res.indirectStudies);
+        }
+        // .concat(cm.impD);
+        cm.sortedRowNames = [];
+        if(res.directStudies.length !== 0){
+          cm.sortedRowNames =
+          cm.sortedRowNames.concat(['Mixed estimates'])
+          .concat(cm.directRowNames);
+        }
+        if(res.indirectStudies.length !== 0){
+          cm.sortedRowNames =
+          cm.sortedRowNames
+          .concat(['Indirect estimates'])
+          .concat(cm.indirectRowNames);
+        }
+        // .concat(['','Entire network']);
+        let studies = cm.sortedStudies;
+        let cols = cm.colNames;
+        let rows = cm.sortedRowNames;
+        let fcols = [cm.MAModel+' '+cm.sm].concat(cols);
+        let fstudies = _.map(_.zip(rows, studies), r=>{
+          return [r[0]].concat(r[1]);
+        });
+        fstudies = _.map(fstudies,st=>{return _.object(fcols,st);});
+        let csvTable = json2csv({
+          data: fstudies,
+          fields: fcols,
+        });
+        let csvContent = 'data:text/csv;charset=utf-8,'+csvTable;
+        var encodedUri = encodeURI(csvContent);
+        let cmfilename = (project.title+'_'+cm.params.MAModel+'_'+cm.params.sm).replace(/\,/g,'_')+'.csv';
+        resolve([encodedUri,cmfilename]);
+      });
+    },
+    downloadCSV: () => {
+      updaters.makeDownloader(updaters.getCM()).then( zfile => {
+        let [blob,filename] = zfile;
+        download(blob,filename);
+      });
     },
   }
   return updaters;

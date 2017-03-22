@@ -68,6 +68,9 @@
     {{#if isLoading}}
       <a id="cancelCM" onClick="Actions.ConMat.cancelMatrix()" class="btn btn-default">Cancel!</a>
     {{/if}}
+    {{#if tableReady}}
+      <a onClick="Actions.ConMat.downloadCSV()" class="btn btn-default" id="downloadAnchorElem">Download csv</a>
+    {{/if}}
   </form>
   <div id='cm-table-container' class='well table-container col-md-9 col-sm-12
     col-xs-12'>

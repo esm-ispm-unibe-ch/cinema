@@ -59,6 +59,7 @@
   },
   "dependencies": {
     "alertifyjs": "^1.8.0",
+    "downloadjs": "^1.4.7",
     "html-to-vdom": "^0.7.0",
     "json2csv": "^3.7.1",
     "safe-access": "^0.1.0",

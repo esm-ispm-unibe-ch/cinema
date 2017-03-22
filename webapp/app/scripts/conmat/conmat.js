@@ -9,7 +9,6 @@ var convertHTML = require('html-to-vdom')({
 var Messages = require('../messages.js').Messages;
 var focusTo = require('../mixins.js').focusTo;
 var bindTableResize = require('../mixins.js').bindTableResize;
-var json2csv = require('json2csv');
 var clone = require('../mixins.js').clone;
 var View = require('./view.js')();
 var Update = require('./update.js')();
@@ -63,6 +62,9 @@ var CM = {
     },
     cancelMatrix: () => {
        Update(CM.model).cancelMatrix();
+    },
+    downloadCSV: () => {
+       Update(CM.model).downloadCSV();
     },
   },
   //has to be incorporated to view module
