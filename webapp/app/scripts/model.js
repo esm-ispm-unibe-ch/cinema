@@ -27,15 +27,16 @@ var Model = {
     let wt = document.documentElement.scrollTop || document.body.scrollTop;
     Model.state.wt = wt;
     localStorage.setItem('state', JSON.stringify(Model.getState()));
-    console.log('saving state');
-    console.log('rendering');
+    // console.log('saving state');
+    // console.log('rendering');
     View.render(Model).then(
       out =>{
         window.scrollTo(0,Model.state.wt);
-        console.log('rendered success!!',out);}
+        // console.log('rendered success!!',out);
+        }
     ).catch(err =>{
       $('#errormsg').text(err);
-      console.log('error rendering view',err);
+      // console.log('error rendering view',err);
     });
   },
   getState: () => {
@@ -86,14 +87,14 @@ var Model = {
     Router.register(Model);
     View.init(Model);
     if (typeof localStorage.state === 'undefined'){
-      console.log('no cached state');
+      // console.log('no cached state');
       Model.setState({
         text : Locales[Model.defaults.locale],
         defaults: Model.defaults,
       });
     }else{
       Model.setState(JSON.parse(localStorage.state));
-      console.log('found cache state',Model.getState());
+      // console.log('found cache state',Model.getState());
     }
   },
   children: [

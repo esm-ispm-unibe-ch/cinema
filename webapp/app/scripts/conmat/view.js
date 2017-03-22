@@ -1,17 +1,56 @@
 var deepSeek = require('safe-access');
 var View = (model) => {
   let cm = deepSeek(model,'getState().project.CM');
-  let cmc = deepSeek(cm,'currentCM');
-  let params = deepSeek(cmc,'params');
+  let cmc=() => deepSeek(cm,'currentCM');
+  let params = deepSeek(cmc(),'params');
   let viewers = {
+    tableReady: () => {
+      if(cmc().status==='ready'){
+        return true;
+      }else{
+        return false;
+      }
+    },
+    isEmpty: () => {
+      if(cmc().status==='epmty'){
+        return true;
+      }else{
+        return false;
+      }
+    },
+    isLoading: () => {
+      if(cmc().status==='loading'){
+        return true;
+      }else{
+        return false;
+      }
+    },
+    isCanceling: () => {
+      if(cmc().status==='canceling'){
+        return true;
+      }else{
+        return false;
+      }
+    },
+    table: () => {
+      return cmc().directStudies;
+    },
+    progress: () => {
+      return cmc().progress;
+    },
+    headerTitle: () => {
+      return cmc().currentRow;
+    },
     canCreateMatrix: () => {
-      console.log('params',params);
+      if(cmc().status !== 'empty'){
+        return false;
+      }
       let musthaves = ['MAModel','sm','rule','intvs'];
       if(_.isEmpty(params)){
         return false;
       }
       let can = ! _.any(musthaves, mh => {
-        return _.isUndefined(params[mh]);
+        return _.isEmpty(params[mh]);
       });
       if (can === false) {
         return false;
@@ -29,13 +68,13 @@ var View = (model) => {
       return isReady;
     },
     status: () => {
-      return cmc.status;
+      return cmc().status;
     },
     isEmpty: () => {
-      return cmc.status === 'empty';
+      return cmc().status === 'empty';
     },
     isLoading: () => {
-      return cmc.status === 'loading';
+      return cmc().status === 'loading';
     },
     controls: () => {
       let project = model.getState().project;
@@ -44,7 +83,6 @@ var View = (model) => {
       let currentCM = cmc;
       let type = project.type;
       let cntrs = viewers.defaultControls();
-      console.log('cmc',cmc);
       _.map(cntrs, cn => {
         _.map(cn.selections, s => {
           if(currentCM.params[cn.id]===s.value){

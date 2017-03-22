@@ -18,7 +18,6 @@ var NP = {
       $(document).on('change','select.netplotControl', {} ,e=>{
           var key = $(e.currentTarget).attr('data-option');
           var value = $(e.currentTarget).children('option:selected').attr('filter');
-        console.log('new options', key,value);
           NP.update.selectOption(key,value);
       });
     },
@@ -155,7 +154,6 @@ var NP = {
     colorEdges : (filter) => {
       var edges = NP.view.edges;
       var colors = [NP.view.getOptions().lowrobcolor,NP.view.getOptions().unclearrobcolor,NP.view.getOptions().highrobcolor];
-      console.log('colors',colors);
       NP.view.cy.batch( () => {
         _.map(NP.view.edges, e => {
           var totalrob = 0;
@@ -467,7 +465,6 @@ var NP = {
     }, 
     hasChanged: () => {
       let np = NP.model.getState().project.NP;
-     console.log('old',NP.npstate,'new',np);
       if ( _.isUndefined(NP.npstate)||$('#cy').is(':empty') ){
         NP.npstate = clone(np);
         return true;

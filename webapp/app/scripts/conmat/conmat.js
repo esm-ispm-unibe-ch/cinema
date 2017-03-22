@@ -16,6 +16,7 @@ var Update = require('./update.js')();
 
 var CM = {
   actions: {
+    //rewrite in view rules 
     selectParams: () => {
       $(document).on('change','.conMatControls', {} ,
           e=>{
@@ -31,8 +32,8 @@ var CM = {
                 param:$(this).attr('data-param'),
                 value:$(this).attr('data-value')
                 };
-            })),'param');
-            let newparams = _.groupBy(_.toArray(params),'param');
+            })),"param");
+            let newparams = _.groupBy(_.toArray(params),"param");
             newparams = _.extend(newparams,sels);
             newparams = _.mapObject(newparams, (v,k) => {
               let vals = _.map(v, vv => {return vv.value});
@@ -55,52 +56,71 @@ var CM = {
       });
     },
     createMatrix: () => {
-      $(document).on('click','createMatrixButton', {} ,
-        e=>{
-          Update(CM.model).createMatrix();
-      });
+       Update(CM.model).createMatrix();
+    },
+    clearMatrix: () => {
+       Update(CM.model).clearMatrix();
+    },
+    cancelMatrix: () => {
+       Update(CM.model).cancelMatrix();
     },
   },
   //has to be incorporated to view module
   view: {
     register: (model) => {
       CM.model = model;
-      model.Actions.ConMat = CM.update;
-      _.mapObject(CM.actions, (f,n) => {f();});
+      model.Actions.ConMat = CM.actions;
+      CM.actions.selectParams();
+      CM.actions.selectAllInts();
     },
   },
   //has to be incorporated to update module rewrite netplot nad project
   update: {
     updateState: () => {
-      console.log('updatingState in conmat');
-      if ( typeof CM.model.getState().project.CM === 'undefined'){
+      // console.log("updatingState in conmat");
+      if ( _.isUndefined(deepSeek(CM,'model.getState().project.CM'))){
         Update(CM.model).setState({
           contributionMatrices: [],
           currentCM: {
+            hatmatrix:[],
+            savedComparisons: [],
             params: {
               MAModel: {},
               sm: {},
               intvs: [],
-              rule: {}
+              rule: {},
+              tau: 0
             },
-            status: 'empty',
+            status: "empty", //empty, loading, canceling, ready
+            progress: 0,
+            currentRow: 'Hat Matrix'
           },
         });
       }else{
-        Update(CM.model).updateChildren();
+        if( (deepSeek(CM,'model.getState().project.CM.currentCM.status')==='loading')){
+          Update(CM.model).createMatrix();
+        }
+        if( (deepSeek(CM,'model.getState().project.CM.currentCM.status')==='canceling')){
+            Update(CM.model).clearMatrix();
+        }
+        if( (deepSeek(CM,'model.getState().project.CM.currentCM.status')==='ready')){
+        }
       }
     },
   },
   render: (model) => {
     if(View(model).isReady()){
       var tmpl = GRADE.templates.conmatrix(View(model));
-      return h('div#contMatContainer.col-xs-12',convertHTML(tmpl));
+      return h("div#contMatContainer.col-xs-12",convertHTML(tmpl));
     }else{
-      console.log('conMat not ready');
+      // console.log('conMat not ready');
     }
   },
   afterRender: () => {
-    console.log('after render conmat');
+    if(($("#cm-table")).is(':empty')){
+      console.log("after render conmat");
+      Update(CM.model).showTable();
+    }
   },
   children: [
   ],
