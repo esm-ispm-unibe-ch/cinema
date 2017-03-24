@@ -1,4 +1,5 @@
 var deepSeek = require('safe-access');
+
 var View = (model) => {
   let cm = deepSeek(model,'getState().project.CM');
   let cmc=() => deepSeek(cm,'currentCM');

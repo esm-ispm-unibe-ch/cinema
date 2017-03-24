@@ -1,5 +1,5 @@
-var Messages = require('./messages.js').Messages;
-var uniqId = require('./mixins.js').uniqId;
+// var Messages = require('../messages.js').Messages;
+// var uniqId = require('../lib/mixins.js').uniqId;
 
 
 var CC = {

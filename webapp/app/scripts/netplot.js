@@ -6,11 +6,11 @@ var convertHTML = require('html-to-vdom')({
      VNode: VNode,
      VText: VText
 });
-var clone = require('./mixins.js').clone;
+var clone = require('./lib/mixins.js').clone;
 var Messages = require('./messages.js').Messages;
-var accumulate = require('./mixins.js').accumulate;
-var sumBy = require('./mixins.js').sumBy;
-var bindTableResize = require('./mixins.js').bindTableResize;
+var accumulate = require('./lib/mixins.js').accumulate;
+var sumBy = require('./lib/mixins.js').sumBy;
+var bindTableResize = require('./lib/mixins.js').bindTableResize;
 
 var NP = {
   actions: {
@@ -481,9 +481,9 @@ var NP = {
   update: {
     updateState: () => {
       if ( typeof NP.model.getState().project.NP === 'undefined'){
-        let lowrobcolor = NP.model.getState().defaults.lowrobcolor;
-        let unclearrobcolor = NP.model.getState().defaults.unclearrobcolor;
-        let highrobcolor = NP.model.getState().defaults.highrobcolor;
+        let lowrobcolor = NP.model.getState().project.robLevels[0].color;
+        let unclearrobcolor = NP.model.getState().project.robLevels[1].color;
+        let highrobcolor = NP.model.getState().project.robLevels[2].color;
         NP.update.setState({
           options: {
             vertexSizeBy: 'equal',

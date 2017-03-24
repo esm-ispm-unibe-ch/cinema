@@ -7,9 +7,9 @@ var convertHTML = require('html-to-vdom')({
      VText: VText
 });
 var Messages = require('../messages.js').Messages;
-var focusTo = require('../mixins.js').focusTo;
-var bindTableResize = require('../mixins.js').bindTableResize;
-var clone = require('../mixins.js').clone;
+var focusTo = require('../lib/mixins.js').focusTo;
+var bindTableResize = require('../lib/mixins.js').bindTableResize;
+var clone = require('../lib/mixins.js').clone;
 var View = require('./view.js')();
 var Update = require('./update.js')();
 
@@ -124,8 +124,6 @@ var CM = {
       Update(CM.model).showTable();
     }
   },
-  children: [
-  ],
 }
 
 module.exports = () => {

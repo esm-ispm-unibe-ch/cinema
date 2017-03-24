@@ -1,0 +1,92 @@
+<blockquote id="" class='col-xs-12'>
+  <h3 id="contMatTitle">{{text.title}}</h3>
+  <div class='form-inline'>
+    {{#unless statusReady}}
+      <label class=' controls-title mr-sm-2'>
+        {{text.selectionTitle}}
+      </label>
+      <select onChange="Actions.DirectRob.selectrob(this)" {{#if statusReady}}
+        disabled {{/if}} class='mr-sm-2 form-inline form-control'>
+        {{#each rulesselections}}
+          {{#if isAvailable}}
+            <option value="{{value}}" {{#if isDisabled}} disabled {{/if}} {{#if isActive}} selected{{/if}}>
+            {{label}}
+            </option>
+          {{/if}}
+        {{/each}}
+      </select>
+      {{/unless}}
+      {{#if statusReady}}
+        <label class=' controls-title mr-sm-2'>
+          {{text.defaultTitle}}
+          {{ruleName}}
+        </label>
+        {{#if customized}}
+          <br>
+          <label class=' controls-title mr-sm-2'>
+            {{numberCustomized}}
+            {{#if customizedSingular}}
+              {{text.customizedTitleSingular}}
+            {{else}}
+              {{text.customizedTitlePlural}}
+            {{/if}}
+          </label>
+        {{/if}}
+      {{/if}}
+    <button onClick="Actions.DirectRob.resetDirectRob()" class="pull-right btn btn-default
+      {{#unless statusReady}} disabled{{/unless}}"> {{text.resetButton}} </button>
+  </div>
+</blockquote>
+<div id="robSelector" class='col-xs-12 well collapse in'>
+  <ul class='list-inline'>
+    {{#each directComparisons}}
+    <li class='well compRobSelector {{#if customized}} customized {{/if}}' id="comp-{{id}}">
+        <ul>
+          {{#if tn1}}
+            <li>
+              <ul>
+                <li>
+                  <strong>{{tn1}}</strong>
+                 </li><li>
+                  vs
+                  </li><li>
+                  <strong>{{tn2}}</strong>
+                </li>
+              </ul>
+              <hr>
+            </li>
+          {{else}}
+            <li>
+            Comparison: <span class='pull-right'><strong>{{t1}}</strong> : <strong>{{t2}}</strong></span>
+              <hr>
+            </li>
+            {{/if}}
+          <li>
+            Number of studies: <strong class='pull-right'>{{numStudies}}</strong>
+            {{#if sampleSize}}
+          </li><li>
+            Sample size: <strong class='pull-right'>{{sampleSize}}</strong>
+            {{/if}}
+              <hr>
+          </li><li class="majrob  {{#unless ../isMaj}} robLabel{{/unless}}">
+            Majority ROB: <strong class='pull-right'>{{majrobName}} </strong>
+          </li><li class="meanrob {{#unless ../isMean}} robLabel{{/unless}}">
+            Mean ROB: <strong class='pull-right'> {{meanrobName}}</strong>
+          </li><li class='maxrob {{#unless ../isMax}} robLabel{{/unless}}'>
+            Maximum ROB: <strong class='pull-right'> {{maxrobName}}</strong>
+              <hr>
+          </li><li>
+            Direct ROB:
+            <select onChange="Actions.DirectRob.selectIndividual(this)"
+              {{#unless ../statusReady}} disabled {{/unless}} class='mr-sm-2 controls-container'>
+              {{#each robselections}}
+              <option value="{{../id}}σδel{{id}}" {{#if isDisabled}} disabled {{/if}} {{#if isActive}} selected{{/if}}>
+                    {{label}}
+                </option>
+              {{/each}}
+            </select>
+          </li>
+        </ul>
+    {{/each}}
+  </ul>
+</div>

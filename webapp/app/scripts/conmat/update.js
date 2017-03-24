@@ -1,6 +1,6 @@
 var deepSeek = require('safe-access');
 var Messages = require('../messages.js').Messages;
-var clone = require('../mixins.js').clone;
+var clone = require('../lib/mixins.js').clone;
 var json2csv = require('json2csv');
 var download = require('downloadjs');
 
@@ -258,18 +258,6 @@ var Update = (model) => {
                 contributions: row.contribution
               });
           },[]);
-          // let updateSavedComparisons = (saved, rows) => {
-          //   let uniqSaved = _.reduce(saved, (memo, comp) => {
-          //     let out = memo;
-          //     if(typeof _.find(rows,r=>{return r.rowname === comp.rowname;}) === 'undefined'){
-          //       return memo.concat(comp);
-          //     }
-          //     return memo;
-          //   },[]);
-          //   return _.union(uniqSaved, rows);
-          // }
-          // ncm.savedComparisons = updateSavedComparisons(ncm.savedComparisons,rows);
-          // updaters.getCM().selectedComparisons = _.map(rows, row => {return row.rowname});
          updaters.setCurrentCM('status','ready')
           updaters.saveState();
           // console.log('the ocpu result',connma,'pushing to project');
@@ -315,7 +303,6 @@ var Update = (model) => {
             (r.rowname.split(':')[0]===d.split(',')[1]))
           );
           return aresame});
-          // return r[0].replace(':',',')===d});
       });
       cm.directRowNames = _.map(directRows,row=>{return row.rowname});
       cm.directStudies = _.map(directRows,row=>{return row.comparisons});
@@ -353,11 +340,6 @@ var Update = (model) => {
               .concat(cm.indirectRowNames);
             mergeCells = numDirects===0?mergeCells:mergeCells.concat({row: numDirects+1, col: 0, rowspan: 1, colspan: cw});
           }
-          // mergeCells.concat(
-          //   {row: numDirects+numIndirects+2, col: 0, rowspan: 1, colspan: cw}
-          // );
-          // studies = studies.concat(cm.impD);
-          // rowNames = rowNames.concat('Entire <br> network');
           let cols = cm.colNames;
           var setBackground = (percentage) => {
             return `
@@ -469,7 +451,7 @@ var Update = (model) => {
         let studies = cm.sortedStudies;
         let cols = cm.colNames;
         let rows = cm.sortedRowNames;
-        let fcols = [cm.MAModel+' '+cm.sm].concat(cols);
+        let fcols = [params.MAModel+' '+params.sm].concat(cols);
         let fstudies = _.map(_.zip(rows, studies), r=>{
           return [r[0]].concat(r[1]);
         });

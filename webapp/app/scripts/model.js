@@ -1,8 +1,8 @@
 var Locales = require('./translations.json');
 var View = require('./view.js').View;
-var clone = require('./mixins.js').clone;
-var accumulate = require('./mixins.js').accumulate;
-var sumBy = require('./mixins.js').sumBy;
+var clone = require('./lib/mixins.js').clone;
+var accumulate = require('./lib/mixins.js').accumulate;
+var sumBy = require('./lib/mixins.js').sumBy;
 var Router = require('./router.js').Router;
 var Project = require('./project.js')();
 
@@ -10,9 +10,16 @@ var Model = {
   Actions: {}
   ,
   defaults: {
-    lowrobcolor: '#7CC9AE',
-    unclearrobcolor: '#FBBC05',
-    highrobcolor: '#E0685C',
+    robLevels: [
+      { id: 1,
+        color: '#7CC9AE'
+      },
+      { id: 2,
+        color: '#FBBC05'
+      },
+      { id: 3,
+        color: '#E0685C'
+    }],
     locale: 'EN',
   },
   setState: (state) => {
@@ -38,6 +45,7 @@ var Model = {
       $('#errormsg').text(err);
       // console.log('error rendering view',err);
     });
+    console.log("the state", Model.getState());
   },
   getState: () => {
     return Model.state;

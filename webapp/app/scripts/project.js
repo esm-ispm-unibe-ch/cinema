@@ -7,17 +7,18 @@ var convertHTML = require('html-to-vdom')({
      VText: VText
 });
 var Messages = require('./messages.js').Messages;
-var htmlEntities = require('./mixins.js').htmlEntities;
-var FR = require('./readFile.js').FR;
-var Checker = require('./fileChecks.js').Checker;
+var htmlEntities = require('./lib/mixins.js').htmlEntities;
+var FR = require('./lib/readFile.js').FR;
+var Checker = require('./lib/fileChecks.js').Checker;
 var md5 = require('../../bower_components/js-md5/js/md5.min.js');
-var Reshaper = require('./reshaper.js').Reshaper;
-var uniqId = require('./mixins.js').uniqId;
-var sumBy = require('./mixins.js').sumBy;
-var getCombinations = require('./combinations.js').getCombinations;
-var accumulate = require('./mixins.js').accumulate;
+var Reshaper = require('./lib/reshaper.js').Reshaper;
+var uniqId = require('./lib/mixins.js').uniqId;
+var sumBy = require('./lib/mixins.js').sumBy;
+var getCombinations = require('./lib/combinations.js').getCombinations;
+var accumulate = require('./lib/mixins.js').accumulate;
 var Netplot = require('./netplot.js')();
 var ConMat = require('./conmat/conmat.js')();
+var DirectRob = require('./directrob/directrob.js')();
 
 var PR = {
   actions: {
@@ -33,9 +34,19 @@ var PR = {
     }
   },
   update: {
+    robLevels: () => {
+      let robs = PR.model.defaults.robLevels;
+      _.map(robs, r => {
+        r.label = PR.model.state.text.robLevels[r.id-1];
+      });
+      return robs;
+    },
     updateState: () => {
       if (typeof PR.model.getState().project === 'undefined'){
-        PR.update.setProject({});
+        let robLvls = PR.update.robLevels();
+        PR.update.setProject({
+          robLevels: robLvls
+        });
       }else{
         _.map(PR.children, c => { c.update.updateState();});
       }
@@ -149,6 +160,7 @@ var PR = {
     createProject: (pr) =>{
       var date = Number(new Date());
       var id = md5(date+Math.random());
+      let robLvls = PR.update.robLevels();
       return {
         id: id,
         title: pr.title,
@@ -158,6 +170,7 @@ var PR = {
         type: pr.type,
         creationDate: date,
         accessDate: date,
+        robLevels: robLvls
       };
     },
     fetchProject: (evt) => {
@@ -212,6 +225,7 @@ var PR = {
   children: [
     Netplot,
     ConMat,
+    DirectRob,
   ],
 };
 

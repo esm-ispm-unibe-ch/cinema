@@ -4,7 +4,6 @@ var patch = require('virtual-dom/patch');
 var createElement = require('virtual-dom/create-element');
 var Router = require('./router.js').Router;
 var Messages = require('./messages.js').Messages;
-var Tools = require('./tools.js')();
 
 
 var View = {
