@@ -12,6 +12,8 @@ var Project = require('./project.js')();
 var Doc = require('./doc.js')();
 var Error = require('./error.js')();
 var General = require('./general.js')();
+var RoB = require('./rob/rob.js')();
+var ConChart = require('./rob/conchart/conchart.js')();
 
 var Router = {
   view: {
@@ -19,6 +21,8 @@ var Router = {
       if(_.contains(Router.view.menuRoutes, route)){
         return true;
       }else{
+        let conmatStatus = deepSeek(Router,'model.getState().project.CM.currentCM.status'); 
+        let directRobStatus = deepSeek(Router,'model.getState().project.DirectRob.status'); 
         switch(route) {
           case 'general':
             if(Router.model.getState().project && typeof Router.model.getState().project.studies !== 'undefined'){
@@ -28,10 +32,10 @@ var Router = {
             }
             break;
           case 'rob':
-            return true;
+            return ((conmatStatus==='ready')&&(directRobStatus==='ready'));
             break;
           case 'inconsistency':
-            return true;
+            return ((conmatStatus==='ready')&&(directRobStatus==='ready'));
             break;
         }
         return false;
@@ -122,8 +126,12 @@ var Router = {
           cnode = Error.render(model);
           // reject('didn\'t find route');
         }else{
+          if(Router.view.currentRoute() !=='rob'){
+             ConChart.destroyRender(model);
+          }
           cnode = child.module.render(model);
         }
+
         let ptree = [
                      h('div#header.row',hnode),
                      cnode,
@@ -135,13 +143,18 @@ var Router = {
       }
     });
   },
-  afterRender: () => {
+  afterRender: (model) => {
     let child = _.find(Router.renderChildren, c => {
       return c.route === Router.view.currentRoute();
     });
-    if(child.route === 'general'){
-      General.afterRender();
-    }else{
+    if( typeof child !== 'undefined'){
+      if(child.route === 'general'){
+        General.afterRender();
+      }else{
+        if(child.route === 'rob'){
+          RoB.afterRender(model);
+        }
+      }
     }
   },
   register:(model) => {
@@ -164,6 +177,9 @@ var Router = {
     },
     { route: 'general',
       module: General
+    },
+    { route: 'rob',
+      module: RoB
     },
   ],
 }

@@ -20,7 +20,7 @@ var View = {
          var patches = diff(View.vtree, nvtree);
          patch(View.rootNode, patches);
          View.vtree = nvtree;
-         Router.afterRender();
+         Router.afterRender(model);
       });
     });
   },

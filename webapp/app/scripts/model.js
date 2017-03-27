@@ -20,6 +20,16 @@ var Model = {
       { id: 3,
         color: '#E0685C'
     }],
+    studyLimitationLevels: [
+      { id: 1,
+        color: '#7CC9AE'
+      },
+      { id: 2,
+        color: '#FBBC05'
+      },
+      { id: 3,
+        color: '#E0685C'
+      }],
     locale: 'EN',
   },
   setState: (state) => {

@@ -1,3 +1,4 @@
+var RoB = require('../rob/rob.js')();
 var deepSeek = require('safe-access');
 var Messages = require('../messages.js').Messages;
 var clone = require('../lib/mixins.js').clone;
@@ -113,7 +114,8 @@ var Update = (model) => {
       // console.log("the CM now after saving",model.getState().project.CM);
     },
     updateChildren: () => {
-      _.map(children, c => {c.update.updateState()});
+      console.log('updating children of contribution matrix');
+      _.map(children, c => {c.update.updateState(model)});
     },
     fetchContributionMatrix: (ncm) => {
       return new Promise((resolve, reject) => {
@@ -477,6 +479,7 @@ var Update = (model) => {
 };
 
 var children = [
+  RoB
   ];
 
 module.exports = () => {

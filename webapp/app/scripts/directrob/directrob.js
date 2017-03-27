@@ -28,8 +28,8 @@ var DirectRob = {
     },
   },
   update: {
-    updateState: () => {
-        Update(DirectRob.model).updateState();
+    updateState: (model) => {
+        Update(model).updateState();
     },
   },
   render: (model) => {

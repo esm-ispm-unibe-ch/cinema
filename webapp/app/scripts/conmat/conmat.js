@@ -78,9 +78,10 @@ var CM = {
   },
   //has to be incorporated to update module rewrite netplot nad project
   update: {
-    updateState: () => {
+    updateState: (model) => {
       // console.log("updatingState in conmat");
       if ( _.isUndefined(deepSeek(CM,'model.getState().project.CM'))){
+        CM.model = model;
         Update(CM.model).setState({
           contributionMatrices: [],
           currentCM: {
@@ -107,6 +108,7 @@ var CM = {
         }
         if( (deepSeek(CM,'model.getState().project.CM.currentCM.status')==='ready')){
         }
+        Update(CM.model).updateChildren();
       }
     },
   },
@@ -115,12 +117,11 @@ var CM = {
       var tmpl = GRADE.templates.conmatrix(View(model));
       return h("div#contMatContainer.col-xs-12",convertHTML(tmpl));
     }else{
-      // console.log('conMat not ready');
+      console.log('conMat not ready');
     }
   },
   afterRender: () => {
     if(($("#cm-table")).is(':empty')){
-      console.log("after render conmat");
       Update(CM.model).showTable();
     }
   },

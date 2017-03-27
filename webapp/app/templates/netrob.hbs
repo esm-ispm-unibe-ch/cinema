@@ -1,0 +1,75 @@
+<blockquote id="netRob" class='col-xs-12'>
+  <h3 id="netrobTitle">{{text.title}}</h3>
+  <div class='form-inline'>
+    {{#unless statusReady}}
+      <label class=' controls-title mr-sm-2'>
+        {{text.selectionTitle}}
+      </label>
+      <select onChange="Actions.NetRob.selectRule(this)" {{#if statusReady}}
+        disabled {{/if}} class='mr-sm-2 form-inline form-control'>
+        {{#each rulesselections}}
+          {{#if isAvailable}}
+            <option value="{{value}}" {{#if isDisabled}} disabled {{/if}} {{#if isActive}} selected{{/if}}>
+            {{label}}
+            </option>
+          {{/if}}
+        {{/each}}
+      </select>
+      {{/unless}}
+      {{#if statusReady}}
+        <label class=' controls-title mr-sm-2'>
+          {{text.defaultTitle}}
+          {{ruleName}}
+        </label>
+        {{#if customized}}
+          <br>
+          <label class=' controls-title mr-sm-2'>
+            {{numberCustomized}}
+            {{#if customizedSingular}}
+              {{text.customizedTitleSingular}}
+            {{else}}
+              {{text.customizedTitlePlural}}
+            {{/if}}
+          </label>
+        {{/if}}
+      {{/if}}
+    <button onClick="Actions.NetRob.resetNetRob()" class="pull-right btn btn-default
+      {{#unless statusReady}} disabled{{/unless}}"> {{text.resetButton}} </button>
+  </div>
+</blockquote>
+<div id="netRobSelector" class='col-xs-12 well collapse in'>
+  <ul class='list-inline'>
+    {{#each boxes}}
+    <li class='well compRobSelector {{#if customized}} customized {{/if}}' id="comp-{{id}}">
+        <ul>
+          <li>
+            <strong>
+              {{#if isMixed}}{{../../text.mixedtitle}}{{else}}{{../../text.indirecttitle}}{{/if}}
+            </strong>
+            <span class='pull-right'>
+              <strong>
+                {{id}}
+            </strong></span>
+              <hr>
+          </li>
+          {{#each rules}}
+          <li class=" {{#unless isActive}} robLabel{{/unless}}">
+              {{name}}:<strong class='pull-right'>{{label}}</strong>
+           </li>
+          {{/each}}
+              <hr>
+          <li>
+          {{../text.judgementField}} 
+            <select onChange="Actions.NetRob.selectIndividual(this)"
+              {{#unless ../statusReady}} disabled {{/unless}} class='mr-sm-2 controls-container'>
+              {{#each judgements}}
+              <option value="{{../id}}σδel{{id}}" {{#if isDisabled}} disabled {{/if}} {{#if isActive}} selected{{/if}}>
+                    {{label}}
+                </option>
+              {{/each}}
+            </select>
+          </li>
+        </ul>
+    {{/each}}
+  </ul>
+</div>

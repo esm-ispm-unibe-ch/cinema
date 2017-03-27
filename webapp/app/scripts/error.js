@@ -9,7 +9,7 @@ var convertHTML = require('html-to-vdom')({
 var Error = {
   init: () => {},
   render: (model) => {
-    var tmpl = GRADE.templates.error(model.text);
+    var tmpl = GRADE.templates.error(model.getState().text);
     return convertHTML(tmpl);
   }
 }

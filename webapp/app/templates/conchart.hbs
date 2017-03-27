@@ -1,40 +1,9 @@
-  <!-- <ul>
-  {{#each model.project.contributionMatrices}}
-  <li>
-    {{MAModel}}
-    {{sm}}
-    {{matrix}}
-    {{isDefault}}
-  </li>
-  {{/each}}
-</ul> -->
-  {{#if currentCM.matrix}}
-    <h4>
-      Contribution Matrix:
-    {{currentCM.MAModel}}
-    {{currentCM.sm}}
-  </h4>
-    <br>
-  {{else}}
-    <h4>
-      Please Select Contribution Matrix
-      <br>
-    </h4>
-  {{/if}}
-  {{#if hasSelectedRob}}
-  <!-- <h4> -->
-  <!-- Rob selected! -->
-  <!-- </h4> -->
-  {{else}}
-    <h4>
-      Please set study limitations
-    </h4>
-    <br>
-  {{/if}}
-{{#if chartReady}}
-<!-- READY -->
-<div id="chartContainer" class="well">
-  <canvas id='barChart' width='600' height="600"></canvas>
-  <button id="barChartsavebtn" class='btn'>Save Chart Image</button>
-</div>
-{{/if}}
+<blockquote id="conChartTitleCont" class='col-xs-12'>
+  <h3 id="contChartTitle">{{text.title}}</h3>
+  <div class='form-inline'>
+    <button onClick="Actions.ConChart.save()"
+    onClick="Actions.DirectRob.resetDirectRob()" class="pull-right btn
+    btn-default"> {{text.saveButton}}</button>
+  </div>
+</blockquote>
+<div id="barChartContainer"></div>

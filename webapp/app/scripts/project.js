@@ -34,6 +34,13 @@ var PR = {
     }
   },
   update: {
+    studyLimitationLevels: () =>{
+      let lims = PR.model.defaults.studyLimitationLevels;
+      _.map(lims, r => {
+        r.label = PR.model.state.text.NetRob.levels[r.id-1];
+      });
+      return lims;
+    },
     robLevels: () => {
       let robs = PR.model.defaults.robLevels;
       _.map(robs, r => {
@@ -41,19 +48,22 @@ var PR = {
       });
       return robs;
     },
-    updateState: () => {
+    updateState: (model) => {
       if (typeof PR.model.getState().project === 'undefined'){
+        PR.model = model;
         let robLvls = PR.update.robLevels();
+        let studyLimitationLevels = PR.update.studyLimitationLevels();
         PR.update.setProject({
-          robLevels: robLvls
+          robLevels: robLvls,
+          studyLimitationLevels: studyLimitationLevels
         });
       }else{
-        _.map(PR.children, c => { c.update.updateState();});
+        _.map(PR.children, c => { c.update.updateState(model);});
       }
     },
     setProject: (pr) => {
       PR.model.getState().project = pr;
-      _.map(PR.children, c => { c.update.updateState();});
+      _.map(PR.children, c => { c.update.updateState(PR.model);});
       PR.model.saveState();
     },
     makeIndirectComparisons: (nodes,directComparisons) => {
@@ -124,7 +134,12 @@ var PR = {
       return _.sortBy(edges,e =>{return e.id});
     },
     clearProject: () => {
-      PR.model.getState().project = {};
+      let robLvls = PR.update.robLevels();
+      let studyLimitationLevels = PR.update.studyLimitationLevels();
+      PR.model.getState().project = {
+          robLevels: robLvls,
+          studyLimitationLevels: studyLimitationLevels
+      };
       PR.model.saveState();
     },
     getJSON: (infile, filename) => {
@@ -161,6 +176,7 @@ var PR = {
       var date = Number(new Date());
       var id = md5(date+Math.random());
       let robLvls = PR.update.robLevels();
+      let studyLimitationLevels = PR.update.studyLimitationLevels();
       return {
         id: id,
         title: pr.title,
@@ -170,7 +186,8 @@ var PR = {
         type: pr.type,
         creationDate: date,
         accessDate: date,
-        robLevels: robLvls
+        robLevels: robLvls,
+        studyLimitationLevels: studyLimitationLevels
       };
     },
     fetchProject: (evt) => {
@@ -219,7 +236,7 @@ var PR = {
   render: (model) => {
     if (PR.view.isReady()){
       var tmpl = GRADE.templates.project({model:model.state,view:PR.view});
-      return h('div#content.row',convertHTML(tmpl));
+      return h('div#contentProject.row',convertHTML(tmpl));
     }
   },
   children: [

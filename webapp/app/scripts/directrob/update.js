@@ -1,7 +1,10 @@
+var RoB = require('../rob/rob.js')();
 var deepSeek = require('safe-access');
 var clone = require('../lib/mixins.js').clone;
+var Messages = require('../messages.js').Messages;
 
 var children = [
+  RoB
   ];
 
 var Update = (model) => {
@@ -21,7 +24,7 @@ var Update = (model) => {
         updaters.resetDirectRob();
       }else{
         console.log("DirectRob model ready");
-        _.map(children, c => { c.update.updateState();});
+        _.map(children, c => { c.update.updateState(model);});
       }
     },
     resetDirectRob: () => {
@@ -44,6 +47,7 @@ var Update = (model) => {
         dc.directRob = dc[rule.value];
       });
       updaters.saveState();
+      Messages.alertify().success(model.getState().text.directRob.directRobSet);
       console.log('the rule you picked was', rule.value);
     },
     selectIndividual: (value) => {
@@ -59,11 +63,15 @@ var Update = (model) => {
         updaters.getState().customized -= 1;
       }
       tbc.directRob = parseInt(tv);
+      updaters.getState().status = 'selecting';
+      updaters.saveState();
+      updaters.getState().status = 'ready';
+      Messages.alertify().success(tid.replace(",",":")+" "+model.getState().text.directRob.directRobSet);
       updaters.saveState();
     },
     saveState: () => {
       model.saveState();
-      _.map(children, c => { c.update.updateState();});
+      _.map(children, c => { c.update.updateState(model);});
     },
     skeletonModel: () => {
       return { 
