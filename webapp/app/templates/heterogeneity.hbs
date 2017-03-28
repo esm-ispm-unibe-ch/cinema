@@ -1,0 +1,144 @@
+<!-- <div id='hetercontainer' class='col-xs-12'> -->
+  <blockquote id="refvals" class='col-xs-12'>
+    <h3 id="referenceValuesTitle">Reference Values for τ<sup>2</sup></h3>
+    <div class='form-inline col-xs-12'>
+      <ul class='list-inline'>
+        {{#each rfvParams}}
+          <li>
+            {{#if isAvailable}}
+              <label class='controls-title mr-sm-2'>
+                {{label}}
+              </label>
+              <select data-id="{{id}}"
+                      onChange="Actions.Heterogeneity.selectRFVparam(this)" {{#if ../../rfvReady}}
+                disabled {{/if}} class='mr-sm-2 form-inline form-control'>
+                {{#each selections}}
+                  {{#if isAvailable}}
+                    <option value="{{id}}" {{#if isDisabled}} disabled {{/if}} {{#if isActive}} selected{{/if}}>
+                    {{label}}
+                    </option>
+                  {{/if}}
+                {{/each}}
+              </select>
+            {{/if}}
+          </li>
+        {{/each}}
+      </ul>
+    </div>
+    <div class='buttoner col-xs-12'>
+      <button onClick="Actions.Heterogeneity.fetchRFV()" class="pull-right btn btn-default
+        {{#unless canFetch}} disabled{{/unless}}">Fetch Values</button>
+      <button onClick="Actions.Heterogeneity.resetRFV()" class="pull-right btn btn-default
+        {{#unless rfvReady}} disabled{{/unless}}">Reset Values</button>
+    </div>
+    {{#if rfvReady}}
+    <div class='col-xs-12 rftable'>
+      <table class='table'>
+        <tr>
+          <th>τ<sup>2</sup><sub>network</sub>{{{rfvs.tauSquareNetwork}}}</th>
+          <th>25<sup>th</sup></th>
+          <th>median</th>
+          <th>75<sup>th</sup></th>
+        </tr>
+        <tr>
+          {{#each rfvs}}
+            <td>{{this}}</td>
+          {{/each}}
+        </tr>
+      </table>
+    </div>
+    {{/if}}
+  </blockquote>
+  {{#if rfvReady}}
+    <blockquote id="heterogeneityBoxes" class='col-xs-12'>
+      <h3 id="heterTitle">{{text.title}}</h3>
+      <div class='form-inline'>
+        {{#unless heterReady}}
+          <label class=' controls-title mr-sm-2'>
+            {{text.selectionTitle}}
+          </label>
+          <select onChange="Actions.NetRob.selectRule(this)" {{#if heterReady}}
+            disabled {{/if}} class='mr-sm-2 form-inline form-control'>
+            {{#each rulesselections}}
+              {{#if isAvailable}}
+                <option value="{{value}}" {{#if isDisabled}} disabled {{/if}} {{#if isActive}} selected{{/if}}>
+                {{label}}
+                </option>
+              {{/if}}
+            {{/each}}
+          </select>
+          {{/unless}}
+          {{#if heterReady}}
+            <label class=' controls-title mr-sm-2'>
+              {{text.defaultTitle}}
+              {{ruleName}}
+            </label>
+            {{#if customized}}
+              <br>
+              <label class=' controls-title mr-sm-2'>
+                {{numberCustomized}}
+                {{#if customizedSingular}}
+                  {{text.customizedTitleSingular}}
+                {{else}}
+                  {{text.customizedTitlePlural}}
+                {{/if}}
+              </label>
+            {{/if}}
+          {{/if}}
+        <button onClick="Actions.NetRob.resetNetRob()" class="pull-right btn btn-default
+          {{#unless heterReady}} disabled{{/unless}}"> {{text.resetButton}} </button>
+      </div>
+    </blockquote>
+    <div id="heterBoxes" class='col-xs-12 well collapse in'>
+      <ul class='list-inline'>
+        {{#each boxes}}
+        <li class='well compRobSelector {{#if customized}} customized {{/if}}' id="comp-{{id}}">
+            <ul>
+              <li>
+                <strong>
+                  {{#if isMixed}}{{../../text.mixedtitle}}{{else}}{{../../text.indirecttitle}}{{/if}}
+                </strong>
+                <span class='pull-right'>
+                  <strong>
+                    {{id}}
+                </strong></span>
+                  <hr>
+              </li>
+              {{#if isMixed}}
+                <li>
+                  τ<sup>2</sup>: <strong class='pull-right'>{{tauSquare}}</strong>
+                </li>
+                <li>
+                  I<sup>2</sup>: <strong class='pull-right'>{{ISquare}}</strong>
+                  <hr>
+                </li>
+              {{/if}}
+                <li>
+                  CI: <strong class='pull-right'>({{CIf}},{{CIs}})</strong>
+                </li>
+                <li>
+                  PrI: <strong class='pull-right'>({{PrIf}},{{PrIs}})</strong>
+                </li>
+              {{#each rules}}
+              <li class=" {{#unless isActive}} robLabel{{/unless}}">
+                  {{name}}:<strong class='pull-right'>{{label}}</strong>
+               </li>
+              {{/each}}
+                  <hr>
+              <li>
+              {{../../text.judgementField}} 
+                <select onChange="Actions.NetRob.selectIndividual(this)"
+                  {{#unless ../../heterReady}} disabled {{/unless}} class='mr-sm-2 controls-container'>
+                  {{#each levels}}
+                  <option value="{{../id}}σδel{{id}}" {{#if isDisabled}} disabled {{/if}} {{#if isActive}} selected{{/if}}>
+                        {{label}}
+                    </option>
+                  {{/each}}
+                </select>
+              </li>
+            </ul>
+        {{/each}}
+      </ul>
+    </div>
+  {{/if}}
+<!-- </div> -->

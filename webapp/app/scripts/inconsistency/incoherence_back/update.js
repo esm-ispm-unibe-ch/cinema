@@ -4,12 +4,11 @@ var uniqId = require('../../lib/mixins.js').uniqId;
 var Messages = require('../../messages.js').Messages;
 
 var children = [
-  //Report
   ];
 
 var Update = (model) => {
   //update functions will only change state in that node of the model DAG
-  let modelPosition = "project.NetRob.studyLimitations";
+  let modelPosition = "project.Inconsistency.Incoherence";
   let updaters = {
     getState: () => {
       return deepSeek(model.getState(),modelPosition);
@@ -22,19 +21,10 @@ var Update = (model) => {
       }
       return isready;
     },
-    drobReady: () => {
-      let isready = false;
-      if (deepSeek(model,'getState().project.DirectRob.status')==='ready'){
-        isready = true;
-        // console.log('direct robs ready');
-      }
-      return isready;
-    },
-    updateState: () => {
-      if ( updaters.cmReady() && updaters.drobReady() ){
-        if(updaters.getState().status === 'ready'){
-        // console.log("Study Limitations model ready");
-          _.map(children, c => { c.update.updateState(model);});
+    updateState: (model) => {
+      if (updaters.cmReady()&&(! _.isUndefined(updaters.getState()))){
+        if(updaters.getState().status !== 'empty'){
+          _.map(children, c => { c.update.updateState();});
         }else{
           updaters.setState(updaters.completeModel());
         }
@@ -43,36 +33,7 @@ var Update = (model) => {
       }
     },
     setState: (newState) => {
-      // this affects the whole node in the state.
-      let  NetRobState = deepSeek(model.getState(),"project");
-      NetRobState.NetRob.studyLimitations = newState;
-      updaters.saveState();
-    },
-    getRule: () => {
-      return deepSeek(model.getState(), modelPosition+".rule");
-    },
-    selectRule: (rule) => {
-    },
-    selectIndividual: (value) => {
-      let [tid,tv] = value.value.split('σδel');
-      let boxes = updaters.getState().boxes;
-      let tbc = _.find(boxes, m => {
-        return m.id === tid;
-      });
-      let rulevalue = deepSeek(_.find(tbc.rules, r => {return r.id === updaters.getRule()}),'value');
-      // console.log('tid tv',tid,tv,'rule',rulevalue);
-      if(parseInt(tv) !== rulevalue){
-        if((tbc.judgement === 'nothing')||(tbc.judgement === rulevalue)){
-          updaters.getState().customized += 1;
-        }      
-      }else{
-        updaters.getState().customized -= 1;
-      }
-      tbc.judgement = parseInt(tv);
-      updaters.getState().status = 'selecting';
-      updaters.saveState();
-      updaters.getState().status = 'ready';
-      Messages.alertify().success(model.getState().text.NetRob.LimitationsSet);
+      model.getState().project.Inconsistency.Incoherence = newState;
       updaters.saveState();
     },
     saveState: () => {
@@ -172,24 +133,6 @@ var Update = (model) => {
       // console.log('mixed',mixed);
       return _.union(mixed,indirect);
     },
-    completeModel: () => {
-      let boxes = updaters.createEstimates();
-      // console.log('boxes',boxes);
-      return { 
-        status: 'noRule',// noRule, editing, ready
-        rule: 'noRule', // noRule, majRule, meanRule, maxRule
-        customized: 0,
-        boxes,
-      }
-    },
-    skeletonModel: () => {
-      return { 
-        status: 'noRule',// noRule, editing, ready
-        rule: 'noRule', // noRule, majRule, meanRule, maxRule
-        customized: 0,
-        boxes: [],
-      }
-    },
     selectRule: (rule) => {
       let nrstate = updaters.getState();
       nrstate.rule = rule.value;
@@ -204,6 +147,24 @@ var Update = (model) => {
     resetNetRob: () => {
       updaters.setState(updaters.completeModel());
     },
+    skeletonModel: () => {
+      return { 
+        rule: 'noRule',
+        status: 'empty',
+        boxes: []
+      }
+    },
+    completeModel: () => {
+      // let boxes = updaters.createEstimates();
+      return { 
+        rule: 'noRule',
+        status: 'empty',
+        // boxes
+      }
+    },
+    clickedMe: () => {
+      console.log("clicked me");
+    }
   }
   return updaters;
 };

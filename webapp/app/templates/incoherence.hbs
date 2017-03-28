@@ -1,0 +1,70 @@
+<blockquote id="refvals" class='col-xs-12'>
+  <h4 id="referenceValuesTitle">{{text.subTitle}}</h4>
+  <div class='col-xs-12 rftable'>
+    <table class='table'>
+      <tr>
+        <th>{{text.QstatisticLabel}}</th>
+        <th>{{text.pvalueLabel}}</th>
+      </tr>
+      <tr>
+        {{#each rfvs}}
+          <td>{{this}}</td>
+        {{/each}}
+      </tr>
+    </table>
+  </div>
+  {{#if customized}}
+    <br>
+    <label class=' controls-title mr-sm-2'>
+    {{numberCustomized}}
+    {{#if customizedSingular}}
+      {{text.customizedTitleSingular}}
+    {{else}}
+      {{text.customizedTitlePlural}}
+    {{/if}}
+    </label>
+  {{/if}}
+  <button onClick="Actions.Incoherence.resetIncoherence()" class="pull-right btn btn-default"> {{text.resetButton}} </button>
+</blockquote>
+<div id="IncoherenceBoxes" class='col-xs-12 well collapse in'>
+  <ul class='list-inline'>
+    {{#each boxes}}
+    <li class='well compRobSelector {{#if customized}} customized {{/if}}' id="comp-{{id}}">
+        <ul class='list-inline'>
+          <li>
+            <strong>
+              {{#if isMixed}}{{../../text.mixedtitle}}{{else}}{{../../text.indirecttitle}}{{/if}}
+            </strong>
+            <span class='pull-right'>
+              <strong>
+                {{id}}
+            </strong></span>
+              <hr>
+          </li>
+          {{#if isMixed}}
+            <li>
+              {{../../text.IFLabel}}: <strong class='pull-right'>{{sideIF}}({{sideIFLower}},{{sideIFUpper}})</strong>
+            </li>
+            <li>
+              {{../../text.ZLabel}}: <strong class='pull-right'>{{Ztest}}</strong>
+            </li>
+            <li>
+              {{../../text.pvalueLabel}}: <strong class='pull-right'>{{pvalue}}</strong>
+            </li>
+          {{/if}}
+              <hr>
+          <li>
+          {{../../text.judgementField}} 
+            <select onChange="Actions.NetRob.selectIndividual(this)"
+               class='mr-sm-2 controls-container'>
+              {{#each levels}}
+              <option value="{{../id}}σδel{{id}}" {{#if isDisabled}} disabled {{/if}} {{#if isActive}} selected{{/if}}>
+                    {{label}}
+                </option>
+              {{/each}}
+            </select>
+          </li>
+        </ul>
+    {{/each}}
+  </ul>
+</div>

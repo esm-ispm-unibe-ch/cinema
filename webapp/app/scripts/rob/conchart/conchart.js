@@ -36,7 +36,7 @@ var ConChart = {
       let ndirects = chartData.datasets.length;
       let legendHeight = ndirects * 15 / 5;
       let chartHeight = 20 * nrows + legendHeight;
-      console.log('chartheight', chartHeight,'nrows',nrows,'data',chartData);
+      // console.log('chartheight', chartHeight,'nrows',nrows,'data',chartData);
       $("#barChartContainer").append("<canvas id='barChart' width='400' height='"+chartHeight+"'></chart>");
       let ctx = document.getElementById("barChart");
       ConChart.barChart = new Chart(ctx, {
@@ -58,11 +58,11 @@ var ConChart = {
         }
       })
     }else{
-      console.log('already rendered bar chart');
+      // console.log('already rendered bar chart');
     }
   },
   destroyRender: (model) => {
-    console.log('destroying barchart');
+    // console.log('destroying barchart');
     if (! _.isUndefined(ConChart.barChart)){
       ConChart.barChart.destroy();
     }

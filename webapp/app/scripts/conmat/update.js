@@ -1,4 +1,5 @@
 var RoB = require('../rob/rob.js')();
+var Inconsistency = require('../inconsistency/inconsistency.js')();
 var deepSeek = require('safe-access');
 var Messages = require('../messages.js').Messages;
 var clone = require('../lib/mixins.js').clone;
@@ -36,14 +37,13 @@ var Update = (model) => {
       updaters.saveState();
     },
     createMatrix: () => {
-      console.log('creating matrix');
+      // console.log('creating matrix');
       updaters.setCurrentCM('status','loading');
       updaters.fetchContributionMatrix(cmc).then(ncm => {
-        console.log('matrix loaded ok!!!!!');
+        // console.log('matrix loaded ok!!!!!');
         updaters.setCurrentCM('status','ready');
         updaters.showTable();
         updaters.updateContributionCache();
-        console.log('state',model.getState().text);
         Messages.alertify().success(model.getState().text.CM.downloadSuccess);
       })
       .catch(err => {
@@ -77,7 +77,7 @@ var Update = (model) => {
     compareCM: (cm1, cm2) =>{
       if ((cm1.params.MAModel === cm2.params.MAModel)&&(cm1.params.sm===cm2.params.sm)&&(cm1.params.tau===cm2.params.tau)){
         return true;
-        console.log(cm1,"and",cm2,"are the same");
+        // console.log(cm1,"and",cm2,"are the same");
       }else{
         return false;
       }
@@ -114,12 +114,12 @@ var Update = (model) => {
       // console.log("the CM now after saving",model.getState().project.CM);
     },
     updateChildren: () => {
-      console.log('updating children of contribution matrix');
       _.map(children, c => {c.update.updateState(model)});
     },
     fetchContributionMatrix: (ncm) => {
       return new Promise((resolve, reject) => {
-      ocpu.seturl('http://ec2-35-156-97-18.eu-central-1.compute.amazonaws.com:8004/ocpu/library/contribution/R');
+      // ocpu.seturl('http://ec2-35-156-97-18.eu-central-1.compute.amazonaws.com:8004/ocpu/library/contribution/R');
+      ocpu.seturl('http://localhost:8004/ocpu/library/contribution/R');
         let cms = model.getState().project.CM.contributionMatrices;
         var result = {};
         let ncmparams = params;
@@ -128,14 +128,14 @@ var Update = (model) => {
         //check if the matrix is in the model;
         let foundCM = updaters.findConMatInCache(cm);
         if(_.isEmpty(foundCM) === false){
-          console.log('found cm',params);
+          // console.log('found cm',params);
           foundCM.params = params;
           foundCM.status = 'loading';
           model.getState().project.CM.currentCM = clone(foundCM);
           cm = model.getState().project.CM.currentCM;
           updaters.saveState();
         }else{
-          console.log("did'nt find cm",clone(cm)," in cms",cms);
+          // console.log("did'nt find cm",clone(cm)," in cms",cms);
         }
         let rtype = '';
         switch(project.type){
@@ -157,7 +157,7 @@ var Update = (model) => {
               sm: cm.params.sm,
             }, (sessionh) => {
           sessionh.getObject( (hatmatrix) => {
-            console.log('the hatmatrix returned ',hatmatrix);
+            // console.log('the hatmatrix returned ',hatmatrix);
             cm.hatmatrix = hatmatrix;
             updaters.saveState();
             updaters.fetchRows(ncm).then(res => {
@@ -169,7 +169,7 @@ var Update = (model) => {
            reject('R returned an error: ' + hmc.responseText);
         });
         }else{
-            console.log("found hatmatrix", cm.hatmatrix);
+            // console.log("found hatmatrix", cm.hatmatrix);
             updaters.fetchRows(cm).then(res => {
               resolve(res);
             }).catch(err => {reject(err)});
@@ -252,7 +252,7 @@ var Update = (model) => {
           });
         };
        return sequencePromises(comparisons, updaters.getCM().savedComparisons).then(output => {
-         console.log("Server output",output);
+         // console.log("Server output",output);
           updaters.getCM().colNames = output[0].names;
           let rows = _.reduceRight(output, (mem ,row) => {
             return mem.concat(
@@ -479,7 +479,8 @@ var Update = (model) => {
 };
 
 var children = [
-  RoB
+  RoB,
+  Inconsistency
   ];
 
 module.exports = () => {

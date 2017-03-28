@@ -5,7 +5,6 @@ var deepSeek = require('safe-access');
 var h = require('virtual-dom/h');
 
 var RoB = {
-  //actions will trigered by hml actions and other msgs 
   actions: {
     clickedMe: () => {
       Update(RoB.model).clickedMe();
