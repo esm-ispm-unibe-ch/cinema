@@ -141,16 +141,18 @@
                 </li>
                 <li>
                   PrI: <strong class='pull-right'>({{PrIf}},{{PrIs}})</strong>
+                  <hr>
                 </li>
               {{#each rules}}
               <li class=" {{#unless isActive}} robLabel{{/unless}}">
-                  {{{label}}}:<strong class='pull-right'>{{level}}{{levelLabel}}</strong>
+                  {{{label}}}:<strong class='pull-right'>{{levelLabel}}</strong>
                </li>
               {{/each}}
                   <hr>
               <li>
               {{../../text.judgementField}} 
-                <select onChange="Actions.NetRob.selectIndividual(this)"
+                <!-- <select onChange="Actions.Heterogeneity.selectIndividual(this)" -->
+                <select 
                   {{#unless ../../heterReady}} disabled {{/unless}} class='mr-sm-2 controls-container'>
                   {{#each levels}}
                   <option value="{{../id}}σδel{{id}}" {{#if isDisabled}} disabled {{/if}} {{#if isActive}} selected{{/if}}>

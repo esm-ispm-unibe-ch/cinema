@@ -19,7 +19,7 @@ var Update = (model) => {
     { id: 3,
       color: '#E0685C'
   }];
-  let HeterogeneityRules = [
+  let HeterogeneityThresholds = [
     { id: 'first',
     },
     { id: 'median',
@@ -27,6 +27,9 @@ var Update = (model) => {
     { id: 'third',
     }
   ];
+  let HeterogeneityRule = [[[3,2],
+                            [2,1]], [[3,3],
+                                     [3,2]]];
   let updaters = {
     getState: () => {
       return deepSeek(model.getState(),modelPosition);
@@ -83,8 +86,6 @@ var Update = (model) => {
     updateState: (model) => {
       if (updaters.cmReady()){
         _.map(children, c => { c.update.updateState();});
-        //HAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAASSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSTOOOOOOOOOOOOBBER~D~ELELTLELTLLETLELLTLETED
-          updaters.setHetersState(updaters.hetersSkeletonModel());
       }else{
         model.getState().project.Inconsistency.Heterogeneity = {};
         updaters.setRFVState(updaters.rfvSkeletonModel());
@@ -111,33 +112,6 @@ var Update = (model) => {
       let NMAValues =  model.getState().project.CM.currentCM.hatmatrix.NMA;
       let NMANames =  model.getState().project.CM.currentCM.hatmatrix.rowNamesNMA;
       let NMAs = _.zip(NMANames,NMAValues);
-      let ruleLevel = (argsss) => {
-        let [rule,CI,PrI,tauSquare] = argsss;
-        let baseValue = updaters.getState().referenceValues.results[rule.id];
-        console.log('baseValue',rule,baseValue);
-        let tauExists = () => {
-          return ! isNaN(tauSquare);
-        };
-        let tauBigger = () => {
-          return tauSquare > baseValue;
-        };
-        let prProblem = () => {
-          let CIcrosses = CI[0] * CI[1] < 0;
-          let PrIcrosses = PrI[0] * PrI[1] < 0;
-          return !((CIcrosses && PrIcrosses) || (! CIcrosses && ! PrIcrosses));
-        };
-        let res = 0;
-        if(tauExists()) {
-          res = tauBigger();
-        }else{
-          if(prProblem()){
-            res = 2;
-          }else{
-            res = 1;
-          }
-        }
-        return res;
-      };
       let makeBoxes = (studies) => {
         let res = _.map(studies, s => {
           let pairRow = _.find(pairWises, pw => {
@@ -156,6 +130,8 @@ var Update = (model) => {
           let contents = {}
             contents =  {
                 id: s[0],
+                CI,
+                PrI,
                 CIf: useExps?Math.exp(CI[0]).toFixed(3):CI[0],
                 CIs: useExps?Math.exp(CI[1]).toFixed(3):CI[1],
                 PrIf: useExps?Math.exp(PrI[0]).toFixed(3):PrI[0],
@@ -170,8 +146,8 @@ var Update = (model) => {
             tauSquare = pairRow[1][6];
             let ISquare = pairRow[1][7];
             if(! isNaN(tauSquare)){
-            tauSquare = pairRow[1][6].toFixed(3);
-            ISquare = pairRow[1][7].toFixed(3);
+              tauSquare = pairRow[1][6].toFixed(3);
+              ISquare = pairRow[1][7].toFixed(3);
             }
             _.extend(contents,{
                 isMixed: true,
@@ -179,20 +155,6 @@ var Update = (model) => {
                 ISquare
             })
           }
-          let boxrules = _.map(updaters.getState().heters.availablerules, rule => {
-            if(tauSquare === 'nothing'){
-              return {
-                id: rule.id,
-                level: ruleLevel([rule,CI,PrI])
-              }
-            }else{
-              return {
-                id: rule.id,
-                level: ruleLevel([rule,CI,PrI,tauSquare])
-              }
-            }
-          });
-          contents.rules = boxrules;
           let levels = _.union([{
             id:'nothing',
             label: '--',
@@ -212,9 +174,9 @@ var Update = (model) => {
       let hstate = updaters.getState().heters;
       hstate.rule = rule.value;
       hstate.status = 'ready';
-      let boxes = updaters.getState().boxes; 
+      let boxes = updaters.getState().heters.boxes; 
       _.map(boxes, m => {
-        m.judgement = _.find(m.rules,mr =>{return mr.id===rule.value}).value;
+        m.judgement = _.find(m.rules,mr =>{return mr.id===rule.value}).level;
       });
       updaters.saveState();
       Messages.alertify().success(model.getState().text.Heterogeneity.HeterogeneitySet);
@@ -232,9 +194,6 @@ var Update = (model) => {
         }
       };
     },
-    setRule: (rule) => {
-      model.getState().project.Inconsistency.Heterogeneity.heters.rule = rule;
-    },
     hetersSkeletonModel: () => {
       let boxes = [];
       if(updaters.rfvReady()){
@@ -244,7 +203,8 @@ var Update = (model) => {
       }
       return { 
         levels: HeterogeneityLevels,
-        availablerules: HeterogeneityRules,
+        availablerules: HeterogeneityThresholds,
+        rules: HeterogeneityRule,
         rule: 'noRule',
         status: 'noRule',
         boxes,
@@ -260,6 +220,31 @@ var Update = (model) => {
     resetRFV: () => {
       updaters.setRFVState(updaters.rfvSkeletonModel());
       updaters.setHetersState(updaters.hetersSkeletonModel());
+      updaters.saveState();
+    },
+    getRule: () => {
+      return updaters.getState().heters.rule;
+    },
+    selectIndividual: (value) => {
+      let [tid,tv] = value.value.split('σδel');
+      let boxes = updaters.getState().boxes;
+      let tbc = _.find(boxes, m => {
+        return m.id === tid;
+      });
+      console.log('tid tv',tid,tv,'rule',rulevalue);
+      let rulevalue = deepSeek(_.find(tbc.rules, r => {return r.id === updaters.getRule()}),'value');
+      if(parseInt(tv) !== rulevalue){
+        if((tbc.judgement === 'nothing')||(tbc.judgement === rulevalue)){
+          updaters.getState().customized += 1;
+        }      
+      }else{
+        updaters.getState().customized -= 1;
+      }
+      tbc.judgement = parseInt(tv);
+      updaters.getState().status = 'selecting';
+      updaters.saveState();
+      updaters.getState().status = 'ready';
+      Messages.alertify().success(model.getState().text.NetRob.LimitationsSet);
       updaters.saveState();
     },
   }

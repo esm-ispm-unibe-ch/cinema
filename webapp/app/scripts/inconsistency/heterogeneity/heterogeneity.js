@@ -32,6 +32,11 @@ var Heterogeneity = {
           Messages.alertify().message(successmsg);
         },() => {});
     },
+    selectIndividual: (value) => {
+      let updated = Heterogeneity.model.getState().text.Heterogeneity.HeterogeneitySet;
+      Messages.alertify().message(updated);
+        Update(Heterogeneity.model).selectIndividual(value);
+    },
   },
   view: {
     register: (model) => {

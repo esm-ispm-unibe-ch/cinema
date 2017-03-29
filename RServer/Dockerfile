@@ -1,6 +1,6 @@
 # Use builds from launchpad
 # FROM opencpu/base:latest
-FROM tosku/cinema:0.1.5
+FROM tosku/cinema:0.2.1
 
 # RUN apt-get update
 
@@ -27,8 +27,10 @@ ADD toRoot /root
 # RUN chmod +x /root/installContribution -R 
 
 # RUN sh -c 'rm -rf /root/cinema'
-RUN b=d sh -c 'cd /root/cinema/webapp/ && git stash'
+# RUN b=d sh -c 'cd /root/cinema/webapp/ && git stash'
 RUN b=d sh -c 'cd /root/cinema/webapp/ && git pull'
+ # RUN b=d sh -c 'cd /root/ && rm -rf cinema'
+ # RUN b=d sh -c 'cd /root/ && git clone  https://github.com/tpapak/cinema.git'
 # RUN sh -c 'cd /root/cinema/webapp/ && npm install gulp -g && npm install bower -g'
 RUN b=d sh -c 'cd /root/cinema/webapp/ && npm install'
 RUN b=d sh -c 'cd /root/cinema/webapp/ && bower install --allow-root'

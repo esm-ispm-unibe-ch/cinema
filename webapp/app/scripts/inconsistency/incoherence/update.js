@@ -116,6 +116,7 @@ var Update = (model) => {
           dbt = _.map(model.getState().project.CM.currentCM.hatmatrix.dbt[0], d => {
             return d.toFixed(3);
           });
+          dbt[1]=parseInt(dbt[1]);
         }
         return dbt;
       };
