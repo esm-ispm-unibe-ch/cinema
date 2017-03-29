@@ -11,7 +11,7 @@ var Inconsistency = {
       Inconsistency.update.gotoRoute(route);
     },
   },
-  modelPosition: "project.Inconsistency",
+  modelPosition: 'project.Inconsistency',
   view: {
     isActive: (route) => {
       return route === Inconsistency.getState(Inconsistency.model).route;
@@ -49,10 +49,10 @@ var Inconsistency = {
           Inconsistency.update.changeState('status','ready');
         }else{
           _.map(Inconsistency.children, c => { c.update.updateState(model);});
-          console.log("Inconsistency model ready");
+          console.log('Inconsistency model ready');
         }
       }else{
-        console.log("Inconsistency model not ready");
+        console.log('Inconsistency model not ready');
         Inconsistency.update.setState(Inconsistency.update.skeletonModel());
       }
     },
@@ -75,36 +75,36 @@ var Inconsistency = {
       Inconsistency.update.saveState();
     },
     gotoRoute: (route) => {
-      console.log("going to", route);
-      Inconsistency.update.changeState("route",route);
+      console.log('going to', route);
+      Inconsistency.update.changeState('route',route);
     }
   },
   render: (model) => {
     if(Inconsistency.view.isReady(model)){
       let child = _.find(Inconsistency.renderChildren, c => {return c.route === Inconsistency.getState(model).route;}).module.render(model);
-      let hetli ="li";
-      hetli+= Inconsistency.view.isActive('heterogeneity')?".active":""; 
-      let incli ="li";
-      incli+= Inconsistency.view.isActive('incoherence')?".active":""; 
-      return [h("ul.nav.nav-tabs", [
+      let hetli ='li';
+      hetli+= Inconsistency.view.isActive('heterogeneity')?'.active':''; 
+      let incli ='li';
+      incli+= Inconsistency.view.isActive('incoherence')?'.active':''; 
+      return [h('ul.nav.nav-tabs', [
           h(hetli, [
-                h("a", {
-                        "attributes": {
-                                  "onclick": "Actions.Inconsistency.gotoRoute('heterogeneity')",
-                                  "href": "#inconsistency/heterogeneity"
+                h('a', {
+                        'attributes': {
+                                  'onclick': 'Actions.Inconsistency.gotoRoute(\'heterogeneity\')',
+                                  'href': '#inconsistency/heterogeneity'
                                 }
-                      }, `Heterogeneity`)
+                      }, 'Heterogeneity')
               ]),
           h(incli, [
-                h("a", {
-                        "attributes": {
-                                  "onclick": "Actions.Inconsistency.gotoRoute('incoherence')",
-                                  "href": "#inconsistency/incoherence"
+                h('a', {
+                        'attributes': {
+                                  'onclick': 'Actions.Inconsistency.gotoRoute(\'incoherence\')',
+                                  'href': '#inconsistency/incoherence'
                                 }
-                      }, `Incoherence`)
+                      }, 'Incoherence')
               ])
       ])
-      ,h("div.row",child)];
+      ,h('div.row',child)];
     }else{
       console.log('Inconsistency not ready to render');
     }

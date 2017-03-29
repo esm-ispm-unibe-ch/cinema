@@ -48,7 +48,7 @@ var Update = (model) => {
       })
       .catch(err => {
         updaters.updateContributionCache();
-        let msg = _.isUndefined(err)?'':" "+err;
+        let msg = _.isUndefined(err)?'':' '+err;
         Messages.alertify().error(model.getState().text.CM.downloadError + msg);
         updaters.clearMatrix();
       });
@@ -64,7 +64,7 @@ var Update = (model) => {
               rule: {},
               tau: 0
             },
-            status: "empty", //empty, loading, canceling, ready
+            status: 'empty', //empty, loading, canceling, ready
             progress: 0,
             currentRow: 'Hat Matrix'
           };
@@ -124,7 +124,7 @@ var Update = (model) => {
         var result = {};
         let ncmparams = params;
         let cm = ncm;
-        console.log("CCCCCCTRRRRRRREEEEAAAAATTTIIIIIINNGGGGGGGG MMMMMAAATTTTTRIXXXXX");
+        console.log('CCCCCCTRRRRRRREEEEAAAAATTTIIIIIINNGGGGGGGG MMMMMAAATTTTTRIXXXXX');
         //check if the matrix is in the model;
         let foundCM = updaters.findConMatInCache(cm);
         if(_.isEmpty(foundCM) === false){

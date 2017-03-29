@@ -1,7 +1,7 @@
 var deepSeek = require('safe-access');
 
 var View = (model) => {
-  let modelPosition = "project.Inconsistency.Incoherence";
+  let modelPosition = 'project.Inconsistency.Incoherence';
   let viewers = {
     isReady: () => {
       let isReady = false;
@@ -14,11 +14,11 @@ var View = (model) => {
       let prs =  [
         {
           id: 'measurement',
-          label: "Measurement",// from text file
+          label: 'Measurement',// from text file
           isAvailable: true,
           selections: [
-            { id : "nothing",
-              label: "--",
+            { id : 'nothing',
+              label: '--',
               isAvailable: true,
               isDisabled: true
             },
@@ -37,44 +37,44 @@ var View = (model) => {
           label: 'Intervention comparison type',
           isAvailable: true,
           selections: [
-            { id : "nothing",
-              label: "--",
+            { id : 'nothing',
+              label: '--',
               isDisabled: true,
               isAvailable: true
             },
-            { id : "Pharmacological vs Placebo/Control",
-              label: "Pharmacological vs Placebo/Control",
+            { id : 'Pharmacological vs Placebo/Control',
+              label: 'Pharmacological vs Placebo/Control',
               isAvailable: true
             },
             { id :'Pharmacological vs Pharmacological',
               label: 'Pharmacological vs Pharmacological',
               isAvailable: true
             },
-            { id : "Non-pharmacological vs any",
-              label: "Non-pharmacological vs any",
+            { id : 'Non-pharmacological vs any',
+              label: 'Non-pharmacological vs any',
               isAvailable: true
             }
           ]
         },
         {
           id: 'OutcomeType',
-          label: "Outcome type",// from text file
+          label: 'Outcome type',// from text file
           isAvailable: () => {
             return viewers.getState().referenceValues.params.measurement !== 'nothing';
           },
           selections: () => {
-            let binaryOptions = ["Objective","Semi-objective","Subjective"];
-            let continuousOptions = ["Obstetric outcome", 
-                  "Resource use and hospital stay/process", 
-                  "Internal and external structure-related outcome",
-                  "General physical health and adverse event and pain and quality of life/functioning",
-                  "Signs/symptoms reflecting continuation/end of condition and infection/onset of new acute/chronic disease",
-                  "Mental health outcome",
-                  "Biological marker",
-                  "Various subjectively measured outcomes"];
+            let binaryOptions = ['Objective','Semi-objective','Subjective'];
+            let continuousOptions = ['Obstetric outcome', 
+                  'Resource use and hospital stay/process', 
+                  'Internal and external structure-related outcome',
+                  'General physical health and adverse event and pain and quality of life/functioning',
+                  'Signs/symptoms reflecting continuation/end of condition and infection/onset of new acute/chronic disease',
+                  'Mental health outcome',
+                  'Biological marker',
+                  'Various subjectively measured outcomes'];
             let res = [
-            { id : "nothing",
-              label: "--",
+            { id : 'nothing',
+              label: '--',
               isDisabled: true,
               isAvailable: true,
               isActive: () => {return ('nothing' === viewers.getState().referenceValues.params.OutcomeType)},

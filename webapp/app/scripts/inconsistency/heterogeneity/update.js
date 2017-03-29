@@ -8,7 +8,7 @@ var children = [
 
 var Update = (model) => {
   //update functions will only change state in that node of the model DAG
-  let modelPosition = "project.Inconsistency.Heterogeneity";
+  let modelPosition = 'project.Inconsistency.Heterogeneity';
   let HeterogeneityLevels = [
     { id: 1,
       color: '#7CC9AE'
@@ -111,35 +111,47 @@ var Update = (model) => {
       let NMAValues =  model.getState().project.CM.currentCM.hatmatrix.NMA;
       let NMANames =  model.getState().project.CM.currentCM.hatmatrix.rowNamesNMA;
       let NMAs = _.zip(NMANames,NMAValues);
-      let ruleLevel = ([rule,CI,PrI,tauSqaure]) => {
+      let ruleLevel = (argsss) => {
+        let [rule,CI,PrI,tauSquare] = argsss;
         let baseValue = updaters.getState().referenceValues.results[rule.id];
         console.log('baseValue',rule,baseValue);
-        let tauExists = arguments.length > 3;
-        let tauProblem = () => {
-          return true;
+        let tauExists = () => {
+          return ! isNaN(tauSquare);
+        };
+        let tauBigger = () => {
+          return tauSquare > baseValue;
         };
         let prProblem = () => {
           let CIcrosses = CI[0] * CI[1] < 0;
           let PrIcrosses = PrI[0] * PrI[1] < 0;
           return !((CIcrosses && PrIcrosses) || (! CIcrosses && ! PrIcrosses));
         };
-        let res = '';
+        let res = 0;
+        if(tauExists()) {
+          res = tauBigger();
+        }else{
+          if(prProblem()){
+            res = 2;
+          }else{
+            res = 1;
+          }
+        }
         return res;
       };
       let makeBoxes = (studies) => {
         let res = _.map(studies, s => {
           let pairRow = _.find(pairWises, pw => {
-            return _.isEqual(uniqId(s[0].split(":")),uniqId(pw[0].split(" vs ")));
+            return _.isEqual(uniqId(s[0].split(':')),uniqId(pw[0].split(' vs ')));
           });
           let nmaRow = _.find(NMAs, nma => {
-            return _.isEqual(uniqId(nma[0].split(":")),uniqId(s[0].split(":")));
+            return _.isEqual(uniqId(nma[0].split(':')),uniqId(s[0].split(':')));
           });
           let CI = [nmaRow[1][2], nmaRow[1][3]];
           let PrI = [nmaRow[1][4], nmaRow[1][5]];
           let tauSquare = 'nothing';
           let useExps = (updaters.getState().referenceValues.params.measurement === 'binary') && (
-            (model.getState().project.CM.currentCM.params.sm === "OR") ||
-            (model.getState().project.CM.currentCM.params.sm === "RR")
+            (model.getState().project.CM.currentCM.params.sm === 'OR') ||
+            (model.getState().project.CM.currentCM.params.sm === 'RR')
           );
           let contents = {}
             contents =  {
@@ -178,8 +190,8 @@ var Update = (model) => {
           });
           contents.rules = boxrules;
           let levels = _.union([{
-            id:"nothing",
-            label: "--",
+            id:'nothing',
+            label: '--',
             isDisabled: true
           }],updaters.getState().heters.levels);
           contents.levels = levels;
@@ -208,11 +220,11 @@ var Update = (model) => {
     },
     rfvSkeletonModel: () => {
       return {
-        status: "empty",
+        status: 'empty',
         params: {
-          measurement: "nothing",
-          OutcomeType: "nothing",
-          InterventionComparisonType: "nothing"
+          measurement: 'nothing',
+          OutcomeType: 'nothing',
+          InterventionComparisonType: 'nothing'
         }
       };
     },
@@ -235,7 +247,7 @@ var Update = (model) => {
       }
     },
     selectRFVparam: (param) => {
-      console.log("picked",param.value,param.getAttribute('data-id'),param);
+      console.log('picked',param.value,param.getAttribute('data-id'),param);
       let paramkey = param.getAttribute('data-id');
       updaters.getState().referenceValues.params[paramkey] = param.value;
       updaters.getState().referenceValues.status = 'edited';

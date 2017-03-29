@@ -9,7 +9,7 @@ var NAC = {
       Update(NAC.model).clickedMe();
     },
   },
-  modelPosition: "model position of NAC",
+  modelPosition: 'model position of NAC',
   view: {
     register: (model) => {
       NAC.model = model;
@@ -32,7 +32,7 @@ var NAC = {
         NAC.model = model;
         NAC.update.setState(NAC.update.skeletonModel());
       }else{
-        console.log("NAC model ready");
+        console.log('NAC model ready');
         _.map(children, c => { c.update.updateState(model);});
       }
     },
@@ -51,21 +51,21 @@ var NAC = {
       }
     },
     clickedMe: () => {
-      console.log("clicked me");
+      console.log('clicked me');
     }
   },
   render: (model) => {
     if(NAC.view.isReady(model)){
       let children = _.map(NAC.renderChildren, c => {return c.render(model);});
-      return h("div.menu", [
-        h("ul", [
-          h("li", `option #1`),
-          h("a", {
-            "attributes": {
-              "onclick": "Actions.NAC.clickedMe()"
+      return h('div.menu', [
+        h('ul', [
+          h('li', 'option #1'),
+          h('a', {
+            'attributes': {
+              'onclick': 'Actions.NAC.clickedMe()'
             }
-          }, `Click`),
-          h("li", `option #2`)
+          }, 'Click'),
+          h('li', 'option #2')
         ])
       ])
     }else{

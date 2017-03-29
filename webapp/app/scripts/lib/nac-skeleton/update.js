@@ -6,7 +6,7 @@ var children = [
 
 var Update = (model) => {
   //update functions will only change state in that node of the model DAG
-  let modelPosition = "model position of NAC";
+  let modelPosition = 'model position of NAC';
   let updaters = {
     getState: () => {
       return deepSeek(model.getState(),modelPosition);
@@ -15,7 +15,7 @@ var Update = (model) => {
       if ( _.isUndefined(updaters.getState())){
         updaters.setState(updaters.skeletonModel());
       }else{
-        console.log("NAC model ready");
+        console.log('NAC model ready');
         _.map(children, c => { c.update.updateState(model);});
       }
     },
@@ -34,7 +34,7 @@ var Update = (model) => {
       }
     },
     clickedMe: () => {
-      console.log("clicked me");
+      console.log('clicked me');
     }
   }
   return updaters;

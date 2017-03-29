@@ -55,7 +55,7 @@ var Model = {
       $('#errormsg').text(err);
       // console.log('error rendering view',err);
     });
-    console.log("the state", Model.getState());
+    console.log('the state', Model.getState());
   },
   getState: () => {
     return Model.state;
@@ -104,7 +104,7 @@ var Model = {
   init: () => {
     Router.register(Model);
     View.init(Model);
-    localStorage.clear();
+    // localStorage.clear();
     if (typeof localStorage.state === 'undefined'){
       // console.log('no cached state');
       Model.setState({

@@ -31,8 +31,8 @@ var CM = {
                 param:$(this).attr('data-param'),
                 value:$(this).attr('data-value')
                 };
-            })),"param");
-            let newparams = _.groupBy(_.toArray(params),"param");
+            })),'param');
+            let newparams = _.groupBy(_.toArray(params),'param');
             newparams = _.extend(newparams,sels);
             newparams = _.mapObject(newparams, (v,k) => {
               let vals = _.map(v, vv => {return vv.value});
@@ -94,7 +94,7 @@ var CM = {
               rule: {},
               tau: 0
             },
-            status: "empty", //empty, loading, canceling, ready
+            status: 'empty', //empty, loading, canceling, ready
             progress: 0,
             currentRow: 'Hat Matrix'
           },
@@ -115,13 +115,13 @@ var CM = {
   render: (model) => {
     if(View(model).isReady()){
       var tmpl = GRADE.templates.conmatrix(View(model));
-      return h("div#contMatContainer.col-xs-12",convertHTML(tmpl));
+      return h('div#contMatContainer.col-xs-12',convertHTML(tmpl));
     }else{
       console.log('conMat not ready');
     }
   },
   afterRender: () => {
-    if(($("#cm-table")).is(':empty')){
+    if(($('#cm-table')).is(':empty')){
       Update(CM.model).showTable();
     }
   },

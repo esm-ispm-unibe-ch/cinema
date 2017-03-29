@@ -10,7 +10,7 @@ var RoB = {
       Update(RoB.model).clickedMe();
     },
   },
-  modelPosition: "getState().project.NetRob",
+  modelPosition: 'getState().project.NetRob',
   view: {
     register: (model) => {
       RoB.model = model;
@@ -52,7 +52,7 @@ var RoB = {
       }
     },
     clickedMe: () => {
-      console.log("clicked me");
+      console.log('clicked me');
     }
   },
   render: (model) => {

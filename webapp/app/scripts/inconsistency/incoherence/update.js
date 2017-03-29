@@ -8,7 +8,7 @@ var children = [
 
 var Update = (model) => {
   //update functions will only change state in that node of the model DAG
-  let modelPosition = "project.Inconsistency.Incoherence";
+  let modelPosition = 'project.Inconsistency.Incoherence';
   let IncoherenceLevels = [
     { id: 1,
       color: '#7CC9AE'
@@ -62,7 +62,7 @@ var Update = (model) => {
       let makeBoxes = (studies) => {
         let res = _.map(studies, s => {
           let sideRow = _.find(sides, side => {
-            return _.isEqual(uniqId(side[0].split(":")),uniqId(s[0].split(":")));
+            return _.isEqual(uniqId(side[0].split(':')),uniqId(s[0].split(':')));
           });
           let contents = {}
             contents =  {
@@ -74,7 +74,7 @@ var Update = (model) => {
                 isMixed: false,
             })
           }else{
-            console.log("sideIF",sideRow);
+            console.log('sideIF',sideRow);
             _.extend(contents,{
                 isMixed: true,
                 sideIF: sideRow[1].SideIF,
@@ -85,8 +85,8 @@ var Update = (model) => {
             })
           }
           let levels = _.union([{
-            id:"nothing",
-            label: "--",
+            id:'nothing',
+            label: '--',
             isDisabled: true
           }],updaters.getState().levels);
           // _.map(levels, l => {

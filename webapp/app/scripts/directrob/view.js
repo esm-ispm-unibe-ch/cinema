@@ -1,7 +1,7 @@
 var deepSeek = require('safe-access');
 
 var View = (model) => {
-  let DirectRobModelPosition = "getState().project.DirectRob";
+  let DirectRobModelPosition = 'getState().project.DirectRob';
   let viewers = {
     directComparisons: () => {
       let directs = deepSeek(model,'getState().project.studies.directComparisons');
@@ -20,8 +20,8 @@ var View = (model) => {
           },
           robselections: () => {
             let robsels = _.union([{
-              id:"nothing",
-              label: "--",
+              id:'nothing',
+              label: '--',
               isDisabled: true
             }],model.getState().project.robLevels);
             _.map(robsels, r => {
@@ -41,19 +41,19 @@ var View = (model) => {
       return model.getState().text.directRob[viewers.getRule()]; 
     },
     getRule: () => {
-      return deepSeek(model, DirectRobModelPosition+".rule");
+      return deepSeek(model, DirectRobModelPosition+'.rule');
     },
     getStatus: () => {
-      return deepSeek(model, DirectRobModelPosition+".status");
+      return deepSeek(model, DirectRobModelPosition+'.status');
     },
     customized: () => {
-      return deepSeek(model, DirectRobModelPosition+".customized")>0;
+      return deepSeek(model, DirectRobModelPosition+'.customized')>0;
     },
     customizedSingular: () => {
       return viewers.numberCustomized()===1;
     },
     numberCustomized: () => {
-      return deepSeek(model, DirectRobModelPosition+".customized");
+      return deepSeek(model, DirectRobModelPosition+'.customized');
     },
     isReady: () => {
       let isReady = false;
@@ -72,32 +72,32 @@ var View = (model) => {
       return [
         {
           label: model.getState().text.directRob.norob, 
-          value: "norob",
-          isActive: viewers.getStatus() === "norob",
-          isAvailable: viewers.getStatus() === "norob",
+          value: 'norob',
+          isActive: viewers.getStatus() === 'norob',
+          isAvailable: viewers.getStatus() === 'norob',
           isDisabled: true
         },
         {
           label: model.getState().text.directRob.majrob, 
-          value: "majrob",
-          isActive: viewers.getRule() === "majrob",
+          value: 'majrob',
+          isActive: viewers.getRule() === 'majrob',
           isAvailable: true
         },
         {
           label: model.getState().text.directRob.meanrob, 
-          value: "meanrob",
-          isActive: viewers.getRule() === "meanrob",
+          value: 'meanrob',
+          isActive: viewers.getRule() === 'meanrob',
           isAvailable: true
         },
         {
           label: model.getState().text.directRob.maxrob, 
-          value: "maxrob",
-          isActive: viewers.getRule() === "maxrob",
+          value: 'maxrob',
+          isActive: viewers.getRule() === 'maxrob',
           isAvailable: true
         },
         {
           label: model.getState().text.directRob.customrob, 
-          value: "customrob",
+          value: 'customrob',
           isAvailable: viewers.getStatus() === 'customized',
           isActive: viewers.getStatus() === 'customized'
         }

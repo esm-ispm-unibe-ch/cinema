@@ -9,21 +9,21 @@ var children = [
 
 var Update = (model) => {
   //update functions will only change state in that node of the model DAG
-  let modelPosition = "project.DirectRob";
+  let modelPosition = 'project.DirectRob';
   let directComparisons = deepSeek(model.getState(),'project.studies.directComparisons');
   let updaters = {
     getState: () => {
       return deepSeek(model.getState(),modelPosition);
     },
     updateState: () => {
-      console.log("updating state form directrob");
+      console.log('updating state form directrob');
       let isReady = _.any(directComparisons, dc => {
         return _.isUndefined(dc.directRob);
       });
       if ((isReady===true)|| _.isUndefined(updaters.getState())){
         updaters.resetDirectRob();
       }else{
-        console.log("DirectRob model ready");
+        console.log('DirectRob model ready');
         _.map(children, c => { c.update.updateState(model);});
       }
     },
@@ -35,7 +35,7 @@ var Update = (model) => {
     },
     setState: (newState) => {
       // this affects the whole node in the state.
-      let  DirectRobState = deepSeek(model.getState(),"project");
+      let  DirectRobState = deepSeek(model.getState(),'project');
       DirectRobState.DirectRob = newState;
       updaters.saveState();
     },
@@ -66,7 +66,7 @@ var Update = (model) => {
       updaters.getState().status = 'selecting';
       updaters.saveState();
       updaters.getState().status = 'ready';
-      Messages.alertify().success(tid.replace(",",":")+" "+model.getState().text.directRob.directRobSet);
+      Messages.alertify().success(tid.replace(',',':')+' '+model.getState().text.directRob.directRobSet);
       updaters.saveState();
     },
     saveState: () => {
@@ -81,7 +81,7 @@ var Update = (model) => {
       }
     },
     clickedMe: () => {
-      console.log("clicked me");
+      console.log('clicked me');
     }
   }
   return updaters;

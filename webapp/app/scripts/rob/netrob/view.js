@@ -1,7 +1,7 @@
 var deepSeek = require('safe-access');
 
 var View = (model) => {
-  let NetRobModelPosition = "getState().project.NetRob.studyLimitations";
+  let NetRobModelPosition = 'getState().project.NetRob.studyLimitations';
   let viewers = {
     makeBoxes: (comparisons) => {
       let project =  deepSeek(model,'getState().project');
@@ -20,8 +20,8 @@ var View = (model) => {
           },
           judgements: () => {
             let lims = _.union([{
-              id:"nothing",
-              label: "--",
+              id:'nothing',
+              label: '--',
               isDisabled: true
             }],model.getState().project.studyLimitationLevels);
             _.map(lims, r => {
@@ -50,19 +50,19 @@ var View = (model) => {
       return deepSeek(model, NetRobModelPosition);
     },
     getRule: () => {
-      return deepSeek(model, NetRobModelPosition+".rule");
+      return deepSeek(model, NetRobModelPosition+'.rule');
     },
     getStatus: () => {
-      return deepSeek(model, NetRobModelPosition+".status");
+      return deepSeek(model, NetRobModelPosition+'.status');
     },
     customized: () => {
-      return deepSeek(model, NetRobModelPosition+".customized")>0;
+      return deepSeek(model, NetRobModelPosition+'.customized')>0;
     },
     customizedSingular: () => {
       return viewers.numberCustomized()===1;
     },
     numberCustomized: () => {
-      return deepSeek(model, NetRobModelPosition+".customized");
+      return deepSeek(model, NetRobModelPosition+'.customized');
     },
     isReady: () => {
       let isReady = false;
@@ -78,27 +78,27 @@ var View = (model) => {
       return [
         {
           label: model.getState().text.NetRob.rules.noRule, 
-          value: "noRule",
-          isActive: viewers.getStatus() === "noRule",
-          isAvailable: viewers.getStatus() === "noRule",
+          value: 'noRule',
+          isActive: viewers.getStatus() === 'noRule',
+          isAvailable: viewers.getStatus() === 'noRule',
           isDisabled: true
         },
         {
           label: model.getState().text.NetRob.rules.majRule, 
-          value: "majRule",
-          isActive: viewers.getRule() === "majRule",
+          value: 'majRule',
+          isActive: viewers.getRule() === 'majRule',
           isAvailable: true
         },
         {
           label: model.getState().text.NetRob.rules.meanRule, 
-          value: "meanRule",
-          isActive: viewers.getRule() === "meanRule",
+          value: 'meanRule',
+          isActive: viewers.getRule() === 'meanRule',
           isAvailable: true
         },
         {
           label: model.getState().text.NetRob.rules.maxRule, 
-          value: "maxRule",
-          isActive: viewers.getRule() === "maxRule",
+          value: 'maxRule',
+          isActive: viewers.getRule() === 'maxRule',
           isAvailable: true
         },
       ];

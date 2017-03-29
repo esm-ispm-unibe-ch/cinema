@@ -8,7 +8,7 @@ var children = [
 
 var Update = (model) => {
   //update functions will only change state in that node of the model DAG
-  let modelPosition = "project.Inconsistency.Incoherence";
+  let modelPosition = 'project.Inconsistency.Incoherence';
   let updaters = {
     getState: () => {
       return deepSeek(model.getState(),modelPosition);
@@ -105,20 +105,20 @@ var Update = (model) => {
           });
           return {
             id: d[0],
-            judgement: "nothing",
+            judgement: 'nothing',
             contributions,
             rules: [{ 
-                id: "majRule",
+                id: 'majRule',
                 name: model.getState().text.NetRob.rules.majRule, 
                 label: project.studyLimitationLevels[majRule(contributions).rob-1].label,
                 value: majRule(contributions).rob,
               },
-              { id: "meanRule",
+              { id: 'meanRule',
                 name: model.getState().text.NetRob.rules.meanRule, 
                 label: project.studyLimitationLevels[meanRule(contributions)-1].label,
                 value: meanRule(contributions),
               },
-              { id: "maxRule",
+              { id: 'maxRule',
                 name: model.getState().text.NetRob.rules.maxRule, 
                 label: project.studyLimitationLevels[maxRule(contributions)-1].label,
                 value: maxRule(contributions),
@@ -163,7 +163,7 @@ var Update = (model) => {
       }
     },
     clickedMe: () => {
-      console.log("clicked me");
+      console.log('clicked me');
     }
   }
   return updaters;

@@ -11,7 +11,7 @@ var Template = (model,children) => {
     var tmpl = GRADE.templates.directrob(
       _.extend(View(model),{ text:model.getState().text.directRob})
     );
-    return h("div#directRob.col-xs-12",convertHTML(tmpl));
+    return h('div#directRob.col-xs-12',convertHTML(tmpl));
 }
 
 module.exports = () => {

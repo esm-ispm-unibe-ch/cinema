@@ -6,17 +6,17 @@ var children = [
 
 var Update = (model) => {
   //update functions will only change state in that node of the model DAG
-  let modelPosition = "getState().project.NetRob.ConChart";
+  let modelPosition = 'getState().project.NetRob.ConChart';
   let updaters = {
     getState: () => {
       return deepSeek(model,modelPosition);
     },
     updateState: () => {
       if ( _.isUndefined(updaters.getState())){
-        console.log("ConChart model not ready");
+        console.log('ConChart model not ready');
         updaters.setState(updaters.skeletonModel());
       }else{
-        console.log("ConChart model ready");
+        console.log('ConChart model ready');
         _.map(children, c => { c.update.updateState(model);});
       }
     },

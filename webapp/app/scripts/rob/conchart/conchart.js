@@ -29,7 +29,7 @@ var ConChart = {
     }
   },
   afterRender: (model) => {
-    if($("#barChartContainer").is(':empty')){
+    if($('#barChartContainer').is(':empty')){
       ConChart.destroyRender(model);
       let chartData = View(model).createChart();
       let nrows = chartData.labels.length;
@@ -37,8 +37,8 @@ var ConChart = {
       let legendHeight = ndirects * 15 / 5;
       let chartHeight = 20 * nrows + legendHeight;
       // console.log('chartheight', chartHeight,'nrows',nrows,'data',chartData);
-      $("#barChartContainer").append("<canvas id='barChart' width='400' height='"+chartHeight+"'></chart>");
-      let ctx = document.getElementById("barChart");
+      $('#barChartContainer').append('<canvas id=\'barChart\' width=\'400\' height=\''+chartHeight+'\'></chart>');
+      let ctx = document.getElementById('barChart');
       ConChart.barChart = new Chart(ctx, {
         type: 'horizontalBar',
         data:  chartData,
@@ -66,7 +66,7 @@ var ConChart = {
     if (! _.isUndefined(ConChart.barChart)){
       ConChart.barChart.destroy();
     }
-    $("#barChartContainer").empty();
+    $('#barChartContainer').empty();
   },
   renderChildren: [
   ],

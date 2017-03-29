@@ -9,7 +9,7 @@ var children = [
 
 var Update = (model) => {
   //update functions will only change state in that node of the model DAG
-  let modelPosition = "project.NetRob.studyLimitations";
+  let modelPosition = 'project.NetRob.studyLimitations';
   let updaters = {
     getState: () => {
       return deepSeek(model.getState(),modelPosition);
@@ -44,12 +44,12 @@ var Update = (model) => {
     },
     setState: (newState) => {
       // this affects the whole node in the state.
-      let  NetRobState = deepSeek(model.getState(),"project");
+      let  NetRobState = deepSeek(model.getState(),'project');
       NetRobState.NetRob.studyLimitations = newState;
       updaters.saveState();
     },
     getRule: () => {
-      return deepSeek(model.getState(), modelPosition+".rule");
+      return deepSeek(model.getState(), modelPosition+'.rule');
     },
     selectRule: (rule) => {
     },
@@ -144,20 +144,20 @@ var Update = (model) => {
           });
           return {
             id: d[0],
-            judgement: "nothing",
+            judgement: 'nothing',
             contributions,
             rules: [{ 
-                id: "majRule",
+                id: 'majRule',
                 name: model.getState().text.NetRob.rules.majRule, 
                 label: project.studyLimitationLevels[majRule(contributions).rob-1].label,
                 value: majRule(contributions).rob,
               },
-              { id: "meanRule",
+              { id: 'meanRule',
                 name: model.getState().text.NetRob.rules.meanRule, 
                 label: project.studyLimitationLevels[meanRule(contributions)-1].label,
                 value: meanRule(contributions),
               },
-              { id: "maxRule",
+              { id: 'maxRule',
                 name: model.getState().text.NetRob.rules.maxRule, 
                 label: project.studyLimitationLevels[maxRule(contributions)-1].label,
                 value: maxRule(contributions),

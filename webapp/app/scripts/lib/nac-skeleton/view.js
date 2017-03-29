@@ -1,7 +1,7 @@
 var deepSeek = require('safe-access');
 
 var View = (model) => {
-  let NACModelPosition = "nac model position";
+  let NACModelPosition = 'nac model position';
   let viewers = {
     isReady: () => {
       let isReady = false;

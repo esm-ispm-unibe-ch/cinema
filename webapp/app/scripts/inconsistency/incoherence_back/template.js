@@ -11,15 +11,15 @@ var h = require('virtual-dom/h');
       // var tmpl = GRADE.templates.conmatrix(View(model));
       // return h("div#contMatContainer.col-xs-12",convertHTML(tmpl));
 var Template = (model,children) => {
-  return h("div.menu", [
-    h("ul", [
-      h("li", `Incoherence baby!!`),
-      h("a", {
-        "attributes": {
-          "onclick": "Actions.Incoherence.clickedMe()"
+  return h('div.menu', [
+    h('ul', [
+      h('li', 'Incoherence baby!!'),
+      h('a', {
+        'attributes': {
+          'onclick': 'Actions.Incoherence.clickedMe()'
         }
-      }, `Click`),
-      h("li", `option #2`)
+      }, 'Click'),
+      h('li', 'option #2')
     ])
   ])
 }
