@@ -27,6 +27,7 @@ ADD toRoot /root
 # RUN chmod +x /root/installContribution -R 
 
 # RUN sh -c 'rm -rf /root/cinema'
+RUN sh -c 'cd /root/cinema/webapp/ && git stash'
 RUN sh -c 'cd /root/cinema/webapp/ && git pull'
 # RUN sh -c 'cd /root/cinema/webapp/ && npm install gulp -g && npm install bower -g'
 RUN sh -c 'cd /root/cinema/webapp/ && npm install'
