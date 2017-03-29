@@ -21,6 +21,17 @@ var Heterogeneity = {
           Messages.alertify().message(successmsg);
         },() => {});
     },
+    selectHetersRule: (rule) => {
+      Update(Heterogeneity.model).selectHetersRule(rule);
+    },
+    resetHeters: (rule) => {
+    let [title,msg,successmsg] = Heterogeneity.model.getState().text.Heterogeneity.resetConfirm;
+      Messages.alertify().confirm(title,msg,
+        () => {
+        Update(Heterogeneity.model).resetHeters(rule);
+          Messages.alertify().message(successmsg);
+        },() => {});
+    },
   },
   view: {
     register: (model) => {

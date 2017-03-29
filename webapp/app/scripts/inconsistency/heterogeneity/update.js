@@ -20,8 +20,6 @@ var Update = (model) => {
       color: '#E0685C'
   }];
   let HeterogeneityRules = [
-    { id: 'noRule'
-    },
     { id: 'first',
     },
     { id: 'median',
@@ -52,9 +50,9 @@ var Update = (model) => {
           console.log('server returned ',rfv);
           let res = {
             tauSquareNetwork: model.getState().project.CM.currentCM.hatmatrix.NMAheterResults[0][0],
-            firstquantile: rfv.quantiles[0][0],
+            first: rfv.quantiles[0][0],
             median: rfv.quantiles[0][1],
-            thirdquantile: rfv.quantiles[0][2],
+            third: rfv.quantiles[0][2],
           };
           updaters.getState().referenceValues.results = res;
           updaters.getState().referenceValues.status = 'ready';
@@ -85,6 +83,8 @@ var Update = (model) => {
     updateState: (model) => {
       if (updaters.cmReady()){
         _.map(children, c => { c.update.updateState();});
+        //HAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAASSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSTOOOOOOOOOOOOBBER~D~ELELTLELTLLETLELLTLETED
+          updaters.setHetersState(updaters.hetersSkeletonModel());
       }else{
         model.getState().project.Inconsistency.Heterogeneity = {};
         updaters.setRFVState(updaters.rfvSkeletonModel());
@@ -111,6 +111,21 @@ var Update = (model) => {
       let NMAValues =  model.getState().project.CM.currentCM.hatmatrix.NMA;
       let NMANames =  model.getState().project.CM.currentCM.hatmatrix.rowNamesNMA;
       let NMAs = _.zip(NMANames,NMAValues);
+      let ruleLevel = ([rule,CI,PrI,tauSqaure]) => {
+        let baseValue = updaters.getState().referenceValues.results[rule.id];
+        console.log('baseValue',rule,baseValue);
+        let tauExists = arguments.length > 3;
+        let tauProblem = () => {
+          return true;
+        };
+        let prProblem = () => {
+          let CIcrosses = CI[0] * CI[1] < 0;
+          let PrIcrosses = PrI[0] * PrI[1] < 0;
+          return !((CIcrosses && PrIcrosses) || (! CIcrosses && ! PrIcrosses));
+        };
+        let res = '';
+        return res;
+      };
       let makeBoxes = (studies) => {
         let res = _.map(studies, s => {
           let pairRow = _.find(pairWises, pw => {
@@ -119,13 +134,20 @@ var Update = (model) => {
           let nmaRow = _.find(NMAs, nma => {
             return _.isEqual(uniqId(nma[0].split(":")),uniqId(s[0].split(":")));
           });
+          let CI = [nmaRow[1][2], nmaRow[1][3]];
+          let PrI = [nmaRow[1][4], nmaRow[1][5]];
+          let tauSquare = 'nothing';
+          let useExps = (updaters.getState().referenceValues.params.measurement === 'binary') && (
+            (model.getState().project.CM.currentCM.params.sm === "OR") ||
+            (model.getState().project.CM.currentCM.params.sm === "RR")
+          );
           let contents = {}
             contents =  {
                 id: s[0],
-                CIf: nmaRow[1][2],
-                CIs: nmaRow[1][3],
-                PrIf: nmaRow[1][4],
-                PrIs: nmaRow[1][5],
+                CIf: useExps?Math.exp(CI[0]).toFixed(4):CI[0],
+                CIs: useExps?Math.exp(CI[1]).toFixed(4):CI[1],
+                PrIf: useExps?Math.exp(PrI[0]).toFixed(4):PrI[0],
+                PrIs: useExps?Math.exp(PrI[1]).toFixed(4):PrI[1],
                 judgement: 'nothing'
             }
           if(_.isUndefined(pairRow)){
@@ -133,26 +155,33 @@ var Update = (model) => {
                 isMixed: false,
             })
           }else{
+            tauSquare = pairRow[1][6];
+            let ISquare = pairRow[1][7];
             _.extend(contents,{
                 isMixed: true,
-                tauSquare: pairRow[1][6],
-                ISquare: pairRow[1][7]
+                tauSquare,
+                ISquare
             })
           }
+          let boxrules = _.map(updaters.getState().heters.availablerules, rule => {
+            if(tauSquare === 'nothing'){
+              return {
+                id: rule.id,
+                level: ruleLevel([rule,CI,PrI])
+              }
+            }else{
+              return {
+                id: rule.id,
+                level: ruleLevel([rule,CI,PrI,tauSquare])
+              }
+            }
+          });
+          contents.rules = boxrules;
           let levels = _.union([{
             id:"nothing",
             label: "--",
             isDisabled: true
           }],updaters.getState().heters.levels);
-          // _.map(levels, l => {
-          //   let name = {};
-          //   if(l.id !=='nothing'){
-          //     name = {
-          //       label: model.getState().text.Heterogeneity.levels[l.id-1]
-          //     }
-          //   }
-          //   return _.extend(l, name);
-          // });
           contents.levels = levels;
           return contents;
         });
@@ -163,10 +192,10 @@ var Update = (model) => {
       // console.log('mixed',mixed);
       return _.union(mixed,indirect);
     },
-    selectRule: (rule) => {
-      let nrstate = updaters.getState();
-      nrstate.rule = rule.value;
-      nrstate.status = 'ready';
+    selectHetersRule: (rule) => {
+      let hstate = updaters.getState().heters;
+      hstate.rule = rule.value;
+      hstate.status = 'ready';
       let boxes = updaters.getState().boxes; 
       _.map(boxes, m => {
         m.judgement = _.find(m.rules,mr =>{return mr.id===rule.value}).value;
@@ -174,7 +203,7 @@ var Update = (model) => {
       updaters.saveState();
       Messages.alertify().success(model.getState().text.Heterogeneity.HeterogeneitySet);
     },
-    resetHeterBoxes: () => {
+    resetHeters: () => {
       updaters.setHetersState(updaters.hetersSkeletonModel());
     },
     rfvSkeletonModel: () => {
@@ -187,8 +216,11 @@ var Update = (model) => {
         }
       };
     },
+    setRule: (rule) => {
+      model.getState().project.Inconsistency.Heterogeneity.heters.rule = rule;
+    },
     hetersSkeletonModel: () => {
-      let boxes =[]
+      let boxes = [];
       if(updaters.rfvReady()){
         boxes = updaters.createEstimators();
       }else{
@@ -196,8 +228,9 @@ var Update = (model) => {
       }
       return { 
         levels: HeterogeneityLevels,
+        availablerules: HeterogeneityRules,
         rule: 'noRule',
-        status: 'ready',
+        status: 'noRule',
         boxes,
       }
     },

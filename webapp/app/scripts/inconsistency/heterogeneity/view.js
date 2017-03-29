@@ -128,11 +128,27 @@ var View = (model) => {
           }
           return _.extend(l, name);
         });
+        _.map(box.rules, r => {
+          r.label = model.getState().text.Heterogeneity.rules[r.id];
+          r.levelLabel = model.getState().text.Heterogeneity.levels[r.level];
+        });
       });
       return boxes;
     },
-    rfvs: () => {
-      let res =viewers.getState().referenceValues.results; 
+    rfvsFirst: () => {
+      let res = viewers.getState().referenceValues.results.first;
+      return res;
+    },
+    rfvsMedian: () => {
+      let res = viewers.getState().referenceValues.results.median;
+      return res;
+    },
+    rfvsThird: () => {
+      let res = viewers.getState().referenceValues.results.third;
+      return res;
+    },
+    rfvsTauSquare: () => {
+      let res = viewers.getState().referenceValues.results.tauSquareNetwork;
       return res;
     },
     rfvFilled: () => {
@@ -148,7 +164,28 @@ var View = (model) => {
       return deepSeek(model.getState(),modelPosition);
     },
     heterReady: () => {
-      return viewers.getState().heters.status === 'ready'
+      return viewers.getState().heters.status === 'ready';
+    },
+    getRule: () => {
+      return viewers.getState().heters.rule;
+    },
+    ruleName: () => {
+      let rule = viewers.getRule(); 
+      return  model.getState().text.Heterogeneity.rules[rule];
+    },
+    rules: () => {
+      let rules = _.union([{id: 'noRule'}], viewers.getState().heters.availablerules);
+      _.map(rules, r => {
+        r.label = model.getState().text.Heterogeneity.rules[r.id];
+        r.isActive = viewers.getState().heters.rule === r.id;
+        if(r.id !== 'noRule'){
+          r.isDisabled = false;
+        }else{
+          r.isDisabled = true;
+        }
+      });
+      console.log("the HHHHETTTEROGGENEITY rules",rules);
+      return rules;
     },
   }
   return viewers;

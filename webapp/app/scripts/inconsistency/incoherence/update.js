@@ -111,8 +111,11 @@ var Update = (model) => {
     skeletonModel: () => {
       let boxes = updaters.createEstimators();
       let rfvs = () => {
-          let dbt = model.getState().project.CM.currentCM.hatmatrix.dbt[0];
-          return dbt;
+        let dbt = [];
+        if(! _.isUndefined(deepSeek(model.getState(),'project.CM.currentCM.hatmatrix.dbt[0]'))){
+        dbt = model.getState().project.CM.currentCM.hatmatrix.dbt[0];
+        }
+        return dbt;
       };
       return { 
         levels: IncoherenceLevels,
