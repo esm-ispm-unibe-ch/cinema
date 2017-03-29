@@ -24,10 +24,13 @@
         {{#if customized}}
           <br>
           <label class=' controls-title mr-sm-2'>
-            {{numberCustomized}}
             {{#if customizedSingular}}
+              {{text.customizedPreSingular}}
+              {{numberCustomized}}
               {{text.customizedTitleSingular}}
             {{else}}
+              {{text.customizedPrePlural}}
+              {{numberCustomized}}
               {{text.customizedTitlePlural}}
             {{/if}}
           </label>

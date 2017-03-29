@@ -200,7 +200,8 @@ var View = (model) => {
       },
       {
         type: 'radio',
-        title: 'Selection rule',
+        title: 'Select comparisons',
+        after: 'the selected treatments',
         id: 'rule',
         tag: 'rule',
         action: 'setComps',

@@ -1,6 +1,6 @@
 # Use builds from launchpad
 # FROM opencpu/base:latest
-FROM tosku/cinema:0.1.1
+FROM tosku/cinema:0.1.5
 
 # RUN apt-get update
 
@@ -38,7 +38,7 @@ RUN b=d sh -c 'rm -rf /root/cinema/webapp/www'
 RUN b=d sh -c 'mv /root/cinema/webapp/dist /root/cinema/webapp/www'
 RUN b=d sh -c 'rm -rf /usr/local/lib/R/site-library/contribution/www/*'
 RUN b=d sh -c 'cp -rf /root/cinema/webapp/www/* /usr/local/lib/R/site-library/contribution/www/'
-RUN sh -c 'Rscript /root/installContribution/rgrade.batch'
+RUN b=d sh -c 'Rscript /root/installContribution/rgrade.batch'
 #restarting opencpu service
 RUN sh -c 'service opencpu stop'
 RUN sh -c 'service opencpu restart'

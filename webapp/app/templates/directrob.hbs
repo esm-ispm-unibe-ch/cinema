@@ -24,10 +24,13 @@
         {{#if customized}}
           <br>
           <label class=' controls-title mr-sm-2'>
-            {{numberCustomized}}
             {{#if customizedSingular}}
+              {{text.customizedPreSingular}}
+              {{numberCustomized}}
               {{text.customizedTitleSingular}}
             {{else}}
+              {{text.customizedPrePlural}}
+              {{numberCustomized}}
               {{text.customizedTitlePlural}}
             {{/if}}
           </label>
@@ -76,9 +79,9 @@
             Maximum ROB: <strong class='pull-right'> {{maxrobName}}</strong>
               <hr>
           </li><li>
-            Direct ROB:
+            Direct RoB:
             <select onChange="Actions.DirectRob.selectIndividual(this)"
-              {{#unless ../statusReady}} disabled {{/unless}} class='mr-sm-2 controls-container'>
+              {{#unless ../statusReady}} disabled {{/unless}} class='pull-right mr-sm-2 controls-container'>
               {{#each robselections}}
               <option value="{{../id}}σδel{{id}}" {{#if isDisabled}} disabled {{/if}} {{#if isActive}} selected{{/if}}>
                     {{label}}

@@ -1,6 +1,6 @@
 <!-- <div id='hetercontainer' class='col-xs-12'> -->
   <blockquote id="refvals" class='col-xs-12'>
-    <h3 id="referenceValuesTitle">Reference Values for τ<sup>2</sup></h3>
+    <h4 id="referenceValuesTitle">Reference Values for τ<sup>2</sup></h4>
     <div class='form-inline col-xs-12'>
       <ul class='list-inline'>
         {{#each rfvParams}}
@@ -25,23 +25,42 @@
         {{/each}}
       </ul>
     </div>
-    <div class='buttoner col-xs-12'>
-      <button onClick="Actions.Heterogeneity.fetchRFV()" class="pull-right btn btn-default
-        {{#unless canFetch}} disabled{{/unless}}">Fetch Values</button>
-      <button onClick="Actions.Heterogeneity.resetRFV()" class="pull-right btn btn-default
-        {{#unless rfvReady}} disabled{{/unless}}">Reset Values</button>
-    </div>
     {{#if rfvReady}}
+    {{#unless heterReady}}
+      <div class='col-xs-12'>
+        <ul class='list-inline'>
+          <li>
+              <label class='controls-title mr-sm-2'>
+        Values greater than the
+              </label>
+          </li>
+          <li>
+          <select onChange="Actions.Heterogeneity.selectHetersRule(this)" {{#if heterReady}}
+            disabled {{/if}} class='mr-sm-2 form-inline form-control'>
+            {{#each rules}}
+              <option value="{{id}}" {{#if isDisabled}} disabled {{/if}} {{#if isActive}} selected{{/if}}>
+                {{{label}}}
+              </option>
+            {{/each}}
+          </select>
+          </li>
+          <li>
+            <label class='controls-title mr-sm-2'>
+          define large heterogeneity
+            </label>
+          </li>
+        </ul>
+      </div>
+    {{/unless}}
     <div class='col-xs-12 rftable'>
       <table class='table'>
+        <tr><th colspan="3">Expected heterogeneity</th></tr>
         <tr>
-          <th>τ<sup>2</sup><sub>network</sub>{{{rfvs.tauSquareNetwork}}}</th>
-          <th>25<sup>th</sup></th>
+          <th>25<sup>th</sup> quantile</th>
           <th>median</th>
-          <th>75<sup>th</sup></th>
+          <th>75<sup>th</sup> quantile</th>
         </tr>
         <tr>
-          <td>{{rfvsTauSquare}}</td>
           <td>{{rfvsFirst}}</td>
           <td>{{rfvsMedian}}</td>
           <td>{{rfvsThird}}</td>
@@ -49,24 +68,19 @@
       </table>
     </div>
     {{/if}}
+    <div class='buttoner col-xs-12'>
+      <button onClick="Actions.Heterogeneity.fetchRFV()" class="pull-right btn btn-default
+        {{#unless canFetch}} disabled{{/unless}}">Fetch Values</button>
+      <button onClick="Actions.Heterogeneity.resetRFV()" class="pull-right btn btn-default
+        {{#unless rfvReady}} disabled{{/unless}}">Reset Values</button>
+    </div>
   </blockquote>
   {{#if rfvReady}}
     <blockquote id="heterogeneityBoxes" class='col-xs-12'>
-      <h3 id="heterTitle">{{text.title}}</h3>
       <div class='form-inline'>
           <label class=' controls-title mr-sm-2'>
             {{text.selectionTitle}}
           </label>
-          {{#unless heterReady}}
-            <select onChange="Actions.Heterogeneity.selectHetersRule(this)" {{#if heterReady}}
-              disabled {{/if}} class='mr-sm-2 form-inline form-control'>
-              {{#each rules}}
-                <option value="{{id}}" {{#if isDisabled}} disabled {{/if}} {{#if isActive}} selected{{/if}}>
-                  {{{label}}}
-                </option>
-              {{/each}}
-            </select>
-          {{/unless}}
           {{#if heterReady}}
             <label class=' controls-title mr-sm-2'>
               {{text.defaultTitle}}
@@ -89,6 +103,16 @@
       </div>
     </blockquote>
     <div id="heterBoxes" class='col-xs-12 well collapse in'>
+    <blockquote class='col-xs-12'>
+    <div class=' rftable'>
+      <table class='table'>
+          <tr><th>Estimated heterogeneity</th><tr>
+          <tr><th>τ<sup>2</sup><sub>common in
+                NMA</sub></th></tr>
+          <tr><td>{{rfvsTauSquare}}</td></tr>
+      </table>
+    </div>
+    </blockquote>
       <ul class='list-inline'>
         {{#each boxes}}
         <li class='well compRobSelector {{#if customized}} customized {{/if}}' id="comp-{{id}}">

@@ -77,11 +77,11 @@ var Update = (model) => {
             console.log('sideIF',sideRow);
             _.extend(contents,{
                 isMixed: true,
-                sideIF: sideRow[1].SideIF,
-                sideIFLower: sideRow[1].SideIFlower,
-                sideIFUpper: sideRow[1].SideIFupper,
-                Ztest: sideRow[1].SideZ,
-                pvalue: sideRow[1].SidePvalue,
+                sideIF: sideRow[1].SideIF.toFixed(3),
+                sideIFLower: sideRow[1].SideIFlower.toFixed(3),
+                sideIFUpper: sideRow[1].SideIFupper.toFixed(3),
+                Ztest: sideRow[1].SideZ.toFixed(3),
+                pvalue: sideRow[1].SidePvalue.toFixed(3),
             })
           }
           let levels = _.union([{
@@ -113,7 +113,9 @@ var Update = (model) => {
       let rfvs = () => {
         let dbt = [];
         if(! _.isUndefined(deepSeek(model.getState(),'project.CM.currentCM.hatmatrix.dbt[0]'))){
-        dbt = model.getState().project.CM.currentCM.hatmatrix.dbt[0];
+          dbt = _.map(model.getState().project.CM.currentCM.hatmatrix.dbt[0], d => {
+            return d.toFixed(3);
+          });
         }
         return dbt;
       };

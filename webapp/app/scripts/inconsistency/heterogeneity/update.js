@@ -49,10 +49,10 @@ var Update = (model) => {
         sessionh.getObject( (rfv) => {
           console.log('server returned ',rfv);
           let res = {
-            tauSquareNetwork: model.getState().project.CM.currentCM.hatmatrix.NMAheterResults[0][0],
-            first: rfv.quantiles[0][0],
-            median: rfv.quantiles[0][1],
-            third: rfv.quantiles[0][2],
+            tauSquareNetwork: model.getState().project.CM.currentCM.hatmatrix.NMAheterResults[0][0].toFixed(3),
+            first: rfv.quantiles[0][0].toFixed(3),
+            median: rfv.quantiles[0][1].toFixed(3),
+            third: rfv.quantiles[0][2].toFixed(3),
           };
           updaters.getState().referenceValues.results = res;
           updaters.getState().referenceValues.status = 'ready';
@@ -146,8 +146,8 @@ var Update = (model) => {
           let nmaRow = _.find(NMAs, nma => {
             return _.isEqual(uniqId(nma[0].split(':')),uniqId(s[0].split(':')));
           });
-          let CI = [nmaRow[1][2], nmaRow[1][3]];
-          let PrI = [nmaRow[1][4], nmaRow[1][5]];
+          let CI = [nmaRow[1][2].toFixed(3), nmaRow[1][3].toFixed(3)];
+          let PrI = [nmaRow[1][4].toFixed(3), nmaRow[1][5].toFixed(3)];
           let tauSquare = 'nothing';
           let useExps = (updaters.getState().referenceValues.params.measurement === 'binary') && (
             (model.getState().project.CM.currentCM.params.sm === 'OR') ||
@@ -156,10 +156,10 @@ var Update = (model) => {
           let contents = {}
             contents =  {
                 id: s[0],
-                CIf: useExps?Math.exp(CI[0]).toFixed(4):CI[0],
-                CIs: useExps?Math.exp(CI[1]).toFixed(4):CI[1],
-                PrIf: useExps?Math.exp(PrI[0]).toFixed(4):PrI[0],
-                PrIs: useExps?Math.exp(PrI[1]).toFixed(4):PrI[1],
+                CIf: useExps?Math.exp(CI[0]).toFixed(3):CI[0],
+                CIs: useExps?Math.exp(CI[1]).toFixed(3):CI[1],
+                PrIf: useExps?Math.exp(PrI[0]).toFixed(3):PrI[0],
+                PrIs: useExps?Math.exp(PrI[1]).toFixed(3):PrI[1],
                 judgement: 'nothing'
             }
           if(_.isUndefined(pairRow)){
@@ -169,6 +169,10 @@ var Update = (model) => {
           }else{
             tauSquare = pairRow[1][6];
             let ISquare = pairRow[1][7];
+            if(! isNaN(tauSquare)){
+            tauSquare = pairRow[1][6].toFixed(3);
+            ISquare = pairRow[1][7].toFixed(3);
+            }
             _.extend(contents,{
                 isMixed: true,
                 tauSquare,

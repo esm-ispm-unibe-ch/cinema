@@ -1,9 +1,11 @@
 <blockquote id="refvals" class='col-xs-12'>
-  <h4 id="referenceValuesTitle">{{text.subTitle}}</h4>
+  <h4 id="referenceValuesTitle">{{text.title}}</h4>
+  <h5 id="">{{text.subTitle}}</h5>
   <div class='col-xs-12 rftable'>
     <table class='table'>
       <tr>
         <th>{{text.QstatisticLabel}}</th>
+        <th>{{text.df}}</th>
         <th>{{text.pvalueLabel}}</th>
       </tr>
       <tr>
@@ -27,10 +29,14 @@
   <button onClick="Actions.Incoherence.resetIncoherence()" class="pull-right btn btn-default"> {{text.resetButton}} </button>
 </blockquote>
 <div id="IncoherenceBoxes" class='col-xs-12 well collapse in'>
+<blockquote>
+  <h4 >{{text.boxesTitle}}</h4>
+  <h5 >{{text.boxesSubTitle}}</h5>
+</blockquote>
   <ul class='list-inline'>
     {{#each boxes}}
     <li class='well compRobSelector {{#if customized}} customized {{/if}}' id="comp-{{id}}">
-        <ul class='list-inline'>
+        <ul>
           <li>
             <strong>
               {{#if isMixed}}{{../../text.mixedtitle}}{{else}}{{../../text.indirecttitle}}{{/if}}
@@ -38,10 +44,13 @@
             <span class='pull-right'>
               <strong>
                 {{id}}
-            </strong></span>
+              </strong>
+            </span>
               <hr>
           </li>
           {{#if isMixed}}
+            <li>
+            <ul>
             <li>
               {{../../text.IFLabel}}: <strong class='pull-right'>{{sideIF}}({{sideIFLower}},{{sideIFUpper}})</strong>
             </li>
@@ -51,10 +60,12 @@
             <li>
               {{../../text.pvalueLabel}}: <strong class='pull-right'>{{pvalue}}</strong>
             </li>
-          {{/if}}
+            </ul>
               <hr>
+            </li>
+          {{/if}}
           <li>
-          {{../../text.judgementField}} 
+          {{../text.judgementField}} 
             <select onChange="Actions.NetRob.selectIndividual(this)"
                class='mr-sm-2 controls-container'>
               {{#each levels}}
