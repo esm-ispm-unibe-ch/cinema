@@ -87,14 +87,14 @@ gulp.task('html', ['styles', 'scripts', 'templates'], () => {
     .pipe($.if('*.js', $.uglify()))
     .pipe($.if('*.css', $.cssnano({safe: true, autoprefixer: false})))
     .pipe($.if('*.html', $.htmlmin({collapseWhitespace: true})))
-    .pipe($.if('index.html', inject.after('<!-- inject:js -->',
-    `<script>
-      if ('serviceWorker' in navigator) {
-          navigator.serviceWorker.register('/sw.js').then(function() {
-                  console.log("Service Worker Registered");
-                    });
-      }
-      </script>`)))
+    // .pipe($.if('index.html', inject.after('<!-- inject:js -->',
+    // `<script>
+    //   if ('serviceWorker' in navigator) {
+    //       navigator.serviceWorker.register('/sw.js').then(function() {
+    //               console.log("Service Worker Registered");
+    //                 });
+    //   }
+    //   </script>`)))
     .pipe(gulp.dest('dist'));
 });
 
