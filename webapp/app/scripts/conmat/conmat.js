@@ -41,6 +41,7 @@ var CM = {
               }
               return vals;
             });
+            CM.actions.scrollToList();
             Update(CM.model).selectParams(newparams);
       });
     },
@@ -48,23 +49,47 @@ var CM = {
       $(document).on('click','#checkAllIntvs', {} ,
         e=>{
           Update(CM.model).checkAllIntvs();
+          CM.actions.scrollToList();
       });
       $(document).on('click','#uncheckAllIntvs', {} ,
         e=>{
           Update(CM.model).uncheckAllIntvs();
+          CM.actions.scrollToList();
       });
     },
     createMatrix: () => {
        Update(CM.model).createMatrix();
+       CM.actions.scrollToList();
     },
-    clearMatrix: () => {
-       Update(CM.model).clearMatrix();
+    resetAnalysis: () => {
+      Messages.alertify().confirm('Reset analysis?','All changes will be lost',
+      () => {
+        Update(CM.model).resetAnalysis();
+        Messages.alertify().message('Analysis cleared');
+      },()=>{});
     },
     cancelMatrix: () => {
        Update(CM.model).cancelMatrix();
     },
     downloadCSV: () => {
        Update(CM.model).downloadCSV();
+    },
+    showContributionMatrix: () => {
+      $('.table-manipulator').toggleClass('hidden');
+       Update(CM.model).showTable();
+       CM.actions.scrollToList();
+    },
+    hideContributionMatrix: () => {
+      $('.table-manipulator').toggleClass('hidden');
+       Update(CM.model).hideTable();
+       CM.actions.scrollToList();
+    },
+    scrollToList: () => {
+      if ( document.getElementById("comparisonList")){
+        var top = $("#comparisonList").offset().top;
+        $("html, body").animate({ scrollTop: top });
+        window.scrollTo(0,top);
+      }
     },
   },
   //has to be incorporated to view module
@@ -96,15 +121,12 @@ var CM = {
             },
             status: 'empty', //empty, loading, canceling, ready
             progress: 0,
-            currentRow: 'Hat Matrix'
+            currentRow: 'Contribution Matrix'
           },
         });
       }else{
         if( (deepSeek(CM,'model.getState().project.CM.currentCM.status')==='loading')){
           Update(CM.model).createMatrix();
-        }
-        if( (deepSeek(CM,'model.getState().project.CM.currentCM.status')==='canceling')){
-            Update(CM.model).clearMatrix();
         }
         if( (deepSeek(CM,'model.getState().project.CM.currentCM.status')==='ready')){
         }
@@ -121,9 +143,6 @@ var CM = {
     }
   },
   afterRender: () => {
-    if(($('#cm-table')).is(':empty')){
-      Update(CM.model).showTable();
-    }
   },
 }
 

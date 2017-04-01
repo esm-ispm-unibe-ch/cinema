@@ -247,7 +247,7 @@ var NP = {
         action: 'colorVertices',
         selections: [
           {
-            label:'ROB',
+            label:'Risk of Bias',
             value:'rob',
             isAvailable:true,
           },
@@ -295,17 +295,17 @@ var NP = {
         action: 'colorEdges',
         selections: [
           {
-          label:'Majority ROB',
+          label:'Majority RoB',
           value:'majority',
           isAvailable:true,
           },
           {
-          label:'Mean ROB',
+          label:'Average RoB',
           value:'mean',
           isAvailable:true,
           },
           {
-          label:'Maximum ROB',
+          label:'Highest RoB',
           value:'max',
           isAvailable:true,
           },

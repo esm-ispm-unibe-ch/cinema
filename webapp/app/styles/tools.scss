@@ -27,11 +27,12 @@ col.rowHeader {
 
 
 #np-table, #cm-table{
-  margin-left:20px;
-  padding:0!important;
+  margin:10px 0 10px 0!important;
   //  max-width:700px;
   //  max-height:700px;
 }
+
+.top-buffer { margin-top:20px; }
 
 #cm-table .ht_clone_left .htCore {
   tr:last-child{
@@ -46,6 +47,10 @@ col.rowHeader {
     }
   }
 }
+
+#directRobTitle {
+  cursor:pointer;
+ }
 
 .fullscreen{
   width:100%!important;
@@ -133,8 +138,8 @@ a.btn{
   cursor: default;
 }
 #conMatloader {
-  height:700px;
-  margin-top:250px;
+  // height:700px;
+  // margin-top:250px;
 }
 #loaderTitle{
 }

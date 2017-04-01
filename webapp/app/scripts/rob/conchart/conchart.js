@@ -43,6 +43,9 @@ var ConChart = {
         type: 'horizontalBar',
         data:  chartData,
         options: {
+          legend: {
+            display: false,
+          },
           scales: {
             xAxes: [{
               stacked: true,
@@ -54,7 +57,7 @@ var ConChart = {
             yAxes: [{
               stacked: true,
             }]
-          }
+          },
         }
       })
     }else{

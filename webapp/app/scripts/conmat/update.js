@@ -28,13 +28,12 @@ var Update = (model) => {
       updaters.setCurrentCM('status','canceling');
       updaters.saveState();
     },
-    clearMatrix: () => {
-      console.log('clearing matrix');
-      updaters.setCurrentCM('status','empty');
-      let params = updaters.getCM().params;
-      project.CM.currentCM = updaters.emptyCM();
-      updaters.setCurrentCM('params',params);
-      updaters.saveState();
+    resetAnalysis: () => {
+        updaters.setCurrentCM('status','empty');
+        let params = updaters.getCM().params;
+        project.CM.currentCM = updaters.emptyCM();
+        updaters.setCurrentCM('params',params);
+        updaters.saveState();
     },
     createMatrix: () => {
       // console.log('creating matrix');
@@ -42,15 +41,14 @@ var Update = (model) => {
       updaters.fetchContributionMatrix(cmc).then(ncm => {
         // console.log('matrix loaded ok!!!!!');
         updaters.setCurrentCM('status','ready');
-        updaters.showTable();
         updaters.updateContributionCache();
-        Messages.alertify().success(model.getState().text.CM.downloadSuccess);
+        Messages.alertify().success('Ready to proceed!');
       })
       .catch(err => {
         updaters.updateContributionCache();
         let msg = _.isUndefined(err)?'':' '+err;
         Messages.alertify().error(model.getState().text.CM.downloadError + msg);
-        updaters.clearMatrix();
+        updaters.resetAnalysis();
       });
     },
     emptyCM: () => {
@@ -66,7 +64,7 @@ var Update = (model) => {
             },
             status: 'empty', //empty, loading, canceling, ready
             progress: 0,
-            currentRow: 'Hat Matrix'
+            currentRow: 'Contribution Matrix'
           };
       updaters.saveState();
     },
@@ -421,6 +419,9 @@ var Update = (model) => {
         });
       }
     },
+    hideTable: () => {
+      $('#cm-table').empty()
+    },
     makeDownloader: (res) => {
       return new Promise((resolve,reject) => {
         let cm = res;
@@ -473,6 +474,8 @@ var Update = (model) => {
         let [blob,filename] = zfile;
         download(blob,filename);
       });
+    },
+    showContributionMatrix: () => {
     },
   }
   return updaters;

@@ -80,6 +80,7 @@ var View = (model) => {
           labels: rowNames,
           datasets: dtsts
       };
+      console.log('chartdata',chartData);
       return chartData;
     },
   }

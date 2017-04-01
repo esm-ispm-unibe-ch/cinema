@@ -5,6 +5,18 @@ var View = (model) => {
   let cmc=() => deepSeek(cm,'currentCM');
   let params = deepSeek(cmc(),'params');
   let viewers = {
+    robReady: () => {
+      let ready = false;
+      if(_.isUndefined(deepSeek(model.getState(),'project.DirectRob.status'))){
+        ready = false;
+      }else{
+        if(deepSeek(model.getState(),'project.DirectRob.status')==='ready'){
+          ready = true;
+        }
+      }
+      console.log("rob ready",ready);
+      return ready;
+    },
     tableReady: () => {
       if(cmc().status==='ready'){
         return true;
@@ -61,6 +73,14 @@ var View = (model) => {
       }
       return true;
     },
+    listReady: () => {
+      if ((_.isUndefined(params.intvs) || _.isUndefined(params.rule)) ){
+        return false;
+      }else{
+        return ( ( (params.intvs.length>0) && (params.rule === 'every') )|| 
+          ( (params.intvs.length>1) && (params.rule === 'between') ) );
+      }
+    },
     isReady: () => {
       let isReady = false;
       if (! _.isUndefined(deepSeek(model,'getState().project.CM.currentCM'))){
@@ -114,17 +134,45 @@ var View = (model) => {
       _.first(_.filter(cntrs, c=> {return c.id ==='intvs'})).selections = intvs;
       return cntrs;
     },
+    selectedComparisons: () =>{
+      let rows = _.union(_.pluck(model.getState().project.studies.directComparisons,'id'),
+        model.getState().project.studies.indirectComparisons);
+      let intvs = model.getState().project.CM.currentCM.params.intvs;
+      let rule = model.getState().project.CM.currentCM.params.rule;
+      let res = [];
+      switch(rule){
+        case 'every':
+          res = _.filter(rows, r =>{
+            let [t1,t2] = r.split(',');
+            return (_.contains(intvs,t1)||_.contains(intvs,t2));
+          });
+          break;
+        case 'between':
+          res = _.filter(rows, r =>{
+            let [t1,t2] = r.split(',');
+            return (_.contains(intvs,t1)&&_.contains(intvs,t2));
+          });
+          break;
+      }
+      return _.map(res, r => () => {
+        return r.replace(","," vs ");
+      });
+    },
+    numSelectedComparisons: () => {
+      let res = viewers.selectedComparisons();
+      return res.length;
+    },
     defaultControls: () => { return [
       {
         type: 'radio',
-        title: 'Model:',
+        title: 'Analysis model:',
         id: 'MAModel',
         tag: 'MAModel',
         action: 'setMAModel',
         selections: [
           {
             name: 'MAModel',
-            label:'Fixed',
+            label:'Fixed effect',
         tag: 'MAModel',
             value:'fixed',
             isAvailable:true,
@@ -132,7 +180,7 @@ var View = (model) => {
           },
           {
             name: 'MAModel',
-            label:'Random',
+            label:'Random effects',
         tag: 'MAModel',
             value:'random',
             isAvailable:true,
@@ -153,37 +201,37 @@ var View = (model) => {
         action: 'setSM',
         selections: [
           {
-            label:'OR',
+            label:'Odds Ratio',
         tag: 'sm',
             value:'OR',
             validTypes:['binary','iv'],
           },
           {
-            label:'RR',
+            label:'Risk Ratio',
             value:'RR',
         tag: 'sm',
             validTypes:['binary','iv'],
           },
           {
-            label:'RD',
+            label:'Risk Difference',
             value:'RD',
         tag: 'sm',
             validTypes:['binary','iv'],
           },
+        //   {
+        //     label:'ASD',
+        //     value:'ASD',
+        // tag: 'sm',
+        //     validTypes:['binary','iv'],
+        //   },
           {
-            label:'ASD',
-            value:'ASD',
-        tag: 'sm',
-            validTypes:['binary','iv'],
-          },
-          {
-            label:'MD',
+            label:'Mean Difference',
             value:'MD',
         tag: 'sm',
             validTypes:['continuous','iv'],
           },
           {
-            label:'SMD',
+            label:'Standardised Mean Difference',
         tag: 'sm',
             value:'SMD',
             validTypes:['continuous','iv'],
@@ -191,7 +239,7 @@ var View = (model) => {
         ]
       },
       {
-        type: 'checkbox',
+        type: 'interventions',
         title: 'Interventions:',
         id: 'intvs',
         tag: 'intvs',
@@ -199,8 +247,8 @@ var View = (model) => {
         selections: []
       },
       {
-        type: 'radio',
-        title: 'Select comparisons',
+        type: 'interventionRules',
+        title: 'Select comparisons:',
         after: 'the selected treatments',
         id: 'rule',
         tag: 'rule',
@@ -208,7 +256,7 @@ var View = (model) => {
         selections: [
           {
             name:'rule',
-            label:'Containing',
+            label:'Containing any of the above interventions',
             value:'every',
             isAvailable:true,
         tag: 'rule',
@@ -216,7 +264,7 @@ var View = (model) => {
           },
           {
             name:'rule',
-            label:'Between',
+            label:'Between the above interventions',
         tag: 'rule',
             value:'between',
             isAvailable:true,

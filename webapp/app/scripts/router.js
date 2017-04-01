@@ -92,6 +92,7 @@ var Router = {
     },
     gotoRoute: (route) => {
       console.log('routing to ', route);
+      window.scrollTo(0,0);
       if((Router.view.currentRoute()!==route)){
         if(Router.view.checkAvailability(route)){
         Router.model.getState().router.currentRoute = route;
