@@ -1,32 +1,21 @@
 <blockquote id="conMatrixTitleCont" class='col-xs-12'>
-<h3 id="contMatTitle">Contribution Matrix</h3>
-</blockquote>
-<div id="conMatrix" class='col-xs-12 well collapse in'>
-  <form id="conMatControls" class='col-md-3 col-sm-12 col-xs-12'>
-    <div class='well pull-right col-xs-12'>
-      <h4 class=''>
-        <span class="pull-right glyphicon glyphicon-cog" aria-hidden="true"></span>
-      </h4>
-      <br>
-      <hr>
-      <div class=''>
+<h3 id="contMatTitle">Define your analysis</h3>
+    <div class='form-inline pull-right col-xs-12'>
         {{#each controls}}
-          <div class="conMatControls">
+          <div class="form-inline  conMatControls">
             {{#if_eq type "radio"}}
-              <h5 class='controls-title'>{{title}}</h5>
+              <label class='controls-title mr-sm-2'>{{title}}</label>
                 {{#each selections}}
                   {{#if isAvailable}}
-                    <label for="{{value}}">{{label}}
-                      <input {{#unless ../../../../isEmpty}} disabled {{/unless}} type="radio" data-param="{{tag}}"
-                            data-value="{{value}}" name="{{name}}"
-                                        value="{{value}}"
-                                        {{#if isSelected}} checked="checked"{{/if}}/></label>
+                    <label  class='mr-sm-2' for="{{value}}">{{label}}
+                      <input class='' {{#unless ../../../../isEmpty}} disabled {{/unless}} type="radio" data-param="{{tag}}"
+                            data-value="{{value}}" name="{{name}}" value="{{value}}"
+                    {{#if isSelected}} checked="checked"{{/if}}/></label>
                   {{/if}}
                 {{/each}}
-              <h5 class='controls-title'>{{after}}</h5>
             {{/if_eq}}
             {{#if_eq type "select"}}
-              <h4 class='controls-title'>{{title}}</h4>
+              <label class='controls-title'>{{title}}</label>
               <select action="{{action}}" class='controls-container form-control' required>
                   {{#each selections}}
                     {{#if isAvailable}}
@@ -37,8 +26,17 @@
                   {{/each}}
               </select>
             {{/if_eq}}
-            {{#if_eq type "checkbox"}}
-                <h4 class='controls-title'>{{title}}</h4>
+            </div>
+        {{/each}}
+    </div>
+</blockquote>
+<blockquote id="conMatrixTitleCont" class='col-xs-12'>
+<h3 id="contMatTitle">Select intervention comparisons for evaluation</h3>
+    <div class='form-inline pull-right col-xs-12'>
+        {{#each controls}}
+          <div class="form-inline  conMatControls">
+            {{#if_eq type "interventions"}}
+                <label class=''>{{title}}</label>
                 {{#each selections}}
                   <label class="checkbox-inline" for="{{value}}">
                     <input type="checkbox" data-param="{{tag}}" data-value="{{value}}" value="{{value}}"
@@ -48,37 +46,57 @@
                     {{label}}
                   </label>
                 {{/each}}
-                <hr>
+                <br>
                 <a id="checkAllIntvs"  class="intvs btn btn-default  {{#unless
                   ../../isEmpty }} disabled {{/unless}} ">Check All</a>
                 <a id="uncheckAllIntvs" class="intvs btn btn-default  {{#unless
                   ../../isEmpty}} disabled {{/unless}} ">Uncheck All</a>
             {{/if_eq}}
+            {{#if_eq type "interventionRules"}}
+              <label class=''>{{title}}</label>
+              <br>
+                {{#each selections}}
+                  {{#if isAvailable}}
+                    <label  class='' for="{{value}}">{{label}}
+                      <input class='' {{#unless ../../../../isEmpty}} disabled {{/unless}} type="radio" data-param="{{tag}}"
+                            data-value="{{value}}" name="{{name}}" value="{{value}}"
+                    {{#if isSelected}} checked="checked"{{/if}}/></label>
+                    <br>
+                  {{/if}}
+                {{/each}}
+            {{/if_eq}}
             </div>
         {{/each}}
-      </div>
     </div>
-    <a id="createMatrixButton"  onClick="Actions.ConMat.createMatrix()"
-      class="btn btn-default {{#unless canCreateMatrix}}disabled{{/unless}}" data-content="All fields should be filled" rel="popover" data-placement="bottom" data-trigger="hover">Create Matrix</a>
-    <a id="clearCM" onClick="Actions.ConMat.clearMatrix()" class="btn btn-default {{#unless tableReady}} disabled {{/unless}} " >Clear Matrix</a>
-    {{#if isLoading}}
-      <a id="cancelCM" onClick="Actions.ConMat.cancelMatrix()" class="btn btn-default">Cancel!</a>
-    {{/if}}
-    {{#if tableReady}}
-      <a onClick="Actions.ConMat.downloadCSV()" class="btn btn-default" id="downloadAnchorElem">Download csv</a>
-    {{/if}}
-  </form>
-  <div id='cm-table-container' class='well table-container col-md-9 col-sm-12
-    col-xs-12'>
-      {{#if isEmpty}}
-        No Data
-      {{/if}}
+</blockquote>
+{{#if listReady}}
+  <div id='comparisonList' class='col-xs-12'>
+    <h5>
+      You have selected the following
+      <strong>{{numSelectedComparisons}}</strong> comparisons. Confidence in the results will
+    be graded for:
+    </h5>
+      <ul class="list-inline">
+        {{#each selectedComparisons}}
+        <li class="">
+          <span class="badge">{{this}}</span>
+        </li>
+      {{/each}}
+      </ul>
+    <div class="pull-right">
+      <strong>
+        <i class="glyphicon glyphicon-exclamation-sign"></i>
+        <em>Analysis is performed including all studies</em>
+      </strong>
+    </div>
+  </div>
+{{/if}}
+  <div id='' class='col-xs-12'>
       {{#if isLoading}}
         <div id="conMatloader" class="col-md-offset-2 col-md-8 col-xs-12"  aria="downloading contribution matrix" aria-hidden="false">
           <div class='row'>
             <div class='col-xs-1'>
               <div class="loader" id="conMatSpinner" style="font-size:12px">
-                <!-- <i class="glyphicon glyphicon-cog gly-spin"></i> -->
               </div>
             </div>
             <h4 id="loaderTitle" class="col-xs-11">
@@ -101,6 +119,34 @@
       {{#if tableReady}}
         <div id="cm-table"></div>
       {{/if}}
-    </div>
   </div>
-</div>
+  {{#if canCreateMatrix}}
+    <a id="createMatrixButton"  onClick="Actions.ConMat.createMatrix()"
+                                class="btn btn-default " data-content="All fields should be filled" rel="popover" data-placement="bottom" data-trigger="hover">
+        Setup your evaluation</a>
+  {{/if}}
+    {{#if isLoading}}
+      <a id="cancelCM" onClick="Actions.ConMat.cancelMatrix()" class="btn btn-default">Cancel!</a>
+    {{/if}}
+    {{#if tableReady}}
+      <a onClick="Actions.ConMat.showContributionMatrix()" class="btn
+                                                           table-manipulator btn-default"
+        id="showTableBtn">Show Contribution Matrix</a>
+      <a onClick="Actions.ConMat.hideContributionMatrix()" class="btn hidden
+                                                           table-manipulator btn-default"
+        id="hideTableBtn">Hide Contribution Matrix</a>
+      <a onClick="Actions.ConMat.downloadCSV()" class="btn btn-default"
+        id="downloadAnchorElem">Download Contribution Matrix</a>
+      <a id="clearCM" onClick="Actions.ConMat.resetAnalysis()" class="btn
+        pull-right btn-default " >Reset your evaluation</a>
+      {{#if robReady}}
+        <div class='row top-buffer'></div>
+          <h5> You can now go to evaluate <a href="#rob"
+              onClick="Actions.Router.gotoRoute('rob')" >Study Limitations</a> or <a
+              href="#inconsistency" onClick="Actions.Router.gotoRoute('inconsistency')" >Inconsistency</a>
+          </h5>
+        </div>
+      {{/if}}
+    {{/if}}
+    <br>
+    <br>

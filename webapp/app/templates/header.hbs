@@ -3,7 +3,7 @@
   {{#each view.mainMenu}}
       <li class="{{#if isActive}}active{{/if}} {{#unless isAvailable}}disabled{{/unless}}">
         <a  onClick="Actions.Router.gotoRoute('{{route}}')" action="{{route}}" class="routes navbar-right {{route}}" href="#{{route}}">
-          {{label}}
+          {{{label}}}
         </a>
       </li>
   {{/each}}
@@ -12,7 +12,7 @@
     {{#each view.evalMenu}}
       <li class="{{#if isActive}}active{{/if}} {{#unless isAvailable}}disabled{{/unless}}">
         <a  onClick="Actions.Router.gotoRoute('{{route}}')" action="{{route}}" class="routes navbar-right {{route}}" href="#{{route}}">
-          {{label}}
+          {{{label}}}
         </a>
       </li>
     {{/each}}

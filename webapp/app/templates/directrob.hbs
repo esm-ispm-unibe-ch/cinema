@@ -1,5 +1,5 @@
 <blockquote id="directRobSelectCont" class='col-xs-12'>
-  <h3 id="directRobTitle">{{text.title}}</h3>
+  <h3 id="directRobTitle" data-toggle="collapse" data-target="#robSelector">{{text.title}}</h3>
   <div class='form-inline'>
     {{#unless statusReady}}
       <label class=' controls-title mr-sm-2'>
@@ -40,7 +40,7 @@
       {{#unless statusReady}} disabled{{/unless}}"> {{text.resetButton}} </button>
   </div>
 </blockquote>
-<div id="robSelector" class='col-xs-12 well collapse in'>
+<div id="robSelector" class='col-xs-12 well collapse'>
   <ul class='list-inline'>
     {{#each directComparisons}}
     <li class='well compRobSelector {{#if customized}} customized {{/if}}' id="comp-{{id}}">
@@ -72,11 +72,11 @@
             {{/if}}
               <hr>
           </li><li class="majrob  {{#unless ../isMaj}} robLabel{{/unless}}">
-            Majority ROB: <strong class='pull-right'>{{majrobName}} </strong>
+            Majority RoB: <strong class='pull-right'>{{majrobName}} </strong>
           </li><li class="meanrob {{#unless ../isMean}} robLabel{{/unless}}">
-            Mean ROB: <strong class='pull-right'> {{meanrobName}}</strong>
+            Average RoB: <strong class='pull-right'> {{meanrobName}}</strong>
           </li><li class='maxrob {{#unless ../isMax}} robLabel{{/unless}}'>
-            Maximum ROB: <strong class='pull-right'> {{maxrobName}}</strong>
+            Highest RoB: <strong class='pull-right'> {{maxrobName}}</strong>
               <hr>
           </li><li>
             Direct RoB:
