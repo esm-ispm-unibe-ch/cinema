@@ -85,9 +85,9 @@ var CM = {
        CM.actions.scrollToList();
     },
     scrollToList: () => {
-      if ( document.getElementById("comparisonList")){
-        var top = $("#comparisonList").offset().top;
-        $("html, body").animate({ scrollTop: top });
+      if ( document.getElementById('comparisonList')){
+        var top = $('#comparisonList').offset().top;
+        $('html, body').animate({ scrollTop: top });
         window.scrollTo(0,top);
       }
     },

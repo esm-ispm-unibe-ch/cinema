@@ -14,7 +14,7 @@ var View = (model) => {
           ready = true;
         }
       }
-      console.log("rob ready",ready);
+      console.log('rob ready',ready);
       return ready;
     },
     tableReady: () => {
@@ -155,7 +155,7 @@ var View = (model) => {
           break;
       }
       return _.map(res, r => () => {
-        return r.replace(","," vs ");
+        return r.replace(',',' vs ');
       });
     },
     numSelectedComparisons: () => {
