@@ -15,6 +15,9 @@ var General = require('./general.js')();
 var RoB = require('./rob/rob.js')();
 var ConChart = require('./rob/conchart/conchart.js')();
 var Inconsistency = require('./inconsistency/inconsistency.js')();
+var Report = require('./report/output/Main');
+Report.view = require('./report/output/View');
+Report.update = require('./report/output/Update');
 
 var Router = {
   view: {
@@ -37,6 +40,9 @@ var Router = {
             break;
           case 'inconsistency':
             return (conmatStatus==='ready');
+            break;
+          case 'report':
+            return true;
             break;
         }
         return false;
@@ -185,6 +191,9 @@ var Router = {
     },
     { route: 'inconsistency',
       module: Inconsistency,
+    },
+    { route: 'report',
+      module: Report,
     },
   ],
 }
