@@ -34,21 +34,46 @@ var ConChart = {
       let chartData = View(model).createChart();
       let nrows = chartData.labels.length;
       let ndirects = chartData.datasets.length;
-      let legendHeight = ndirects * 15 / 5;
-      let chartHeight = 20 * nrows + legendHeight;
-      // console.log('chartheight', chartHeight,'nrows',nrows,'data',chartData);
-      $('#barChartContainer').append('<canvas id=\'barChart\' width=\'400\' height=\''+chartHeight+'\'></chart>');
-      let ctx = document.getElementById('barChart');
-      ConChart.barChart = new Chart(ctx, {
+      let chartHeight = 15 * nrows;
+      $('#barChartContainer').append('<canvas style="display:none" id=\'barChartPrinterFriendly\' width=\'300\' height=\''+chartHeight+'\'></chart>');
+      let ctxp = document.getElementById('barChartPrinterFriendly');
+      ConChart.barChart = new Chart(ctxp, {
         type: 'horizontalBar',
         data:  chartData,
         options: {
+          responsive: false,
           legend: {
             display: false,
           },
           scales: {
             xAxes: [{
               stacked: true,
+              barThickness: 40,
+              ticks: {
+                   min: 0,
+                   max: 100
+               }
+            }],
+            yAxes: [{
+              stacked: true,
+            }]
+          },
+        }
+      })
+      $('#barChartContainer').append('<canvas style="display:visible" id=\'barChart\' width=\'400\' height=\''+chartHeight+'\'></chart>');
+      let ctx = document.getElementById('barChart');
+      ConChart.barChart = new Chart(ctx, {
+        type: 'horizontalBar',
+        data:  chartData,
+        options: {
+          responsive: true,
+          legend: {
+            display: false,
+          },
+          scales: {
+            xAxes: [{
+              stacked: true,
+              barThickness: 40,
               ticks: {
                    min: 0,
                    max: 100

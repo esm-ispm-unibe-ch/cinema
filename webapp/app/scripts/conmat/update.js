@@ -155,19 +155,19 @@ var Update = (model) => {
               sm: cm.params.sm,
             }, (sessionh) => {
           sessionh.getObject( (hatmatrix) => {
-            // console.log('the hatmatrix returned ',hatmatrix);
+            console.log('the hatmatrix returned ',hatmatrix);
             cm.hatmatrix = hatmatrix;
             updaters.saveState();
             updaters.fetchRows(ncm).then(res => {
               resolve(res);
-            }).catch(err => {reject(err)});
+            }).catch(err => {console.log(err);reject(err)});
           })
          });
          hmc.fail( () => {
            reject('R returned an error: ' + hmc.responseText);
         });
         }else{
-            // console.log("found hatmatrix", cm.hatmatrix);
+            console.log("found hatmatrix", cm.hatmatrix);
             updaters.fetchRows(cm).then(res => {
               resolve(res);
             }).catch(err => {reject(err)});
