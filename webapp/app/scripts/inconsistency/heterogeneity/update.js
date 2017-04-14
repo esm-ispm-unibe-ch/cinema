@@ -8,7 +8,7 @@ var children = [
 
 var Update = (model) => {
   //update functions will only change state in that node of the model DAG
-  let modelPosition = 'project.Inconsistency.Heterogeneity';
+  let modelPosition = 'project.inconsistency.heterogeneity';
   let HeterogeneityLevels = [
     { id: 1,
       color: '#7CC9AE'
@@ -87,17 +87,17 @@ var Update = (model) => {
       if (updaters.cmReady()){
         _.map(children, c => { c.update.updateState();});
       }else{
-        model.getState().project.Inconsistency.Heterogeneity = {};
+        model.getState().project.inconsistency.heterogeneity = {};
         updaters.setRFVState(updaters.rfvSkeletonModel());
         updaters.setHetersState(updaters.hetersSkeletonModel());
       }
     },
     setRFVState: (newState) => {
-      model.getState().project.Inconsistency.Heterogeneity.referenceValues = newState;
+      model.getState().project.inconsistency.heterogeneity.referenceValues = newState;
       updaters.saveState();
     },
     setHetersState: (newState) => {
-      model.getState().project.Inconsistency.Heterogeneity.heters = newState;
+      model.getState().project.inconsistency.heterogeneity.heters = newState;
       updaters.saveState();
     },
     saveState: () => {

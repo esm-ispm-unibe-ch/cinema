@@ -10,7 +10,7 @@ var RoB = {
       Update(RoB.model).clickedMe();
     },
   },
-  modelPosition: 'getState().project.NetRob',
+  modelPosition: 'getState().project.netRob',
   view: {
     register: (model) => {
       RoB.model = model;
@@ -39,7 +39,7 @@ var RoB = {
     },
     setState: (newState) => {
       let RoBstate = deepSeek(RoB.model,RoB.modelPosition);
-      RoB.model.getState().project.NetRob = newState;
+      RoB.model.getState().project.netRob = newState;
       RoB.update.saveState();
     },
     saveState: () => {

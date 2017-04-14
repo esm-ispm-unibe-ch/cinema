@@ -6,7 +6,7 @@ var children = [
 
 var Update = (model) => {
   //update functions will only change state in that node of the model DAG
-  let modelPosition = 'getState().project.NetRob.ConChart';
+  let modelPosition = 'getState().project.netRob.ConChart';
   let updaters = {
     getState: () => {
       return deepSeek(model,modelPosition);
@@ -22,7 +22,7 @@ var Update = (model) => {
     },
     // this affects the whole node in the state.
     setState: (newState) => {
-      model.getState().project.NetRob.ConChart = newState;
+      model.getState().project.netRob.ConChart = newState;
       updaters.saveState();
     },
     saveState: () => {

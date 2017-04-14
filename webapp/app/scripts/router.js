@@ -16,8 +16,8 @@ var RoB = require('./rob/rob.js')();
 var ConChart = require('./rob/conchart/conchart.js')();
 var Inconsistency = require('./inconsistency/inconsistency.js')();
 var Report = require('./report/output/Main');
-Report.view = require('./report/output/View');
-Report.update = require('./report/output/Update');
+Report.view = require('./report/output/Main.View');
+Report.update = require('./report/output/Main.Update');
 
 var Router = {
   view: {
@@ -130,6 +130,8 @@ var Router = {
         let child = _.find(Router.renderChildren, c => {
           return c.route === Router.view.currentRoute();
         });
+        //// let lkj = Report.katiFn(model);
+        // console.log('giving to report',lkj);
         if(typeof child === 'undefined'){
           cnode = Error.render(model);
           // reject('didn\'t find route');
@@ -137,7 +139,13 @@ var Router = {
           if(Router.view.currentRoute() !=='rob'){
              ConChart.destroyRender(model);
           }
-          cnode = child.module.render(model);
+          if(Router.view.currentRoute() === 'report'){
+            let state = model.getState();
+              cnode = child.module.render(state);
+
+          }else{
+            cnode = child.module.render(model);
+          }
         }
 
         let ptree = [

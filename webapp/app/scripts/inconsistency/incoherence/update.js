@@ -8,7 +8,7 @@ var children = [
 
 var Update = (model) => {
   //update functions will only change state in that node of the model DAG
-  let modelPosition = 'project.Inconsistency.Incoherence';
+  let modelPosition = 'project.inconsistency.incoherence';
   let IncoherenceLevels = [
     { id: 1,
       color: '#7CC9AE'
@@ -39,12 +39,12 @@ var Update = (model) => {
         _.map(children, c => { c.update.updateState();});
         updaters.setState(updaters.skeletonModel());
       }else{
-        model.getState().project.Inconsistency.Incoherence = {};
+        model.getState().project.inconsistency.incoherence = {};
         updaters.setState(updaters.skeletonModel());
       }
     },
     setState: (newState) => {
-      model.getState().project.Inconsistency.Incoherence = newState;
+      model.getState().project.inconsistency.incoherence = newState;
       updaters.saveState();
     },
     saveState: () => {

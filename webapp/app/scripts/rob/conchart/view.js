@@ -3,7 +3,7 @@ var uniqId = require('../../lib/mixins.js').uniqId;
 
 
 var View = (model) => {
-  let modelPosition = 'getState().project.NetRob.ConChart';
+  let modelPosition = 'getState().project.netRob.ConChart';
   let viewers = {
     isReady: () => {
       let isReady = false;

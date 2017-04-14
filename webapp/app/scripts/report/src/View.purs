@@ -1,4 +1,4 @@
-module View where
+module Main.View where
 
 import Prelude
 import Control.Monad.Eff (Eff)

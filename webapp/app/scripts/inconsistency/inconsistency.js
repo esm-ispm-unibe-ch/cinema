@@ -11,7 +11,7 @@ var Inconsistency = {
       Inconsistency.update.gotoRoute(route);
     },
   },
-  modelPosition: 'project.Inconsistency',
+  modelPosition: 'project.inconsistency',
   view: {
     isActive: (route) => {
       return route === Inconsistency.getState(Inconsistency.model).route;
@@ -57,7 +57,7 @@ var Inconsistency = {
       }
     },
     setState: (newState) => {
-      Inconsistency.model.getState().project.Inconsistency=newState;
+      Inconsistency.model.getState().project.inconsistency=newState;
       Inconsistency.update.saveState();
     },
     saveState: () => {

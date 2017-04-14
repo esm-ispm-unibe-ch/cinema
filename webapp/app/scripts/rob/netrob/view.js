@@ -1,7 +1,7 @@
 var deepSeek = require('safe-access');
 
 var View = (model) => {
-  let NetRobModelPosition = 'getState().project.NetRob.studyLimitations';
+  let NetRobModelPosition = 'getState().project.netRob.studyLimitations';
   let viewers = {
     makeBoxes: (comparisons) => {
       let project =  deepSeek(model,'getState().project');

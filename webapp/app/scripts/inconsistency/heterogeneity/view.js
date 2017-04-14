@@ -1,7 +1,7 @@
 var deepSeek = require('safe-access');
 
 var View = (model) => {
-  let modelPosition = 'project.Inconsistency.Heterogeneity';
+  let modelPosition = 'project.inconsistency.heterogeneity';
   let viewers = {
     isReady: () => {
       let isReady = false;

@@ -9,7 +9,7 @@ var children = [
 
 var Update = (model) => {
   //update functions will only change state in that node of the model DAG
-  let modelPosition = 'project.NetRob.studyLimitations';
+  let modelPosition = 'project.netRob.studyLimitations';
   let updaters = {
     getState: () => {
       return deepSeek(model.getState(),modelPosition);
@@ -45,7 +45,7 @@ var Update = (model) => {
     setState: (newState) => {
       // this affects the whole node in the state.
       let  NetRobState = deepSeek(model.getState(),'project');
-      NetRobState.NetRob.studyLimitations = newState;
+      NetRobState.netRob.studyLimitations = newState;
       updaters.saveState();
     },
     getRule: () => {

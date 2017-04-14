@@ -1,7 +1,7 @@
 var deepSeek = require('safe-access');
 
 var View = (model) => {
-  let modelPosition = 'project.Inconsistency.Incoherence';
+  let modelPosition = 'project.inconsistency.incoherence';
   let viewers = {
     isReady: () => {
       let isReady = false;
