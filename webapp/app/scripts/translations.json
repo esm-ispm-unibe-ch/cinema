@@ -92,7 +92,7 @@
     ],
     "directRob": {
       "title": "Evaluate risk of bias in direct comparisons",
-      "selectionTitle": "Define how to summarize study-level risk of bias wihtin comparisons",
+      "selectionTitle": "Define how to summarize study-level risk of bias within comparisons",
       "defaultTitle": "Selected rule:",
       "customizedpreSingular": "Judgement for",
       "customizedprePlural": "Judgements for",

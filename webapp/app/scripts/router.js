@@ -18,6 +18,7 @@ var Inconsistency = require('./inconsistency/inconsistency.js')();
 var Report = require('./report/output/Main');
 Report.view = require('./report/output/Main.View');
 Report.update = require('./report/output/Main.Update');
+Report.Actions = require('./report/output/Actions');
 
 var Router = {
   view: {
@@ -141,7 +142,7 @@ var Router = {
           }
           if(Router.view.currentRoute() === 'report'){
             let state = model.getState();
-              cnode = child.module.render(state);
+              cnode = convertHTML(child.module.render(state));
 
           }else{
             cnode = child.module.render(model);
@@ -178,7 +179,11 @@ var Router = {
     Router.model.Actions.Router = Router.update;
     Router.actions.bindNavControls();
     _.map(Router.renderChildren, c => {
-      c.module.view.register(model);
+      if ( c.route === 'report' ){
+        Router.model.Actions.Report = Report.Actions;
+      }else{
+        c.module.view.register(model);
+      }
     });
   },
   renderChildren: [

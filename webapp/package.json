@@ -20,6 +20,7 @@
     "gulp-declare": "^0.3.0",
     "gulp-define-module": "^0.1.4",
     "gulp-eslint": "^3.0.0",
+    "gulp-ext-replace": "^0.3.0",
     "gulp-handlebars": "^4.0.0",
     "gulp-htmlmin": "^3.0.0",
     "gulp-if": "^2.0.0",
@@ -60,6 +61,8 @@
   "dependencies": {
     "alertifyjs": "^1.8.0",
     "downloadjs": "^1.4.7",
+    "gulp-json-format": "^1.0.0",
+    "gulp-transform": "^1.1.0",
     "html-to-vdom": "^0.7.0",
     "json2csv": "^3.7.1",
     "safe-access": "^0.1.0",

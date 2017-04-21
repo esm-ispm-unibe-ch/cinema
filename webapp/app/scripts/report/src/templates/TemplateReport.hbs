@@ -1,0 +1,17 @@
+<div class="container-fluid routed" id='report'></div>
+  <div class='col-xs-12'>
+    <h4>
+      {{{project.title}}}
+    </h4>
+     Study Limitations {{project.netRob.studyLimitations.status}}
+    <ul>
+      {{#each project.netRob.studyLimitations.boxes}}
+
+        <li>
+          {{{id}}}
+          <button onClick="Actions.Report.testAction(Model.getState())"> Test Action </button>
+        </li>
+      {{/each}}
+    </ul>
+  </div>
+</div>

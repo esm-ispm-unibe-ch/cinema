@@ -10,9 +10,22 @@ const babelify = require('babelify');
 const buffer = require('vinyl-buffer');
 const source = require('vinyl-source-stream');
 const dockerPath = '../RServer/toRoot/installContribution/contribution/inst/';
-
 const $ = gulpLoadPlugins();
 const reload = browserSync.reload;
+const transform = require('gulp-transform');
+const ext_replace = require('gulp-ext-replace');
+
+gulp.task('hbsTojs', () => {
+  let modulify = c => {
+    let pre = '"use strict";exports.template=';
+    let contents = JSON.stringify(c);
+    return pre + contents;
+  };
+  return gulp.src('app/scripts/**/*.hbs')
+    .pipe(transform( contents => modulify(contents),{encoding: 'utf8'}))
+    .pipe(ext_replace('.js'))
+    .pipe(gulp.dest('app/scripts/'));
+});
 
 gulp.task('templates', () => {
   return gulp.src('app/templates/**/*.hbs')
@@ -80,7 +93,7 @@ gulp.task('lint:test', () => {
     .pipe(gulp.dest('test/spec'));
 });
 
-gulp.task('html', ['styles', 'scripts', 'templates'], () => {
+gulp.task('html', ['styles', 'scripts', 'templates', 'hbsTojs'], () => {
   var inject = require('gulp-inject-string');
   return gulp.src('app/*.html')
     .pipe($.useref({searchPath: ['.tmp', 'app', '.']}))
@@ -123,7 +136,7 @@ gulp.task('extras',() => {
 gulp.task('clean', del.bind(null, ['.tmp', 'dist']));
 
 gulp.task('serve', () => {
-  runSequence(['clean', 'wiredep'], ['styles', 'templates', 'scripts', 'fonts'], () => {
+  runSequence(['clean', 'wiredep'], ['styles', 'templates', 'hbsTojs', 'scripts', 'fonts'], () => {
     browserSync({
       notify: false,
       port: 9000,
@@ -146,6 +159,7 @@ gulp.task('serve', () => {
 
     gulp.watch('app/styles/**/*.scss', ['styles']);
     gulp.watch('app/templates/**/*.hbs', ['templates']);
+    gulp.watch('app/scripts/**/*.hbs', ['hbsTojs']);
     gulp.watch('app/scripts/**/*.js', ['scripts']);
     gulp.watch('app/fonts/**/*', ['fonts']);
     gulp.watch('bower.json', ['wiredep', 'fonts']);
