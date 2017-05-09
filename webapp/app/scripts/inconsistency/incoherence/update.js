@@ -74,7 +74,7 @@ var Update = (model) => {
                 isMixed: false,
             })
           }else{
-            console.log('sideIF',sideRow);
+            // console.log('sideIF',sideRow);
             if (_.every(_.toArray(sideRow[1]), sr => {return sr !== 'NA'})){
               _.extend(contents,{
                   isMixed: true,

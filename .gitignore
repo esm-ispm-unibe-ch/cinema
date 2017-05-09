@@ -7,3 +7,5 @@ node_modules/
 .Rproj.user
 ispm/*
 *.swp
+*.swp
+RServer/toRoot/www/

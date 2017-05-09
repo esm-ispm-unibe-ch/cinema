@@ -57,6 +57,12 @@ var Model = {
     });
     console.log('the state', Model.getState());
   },
+  factorySettings: () => {
+    Model.setState({
+      text : Locales[Model.defaults.locale],
+      defaults: Model.defaults,
+    });
+  },
   getState: () => {
     return Model.state;
   },
