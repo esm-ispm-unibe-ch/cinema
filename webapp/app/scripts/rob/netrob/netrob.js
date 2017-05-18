@@ -28,8 +28,8 @@ var NetRob = {
     },
   },
   update: {
-    updateState: () => {
-        Update(NetRob.model).updateState();
+    updateState: (model) => {
+        Update(NetRob.model).updateState(model);
     },
   },
   render: (model) => {

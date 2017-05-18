@@ -2,9 +2,13 @@ var deepSeek = require('safe-access');
 var clone = require('../../lib/mixins.js').clone;
 var uniqId = require('../../lib/mixins.js').uniqId;
 var Messages = require('../../messages.js').Messages;
+var Report = require('../../report/output/Main');
+Report.view = require('../../report/output/Main.View');
+Report.update = require('../../report/output/Main.Update');
+Report.Actions = require('../../report/output/Actions');
 
 var children = [
-  //Report
+  Report
   ];
 
 var Update = (model) => {
@@ -30,11 +34,15 @@ var Update = (model) => {
       }
       return isready;
     },
-    updateState: () => {
+    updateState: (model) => {
+      console.log('updating study limitations and Report',model.getState());
+      let mdl = model.getState();
+      _.map(children, c => {
+        c.update.updateState(mdl)(mdl);
+      });
       if ( updaters.cmReady() && updaters.drobReady() ){
         if(updaters.getState().status === 'ready'){
-        // console.log("Study Limitations model ready");
-          _.map(children, c => { c.update.updateState(model);});
+          // _.map(children, c => {c.update.updateState(model);});
         }else{
           updaters.setState(updaters.completeModel());
         }
@@ -77,7 +85,12 @@ var Update = (model) => {
     },
     saveState: () => {
       model.saveState();
-      _.map(children, c => { c.update.updateState();});
+      let mdl = model.getState();
+      console.log('saving study limitations and Report');
+      _.map(children, c => {
+        console.log("report module", mdl);
+        c.update.updateState(mdl)(mdl);
+      });
     },
     createEstimates: () => {
       let cm = model.getState().project.CM.currentCM;

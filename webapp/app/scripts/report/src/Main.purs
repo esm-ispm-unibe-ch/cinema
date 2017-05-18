@@ -33,12 +33,10 @@ studyLimitationsReady s = do
          Just a -> do
            let b = a ^. _State 
                    <<< project <<< _Project 
-                   <<< netRob <<< _NetRobModel <<< studyLimitations <<< _StudyLimitations
+                   <<< netRob <<< _NetRobModel 
+                   <<< studyLimitations <<< _StudyLimitations
            show b."status"
   
-sceletonReport :: Report
-sceletonReport = Report { id : 23 } 
-
 render :: Foreign -> String 
 render m = do
     let rs = readState m  

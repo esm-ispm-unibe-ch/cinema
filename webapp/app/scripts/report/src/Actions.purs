@@ -18,13 +18,15 @@ import Text.Smolder.Markup (on, (#!), Markup, text, (!))
 import Text.Smolder.Renderer.String (render)
 
 import Model
+import ReadModel
+import SaveModel
 
-testAction :: forall e. Foreign -> Eff (console :: CONSOLE , model ::
+testAction :: forall e. Foreign -> Eff (console :: CONSOLE , modelOut ::
                                      SAVE_STATE | e) Unit
 testAction a = do 
   let s = readState a 
   case (s :: Either String State) of
     Left err -> logShow $ "error" <> err
-    Right st ->
-        {--logShow $ (st ^. _State <<< project <<< _Project)."title"--}
-        setState skeletonReport
+    Right st -> do
+        logShow $ "Test Report Action " <> (st ^. _State <<< project <<< _Project)."title"
+        {--saveState $ Report { status : "notReady" }--}

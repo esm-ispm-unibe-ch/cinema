@@ -3,15 +3,53 @@
     <h4>
       {{{project.title}}}
     </h4>
-     Study Limitations {{project.netRob.studyLimitations.status}}
-    <ul>
-      {{#each project.netRob.studyLimitations.boxes}}
-
-        <li>
-          {{{id}}}
-          <button onClick="Actions.Report.testAction(Model.getState())"> Test Action </button>
-        </li>
-      {{/each}}
-    </ul>
+    {{#if hasDirects}}
+    <hr>
+      <h4>Direct evidence</h4>
+      <table class="table">
+        <thead class="thead-inverse">
+          <tr>
+            <th>Comparison</th>
+            <th>Number of Studies</th>
+            {{#if hasStudyLimitations}}
+              <th>
+                Study Limitations 
+              <br>
+                Rule: {{studyLimitationsRule.label}}
+              </th>
+            {{/if}}
+          </tr>
+        </thead>
+        <tbody>
+          {{#each directRows}} 
+            <tr>
+              <th scope="row">
+                {{{armA}}} vs {{{armB}}}
+              </th>
+              <td>
+                {{numberOfStudies}}
+              </td>
+              {{#if ../hasStudyLimitations}}
+                <td>
+                  {{studyLimitation.label}}
+                </td>
+              {{/if}}
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    {{/if}}
   </div>
 </div>
+
+    <!-- <h4> -->
+    <!--   Indirect evidence -->
+    <!-- </h4> -->
+    <!-- <ul> -->
+    <!--   {{#each indirectRows}}  -->
+    <!--     <li> -->
+    <!--       {{{id}}} -->
+    <!--       <button onClick="Actions.Report.testAction(Model.getState())"> Test Action </button> -->
+    <!--     </li> -->
+    <!--   {{/each}} -->
+    <!-- </ul> -->

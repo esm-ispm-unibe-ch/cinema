@@ -18,11 +18,14 @@ import Data.Lens
 import Data.Lens.Record (prop)
 import Data.Lens.Zoom (Traversal, Traversal', Lens, Lens', zoom)
 
+import TextModel
+
 opts = defaultOptions { unwrapSingleConstructors = true }
 
 -- State <
 newtype State = State
   { project :: Project
+  , text :: TextContent
   }
 _State :: Lens' State (Record _)
 _State = lens (\(State s) -> s) (\_ -> State)
@@ -35,6 +38,8 @@ getState :: Foreign -> F State
 getState = genericDecode opts 
 project :: forall a b r. Lens { project :: a | r } { project :: b | r } a b
 project = prop (SProxy :: SProxy "project")
+text :: forall a b r. Lens { text :: a | r } { text :: b | r } a b
+text = prop (SProxy :: SProxy "text")
 
 readState :: Foreign -> Either String State
 readState m = do
@@ -51,6 +56,9 @@ newtype Project = Project
   , "type" :: String
   , accessDate :: Int
   , creationDate :: Int
+  , studyLimitationLevels :: Array RoBLevel
+  , studies :: Studies
+  , "CM" :: CMContainer
   , netRob :: NetRobModel
   , inconsistency :: Inconsistency
   }
@@ -64,17 +72,176 @@ instance decodeProject :: Decode Project where
     tp <- p ! "type" >>= readString
     creationDate <- pure floor <*> ( p ! "creationDate" >>= readNumber )
     accessDate <- pure floor <*> ( p ! "accessDate" >>= readNumber)
+    studyLimitationLevels <- p ! "studyLimitationLevels" >>= decode
+    studies <- p ! "studies" >>= decode
+    cm <- p ! "CM" >>= decode
     netRob <- p ! "netRob" >>= decode
     inconsistency <- p ! "inconsistency" >>= decode
-    pure $ Project { title, format, "type" : tp,  creationDate, accessDate,
-                   netRob ,inconsistency }
+    pure $ Project { title
+                   , format
+                   , "type" : tp
+                   , creationDate
+                   , accessDate
+                   , studyLimitationLevels
+                   , studies 
+                   , "CM" : cm
+                   , netRob 
+                   , inconsistency }
 _Project :: Lens' Project (Record _)
 _Project = lens (\(Project s) -> s) (\_ -> Project)
 netRob :: forall a b r. Lens { netRob :: a | r } { netRob :: b | r } a b
 netRob = prop (SProxy :: SProxy "netRob")
 inconsistency :: forall a b r. Lens { inconsistency :: a | r } { inconsistency :: b | r } a b
 inconsistency = prop (SProxy :: SProxy "inconsistency")
+studies :: forall a b r. Lens { studies :: a | r } { studies :: b | r } a b
+studies = prop (SProxy :: SProxy "studies")
+cmContainer :: forall a b r. Lens { "CM" :: a | r } { "CM" :: b | r } a b
+cmContainer = prop (SProxy :: SProxy "CM")
 -- Project >
+
+-- RoBLevel <
+newtype RoBLevel = RoBLevel
+  { id :: Int
+  , color :: String
+  , label :: String
+  }
+derive instance genericRoBLevel :: Rep.Generic RoBLevel _
+instance showRoBLevel :: Show RoBLevel where
+    show = genericShow
+instance decodeRoBLevel :: Decode RoBLevel where
+  decode = genericDecode opts
+_RoBLevel :: Lens' RoBLevel (Record _)
+_RoBLevel = lens (\(RoBLevel s) -> s) (\_ -> RoBLevel)
+
+skeletonRoBLevel =  RoBLevel { id : 0
+                             , color: "none"
+                             , label: "none"
+                             }
+-- RoBLevel >
+
+-- Studies <
+newtype Studies = Studies
+  { directComparisons :: Array Comparison
+  }
+derive instance genericStudies :: Rep.Generic Studies _
+instance showStudies :: Show Studies where
+    show = genericShow
+instance decodeStudies :: Decode Studies where
+  decode = genericDecode opts
+_Studies :: Lens' Studies (Record _)
+_Studies = lens (\(Studies s) -> s) (\_ -> Studies)
+directComparisons :: forall a b r. Lens { directComparisons :: a | r } {
+  directComparisons :: b | r } a b
+directComparisons = prop (SProxy :: SProxy "directComparisons" )
+-- Studies >
+
+
+-- Comparison <
+data TreatmentId = StringId String | IntId Int
+instance showTreatmentId :: Show TreatmentId where
+  show (StringId a) = show a
+  show (IntId a) = show a
+
+instance equalTreatmentId :: Eq TreatmentId where
+  eq (StringId a) (StringId b)  = ((show a) == (show b))
+  eq (IntId a) (IntId b)  = ((show a) == (show b))
+  eq (StringId a) (IntId b)  = ((show a) == (show b))
+  eq (IntId a) (StringId b)  = ((show a) == (show b))
+
+instance orderTreatmentId :: Ord TreatmentId where
+  compare (StringId a) (StringId b) = compare a b
+  compare (IntId a) (IntId b) = compare a b
+  compare (StringId a) (IntId b) = compare a (show b)
+  compare (IntId a) (StringId b) = compare (show a) b
+
+readTreatmentId :: Foreign -> F TreatmentId
+readTreatmentId tid = do
+  let sid = runExcept $ readString tid
+  case sid of 
+       Left _ -> do 
+         let iid = runExcept $ readInt tid
+         case iid of
+             Left _ -> pure $ StringId "Error"
+             Right oid -> IntId <$> (readInt tid)
+       Right id -> StringId <$> (readString tid)
+
+treatmentIdToString :: TreatmentId -> String
+treatmentIdToString (StringId t) = t
+treatmentIdToString (IntId t) = show t
+
+  
+newtype Comparison = Comparison
+  { id :: String
+  , t1 :: TreatmentId
+  , t2 :: TreatmentId
+  , numStudies :: Int
+  }
+derive instance genericComparison :: Rep.Generic Comparison _
+instance showComparison :: Show Comparison where
+    show = genericShow
+instance decodeComparison :: Decode Comparison where
+  decode c = do
+    id <- c ! "id" >>= readString
+    t1 <- c ! "t1" >>= readTreatmentId
+    t2 <- c ! "t2" >>= readTreatmentId
+    numStudies <- c ! "numStudies" >>= readInt
+    pure $ Comparison { id
+                      , t1
+                      , t2
+                      , numStudies
+                      }
+
+_Comparison :: Lens' Comparison (Record _)
+_Comparison = lens (\(Comparison s) -> s) (\_ -> Comparison)
+-- Comparison >
+
+-- CMContainer <
+newtype CMContainer = CMContainer
+  { currentCM :: ContributionMatrix
+  }
+derive instance genericCMContainer :: Rep.Generic CMContainer _
+instance showCMContainer :: Show CMContainer where
+    show = genericShow
+instance decodeCMContainer :: Decode CMContainer where
+  decode = genericDecode opts
+_CMContainer :: Lens' CMContainer (Record _)
+_CMContainer = lens (\(CMContainer s) -> s) (\_ -> CMContainer)
+currentCM :: forall a b r. Lens { currentCM :: a | r } { currentCM :: b | r } a b
+currentCM = prop (SProxy :: SProxy "currentCM" )
+-- CMContainer >
+
+-- ContributionMatrix <
+newtype ContributionMatrix = ContributionMatrix
+  { colNames :: Array String
+  , directRowNames :: Array String
+  , indirectRowNames :: Array String
+  , params :: CMParameters 
+  , selectedComparisons :: Array String
+  }
+derive instance genericContributionMatrix :: Rep.Generic ContributionMatrix _
+instance showContributionMatrix :: Show ContributionMatrix where
+    show = genericShow
+instance decodeContributionMatrix :: Decode ContributionMatrix where
+  decode = genericDecode opts
+_ContributionMatrix :: Lens' ContributionMatrix (Record _)
+_ContributionMatrix = lens (\(ContributionMatrix s) -> s) (\_ -> ContributionMatrix)
+-- ContributionMatrix >
+
+-- CMParameters <
+newtype CMParameters = CMParameters
+  { "MAModel" :: String
+    , intvs :: Array String
+    , rule :: String
+    , sm :: String
+  }
+derive instance genericCMParameters :: Rep.Generic CMParameters _
+instance showCMParameters :: Show CMParameters where
+    show = genericShow
+instance decodeCMParameters :: Decode CMParameters where
+  decode = genericDecode opts
+_CMParameters :: Lens' CMParameters (Record _)
+_CMParameters = lens (\(CMParameters s) -> s) (\_ -> CMParameters)
+-- CMParameters >
 
 -- NetRobModel <
 newtype NetRobModel = NetRobModel
@@ -110,10 +277,39 @@ boxes :: forall a b r. Lens { boxes :: a | r } { boxes :: b | r } a b
 boxes = prop (SProxy :: SProxy "boxes")
 -- StudyLimitations >
 
+-- StudyLimitation <
+newtype StudyLimitation = StudyLimitation
+    { id :: String
+    , customized :: Boolean
+    , label :: String
+    }
+derive instance genericStudyLimitation :: Rep.Generic StudyLimitation _
+instance showStudyLimitation :: Show StudyLimitation where
+    show = genericShow
+instance decodeStudyLimitation :: Decode StudyLimitation where
+  decode = genericDecode opts
+_StudyLimitation :: Lens' StudyLimitation (Record _)
+_StudyLimitation = lens (\(StudyLimitation s) -> s) (\_ -> StudyLimitation)
+
+skeletonStudyLimitation = StudyLimitation { id : "None"
+                                          , customized : false
+                                          , label : "Not set"
+                                          }
+-- StudyLimitation >
+
+-- Various <
+type Imprecision = String
+type Heterogeneity = String
+type Incoherence = String
+type Indirectness = String
+type PubBias = String
+-- Various >
+
 -- NetRob <
 newtype NetRob = NetRob
     { id :: String
-    , rules :: Array RobRules
+    , judgement :: Int
+    , rules :: Array RobRule
     }
 derive instance genericNetRob :: Rep.Generic NetRob _
 instance showNetRob :: Show NetRob where
@@ -127,20 +323,28 @@ rules = prop (SProxy :: SProxy "rules")
 -- NetRob >
 
 -- RobRules <
-newtype RobRules = RobRules
+newtype RobRule = RobRule
     { id :: String
     , isActive :: Boolean
     , label :: String
     , name :: String
     , value :: Int
     }
-derive instance genericRobRules :: Rep.Generic RobRules _
-instance showRobRules :: Show RobRules where
+derive instance genericRobRule :: Rep.Generic RobRule _
+instance showRobRule :: Show RobRule where
     show = genericShow
-instance decodeRobRules :: Decode RobRules where
+instance decodeRobRule :: Decode RobRule where
   decode = genericDecode opts
-_RobRules :: Lens' RobRules (Record _)
-_RobRules = lens (\(RobRules s) -> s) (\_ -> RobRules)
+_RobRule :: Lens' RobRule (Record _)
+_RobRule = lens (\(RobRule s) -> s) (\_ -> RobRule)
+
+skeletonRobRule = RobRule 
+    { id : "Nothing"
+    , isActive : false
+    , label : "Nothing"
+    , name : "Nothing"
+    , value : 0
+    }
 -- RobRules >
 
 -- Inconsistency <
@@ -159,26 +363,19 @@ instance decodeInconsistency :: Decode Inconsistency where
 
 -- Report <
 newtype Report = Report
-  { id :: Int
+  { status :: String
   }
 derive instance genericReport :: Rep.Generic Report _
 instance showReport :: Show Report where
     show = genericShow
 instance decodeReport :: Decode Report where
   decode = genericDecode opts
+_Report :: Lens' Report (Record _)
+_Report = lens (\(Report s) -> s) (\_ -> Report)
 
 skeletonReport :: Report
-skeletonReport = Report{
-  id : 49
-}
+skeletonReport = Report 
+  { status : "ready"
+  }
+
 -- Report >
-foreign import data Model :: Type
-
-
-foreign import data SAVE_STATE :: Effect
-
-foreign import data GET_STATE :: Effect
-
-foreign import setState :: forall eff. 
-                            Report -> 
-                            Eff ( model :: SAVE_STATE | eff) Unit

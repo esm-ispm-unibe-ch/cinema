@@ -28,6 +28,7 @@ var Router = {
       }else{
         let conmatStatus = deepSeek(Router,'model.getState().project.CM.currentCM.status'); 
         let directRobStatus = deepSeek(Router,'model.getState().project.DirectRob.status'); 
+        let reportStatus = deepSeek(Router,'model.getState().project.report.status'); 
         switch(route) {
           case 'general':
             if(Router.model.getState().project && typeof Router.model.getState().project.studies !== 'undefined'){
@@ -43,7 +44,7 @@ var Router = {
             return (conmatStatus==='ready');
             break;
           case 'report':
-            return true;
+            return (reportStatus==='ready');
             break;
         }
         return false;
