@@ -2,6 +2,7 @@ module Model where
 
 import Prelude
 import Control.Monad.Eff 
+import Data.Array
 import Data.Foreign 
 import Data.Foreign.Class (class Decode, encode, decode)
 import Data.Foreign.Index ((!))
@@ -9,14 +10,16 @@ import Data.Foreign.Generic (defaultOptions, genericDecode, genericDecodeJSON)
 import Data.Generic.Rep as Rep 
 import Data.Generic.Rep.Show (genericShow)
 import Control.Monad.Except (runExcept)
-import Data.Maybe (Maybe(..))
+import Data.Maybe
 import Data.Either (Either(..))
 import Data.Int
 import Data.Newtype
+import Data.String as S
 import Data.Symbol
 import Data.Lens
 import Data.Lens.Record (prop)
 import Data.Lens.Zoom (Traversal, Traversal', Lens, Lens', zoom)
+import Partial.Unsafe (unsafePartial)
 
 import TextModel
 
@@ -122,6 +125,7 @@ skeletonRoBLevel =  RoBLevel { id : 0
 -- Studies <
 newtype Studies = Studies
   { directComparisons :: Array Comparison
+  , indirectComparisons :: Array String
   }
 derive instance genericStudies :: Rep.Generic Studies _
 instance showStudies :: Show Studies where
@@ -133,6 +137,9 @@ _Studies = lens (\(Studies s) -> s) (\_ -> Studies)
 directComparisons :: forall a b r. Lens { directComparisons :: a | r } {
   directComparisons :: b | r } a b
 directComparisons = prop (SProxy :: SProxy "directComparisons" )
+indirectComparisons :: forall a b r. Lens { indirectComparisons :: a | r } {
+  indirectComparisons :: b | r } a b
+indirectComparisons = prop (SProxy :: SProxy "indirectComparisons" )
 -- Studies >
 
 
@@ -145,14 +152,14 @@ instance showTreatmentId :: Show TreatmentId where
 instance equalTreatmentId :: Eq TreatmentId where
   eq (StringId a) (StringId b)  = ((show a) == (show b))
   eq (IntId a) (IntId b)  = ((show a) == (show b))
-  eq (StringId a) (IntId b)  = ((show a) == (show b))
-  eq (IntId a) (StringId b)  = ((show a) == (show b))
+  eq (StringId a) (IntId b)  = false
+  eq (IntId a) (StringId b)  = false
 
 instance orderTreatmentId :: Ord TreatmentId where
   compare (StringId a) (StringId b) = compare a b
   compare (IntId a) (IntId b) = compare a b
-  compare (StringId a) (IntId b) = compare a (show b)
-  compare (IntId a) (StringId b) = compare (show a) b
+  compare (StringId a) (IntId b) = GT
+  compare (IntId a) (StringId b) = LT
 
 readTreatmentId :: Foreign -> F TreatmentId
 readTreatmentId tid = do
@@ -169,7 +176,6 @@ treatmentIdToString :: TreatmentId -> String
 treatmentIdToString (StringId t) = t
 treatmentIdToString (IntId t) = show t
 
-  
 newtype Comparison = Comparison
   { id :: String
   , t1 :: TreatmentId
@@ -193,6 +199,37 @@ instance decodeComparison :: Decode Comparison where
 
 _Comparison :: Lens' Comparison (Record _)
 _Comparison = lens (\(Comparison s) -> s) (\_ -> Comparison)
+
+skeletonComparison :: Comparison
+skeletonComparison = Comparison { id : "none:none"
+                                , t1 : StringId "none"
+                                , t2 : StringId "none"
+                                , numStudies : 0
+                                }
+
+stringToTreatmentId :: String -> TreatmentId
+stringToTreatmentId str = do
+   let sint = fromString str
+   case sint of
+     Just sint -> IntId sint
+     Nothing ->  StringId str
+  
+stringToComparison :: String -> String -> Comparison
+stringToComparison del str = do
+  let sid = S.split (S.Pattern del) str
+  if (length sid == 2)
+     then let st1 = stringToTreatmentId 
+                       (unsafePartial $ fromJust $ head sid)
+              st2 = stringToTreatmentId 
+                       (unsafePartial $ fromJust $ last sid)
+
+            in Comparison { id : str
+                       , t1 : min st1 st2                     
+                       , t2 : max st1 st2                       
+                       , numStudies : 0
+                     }
+     else Comparison $ (skeletonComparison ^. _Comparison) { id = str }
+
 -- Comparison >
 
 -- CMContainer <
@@ -277,26 +314,6 @@ boxes :: forall a b r. Lens { boxes :: a | r } { boxes :: b | r } a b
 boxes = prop (SProxy :: SProxy "boxes")
 -- StudyLimitations >
 
--- StudyLimitation <
-newtype StudyLimitation = StudyLimitation
-    { id :: String
-    , customized :: Boolean
-    , label :: String
-    }
-derive instance genericStudyLimitation :: Rep.Generic StudyLimitation _
-instance showStudyLimitation :: Show StudyLimitation where
-    show = genericShow
-instance decodeStudyLimitation :: Decode StudyLimitation where
-  decode = genericDecode opts
-_StudyLimitation :: Lens' StudyLimitation (Record _)
-_StudyLimitation = lens (\(StudyLimitation s) -> s) (\_ -> StudyLimitation)
-
-skeletonStudyLimitation = StudyLimitation { id : "None"
-                                          , customized : false
-                                          , label : "Not set"
-                                          }
--- StudyLimitation >
-
 -- Various <
 type Imprecision = String
 type Heterogeneity = String
@@ -322,7 +339,7 @@ rules :: forall a b r. Lens { rules :: a | r } { rules :: b | r } a b
 rules = prop (SProxy :: SProxy "rules")
 -- NetRob >
 
--- RobRules <
+-- RobRule <
 newtype RobRule = RobRule
     { id :: String
     , isActive :: Boolean
@@ -345,7 +362,7 @@ skeletonRobRule = RobRule
     , name : "Nothing"
     , value : 0
     }
--- RobRules >
+-- RobRule >
 
 -- Inconsistency <
 newtype Inconsistency = Inconsistency

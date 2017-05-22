@@ -5,7 +5,7 @@
     </h4>
     {{#if hasDirects}}
     <hr>
-      <h4>Direct evidence</h4>
+      <h4>Mixed evidence</h4>
       <table class="table">
         <thead class="thead-inverse">
           <tr>
@@ -30,7 +30,44 @@
                 {{numberOfStudies}}
               </td>
               {{#if ../hasStudyLimitations}}
-                <td>
+                <td {{# if studyLimitation.customized}} class='customized'{{/if}}>
+                  <!-- {{studyLimitation.value}} -->
+                  {{studyLimitation.label}}
+                </td>
+              {{/if}}
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    {{/if}}
+    {{#if hasIndirects}}
+      <hr>
+        <h4>Indirect evidence</h4>
+        <table class="table">
+          <thead class="thead-inverse">
+            <tr>
+              <th>Comparison</th>
+              <th>Number of Studies</th>
+              {{#if hasStudyLimitations}}
+                <th>
+                  Study Limitations 
+                <br>
+                  Rule: {{studyLimitationsRule.label}}
+                </th>
+              {{/if}}
+            </tr>
+          </thead>
+          <tbody>
+          {{#each indirectRows}} 
+            <tr>
+              <th scope="row">
+                {{{armA}}} vs {{{armB}}}
+              </th>
+              <td>
+                --
+              </td>
+              {{#if ../hasStudyLimitations}}
+                <td {{# if studyLimitation.customized}} class='customized'{{/if}}>
                   {{studyLimitation.label}}
                 </td>
               {{/if}}
