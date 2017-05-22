@@ -35,7 +35,7 @@ var Update = (model) => {
       }
     },
     save: () => {
-      $('#barChart').get(0).toBlob(function(blob) {
+      $('#barChartPrinterFriendly').get(0).toBlob(function(blob) {
         saveAs(blob, model.getState().project.filename+'_chart.png');
       });
     }

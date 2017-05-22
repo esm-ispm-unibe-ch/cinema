@@ -141,6 +141,7 @@ var PR = {
           studyLimitationLevels: studyLimitationLevels
       };
       PR.model.saveState();
+      PR.model.factorySettings();
     },
     getJSON: (infile, filename) => {
       return FR.handleFileSelect(infile)

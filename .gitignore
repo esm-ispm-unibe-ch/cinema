@@ -5,5 +5,9 @@ node_modules/
 */test/bower_components
 .Rproj.user
 *.swp
+<<<<<<< HEAD
 *.swo
+=======
+*.swp
+>>>>>>> master
 RServer/toRoot/www/

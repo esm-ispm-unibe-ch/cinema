@@ -1,5 +1,6 @@
 var RoB = require('../rob/rob.js')();
 var Inconsistency = require('../inconsistency/inconsistency.js')();
+var uniqId = require('../lib/mixins.js').uniqId;
 var deepSeek = require('safe-access');
 var Messages = require('../messages.js').Messages;
 var clone = require('../lib/mixins.js').clone;
@@ -155,19 +156,19 @@ var Update = (model) => {
               sm: cm.params.sm,
             }, (sessionh) => {
           sessionh.getObject( (hatmatrix) => {
-            // console.log('the hatmatrix returned ',hatmatrix);
+            console.log('the hatmatrix returned ',hatmatrix);
             cm.hatmatrix = hatmatrix;
             updaters.saveState();
             updaters.fetchRows(ncm).then(res => {
               resolve(res);
-            }).catch(err => {reject(err)});
+            }).catch(err => {console.log(err);reject(err)});
           })
          });
          hmc.fail( () => {
            reject('R returned an error: ' + hmc.responseText);
         });
         }else{
-            // console.log("found hatmatrix", cm.hatmatrix);
+            console.log("found hatmatrix", cm.hatmatrix);
             updaters.fetchRows(cm).then(res => {
               resolve(res);
             }).catch(err => {reject(err)});
@@ -284,31 +285,42 @@ var Update = (model) => {
       updaters.saveState();
     },
     formatMatrix(ncm){
-      let cm = ncm
+      let cm = ncm;
       let directs = project.studies.directComparisons;
       let indirects = project.studies.indirectComparisons;
       let cw = cm.colNames.length;
       let rows = _.filter(cm.savedComparisons, sr => {
-        return _.contains(cm.selectedComparisons, sr.rowname)});
-      let directRows = _.filter(rows, r=>{
-        return _.find(directs, d=>{
-          return r.rowname.replace(':',',')===d.id});
+        return _.contains(cm.selectedComparisons, sr.rowname)
       });
-      let indirectRows = _.filter(rows, r=>{
-        return _.find(indirects, d=>{
-          let aresame = (
-            ( (r.rowname.split(':')[0]===d.split(',')[0]) &&
-            (r.rowname.split(':')[1]===d.split(',')[1])) || 
-            ( (r.rowname.split(':')[1]===d.split(',')[0]) &&
-            (r.rowname.split(':')[0]===d.split(',')[1]))
-          );
-          return aresame});
-      });
+      let directRows = _.sortBy(
+        _.filter(rows, r=>{
+          return _.find(directs, d=>{
+            return uniqId(r.rowname.replace(':',',').split(',')).toString()===d.id;
+          });
+        }),
+        'rowname'
+      );
+      let indirectRows = _.sortBy (
+        _.filter(rows, r=>{
+          return _.find(indirects, d=>{
+            let aresame = (
+              ( (r.rowname.split(':')[0]===d.split(',')[0]) &&
+              (r.rowname.split(':')[1]===d.split(',')[1])) || 
+              ( (r.rowname.split(':')[1]===d.split(',')[0]) &&
+              (r.rowname.split(':')[0]===d.split(',')[1]))
+            );
+            return aresame});
+        }),
+        'rowname'
+      );
       cm.directRowNames = _.map(directRows,row=>{return row.rowname});
       cm.directStudies = _.map(directRows,row=>{return row.comparisons});
       cm.indirectRowNames = _.map(indirectRows,row=>{return row.rowname});
       cm.indirectStudies = _.map(indirectRows,row=>{return row.comparisons});
-      return (cm);
+      if(cm.selectedComparisons.length !== (directRows.length+indirectRows.length)){
+        throw 'unable to match comparison names';
+      }
+     return cm;
     },
     showTable: () => {
       if (model.getState().router.currentRoute === 'general'){
