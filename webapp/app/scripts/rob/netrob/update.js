@@ -42,7 +42,7 @@ var Update = (model) => {
       });
       if ( updaters.cmReady() && updaters.drobReady() ){
         if(updaters.getState().status === 'ready'){
-          // _.map(children, c => {c.update.updateState(model);});
+          _.map(children, c => {c.update.updateState(model);});
         }else{
           updaters.setState(updaters.completeModel());
         }

@@ -130,7 +130,7 @@ var CM = {
         }
         if( (deepSeek(CM,'model.getState().project.CM.currentCM.status')==='ready')){
         }
-        Update(CM.model).updateChildren();
+        Update(CM.model).updateChildren(CM.model);
       }
     },
   },
