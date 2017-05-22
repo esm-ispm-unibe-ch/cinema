@@ -11,8 +11,8 @@ FROM tosku/cinema:0.1.0
 # RUN sh -c 'curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -'
 # RUN sh -c 'apt-get install -y nodejs'
 #copying contribution package and installation scripts
-ADD toRoot /root
 
+ADD toRoot /root
 # RUN mv /root/server.conf /etc/opencpu/
 
 
@@ -37,10 +37,10 @@ ADD toRoot /root
 # RUN d=d sh -c 'cd /root/cinema/webapp/ && gulp'
 # RUN d=d sh -c 'rm -rf /root/cinema/webapp/www/'
 # RUN d=d sh -c 'mv /root/cinema/webapp/dist /root/cinema/webapp/www'
-RUN d=d sh -c 'rm -rf /usr/local/lib/R/site-library/contribution/www/'
-RUN d=d sh -c 'cp -rf /root/www/ /usr/local/lib/R/site-library/contribution/www/'
+RUN e=e sh -c 'rm -rf /usr/local/lib/R/site-library/contribution/www/'
+RUN e=e sh -c 'cp -rf /root/www/ /usr/local/lib/R/site-library/contribution/www/'
 # RUN d=d sh -c 'cp -rf /root/cinema/webapp/www/ /usr/local/lib/R/site-library/contribution/www/'
-RUN d=d sh -c 'Rscript /root/installContribution/rgrade.batch'
+RUN e=e sh -c 'Rscript /root/installContribution/rgrade.batch'
 #restarting opencpu service
 RUN sh -c 'service opencpu stop'
 RUN sh -c 'service opencpu restart'
