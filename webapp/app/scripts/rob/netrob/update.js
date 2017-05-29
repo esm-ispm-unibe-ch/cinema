@@ -35,13 +35,13 @@ var Update = (model) => {
       return isready;
     },
     updateState: (model) => {
-      console.log('updating study limitations and Report',model.getState());
+      // console.log('updating study limitations and Report',model.getState());
       let mdl = model.getState();
       _.map(children, c => {
         c.update.updateState(mdl)(mdl);
       });
-      if ( updaters.cmReady() && updaters.drobReady() ){
-        if(updaters.getState().status === 'ready'){
+      if (updaters.cmReady() && updaters.drobReady()){
+        if (updaters.getState().status === 'ready'){
           _.map(children, c => {c.update.updateState(model);});
         }else{
           updaters.setState(updaters.completeModel());
@@ -86,9 +86,9 @@ var Update = (model) => {
     saveState: () => {
       model.saveState();
       let mdl = model.getState();
-      console.log('saving study limitations and Report');
+      // console.log('saving study limitations and Report');
       _.map(children, c => {
-        console.log("report module", mdl);
+        // console.log("report module", mdl);
         c.update.updateState(mdl)(mdl);
       });
     },
@@ -182,7 +182,6 @@ var Update = (model) => {
       _.map(mixed, m => { m.isMixed = true } );
       let indirect = makeRules(cm.indirectRowNames,cm.colNames,cm.indirectStudies);
       _.map(indirect, i => { i.isMixed = false } );
-      // console.log('mixed',mixed);
       return _.union(mixed,indirect);
     },
     completeModel: () => {

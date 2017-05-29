@@ -121,6 +121,7 @@
       "selectionTitle": "Define how to summarize the risk of bias bar for each comparison",
       "mixedtitle": "mixed",
       "indirecttitle": "indirect",
+      "directtitle": "direct",
       "rules": {
         "noRule": "--",
         "majRule": "Majority RoB",
@@ -171,6 +172,7 @@
         "Serious",
         "Very Serious"
       ],
+      "changedJudgement": "Judgement saved",
       "title": "Global text for incoherence",
       "subTitle": "Based on a random-effects design-by-treatment interaction model",
       "QstatisticLabel": "Q statistic",
@@ -180,6 +182,7 @@
       "boxesSubTitle" : "Separating indirect from direct evidence",
       "mixedtitle": "mixed",
       "indirecttitle": "indirect",
+      "directtitle": "direct",
       "customizedTitleSingular": "selection differs",
       "customizedTitlePlural": "selections differ",
       "resetButton": "Reset",

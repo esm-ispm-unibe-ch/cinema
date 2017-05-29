@@ -37,7 +37,7 @@ var NetRob = {
       let children = _.map(NetRob.renderChildren, c => { c.render(model);});
       return Template(model,children);
     }else{
-      console.log('NetRob not ready to render');
+      // console.log('NetRob not ready to render');
     }
   },
   afterRender: () => {

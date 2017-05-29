@@ -14,7 +14,6 @@ var View = (model) => {
           ready = true;
         }
       }
-      console.log('rob ready',ready);
       return ready;
     },
     tableReady: () => {

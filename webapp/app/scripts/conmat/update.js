@@ -6,6 +6,8 @@ var Messages = require('../messages.js').Messages;
 var clone = require('../lib/mixins.js').clone;
 var json2csv = require('json2csv');
 var download = require('downloadjs');
+var Heterogeneity = require('../inconsistency/heterogeneity/heterogeneity.js')();
+var Incoherence = require('../inconsistency/incoherence/incoherence.js')();
 
 var Update = (model) => {
   let project = deepSeek(model,'getState().project');
@@ -35,6 +37,7 @@ var Update = (model) => {
         project.CM.currentCM = updaters.emptyCM();
         updaters.setCurrentCM('params',params);
         updaters.saveState();
+      console.log("resetting CONTRIBUTION MATRIXXXXXXXXXXXXXX",children);
     },
     createMatrix: () => {
       // console.log('creating matrix');
@@ -259,8 +262,6 @@ var Update = (model) => {
                 contributions: row.contribution
               });
           },[]);
-         updaters.setCurrentCM('status','ready')
-          updaters.saveState();
           // console.log('the ocpu result',connma,'pushing to project');
           let cm = updaters.getCM();
           let result = updaters.formatMatrix(cm);
@@ -495,7 +496,7 @@ var Update = (model) => {
 
 var children = [
   RoB,
-  Inconsistency
+  Inconsistency,
   ];
 
 module.exports = () => {

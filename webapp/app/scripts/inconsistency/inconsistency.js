@@ -11,10 +11,10 @@ var Inconsistency = {
       Inconsistency.update.gotoRoute(route);
     },
   },
-  modelPosition: 'project.inconsistency',
+  modelPosition: 'getState().project.inconsistency',
   view: {
     isActive: (route) => {
-      return route === Inconsistency.getState(Inconsistency.model).route;
+      return route === Inconsistency.model.getState().project.inconsistency.route;
     },
     register: (model) => {
       Inconsistency.model = model;
@@ -23,14 +23,11 @@ var Inconsistency = {
     },
     isReady: (model) => {
       let isReady = false;
-      if (! _.isUndefined(Inconsistency.getState(model))){
+      if (! _.isUndefined(Inconsistency.model)){
         isReady = true;
       }
       return isReady;
     },
-  },
-  getState: (model) => {
-    return deepSeek(model.getState(),Inconsistency.modelPosition);
   },
   update: {
     cmReady: (model) => {
@@ -42,18 +39,11 @@ var Inconsistency = {
       return isready;
     },
     updateState: (model) => {
-      if (Inconsistency.update.cmReady(model) ){
-        if(_.isUndefined(Inconsistency.getState(model))){
-          Inconsistency.model = model;
-          Inconsistency.update.setState(Inconsistency.update.skeletonModel());
-          Inconsistency.update.changeState('status','ready');
-        }else{
-          _.map(Inconsistency.children, c => { c.update.updateState(model);});
-          console.log('Inconsistency model ready');
-        }
-      }else{
-        console.log('Inconsistency model not ready');
+      if ( _.isUndefined(deepSeek(Inconsistency.model,Inconsistency.modelPosition))){
+        Inconsistency.model = model;
         Inconsistency.update.setState(Inconsistency.update.skeletonModel());
+      }else{
+        _.map(Inconsistency.children, c => { c.update.updateState(model);});
       }
     },
     setState: (newState) => {
@@ -67,11 +57,11 @@ var Inconsistency = {
     skeletonModel: () => {
       return { 
         route: 'heterogeneity',
-        status: 'notReady',
+        status: 'ready',
       }
     },
     changeState: (key,value) => {
-      Inconsistency.getState(Inconsistency.model)[key] = value;
+      deepSeek(Inconsistency.model,Inconsistency.modelPosition)[key] = value;
       Inconsistency.update.saveState();
     },
     gotoRoute: (route) => {
@@ -81,7 +71,7 @@ var Inconsistency = {
   },
   render: (model) => {
     if(Inconsistency.view.isReady(model)){
-      let child = _.find(Inconsistency.renderChildren, c => {return c.route === Inconsistency.getState(model).route;}).module.render(model);
+      let child = _.find(Inconsistency.renderChildren, c => {return c.route === Inconsistency.model.getState().project.inconsistency.route;}).module.render(model);
       let hetli ='li';
       hetli+= Inconsistency.view.isActive('heterogeneity')?'.active':''; 
       let incli ='li';

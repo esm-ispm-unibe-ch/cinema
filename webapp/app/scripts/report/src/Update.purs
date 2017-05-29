@@ -21,7 +21,7 @@ updateState mdl = do
   let (s :: Either String State) = readState mdl
   case s of
     Left err -> do saveState $ Report { status : "notReady" }
-                   logShow $ "reading state in Report error: " <> err
+                   {--logShow $ "reading state in Report error: " <> err--}
     Right st -> do
       if isReady st then do
           saveState $ Report { status : "ready" }
@@ -30,4 +30,4 @@ updateState mdl = do
           {--log $ "Report Ready selected rows" <> rows--}
         else do
           saveState $ Report { status : "notReady" }
-          log "Report Not Ready"
+          {--log "Report Not Ready"--}

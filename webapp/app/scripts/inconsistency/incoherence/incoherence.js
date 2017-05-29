@@ -15,6 +15,10 @@ var Incoherence = {
           Messages.alertify().message(successmsg);
         },() => {});
     },
+    selectIndividual: (judgement) => {
+      let msg = Incoherence.model.getState().text.Incoherence.changedJudgement;
+      Update(Incoherence.model).selectIndividual(judgement);
+    },
   },
   view: {
     register: (model) => {
@@ -24,7 +28,7 @@ var Incoherence = {
   },
   update: {
     updateState: (model) => {
-        Update(model).updateState(model);
+        Update(Incoherence.model).updateState(model);
     },
   },
   render: (model) => {

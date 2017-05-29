@@ -24,9 +24,6 @@ var RoB = {
       }
       return isReady;
     },
-    getState: () => {
-      return deepSeek(model.getState(),RoB.modelPosition);
-    },
   },
   update: {
     updateState: (model) => {
@@ -51,16 +48,13 @@ var RoB = {
         status: 'ready'
       }
     },
-    clickedMe: () => {
-      console.log('clicked me');
-    }
   },
   render: (model) => {
     if(RoB.view.isReady(model)){
       let children = _.map(RoB.renderChildren, c => {return c.render(model);});
       return h('div#contentStudyLimitations.row',children);
     }else{
-      console.log('RoB not ready to render');
+      // console.log('RoB not ready to render');
     }
   },
   afterRender: (model) => {

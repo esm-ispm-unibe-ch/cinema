@@ -1,11 +1,12 @@
 var deepSeek = require('safe-access');
+var clone = require('../../lib/mixins.js').clone;
 
 var View = (model) => {
-  let modelPosition = 'project.inconsistency.incoherence';
+  let modelPosition = 'getState().project.inconsistency.incoherence';
   let viewers = {
     isReady: () => {
       let isReady = false;
-      if (! _.isUndefined(deepSeek(model.getState(), modelPosition))){
+      if (! _.isUndefined(deepSeek(model, modelPosition))){
         isReady = true;
       }
       return isReady;
@@ -117,19 +118,22 @@ var View = (model) => {
       return prs;
     },
     boxes: () => {
-      let boxes = viewers.getState().boxes;
-      _.map(boxes, box => {
-        _.map(box.levels, l => {
+      return _.map(viewers.getState().boxes, box => {
+        let levels = _.map(box.levels, l => {
+          let level = clone(l);
           let name = {};
-          if(l.id !=='nothing'){
-            name = {
-              label: model.getState().text.Incoherence.levels[l.id-1]
-            }
+          let isActive = parseInt(box.judgement) === parseInt(level.id);
+          name = {
+            isActive,
+            label: model.getState().text.Incoherence.levels[level.id-1],
           }
-          return _.extend(l, name);
+          return _.extend(level, name);
         });
+        box.levels = levels;
+        box.customized = box.ruleJudgement !== box.judgement;
+        box.color = _.find(box.levels, l => {return l.id === box.judgement}).color;
+        return box;
       });
-      return boxes;
     },
     rfvs: () => {
       let res = viewers.getState().referenceValues; 
@@ -145,7 +149,7 @@ var View = (model) => {
       return viewers.getState().referenceValues.status === 'ready';
     },
     getState: () => {
-      return deepSeek(model.getState(),modelPosition);
+      return deepSeek(model,modelPosition);
     },
     heterReady: () => {
       return viewers.getState().heters.status === 'ready'

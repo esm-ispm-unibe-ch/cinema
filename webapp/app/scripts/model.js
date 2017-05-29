@@ -55,7 +55,7 @@ var Model = {
       $('#errormsg').text(err);
       // console.log('error rendering view',err);
     });
-    console.log('the state', Model.getState());
+    // console.log('the state', Model.getState());
   },
   factorySettings: () => {
     Model.setState({

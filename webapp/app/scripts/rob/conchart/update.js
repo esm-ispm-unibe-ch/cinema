@@ -13,10 +13,10 @@ var Update = (model) => {
     },
     updateState: () => {
       if ( _.isUndefined(updaters.getState())){
-        console.log('ConChart model not ready');
+        // console.log('ConChart model not ready');
         updaters.setState(updaters.skeletonModel());
       }else{
-        console.log('ConChart model ready');
+        // console.log('ConChart model ready');
         _.map(children, c => { c.update.updateState(model);});
       }
     },

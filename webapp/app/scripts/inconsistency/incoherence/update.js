@@ -25,9 +25,8 @@ var Update = (model) => {
     },
     cmReady: () => {
       let isready = false;
-      if (deepSeek(model,'getState().project.CM.currentCM.status')==='ready'){
+      if (deepSeek(model.getState(),'project.CM.currentCM.status') === 'ready'){
         isready = true;
-        // console.log('contribution matrix ready');
       }
       return isready;
     },
@@ -35,13 +34,20 @@ var Update = (model) => {
       return  (updaters.getState().status === 'ready');
     },
     updateState: (model) => {
+      let mdl = model.getState();
+      let cm = model.getState().project.CM.currentCM;
       if (updaters.cmReady()){
-        _.map(children, c => { c.update.updateState();});
-        updaters.setState(updaters.skeletonModel());
+        if (updaters.getState().status === 'ready'){
+        }else{
+          updaters.setState(updaters.skeletonModel());
+        }
       }else{
         model.getState().project.inconsistency.incoherence = {};
-        updaters.setState(updaters.skeletonModel());
+        updaters.setState(updaters.emptyModel());
       }
+      _.map(children, c => {
+        c.update.updateState(mdl)(mdl);
+      });
     },
     setState: (newState) => {
       model.getState().project.inconsistency.incoherence = newState;
@@ -49,13 +55,14 @@ var Update = (model) => {
     },
     saveState: () => {
       model.saveState();
-      _.map(children, c => { c.update.updateState();});
+      _.map(children, c => { c.update.updateState(model);});
     },
     createEstimators: () => {
-      let cm = model.getState().project.CM.currentCM;
-      let sideValues = model.getState().project.CM.currentCM.hatmatrix.side;
-      let sideRowNames = model.getState().project.CM.currentCM.hatmatrix.rowNamesSide;
-      let sideColNames = model.getState().project.CM.currentCM.hatmatrix.colNamesSide;
+      let cm = window.Model.getState().project.CM.currentCM;
+      let sideValues = cm.hatmatrix.side;
+      let sideRowNames = cm.hatmatrix.rowNamesSide;
+      let sideColNames = cm.hatmatrix.colNamesSide;
+      let levels = IncoherenceLevels;
       let sides = _.zip(sideRowNames,_.map(sideValues,sr => {
         return _.object(sideColNames,sr);
       }));
@@ -67,66 +74,119 @@ var Update = (model) => {
           let contents = {}
             contents =  {
                 id: s[0],
-                judgement: 'nothing'
+                levels
             }
           if(_.isUndefined(sideRow)){
             _.extend(contents,{
                 isMixed: false,
+                isDirect: false,
+                isIndirect: true,
             })
           }else{
-            // console.log('sideIF',sideRow);
-            if (_.every(_.toArray(sideRow[1]), sr => {return sr !== 'NA'})){
+            if (! isNaN(sideRow[1].SideIF)){
               _.extend(contents,{
                   isMixed: true,
+                  isDirect: false,
+                  isIndirect: false,
                   sideIF: sideRow[1].SideIF.toFixed(3),
                   sideIFLower: sideRow[1].SideIFlower.toFixed(3),
                   sideIFUpper: sideRow[1].SideIFupper.toFixed(3),
                   Ztest: sideRow[1].SideZ.toFixed(3),
                   pvalue: sideRow[1].SidePvalue.toFixed(3),
               })
+            }else{
+              _.extend(contents,{
+                  isMixed: false,
+                  isDirect: true,
+                  isIndirect: false,
+              })
             }
           }
-          let levels = _.union([{
-            id:'nothing',
-            label: '--',
-            isDisabled: true
-          }],updaters.getState().levels);
-          // _.map(levels, l => {
-          //   let name = {};
-          //   if(l.id !=='nothing'){
-          //     name = {
-          //       label: model.getState().text.Incoherence.levels[l.id-1]
-          //     }
-          //   }
-          //   return _.extend(l, name);
-          // });
-          contents.levels = levels;
+          contents.ruleJudgement = 
+            updaters.getRuleJudgement(contents);
+          contents.judgement = contents.ruleJudgement;
+          contents.customized = false;
           return contents;
         });
         return res;
       };
       let mixed = makeBoxes(_.zip(cm.directRowNames,cm.directStudies));
       let indirect = makeBoxes(_.zip(cm.indirectRowNames,cm.indirectStudies));
-      // console.log('mixed',mixed);
-      return _.union(mixed,indirect);
+      return _.union(mixed, indirect);
+    },
+    selectIndividual: (value) => {
+      let [tid,tv] = value.value.split('σδel');
+      let boxes = updaters.getState().boxes;
+      let tbc = _.find(boxes, m => {
+        return m.id === tid;
+      });
+      let rulevalue = tbc.ruleJudgement
+      tbc.judgement = parseInt(tv);
+      updaters.saveState();
+      Messages.alertify().success(model.getState().text.Incoherence.IncoherenceSet);
+    },
+    mixedRuleTable : [
+      [1,2,2],
+      [2,2,3],
+      [2,3,3]
+    ],
+    getRuleJudgement : (comparison) => {
+      let netpvalue = updaters.rfvs()[2];
+      let sidepvalue = comparison.pvalue;
+      let level = 0; 
+      let pindex = (pv) => {
+        let xr = -1;
+        if (pv > 0.1){
+          xr = 0;
+        }else{
+          if ((pv <= 0.1) && (pv > 0.01)){
+            xr = 1;
+          }else{
+            xr = 2;
+          }
+        }
+        return xr;
+      };
+      if (comparison.isMixed) {
+        level = updaters.mixedRuleTable[pindex(sidepvalue)][pindex(netpvalue)];
+      }else{
+        if (comparison.isDirect) {
+          level = 1;
+        }else{
+          if (comparison.isIndirect) {
+            level = updaters.mixedRuleTable[1][pindex(netpvalue)];
+          }else{
+            level = 0;
+          }
+        }
+      }
+      return level;
+    },
+    rfvs : () => {
+      let dbt = [];
+      if(! _.isUndefined(deepSeek(model.getState(),'project.CM.currentCM.hatmatrix.dbt[0]'))){
+        dbt = _.map(model.getState().project.CM.currentCM.hatmatrix.dbt[0], d => {
+          return d.toFixed(3);
+        });
+        dbt[1]=parseInt(dbt[1]);
+      }
+      return dbt;
     },
     skeletonModel: () => {
+      let out = {};
       let boxes = updaters.createEstimators();
-      let rfvs = () => {
-        let dbt = [];
-        if(! _.isUndefined(deepSeek(model.getState(),'project.CM.currentCM.hatmatrix.dbt[0]'))){
-          dbt = _.map(model.getState().project.CM.currentCM.hatmatrix.dbt[0], d => {
-            return d.toFixed(3);
-          });
-          dbt[1]=parseInt(dbt[1]);
-        }
-        return dbt;
-      };
-      return { 
-        levels: IncoherenceLevels,
+      out = { 
         status: 'ready',
-        referenceValues: rfvs(),
+        referenceValues: updaters.rfvs(),
         boxes,
+      }
+      return out;
+    },
+    emptyModel: () => {
+      return {
+        status: "empty",
+        boxes: [],
+        referenceValues: []
       }
     },
     resetIncoherence: () => {

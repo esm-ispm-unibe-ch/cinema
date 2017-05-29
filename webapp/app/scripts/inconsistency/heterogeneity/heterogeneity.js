@@ -46,7 +46,7 @@ var Heterogeneity = {
   },
   update: {
     updateState: (model) => {
-        Update(model).updateState(model);
+        Update(Heterogeneity.model).updateState(model);
     },
   },
   render: (model) => {
