@@ -50,8 +50,8 @@ var Router = {
         return false;
       }
     },
-    menuRoutes: ['welcome','project','doc'],
-    evalRoutes: ['general','rob', 'imprecision','inconsistency', 'indirectness',  'pubBias','report'],
+    menuRoutes: ['welcome', 'project', 'doc'],
+    evalRoutes: ['general', 'rob', 'imprecision', 'inconsistency', 'indirectness', 'pubBias', 'report'],
     dependencies: {
       project: [],
       general: ['projectName'],

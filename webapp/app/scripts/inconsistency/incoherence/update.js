@@ -2,8 +2,13 @@ var deepSeek = require('safe-access');
 var clone = require('../../lib/mixins.js').clone;
 var uniqId = require('../../lib/mixins.js').uniqId;
 var Messages = require('../../messages.js').Messages;
+var Report = require('../../report/output/Main');
+Report.view = require('../../report/output/Main.View');
+Report.update = require('../../report/output/Main.Update');
+Report.Actions = require('../../report/output/Actions');
 
 var children = [
+  Report
   ];
 
 var Update = (model) => {
@@ -34,7 +39,6 @@ var Update = (model) => {
       return  (updaters.getState().status === 'ready');
     },
     updateState: (model) => {
-      let mdl = model.getState();
       let cm = model.getState().project.CM.currentCM;
       if (updaters.cmReady()){
         if (updaters.getState().status === 'ready'){
@@ -45,6 +49,7 @@ var Update = (model) => {
         model.getState().project.inconsistency.incoherence = {};
         updaters.setState(updaters.emptyModel());
       }
+      let mdl = model.getState();
       _.map(children, c => {
         c.update.updateState(mdl)(mdl);
       });
@@ -55,7 +60,10 @@ var Update = (model) => {
     },
     saveState: () => {
       model.saveState();
-      _.map(children, c => { c.update.updateState(model);});
+      let mdl = model.getState();
+      _.map(children, c => {
+        c.update.updateState(mdl)(mdl);
+      });
     },
     createEstimators: () => {
       let cm = window.Model.getState().project.CM.currentCM;
@@ -116,14 +124,40 @@ var Update = (model) => {
     },
     selectIndividual: (value) => {
       let [tid,tv] = value.value.split('σδel');
-      let boxes = updaters.getState().boxes;
+      let boxes = updaters.getState().boxes
       let tbc = _.find(boxes, m => {
         return m.id === tid;
       });
       let rulevalue = tbc.ruleJudgement
       tbc.judgement = parseInt(tv);
+      tbc = updaters.updateBox(tbc, parseInt(tv));
       updaters.saveState();
       Messages.alertify().success(model.getState().text.Incoherence.IncoherenceSet);
+    },
+    updateBox: (box) => {
+      let levels = _.map(box.levels, l => {
+        let level = clone(l);
+        let label = model.getState().text.Incoherence.levels[level.id-1];
+        let name = {};
+        let isActive = parseInt(box.judgement) === parseInt(level.id);
+        if (isActive) {
+          box.label = label; 
+        }
+        name = {
+          isActive,
+          label,
+        }
+        return _.extend(level, name);
+      });
+      box.levels = levels;
+      box.customized = box.ruleJudgement !== box.judgement;
+      box.color = _.find(box.levels, l => {return l.id === box.judgement}).color;
+      return box;
+    },
+    updateBoxes: (boxes) => {
+      return _.map(boxes, box => {
+        return updaters.updateBox(box);
+      });
     },
     mixedRuleTable : [
       [1,2,2],
@@ -175,6 +209,7 @@ var Update = (model) => {
     skeletonModel: () => {
       let out = {};
       let boxes = updaters.createEstimators();
+      boxes = updaters.updateBoxes(boxes);
       out = { 
         status: 'ready',
         referenceValues: updaters.rfvs(),

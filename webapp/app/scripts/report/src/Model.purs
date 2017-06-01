@@ -22,6 +22,9 @@ import Data.Lens.Zoom (Traversal, Traversal', Lens, Lens', zoom)
 import Partial.Unsafe (unsafePartial)
 
 import TextModel
+import StudyLimitationsModel
+import InconsistencyModel
+import ReportModel
 
 opts = defaultOptions { unwrapSingleConstructors = true }
 
@@ -101,26 +104,6 @@ studies = prop (SProxy :: SProxy "studies")
 cmContainer :: forall a b r. Lens { "CM" :: a | r } { "CM" :: b | r } a b
 cmContainer = prop (SProxy :: SProxy "CM")
 -- Project >
-
--- RoBLevel <
-newtype RoBLevel = RoBLevel
-  { id :: Int
-  , color :: String
-  , label :: String
-  }
-derive instance genericRoBLevel :: Rep.Generic RoBLevel _
-instance showRoBLevel :: Show RoBLevel where
-    show = genericShow
-instance decodeRoBLevel :: Decode RoBLevel where
-  decode = genericDecode opts
-_RoBLevel :: Lens' RoBLevel (Record _)
-_RoBLevel = lens (\(RoBLevel s) -> s) (\_ -> RoBLevel)
-
-skeletonRoBLevel =  RoBLevel { id : 0
-                             , color: "none"
-                             , label: "none"
-                             }
--- RoBLevel >
 
 -- Studies <
 newtype Studies = Studies
@@ -280,119 +263,3 @@ _CMParameters :: Lens' CMParameters (Record _)
 _CMParameters = lens (\(CMParameters s) -> s) (\_ -> CMParameters)
 -- CMParameters >
 
--- NetRobModel <
-newtype NetRobModel = NetRobModel
-  { status :: String
-  , studyLimitations :: StudyLimitations
-  }
-derive instance genericNetRobModel :: Rep.Generic NetRobModel _
-instance showNetRobModel :: Show NetRobModel where
-    show = genericShow
-instance decodeNetRobModel :: Decode NetRobModel where
-  decode = genericDecode opts
-_NetRobModel :: Lens' NetRobModel (Record _)
-_NetRobModel = lens (\(NetRobModel s) -> s) (\_ -> NetRobModel)
-studyLimitations :: forall a b r. Lens { studyLimitations :: a | r } { studyLimitations :: b | r } a b
-studyLimitations = prop (SProxy :: SProxy "studyLimitations")
--- NetRobModel >
-
--- StudyLimitations <
-newtype StudyLimitations = StudyLimitations
-    { customized :: Number
-    , rule :: String
-    , status :: String
-    , boxes :: Array NetRob
-    }
-derive instance genericStudyLimitations :: Rep.Generic StudyLimitations _
-instance showStudyLimitations :: Show StudyLimitations where
-    show = genericShow
-instance decodeStudyLimitations :: Decode StudyLimitations where
-  decode = genericDecode opts
-_StudyLimitations :: Lens' StudyLimitations (Record _)
-_StudyLimitations = lens (\(StudyLimitations s) -> s) (\_ -> StudyLimitations)
-boxes :: forall a b r. Lens { boxes :: a | r } { boxes :: b | r } a b
-boxes = prop (SProxy :: SProxy "boxes")
--- StudyLimitations >
-
--- Various <
-type Imprecision = String
-type Heterogeneity = String
-type Incoherence = String
-type Indirectness = String
-type PubBias = String
--- Various >
-
--- NetRob <
-newtype NetRob = NetRob
-    { id :: String
-    , judgement :: Int
-    , rules :: Array RobRule
-    }
-derive instance genericNetRob :: Rep.Generic NetRob _
-instance showNetRob :: Show NetRob where
-    show = genericShow
-instance decodeNetRob :: Decode NetRob where
-  decode = genericDecode opts
-_NetRob :: Lens' NetRob (Record _)
-_NetRob = lens (\(NetRob s) -> s) (\_ -> NetRob)
-rules :: forall a b r. Lens { rules :: a | r } { rules :: b | r } a b
-rules = prop (SProxy :: SProxy "rules")
--- NetRob >
-
--- RobRule <
-newtype RobRule = RobRule
-    { id :: String
-    , isActive :: Boolean
-    , label :: String
-    , name :: String
-    , value :: Int
-    }
-derive instance genericRobRule :: Rep.Generic RobRule _
-instance showRobRule :: Show RobRule where
-    show = genericShow
-instance decodeRobRule :: Decode RobRule where
-  decode = genericDecode opts
-_RobRule :: Lens' RobRule (Record _)
-_RobRule = lens (\(RobRule s) -> s) (\_ -> RobRule)
-
-skeletonRobRule = RobRule 
-    { id : "Nothing"
-    , isActive : false
-    , label : "Nothing"
-    , name : "Nothing"
-    , value : 0
-    }
--- RobRule >
-
--- Inconsistency <
-newtype Inconsistency = Inconsistency
-    { route :: String
-    , status :: String
-    }
-_Inconsistency :: Lens' Inconsistency (Record _)
-_Inconsistency = lens (\(Inconsistency s) -> s) (\_ -> Inconsistency)
-derive instance genericInconsistency :: Rep.Generic Inconsistency _
-instance showInconsistency :: Show Inconsistency where
-    show = genericShow
-instance decodeInconsistency :: Decode Inconsistency where
-  decode = genericDecode opts
--- Inconsistency >
-
--- Report <
-newtype Report = Report
-  { status :: String
-  }
-derive instance genericReport :: Rep.Generic Report _
-instance showReport :: Show Report where
-    show = genericShow
-instance decodeReport :: Decode Report where
-  decode = genericDecode opts
-_Report :: Lens' Report (Record _)
-_Report = lens (\(Report s) -> s) (\_ -> Report)
-
-skeletonReport :: Report
-skeletonReport = Report 
-  { status : "ready"
-  }
-
--- Report >

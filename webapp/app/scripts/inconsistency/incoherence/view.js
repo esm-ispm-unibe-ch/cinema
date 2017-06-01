@@ -118,22 +118,7 @@ var View = (model) => {
       return prs;
     },
     boxes: () => {
-      return _.map(viewers.getState().boxes, box => {
-        let levels = _.map(box.levels, l => {
-          let level = clone(l);
-          let name = {};
-          let isActive = parseInt(box.judgement) === parseInt(level.id);
-          name = {
-            isActive,
-            label: model.getState().text.Incoherence.levels[level.id-1],
-          }
-          return _.extend(level, name);
-        });
-        box.levels = levels;
-        box.customized = box.ruleJudgement !== box.judgement;
-        box.color = _.find(box.levels, l => {return l.id === box.judgement}).color;
-        return box;
-      });
+      return viewers.getState().boxes;
     },
     rfvs: () => {
       let res = viewers.getState().referenceValues; 

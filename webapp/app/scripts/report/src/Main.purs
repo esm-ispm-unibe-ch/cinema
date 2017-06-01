@@ -19,6 +19,7 @@ import Data.Lens.Setter
 import Data.Lens.Zoom
 
 import Model 
+import StudyLimitationsModel
 import Main.View as V
 import Actions as A
 

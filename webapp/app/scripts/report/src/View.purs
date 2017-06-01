@@ -26,9 +26,12 @@ import Data.Lens.Traversal
 import Text.Smolder.Renderer.String (render) as S 
 import Partial.Unsafe (unsafePartial)
 
+import Actions
 import Model
 import TextModel
-import Actions
+import StudyLimitationsModel
+import InconsistencyModel
+import ReportModel
 
 opts = defaultOptions { unwrapSingleConstructors = true }
 
@@ -39,6 +42,7 @@ newtype StudyLimitation = StudyLimitation
     , label :: String
     , value :: Int
     , rules :: Array RobRule
+    , color :: String
     }
 derive instance genericStudyLimitation :: Rep.Generic StudyLimitation _
 instance showStudyLimitation :: Show StudyLimitation where
@@ -50,25 +54,19 @@ _StudyLimitation = lens (\(StudyLimitation s) -> s) (\_ -> StudyLimitation)
 
 skeletonStudyLimitation = StudyLimitation { id : "None"
                                           , customized : false
-                                          , label : "Not set"
+                                          , label : "--"
                                           , value : 0
                                           , rules : []
+                                          , color : ""
                                           }
--- StudyLimitation >
 
 register :: forall e. Foreign -> Unit
 register s = unit
 
 isReady :: State -> Boolean
-isReady s 
-  | (s ^. _State <<< project <<< _Project 
-    <<< netRob <<< _NetRobModel 
-    <<< studyLimitations <<< _StudyLimitations)
-    ."status" == "ready" = true
-  | (s ^. _State <<< project <<< _Project 
-    <<< inconsistency <<< _Inconsistency)
-    ."status" == "ready" = true
-  | otherwise = false
+isReady s =
+  (hasIncoherence s) ||
+  (hasStudyLimitations s)
 
 type ViewModel r = 
   { isReady :: Boolean
@@ -77,9 +75,49 @@ type ViewModel r =
   , hasDirects :: Boolean
   , hasIndirects :: Boolean
   , hasStudyLimitations :: Boolean
+  , hasIncoherence :: Boolean
   , studyLimitationsRule :: RobRule
   | r
   }
+
+getReportLevels :: State -> Array ReportLevel
+getReportLevels st =
+  let levelsText = (st ^. _State <<< text <<< _TextContent
+                 <<< reportText <<< _ReportText)."levels"
+      defaultLevels = [ { id: 0
+                        , label: ""
+                        , color: "#7CC9AE"
+                        , isActive: false
+                        }
+                      , { id: -1
+                        , label: ""
+                        , color: "#0C8CE7"
+                        , isActive: false
+                        }
+                      , { id: -2
+                        , label: ""
+                        , color: "#FBBC05"
+                        , isActive: false
+                        }
+                      , { id: -2
+                        , label: ""
+                        , color: "#E0685C"
+                        , isActive: false
+                        }
+                      ]
+      levels = map (\i -> do
+                     let l = defaultLevels !! i
+                         ol = case l of 
+                           Just dl -> dl
+                           Nothing -> skeletonReportLevel ^. _ReportLevel
+                         lb = levelsText !! i
+                         label = case lb of
+                           Just l -> l
+                           Nothing -> "UNKNOWN"
+                     ReportLevel $ ol { label = label }
+                   )
+                   $ 0..3
+  in levels
 
 type ReportRow = 
   { id :: String
@@ -87,9 +125,11 @@ type ReportRow =
   , armB :: String
   , numberOfStudies :: Int
   , studyLimitation :: StudyLimitation
+  , incoherence :: IncoherenceBox
+  , levels :: Array ReportLevel
+  , judgement :: ReportLevel
   {--, imprecision :: Maybe Imprecision--}
   {--, heterogeneity :: Maybe Heterogeneity--}
-  {--, incoherence :: Maybe Incoherence--}
   {--, indirectness :: Maybe Indirectness--}
   {--, pubBias :: Maybe PubBias--}
   }
@@ -108,6 +148,24 @@ isSelectedComparison selected comp = do
                    isIdOfComparison sid comp
                   ) selected
   isSelected
+
+hasDirects :: State -> Boolean
+hasDirects st = length (directRows st) > 0
+
+hasIndirects :: State -> Boolean
+hasIndirects st = length (indirectRows st) > 0
+
+hasIncoherence :: State -> Boolean
+hasIncoherence st = (st ^. _State <<< project <<< _Project 
+                    <<< inconsistency <<< _Inconsistency 
+                    <<< incoherence <<< _Incoherence)
+                   ."status" == "ready"
+
+hasStudyLimitations :: State -> Boolean
+hasStudyLimitations st = (st ^. _State <<< project <<< _Project 
+                 <<< netRob <<< _NetRobModel 
+                 <<< studyLimitations <<< _StudyLimitations)
+                 ."status" == "ready"
 
 getDirects :: State -> Array Comparison
 getDirects st = 
@@ -148,6 +206,7 @@ getStudyLimitationsRule st = do
 getStudyLimitationLevels :: State -> Array RoBLevel
 getStudyLimitationLevels st = (st  ^. _State <<< project <<< _Project)
                               ."studyLimitationLevels"
+
 
 isIdOfComparison :: String -> Comparison -> Boolean
 isIdOfComparison id comp = do
@@ -198,54 +257,53 @@ getStudyLimitation st c = do
                              _NetRob)."judgement"
                            , rules :
                              ((unsafePartial $ fromJust rob) ^. _NetRob)."rules"
+                           , color :
+                             ((unsafePartial $ fromJust rob) ^. _NetRob)."color"
                            }
                 Nothing -> skeletonStudyLimitation
     else
     skeletonStudyLimitation
 
-directRows :: State -> Array ReportRow 
-directRows a = 
+
+getIncoherence :: State -> Comparison -> IncoherenceBox
+getIncoherence st c = do
+  let incoherences = st  ^. _State <<< project <<< _Project 
+                     <<< inconsistency <<< _Inconsistency
+                     <<< incoherence <<< _Incoherence
+                     <<< boxes
+  if hasIncoherence st then
+    let rob = find (\ib -> 
+              isIdOfComparison (ib ^. _IncoherenceBox)."id" c
+              ) incoherences 
+     in case rob of
+                 Just r -> r
+                 Nothing -> skeletonIncoherenceBox
+    else
+    skeletonIncoherenceBox
+
+
+getRows :: State -> Array Comparison -> Array ReportRow
+getRows a comps = 
   let selects = getSelected a
-      directs = getDirects a  
       rows =  map (\s -> 
              let c = s ^. _Comparison 
              in { id : c."id"
              , armA : show (min c."t1" c."t2")
              , armB : show (max c."t1" c."t2")
              , numberOfStudies: c."numStudies"
+             , levels : getReportLevels a
              , studyLimitation: getStudyLimitation a s
+             , incoherence: getIncoherence a s
+             , judgement: skeletonReportLevel
              }) 
-             $ filter (isSelectedComparison selects) directs
+             $ filter (isSelectedComparison selects) comps
       in rows
 
+directRows :: State -> Array ReportRow 
+directRows a = getRows a $ getDirects a
 
 indirectRows :: State -> Array ReportRow 
-indirectRows a = 
-  let selects = getSelected a
-      indirects = getIndirects a  
-      rows =  map (\s -> 
-             let c = s ^. _Comparison 
-             in { id : c."id"
-             , armA : show (min c."t1" c."t2")
-             , armB : show (max c."t1" c."t2")
-             , numberOfStudies: c."numStudies"
-             , studyLimitation: getStudyLimitation a s
-             }) 
-             $ filter (isSelectedComparison selects) indirects
-      in rows
-
-
-hasDirects :: State -> Boolean
-hasDirects st = length (directRows st) > 0
-
-hasIndirects :: State -> Boolean
-hasIndirects st = length (indirectRows st) > 0
-
-hasStudyLimitations :: State -> Boolean
-hasStudyLimitations st = (st ^. _State <<< project <<< _Project 
-                 <<< netRob <<< _NetRobModel 
-                 <<< studyLimitations <<< _StudyLimitations)
-                 ."status" == "ready"
+indirectRows a = getRows a $ getIndirects a  
 
 template :: State -> String
 template a = 
@@ -257,6 +315,7 @@ template a =
             , hasDirects : hasDirects a
             , hasIndirects : hasIndirects a
             , hasStudyLimitations : hasStudyLimitations a
+            , hasIncoherence : hasIncoherence a
             , studyLimitationsRule : getStudyLimitationsRule a
           }
         viewData = b

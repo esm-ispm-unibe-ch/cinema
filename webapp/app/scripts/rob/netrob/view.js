@@ -6,14 +6,14 @@ var View = (model) => {
     makeBoxes: (comparisons) => {
       let project =  deepSeek(model,'getState().project');
       let boxes = _.map(comparisons, dc => {
-        dc.color = () => {
+        dc.color = (() => {
           let color = '';
           let level = _.find(model.getState().project.studyLimitationLevels, l => {return l.id === dc.judgement});
           if (typeof level !== 'undefined'){
             color = level.color;
           }
           return color;
-        },
+        })(),
         _.map(dc.rules, r => {
           return r.isActive = viewers.getRule()===r.id;
         });

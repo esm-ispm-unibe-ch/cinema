@@ -21,8 +21,8 @@ import Model
 import ReadModel
 import SaveModel
 
-testAction :: forall e. Foreign -> Eff (console :: CONSOLE , modelOut ::
-                                     SAVE_STATE | e) Unit
+testAction :: forall e. Foreign -> Eff (console :: CONSOLE
+                                       , modelOut :: SAVE_STATE | e) Unit
 testAction a = do 
   let s = readState a 
   case (s :: Either String State) of

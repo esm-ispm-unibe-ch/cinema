@@ -158,22 +158,26 @@ var Update = (model) => {
           return {
             id: d[0],
             judgement: 'nothing',
+            color: '',
             contributions,
             rules: [{ 
                 id: 'majRule',
                 name: model.getState().text.NetRob.rules.majRule, 
                 label: project.studyLimitationLevels[majRule(contributions).rob-1].label,
                 value: majRule(contributions).rob,
+                isActive : false
               },
               { id: 'meanRule',
                 name: model.getState().text.NetRob.rules.meanRule, 
                 label: project.studyLimitationLevels[meanRule(contributions)-1].label,
                 value: meanRule(contributions),
+                isActive : false
               },
               { id: 'maxRule',
                 name: model.getState().text.NetRob.rules.maxRule, 
                 label: project.studyLimitationLevels[maxRule(contributions)-1].label,
                 value: maxRule(contributions),
+                isActive : false
             }],
           }
         })

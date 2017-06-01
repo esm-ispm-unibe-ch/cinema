@@ -3,90 +3,134 @@
     <h4>
       {{{project.title}}}
     </h4>
-    {{#if hasDirects}}
-    <hr>
-      <h4>Mixed evidence</h4>
-      <table class="table">
+      <table class="table report-table">
         <thead class="thead-inverse">
+          <tr>
+            <th colspan='4'>
+            </th>
+            <th style='text-align:center;background-color:#F8F8F8' colspan='2'>
+              Inconsistency
+            </th>
+            <th colspan='3'>
+            </th>
+          </tr>
           <tr>
             <th>Comparison</th>
             <th>Number of Studies</th>
-            {{#if hasStudyLimitations}}
-              <th>
-                Study Limitations 
-              <br>
-                Rule: {{studyLimitationsRule.label}}
-              </th>
-            {{/if}}
+            <th>
+              Study Limitations
+            <br>
+              Rule: {{studyLimitationsRule.label}}
+            </th>
+            <th>
+              Imprecision
+            </th>
+            <th style='background-color:#F8F8F8'>
+              Heterogeneity
+            </th>
+            <th style='background-color:#F8F8F8'>
+              Incoherence
+            </th>
+            <th>
+              Indirectness
+            </th>
+            <th>
+              Publication bias
+            </th>
+            <th>
+              SCORE
+            </th>
           </tr>
         </thead>
         <tbody>
-          {{#each directRows}} 
+          {{#if hasDirects}}
             <tr>
-              <th scope="row">
-                {{{armA}}} vs {{{armB}}}
-              </th>
-              <td>
-                {{numberOfStudies}}
-              </td>
-              {{#if ../hasStudyLimitations}}
-                <td {{# if studyLimitation.customized}} class='customized'{{/if}}>
-                  <!-- {{studyLimitation.value}} -->
-                  {{studyLimitation.label}}
-                </td>
-              {{/if}}
+              <td colspan='9'>
+            <h4>Mixed evidence</h4>
             </tr>
-          {{/each}}
-        </tbody>
-      </table>
-    {{/if}}
-    {{#if hasIndirects}}
-      <hr>
-        <h4>Indirect evidence</h4>
-        <table class="table">
-          <thead class="thead-inverse">
-            <tr>
-              <th>Comparison</th>
-              <th>Number of Studies</th>
-              {{#if hasStudyLimitations}}
-                <th>
-                  Study Limitations 
-                <br>
-                  Rule: {{studyLimitationsRule.label}}
+            {{#each directRows}} 
+              <tr>
+                <th scope="row">
+                  {{{armA}}} vs {{{armB}}}
                 </th>
-              {{/if}}
-            </tr>
-          </thead>
-          <tbody>
-          {{#each indirectRows}} 
-            <tr>
-              <th scope="row">
-                {{{armA}}} vs {{{armB}}}
-              </th>
-              <td>
-                --
-              </td>
-              {{#if ../hasStudyLimitations}}
-                <td {{# if studyLimitation.customized}} class='customized'{{/if}}>
+                <td>
+                  {{numberOfStudies}}
+                </td>
+                <td style="background-color:{{studyLimitation.color}}" {{# if studyLimitation.customized}} class='customized-report'{{/if}}>
+                    
                   {{studyLimitation.label}}
                 </td>
-              {{/if}}
+                <td>
+                  --
+                </td>
+                <td>
+                  --
+                </td>
+                <td style="background-color:{{incoherence.color}}"  {{# if incoherence.customized}} class='customized-report'{{/if}}>
+                  {{incoherence.label}}
+                </td>
+                <td>
+                  --
+                </td>
+                <td>
+                  --
+                </td>
+                <td>
+                  <select onChange="Actions.Report.testAction(this)()">
+                    {{#each levels}}
+                      <option value="{{id}}σδεl{{../id}}">
+                        {{label}}
+                      </option>
+                    {{/each}}
+                  </select>
+                </td>
+              </tr>
+            {{/each}}
+          {{/if}}
+          {{#if hasIndirects}}
+            <tr>
+              <td colspan='9'>
+            <h4>Indirect evidence</h4>
             </tr>
-          {{/each}}
+            {{#each indirectRows}} 
+              <tr>
+                <th scope="row">
+                  {{{armA}}} vs {{{armB}}}
+                </th>
+                <td>
+                  --
+                </td>
+                <td style="background-color:{{studyLimitation.color}}" {{# if studyLimitation.customized}} class='customized-report'{{/if}}>
+                  {{studyLimitation.label}}
+                </td>
+                <td>
+                  --
+                </td>
+                <td>
+                  --
+                </td>
+                <td style="background-color:{{incoherence.color}}"  {{# if incoherence.customized}} class='customized-report'{{/if}}>
+                  {{incoherence.label}}
+                </td>
+                <td>
+                  --
+                </td>
+                <td>
+                  --
+                </td>
+                <td>
+                  <select onChange="Actions.Report.testAction(this)()">
+                    {{#each levels}}
+                      <option value="{{id}}σδεl{{../id}}">
+                        {{label}}
+                      </option>
+                    {{/each}}
+                  </select>
+                </td>
+              </tr>
+            {{/each}}
+          {{/if}}
         </tbody>
       </table>
-    {{/if}}
   </div>
 </div>
-
-    <!-- <h4> -->
-    <!--   Indirect evidence -->
-    <!-- </h4> -->
-    <!-- <ul> -->
-    <!--   {{#each indirectRows}}  -->
-    <!--     <li> -->
-    <!--       {{{id}}} -->
-    <!--       <button onClick="Actions.Report.testAction(Model.getState())"> Test Action </button> -->
-    <!--     </li> -->
-    <!--   {{/each}} -->
-    <!-- </ul> -->

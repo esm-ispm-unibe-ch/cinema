@@ -24,6 +24,7 @@ opts = defaultOptions { unwrapSingleConstructors = true }
 newtype TextContent = TextContent
   { "NetRob" :: NetRobText
   , errorPage :: String
+  , "Report" :: ReportText
   }
 derive instance genericTextContent :: Rep.Generic TextContent _
 instance showTextContent :: Show TextContent where
@@ -35,6 +36,9 @@ _TextContent = lens (\(TextContent s) -> s) (\_ -> TextContent)
 
 netRobText :: forall a b r. Lens { "NetRob" :: a | r } { "NetRob" :: b | r } a b
 netRobText = prop (SProxy :: SProxy "NetRob")
+
+reportText :: forall a b r. Lens { "Report" :: a | r } { "Report" :: b | r } a b
+reportText = prop (SProxy :: SProxy "Report")
 -- TextContent >
 
 -- NetRobText <
@@ -78,6 +82,18 @@ getNetRobRuleText rule texts = do
        otherwise -> tr."noRule"
   ruletext
 
-  
+-- ReportText <
+newtype ReportText = ReportText 
+  { levels :: Array String
+  }
+derive instance genericReportText :: Rep.Generic ReportText _
+instance showReportText :: Show ReportText where
+    show = genericShow
+instance decodeReportText :: Decode ReportText where
+  decode = genericDecode opts
+_ReportText :: Lens' ReportText (Record _)
+_ReportText = lens (\(ReportText s) -> s) (\_ -> ReportText)
 
--- RuleTextx >
+reportRulesText :: forall a b r. Lens { levels :: a | r } { levels :: b | r } a b
+reportRulesText = prop (SProxy :: SProxy "levels")
+--NetRobText >

@@ -3,6 +3,7 @@ $tablew: 400px;
 $tableh: 700px;
 $chartw: 700px;
 $charth: 700px;
+$customized: #EBEBEB;
 
 #cy{
   padding:0!important;
@@ -109,6 +110,14 @@ col.rowHeader {
 
 .customized {
   background-color:rgba(225,225,225,0.5);
+}
+
+.customized-report {
+  border-left: 8px solid $customized;
+}
+
+.report-table {
+  text-align: center;
 }
 
 //Contribution Chart
