@@ -2,10 +2,10 @@ var deepSeek = require('safe-access');
 var clone = require('../../lib/mixins.js').clone;
 var uniqId = require('../../lib/mixins.js').uniqId;
 var Messages = require('../../messages.js').Messages;
-var Report = require('../../report/output/Main');
-Report.view = require('../../report/output/Main.View');
-Report.update = require('../../report/output/Main.Update');
-Report.Actions = require('../../report/output/Actions');
+var Report = require('../../purescripts/output/Report');
+Report.view = require('../../purescripts/output/Report.View');
+Report.update = require('../../purescripts/output/Report.Update');
+Report.Actions = require('../../purescripts/output/Report.Actions');
 
 var children = [
   Report

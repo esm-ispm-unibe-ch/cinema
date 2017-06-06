@@ -111,6 +111,9 @@
       "title": "Contribution Bar Chart",
       "saveButton": "Save Chart"
     },
+    "ClinImp" : {
+      "question" : "Define threshold of clinical importance"
+    },
     "NetRob": {
       "levels":[
         "No serious",

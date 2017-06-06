@@ -1,4 +1,4 @@
-module Main where
+module Report where
 
 import Prelude 
 import Data.Maybe (Maybe(..))
@@ -20,12 +20,12 @@ import Data.Lens.Zoom
 
 import Model 
 import StudyLimitationsModel
-import Main.View as V
-import Actions as A
+import Report.View as V
+import Report.Actions as A
 
-main :: String -> Eff (console :: CONSOLE) Unit
-main = do
-  log
+{--main :: String -> Eff (console :: CONSOLE) Unit--}
+{--main = do--}
+{--  log--}
 
 studyLimitationsReady :: Maybe State -> String
 studyLimitationsReady s = do

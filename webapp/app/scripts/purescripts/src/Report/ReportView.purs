@@ -1,4 +1,4 @@
-module Main.View where
+module Report.View where
 
 import Prelude
 import Control.Monad.Eff 
@@ -18,7 +18,6 @@ import Data.Maybe
 import Data.Either (Either(..))
 import Data.Traversable
 import Text.Handlebars (compile)
-import TemplateReport as T
 import Data.Lens 
 import Data.Lens.Index
 import Data.Lens.Record
@@ -26,12 +25,13 @@ import Data.Lens.Traversal
 import Text.Smolder.Renderer.String (render) as S 
 import Partial.Unsafe (unsafePartial)
 
-import Actions
+import Report.Actions
+import Report.Template as T
 import Model
-import TextModel
+import Text.Model
 import StudyLimitationsModel
 import InconsistencyModel
-import ReportModel
+import Report.Model
 
 opts = defaultOptions { unwrapSingleConstructors = true }
 

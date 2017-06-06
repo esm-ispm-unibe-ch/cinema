@@ -1,4 +1,4 @@
-module Main.Update where
+module ClinImp.Update where
 
 import Prelude
 import Control.Monad.Eff (Eff)
@@ -11,38 +11,28 @@ import Data.Lens
 import Data.Lens.Record (prop)
 import Data.Lens.Zoom (Traversal, Traversal', Lens, Lens', zoom)
 
-import Main.View
-import Actions
 import Model
-import TextModel
+import Text.Model
 import SaveModel
-import ReportModel
+import ClinImp.Model
+import ClinImp.View
 
-
-readLevels :: Foreign -> Array ReportLevel
-readLevels f = do
-  {--let rulesTexts = (readState f) ^. _State <<< text <<< _TextContent--}
-                     {--<<< reportText <<< _ReportText--}
-                     {--<<< reportRulesText--}
-  []
 
 updateState :: forall eff. Foreign -> Eff (console :: CONSOLE 
-                   , modelOut :: SAVE_STATE 
-                   | eff
-                   ) Unit
+                   , modelOut :: SAVE_STATE | eff) Unit
 updateState mdl = do
   let (s :: Either String State) = readState mdl
   case s of
-    Left err -> do saveState $ Report { status : "notReady", levels: [] }
+    Left err -> do saveState "clinImp" emptyClinImp
                    logShow $ "reading state in Report error: " <> err
     Right st -> do
       if isReady st then do
-          saveState $ skeletonReport
+          saveState "clinImp" (skeletonClinImp $ getEffectMeasureType st)
           {--let rows = foldl (<>) "" $ map (\c -> isSelectedComparison c--}
           {--                (getSelected st) <> "\n" ) (getDirects st)  --}
           {--log $ "Report Ready selected rows" <> rows--}
-          log $ "Report Ready"
+          log $ "Clincal Importance Ready"
         else do
-          saveState $ Report { status : "notReady"
-                             , levels : [] }
-          log $ "Report Not Ready"
+          saveState "clinImp" emptyClinImp
+          log $ "Clinical Importance  Not Ready"
+

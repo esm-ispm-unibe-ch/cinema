@@ -1,4 +1,4 @@
-module ReportModel where
+module Report.Model where
 
 import Prelude
 import Control.Monad.Eff 

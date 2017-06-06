@@ -1,4 +1,4 @@
-module Actions where
+module Report.Actions where
 
 import Prelude
 import Control.Monad.Eff (Eff)
@@ -7,7 +7,6 @@ import Data.Foreign (Foreign)
 import Data.Maybe (Maybe(..))
 import Data.Either (Either(..))
 import Text.Handlebars (compile)
-import TemplateReport as T
 import Data.Lens 
 import Data.Lens.Lens 
 import Data.Lens.Record
@@ -17,6 +16,7 @@ import Text.Smolder.HTML.Attributes (lang, charset, httpEquiv, content, name,
 import Text.Smolder.Markup (on, (#!), Markup, text, (!))
 import Text.Smolder.Renderer.String (render)
 
+import Report.Template as T
 import Model
 import ReadModel
 import SaveModel

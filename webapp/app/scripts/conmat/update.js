@@ -8,6 +8,8 @@ var json2csv = require('json2csv');
 var download = require('downloadjs');
 var Heterogeneity = require('../inconsistency/heterogeneity/heterogeneity.js')();
 var Incoherence = require('../inconsistency/incoherence/incoherence.js')();
+var ClinicalImportance = require('../purescripts/output/ClinImp');
+ClinicalImportance.update = require('../purescripts/output/ClinImp.Update');
 
 var Update = (model) => {
   let project = deepSeek(model,'getState().project');
@@ -37,7 +39,7 @@ var Update = (model) => {
         project.CM.currentCM = updaters.emptyCM();
         updaters.setCurrentCM('params',params);
         updaters.saveState();
-      console.log("resetting CONTRIBUTION MATRIXXXXXXXXXXXXXX",children);
+      console.log("resetting CONTRIBUTION MATRIXXXXXXXXXXXXXX");
     },
     createMatrix: () => {
       // console.log('creating matrix');
@@ -112,11 +114,15 @@ var Update = (model) => {
     },
     saveState: () => {
       model.saveState();
-      updaters.updateChildren();
+      updaters.updateChildren(model);
       // console.log("the CM now after saving",model.getState().project.CM);
     },
-    updateChildren: () => {
-      _.map(children, c => {c.update.updateState(model)});
+    updateChildren: (model) => {
+      let mdl = model.getState();
+      _.map(children, c => {
+        c.update.updateState(model)
+      });
+      ClinicalImportance.update.updateState(mdl)(mdl);
     },
     fetchContributionMatrix: (ncm) => {
       return new Promise((resolve, reject) => {
@@ -497,6 +503,7 @@ var Update = (model) => {
 var children = [
   RoB,
   Inconsistency,
+  ClinicalImportance
   ];
 
 module.exports = () => {

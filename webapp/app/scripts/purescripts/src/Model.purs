@@ -21,10 +21,10 @@ import Data.Lens.Record (prop)
 import Data.Lens.Zoom (Traversal, Traversal', Lens, Lens', zoom)
 import Partial.Unsafe (unsafePartial)
 
-import TextModel
+import Text.Model
 import StudyLimitationsModel
 import InconsistencyModel
-import ReportModel
+import Report.Model
 
 opts = defaultOptions { unwrapSingleConstructors = true }
 
@@ -103,6 +103,12 @@ studies :: forall a b r. Lens { studies :: a | r } { studies :: b | r } a b
 studies = prop (SProxy :: SProxy "studies")
 cmContainer :: forall a b r. Lens { "CM" :: a | r } { "CM" :: b | r } a b
 cmContainer = prop (SProxy :: SProxy "CM")
+
+hasConMat :: State -> Boolean
+hasConMat st = (st ^. _State <<< project <<< _Project 
+                    <<< cmContainer <<< _CMContainer 
+                    <<< currentCM <<< _ContributionMatrix)
+                   ."status" == "ready"
 -- Project >
 
 -- Studies <
@@ -124,8 +130,6 @@ indirectComparisons :: forall a b r. Lens { indirectComparisons :: a | r } {
   indirectComparisons :: b | r } a b
 indirectComparisons = prop (SProxy :: SProxy "indirectComparisons" )
 -- Studies >
-
-
 -- Comparison <
 data TreatmentId = StringId String | IntId Int
 instance showTreatmentId :: Show TreatmentId where
@@ -232,7 +236,8 @@ currentCM = prop (SProxy :: SProxy "currentCM" )
 
 -- ContributionMatrix <
 newtype ContributionMatrix = ContributionMatrix
-  { colNames :: Array String
+  { status :: String
+  , colNames :: Array String
   , directRowNames :: Array String
   , indirectRowNames :: Array String
   , params :: CMParameters 
@@ -245,14 +250,46 @@ instance decodeContributionMatrix :: Decode ContributionMatrix where
   decode = genericDecode opts
 _ContributionMatrix :: Lens' ContributionMatrix (Record _)
 _ContributionMatrix = lens (\(ContributionMatrix s) -> s) (\_ -> ContributionMatrix)
+params :: forall a b r. Lens { params :: a | r } { params :: b | r } a b
+params = prop (SProxy :: SProxy "params")
 -- ContributionMatrix >
+
+-- EffectMeasureType <
+data EffectMeasureType = RR | OR | RD | MD | SMD
+
+derive instance genericEffectMeasureType :: Rep.Generic EffectMeasureType _
+
+instance showEffectMeasureType :: Show EffectMeasureType where
+  show RR  = "RR"
+  show OR  = "OR"
+  show RD  = "RD"
+  show MD  = "MD"
+  show SMD = "SMD"
+
+instance decodeEffectMeasureType :: Decode EffectMeasureType where
+  decode = readEffectMeasureType
+
+readEffectMeasureType :: Foreign -> F EffectMeasureType
+readEffectMeasureType fem = do
+  let mem = runExcept $ readString fem
+  case mem  of 
+       Left _ -> fail $ ForeignError "not a string"
+       Right em -> case em of 
+                        "RR" -> pure RR
+                        "OR" -> pure OR
+                        "RD" -> pure RD
+                        "MD" -> pure MD
+                        "SMD" -> pure SMD
+                        otherwise -> fail 
+                         $ ForeignError "unknown effect measure type"
+-- EffectMeasureType <
 
 -- CMParameters <
 newtype CMParameters = CMParameters
   { "MAModel" :: String
     , intvs :: Array String
     , rule :: String
-    , sm :: String
+    , sm :: EffectMeasureType
   }
 derive instance genericCMParameters :: Rep.Generic CMParameters _
 instance showCMParameters :: Show CMParameters where
@@ -261,5 +298,12 @@ instance decodeCMParameters :: Decode CMParameters where
   decode = genericDecode opts
 _CMParameters :: Lens' CMParameters (Record _)
 _CMParameters = lens (\(CMParameters s) -> s) (\_ -> CMParameters)
+
+getEffectMeasureType :: State -> EffectMeasureType
+getEffectMeasureType st = (st ^. _State <<< project <<< _Project 
+                          <<< cmContainer <<< _CMContainer
+                          <<< currentCM <<< _ContributionMatrix
+                          <<< params <<< _CMParameters
+                          )."sm"
 -- CMParameters >
 

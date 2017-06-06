@@ -15,10 +15,7 @@ var General = require('./general.js')();
 var RoB = require('./rob/rob.js')();
 var ConChart = require('./rob/conchart/conchart.js')();
 var Inconsistency = require('./inconsistency/inconsistency.js')();
-var Report = require('./report/output/Main');
-Report.view = require('./report/output/Main.View');
-Report.update = require('./report/output/Main.Update');
-Report.Actions = require('./report/output/Actions');
+var Report = require('./purescripts/output/Report');
 
 var Router = {
   view: {

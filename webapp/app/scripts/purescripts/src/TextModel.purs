@@ -1,4 +1,4 @@
-module TextModel where
+module Text.Model where
 
 import Prelude
 import Control.Monad.Eff 
@@ -25,6 +25,7 @@ newtype TextContent = TextContent
   { "NetRob" :: NetRobText
   , errorPage :: String
   , "Report" :: ReportText
+  , "ClinImp" :: ClinImpText
   }
 derive instance genericTextContent :: Rep.Generic TextContent _
 instance showTextContent :: Show TextContent where
@@ -39,7 +40,24 @@ netRobText = prop (SProxy :: SProxy "NetRob")
 
 reportText :: forall a b r. Lens { "Report" :: a | r } { "Report" :: b | r } a b
 reportText = prop (SProxy :: SProxy "Report")
+
+clinImpText :: forall a b r. Lens { "ClinImp" :: a | r } { "ClinImp" :: b | r } a b
+clinImpText = prop (SProxy :: SProxy "ClinImp")
 -- TextContent >
+
+-- ClinImpText <
+newtype ClinImpText = ClinImpText 
+  { question :: String
+  }
+derive instance genericClinImpText :: Rep.Generic ClinImpText _
+instance showClinImpText :: Show ClinImpText where
+    show = genericShow
+instance decodeClinImpText :: Decode ClinImpText where
+  decode = genericDecode opts
+_ClinImpText :: Lens' ClinImpText (Record _)
+_ClinImpText = lens (\(ClinImpText s) -> s) (\_ -> ClinImpText)
+--ClinImpText >
+
 
 -- NetRobText <
 newtype NetRobText = NetRobText 
