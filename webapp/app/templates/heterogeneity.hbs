@@ -3,6 +3,32 @@
     <h4 id="referenceValuesTitle">Reference Values for τ<sup>2</sup></h4>
     <div class='form-inline col-xs-12'>
       <ul class='list-inline'>
+        <ul class='list-inline'>
+          {{#each treatments}}
+          <li class='well compRobSelector {{#if customized}} customized {{/if}}'
+        id="comp-{{{id.value0}}}">
+            <ul class='list-inline'>
+              <li>
+            {{{label}}}:
+              </li>
+              <li>
+                {{#with ../interventionTypes}}
+                  <select
+          onChange="Actions.Heterogeneity.selectIntervensionType(this)" {{#if
+          rfvReady}}
+                    disabled {{/if}} class='mr-sm-2 form-inline form-control'>
+                    {{#each selections}}
+                      <option value="{{{../../label}}}σδel{{id}}" {{#if isDisabled}} disabled {{/if}}  {{#if isActive}} selected{{/if}}>
+                        {{{label}}}
+                      </option>
+                    {{/each}}
+                  </select>
+                {{/with}}
+              </li>
+            </ul>
+          </li>
+          {{/each}}
+        </ul>
         {{#each rfvParams}}
           <li>
             {{#if isAvailable}}

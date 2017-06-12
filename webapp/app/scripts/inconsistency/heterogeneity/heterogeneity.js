@@ -21,6 +21,9 @@ var Heterogeneity = {
           Messages.alertify().message(successmsg);
         },() => {});
     },
+    selectIntervensionType: (value) => {
+      Update(Heterogeneity.model).selectIntervensionType(value);
+    },
     selectHetersRule: (rule) => {
       Update(Heterogeneity.model).selectHetersRule(rule);
     },

@@ -2,8 +2,14 @@ var deepSeek = require('safe-access');
 var clone = require('../../lib/mixins.js').clone;
 var uniqId = require('../../lib/mixins.js').uniqId;
 var Messages = require('../../messages.js').Messages;
+var Report = require('../../purescripts/output/Report');
+Report.view = require('../../purescripts/output/Report.View');
+Report.update = require('../../purescripts/output/Report.Update');
+Report.Actions = require('../../purescripts/output/Report.Actions');
+var Nodes = require('../../purescripts/output/Nodes');
 
 var children = [
+  Report
   ];
 
 var Update = (model) => {
@@ -28,8 +34,9 @@ var Update = (model) => {
     }
   ];
   let HeterogeneityRule = [[[3,2],
-                            [2,1]], [[3,3],
-                                     [3,2]]];
+                            [2,1]], 
+                           [[3,3],
+                            [3,2]]];
   let updaters = {
     getState: () => {
       return deepSeek(model.getState(),modelPosition);
@@ -71,6 +78,11 @@ var Update = (model) => {
       });
       });
     },
+    treatments: () => {
+      let mdl = model.getState();
+      // Nodes.getState(mdl)();
+      return Nodes.getNodes(mdl);
+    },
     rfvChanged: () => {
       return  (updaters.getState().referenceValues.status !== 'empty');
     },
@@ -84,13 +96,26 @@ var Update = (model) => {
       return  (updaters.getState().heters.status === 'ready');
     },
     updateState: (model) => {
-      if (updaters.cmReady()){
-        _.map(children, c => { c.update.updateState();});
+      let cm = model.getState().project.CM.currentCM;
+      if (updaters.cmReady()) {
+        if ((updaters.getState().referenceValues.status === 'ready')
+        || (updaters.getState().referenceValues.status === 'edited')){
+        }else{
+          updaters.setRFVState(updaters.rfvEmptyModel());
+        }
+        if (updaters.getState().heters.status === 'ready'){
+        }else{
+          updaters.setHetersState(updaters.hetersSkeletonModel());
+        }
       }else{
         model.getState().project.inconsistency.heterogeneity = {};
-        updaters.setRFVState(updaters.rfvSkeletonModel());
+        updaters.setRFVState(updaters.rfvEmptyModel());
         updaters.setHetersState(updaters.hetersSkeletonModel());
       }
+      let mdl = model.getState();
+      _.map(children, c => {
+        c.update.updateState(mdl)(mdl);
+      });
     },
     setRFVState: (newState) => {
       model.getState().project.inconsistency.heterogeneity.referenceValues = newState;
@@ -184,7 +209,7 @@ var Update = (model) => {
     resetHeters: () => {
       updaters.setHetersState(updaters.hetersSkeletonModel());
     },
-    rfvSkeletonModel: () => {
+    rfvEmptyModel: () => {
       return {
         status: 'empty',
         params: {
@@ -208,6 +233,7 @@ var Update = (model) => {
         rule: 'noRule',
         status: 'noRule',
         boxes,
+        treatments: updaters.treatments()
       }
     },
     selectRFVparam: (param) => {
@@ -218,12 +244,17 @@ var Update = (model) => {
       updaters.saveState();
     },
     resetRFV: () => {
-      updaters.setRFVState(updaters.rfvSkeletonModel());
+      updaters.setRFVState(updaters.rfvEmptyModel());
       updaters.setHetersState(updaters.hetersSkeletonModel());
       updaters.saveState();
     },
     getRule: () => {
       return updaters.getState().heters.rule;
+    },
+    selectIntervensionType: (value) => {
+      let mdl = model.getState();
+      let [node_label, itv] = value.value.split('σδel');
+      Nodes.setNodeIntType(mdl)(node_label)(itv)();
     },
     selectIndividual: (value) => {
       let [tid,tv] = value.value.split('σδel');

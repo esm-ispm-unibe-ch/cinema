@@ -119,9 +119,8 @@ var Update = (model) => {
     },
     updateChildren: (model) => {
       let mdl = model.getState();
-      _.map(children, c => {
-        c.update.updateState(model)
-      });
+      RoB.update.updateState(model),
+      Inconsistency.update.updateState(model);
       ClinicalImportance.update.updateState(mdl)(mdl);
     },
     fetchContributionMatrix: (ncm) => {

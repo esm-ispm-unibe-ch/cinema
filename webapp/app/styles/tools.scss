@@ -89,8 +89,10 @@ col.rowHeader {
   width:310px;
   margin: 6px;
   padding:5px 11px 5px 11px!important;
-  // border-radius: 8px 8px 8px 8px;
-  border-width:1px;
+  border-radius: 0;
+  // border-width:1px;
+  border: 0px; 
+  border-left: 6px solid grey;
   background-color: white;
   ul{
     list-style-type: none;

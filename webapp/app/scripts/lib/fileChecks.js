@@ -1,3 +1,5 @@
+var Messages = require('../messages.js').Messages;
+
 var Settings = {
   required: {
     binaryLong: ['id','t','r','n','rob'],
@@ -18,31 +20,40 @@ var fileChecker = {
         return _.without(memo, t);}
       ,required).length === 0;
     };
-    return new Promise ((resolve, reject) => {
-      let titles = Object.keys(json[0]);
-      let fileTypes = Object.keys(required);
-      _.map(fileTypes, ft => {
-        if(checkNames(titles, required[ft])){
-          switch (ft) {
-            case 'binaryLong':
-            resolve({model:json, format:'long', type:'binary'});
-            break;
-            case 'continuousLong':
-            resolve({model:json, format:'long', type:'continuous'});
-            break;
-            case 'binaryWide':
-            resolve({model:json, format:'wide', type:'binary'});
-            break;
-            case 'continuousWide':
-            resolve({model:json, format:'wide', type:'continuous'});
-            break;
-            case 'ivWide':
-            resolve({model:json, format:'wide', type:'iv'});
-            break;
-          }
+    let titles = Object.keys(json[0]);
+    let fileTypes = Object.keys(required);
+    let answer = "Nothing";
+    _.map(fileTypes, ft => {
+      if(checkNames(titles, required[ft])){
+        switch (ft) {
+          case 'binaryLong':
+            answer = {model:json, format:'long', type:'binary'};
+          break;
+          case 'continuousLong':
+            answer = {model:json, format:'long', type:'continuous'};
+          break;
+          case 'binaryWide':
+            answer = {model:json, format:'wide', type:'binary'};
+          break;
+          case 'continuousWide':
+            answer = {model:json, format:'wide', type:'continuous'};
+          break;
+          case 'ivWide':
+            answer = {model:json, format:'wide', type:'iv'};
+          break;
         }
-      });
-      reject('Wrong column names or missing columns');
+      }
+    });
+    return new Promise ((resolve, reject) => {
+      if (answer === "Nothing"){
+        reject('Wrong column names or missing columns');
+      }else{
+        if( answer.type === "iv" ) {
+          resolve(answer);
+        }else{
+          resolve(answer);
+        }
+      }
     });
   },
   checkTypes: (project) => {

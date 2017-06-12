@@ -111,10 +111,63 @@ hasConMat st = (st ^. _State <<< project <<< _Project
                    ."status" == "ready"
 -- Project >
 
+-- Node <
+newtype Node = Node
+    { id :: TreatmentId
+    , label :: String
+    , numStudies :: Int
+    , sampleSize :: Int
+    , interventionType :: Maybe String
+    }
+
+derive instance genericNode :: Rep.Generic Node _
+
+instance showNode :: Show Node where
+    show = genericShow
+
+instance equalNodes :: Eq Node where
+  eq nA nB = ((nA ^. _Node)."id") == ((nB ^. _Node)."id")
+
+instance orderNodes :: Ord Node where
+  compare nA nB = compare ((nA ^. _Node)."id")  ((nB ^. _Node)."id")
+
+instance decodeNode :: Decode Node where
+  decode n = do
+    id <- n ! "id" >>= readTreatmentId
+    let label = n ! "label" >>= readString
+    numStudies <- n ! "numStudies" >>= readNumber
+    sampleSize <- n ! "sampleSize" >>= readNumber
+    let l = case (runExcept label) of
+         Left _ -> do 
+           let lll = n ! "label" >>= readInt
+           let outl = case (runExcept lll) of
+                Left _ -> ""
+                Right llll -> show llll
+           outl
+         Right ll -> ll
+    let it = n ! "interventionType" >>= readString
+    let interventionType = case (runExcept it) of
+          Left _ -> Nothing
+          Right intp -> Just intp
+    pure $ Node { id
+                , label : l
+                , numStudies : floor numStudies
+                , sampleSize : floor sampleSize
+                , interventionType
+                }
+
+interventionType :: forall a b r. Lens { interventionType :: a | r } { interventionType :: b | r } a b
+interventionType = prop (SProxy :: SProxy "interventionType")
+
+_Node :: Lens' Node (Record _)
+_Node = lens (\(Node s) -> s) (\_ -> Node)
+-- Node >
+
 -- Studies <
 newtype Studies = Studies
   { directComparisons :: Array Comparison
   , indirectComparisons :: Array String
+  , nodes :: Array Node 
   }
 derive instance genericStudies :: Rep.Generic Studies _
 instance showStudies :: Show Studies where
@@ -138,15 +191,18 @@ instance showTreatmentId :: Show TreatmentId where
 
 instance equalTreatmentId :: Eq TreatmentId where
   eq (StringId a) (StringId b)  = ((show a) == (show b))
-  eq (IntId a) (IntId b)  = ((show a) == (show b))
-  eq (StringId a) (IntId b)  = false
-  eq (IntId a) (StringId b)  = false
+  eq (IntId a) (IntId b) = ((show a) == (show b))
+  eq (StringId a) (IntId b) = false
+  eq (IntId a) (StringId b) = false
 
 instance orderTreatmentId :: Ord TreatmentId where
   compare (StringId a) (StringId b) = compare a b
   compare (IntId a) (IntId b) = compare a b
   compare (StringId a) (IntId b) = GT
   compare (IntId a) (StringId b) = LT
+
+instance decodeTreatmentId :: Decode TreatmentId where
+  decode = readTreatmentId
 
 readTreatmentId :: Foreign -> F TreatmentId
 readTreatmentId tid = do
@@ -157,7 +213,10 @@ readTreatmentId tid = do
          case iid of
              Left _ -> pure $ StringId "Error"
              Right oid -> IntId <$> (readInt tid)
-       Right id -> StringId <$> (readString tid)
+       Right id -> do
+         case fromString id of 
+              Just iid -> pure $ IntId iid
+              Nothing -> pure $ StringId id
 
 treatmentIdToString :: TreatmentId -> String
 treatmentIdToString (StringId t) = t
@@ -199,7 +258,7 @@ stringToTreatmentId str = do
    let sint = fromString str
    case sint of
      Just sint -> IntId sint
-     Nothing ->  StringId str
+     Nothing -> StringId str
   
 stringToComparison :: String -> String -> Comparison
 stringToComparison del str = do
@@ -216,6 +275,47 @@ stringToComparison del str = do
                        , numStudies : 0
                      }
      else Comparison $ (skeletonComparison ^. _Comparison) { id = str }
+
+
+comparisonsOrdering :: Comparison -> Comparison -> Ordering
+comparisonsOrdering compA compB 
+  | ((compA ^. _Comparison)."t1") > ((compB ^. _Comparison)."t1" ) = GT
+  | ((compA ^. _Comparison)."t1" ) < ((compB ^. _Comparison)."t1") = LT
+  | ((compA ^. _Comparison)."t1") == ((compB ^. _Comparison)."t1") = 
+    compare ((compA ^. _Comparison)."t2") ((compB ^. _Comparison)."t2")
+  | otherwise = EQ
+
+isIdOfComparison :: String -> Comparison -> Boolean
+isIdOfComparison id comp = do
+  let t1 = min (comp ^. _Comparison)."t1" (comp ^. _Comparison)."t2"
+      t2 = max (comp ^. _Comparison)."t1" (comp ^. _Comparison)."t2"
+      sid = S.split (S.Pattern ":") id
+      st1 = unsafePartial $ fromJust $ head sid
+      st2 = unsafePartial $ fromJust $ last sid
+  (st1 == treatmentIdToString t1) && (st2 == treatmentIdToString t2)  ||
+  (st1 == treatmentIdToString t2) && (st2 == treatmentIdToString t1) 
+
+hasNode :: Comparison -> Node -> Boolean
+hasNode c n = do
+  let t1 = (c ^. _Comparison)."t1"
+      t2 = (c ^. _Comparison)."t2"
+      nid = (n ^. _Node)."id"
+  t1 == nid || t2 == nid
+  
+
+isSelectedComparison :: forall eff. Array String -> Comparison -> Boolean
+isSelectedComparison selected comp = do
+  let isSelected = foldl (||) false $ map (\sid -> do
+                   isIdOfComparison sid comp
+                  ) selected
+  isSelected
+
+isSelectedNode :: forall eff. Array String -> Node -> Boolean
+isSelectedNode selected node = do
+  let isSelected = foldl (||) false $ map (\sid -> do
+                   hasNode (stringToComparison ":" sid) node
+                  ) selected
+  isSelected
 
 -- Comparison >
 
@@ -252,6 +352,11 @@ _ContributionMatrix :: Lens' ContributionMatrix (Record _)
 _ContributionMatrix = lens (\(ContributionMatrix s) -> s) (\_ -> ContributionMatrix)
 params :: forall a b r. Lens { params :: a | r } { params :: b | r } a b
 params = prop (SProxy :: SProxy "params")
+
+getSelected :: State -> Array String
+getSelected st = (st  ^. _State <<< project <<< _Project 
+                 <<< cmContainer <<< _CMContainer
+                 <<< currentCM <<< _ContributionMatrix)."selectedComparisons"
 -- ContributionMatrix >
 
 -- EffectMeasureType <

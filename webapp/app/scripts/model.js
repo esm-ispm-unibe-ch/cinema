@@ -77,7 +77,7 @@ var Model = {
       vertex.studies = accumulate(group,'id');
       vertex.numStudies = group.length;
       if(type!=='iv'){
-      vertex.sampleSize = sumBy(group,'n');
+        vertex.sampleSize = sumBy(group,'n');
       }
       //vertex.rSum = _.reduce(group, function (memo, row){ return memo + row.r},0);
       vertex.rob = accumulate(group,'rob');

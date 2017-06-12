@@ -134,21 +134,6 @@ type ReportRow =
   {--, pubBias :: Maybe PubBias--}
   }
 
-comparisonsOrdering :: Comparison -> Comparison -> Ordering
-comparisonsOrdering compA compB 
-  | ((compA ^. _Comparison)."t1") > ((compB ^. _Comparison)."t1" ) = GT
-  | ((compA ^. _Comparison)."t1" ) < ((compB ^. _Comparison)."t1") = LT
-  | ((compA ^. _Comparison)."t1") == ((compB ^. _Comparison)."t1") = 
-    compare ((compA ^. _Comparison)."t2") ((compB ^. _Comparison)."t2")
-  | otherwise = EQ
-
-isSelectedComparison :: forall eff. Array String -> Comparison -> Boolean
-isSelectedComparison selected comp = do
-  let isSelected = foldl (||) false $ map (\sid -> do
-                   isIdOfComparison sid comp
-                  ) selected
-  isSelected
-
 hasDirects :: State -> Boolean
 hasDirects st = length (directRows st) > 0
 
@@ -181,10 +166,6 @@ getIndirects st =
                  <<< indirectComparisons 
      in (sortBy comparisonsOrdering (map (stringToComparison ",") indirects))
 
-getSelected :: State -> Array String
-getSelected st = (st  ^. _State <<< project <<< _Project 
-                 <<< cmContainer <<< _CMContainer
-                 <<< currentCM <<< _ContributionMatrix)."selectedComparisons"
 
 getStudyLimitations :: State -> Array NetRob
 getStudyLimitations st = st  ^. _State <<< project <<< _Project 
@@ -207,17 +188,6 @@ getStudyLimitationLevels :: State -> Array RoBLevel
 getStudyLimitationLevels st = (st  ^. _State <<< project <<< _Project)
                               ."studyLimitationLevels"
 
-
-isIdOfComparison :: String -> Comparison -> Boolean
-isIdOfComparison id comp = do
-  let t1 = min (comp ^. _Comparison)."t1" (comp ^. _Comparison)."t2"
-      t2 = max (comp ^. _Comparison)."t1" (comp ^. _Comparison)."t2"
-      sid = S.split (S.Pattern ":") id
-      st1 = unsafePartial $ fromJust $ head sid
-      st2 = unsafePartial $ fromJust $ last sid
-  (st1 == treatmentIdToString t1) && (st2 == treatmentIdToString t2)  ||
-  (st1 == treatmentIdToString t2) && (st2 == treatmentIdToString t1) 
-
 isCustomized :: NetRob -> RobRule -> Boolean
 isCustomized comp rl = do
   let rule = (rl ^. _RobRule)."id"
@@ -228,8 +198,6 @@ isCustomized comp rl = do
          Just ar -> (ar ^. _RobRule)."value" 
          Nothing -> 0
   value /= ruleValue
-            
-  
 
 getStudyLimitation :: State -> Comparison -> StudyLimitation
 getStudyLimitation st c = do

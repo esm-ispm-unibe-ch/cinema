@@ -10,110 +10,140 @@ var View = (model) => {
       }
       return isReady;
     },
-    rfvParams: () => {
-      let prs =  [
-        {
-          id: 'measurement',
-          label: 'Measurement',// from text file
-          isAvailable: true,
-          selections: [
-            { id : 'nothing',
-              label: '--',
-              isAvailable: true,
-              isDisabled: true
-            },
-            { id :'binary',
-              label: 'binary',
-              isAvailable: true
-            },
-            { id :'continuous',
-              label: 'continuous',
-              isAvailable: true
-            }
-          ]
-        },
-        {
-          id: 'InterventionComparisonType',
-          label: 'Intervention comparison type',
-          isAvailable: true,
-          selections: [
-            { id : 'nothing',
-              label: '--',
-              isDisabled: true,
-              isAvailable: true
-            },
-            { id : 'Pharmacological vs Placebo/Control',
-              label: 'Pharmacological vs Placebo/Control',
-              isAvailable: true
-            },
-            { id :'Pharmacological vs Pharmacological',
-              label: 'Pharmacological vs Pharmacological',
-              isAvailable: true
-            },
-            { id : 'Non-pharmacological vs any',
-              label: 'Non-pharmacological vs any',
-              isAvailable: true
-            }
-          ]
-        },
-        {
-          id: 'OutcomeType',
-          label: 'Outcome type',// from text file
-          isAvailable: () => {
-            return viewers.getState().referenceValues.params.measurement !== 'nothing';
+    defaultParameters :  [
+      {
+        id: 'measurement',
+        label: 'Measurement',// from text file
+        isAvailable: true,
+        selections: [
+          { id : 'nothing',
+            label: '--',
+            isAvailable: true,
+            isDisabled: true
           },
-          selections: () => {
-            let binaryOptions = ['Objective','Semi-objective','Subjective'];
-            let continuousOptions = ['Obstetric outcome', 
-                  'Resource use and hospital stay/process', 
-                  'Internal and external structure-related outcome',
-                  'General physical health and adverse event and pain and quality of life/functioning',
-                  'Signs/symptoms reflecting continuation/end of condition and infection/onset of new acute/chronic disease',
-                  'Mental health outcome',
-                  'Biological marker',
-                  'Various subjectively measured outcomes'];
-            let res = [
-            { id : 'nothing',
-              label: '--',
-              isDisabled: true,
-              isAvailable: true,
-              isActive: () => {return ('nothing' === viewers.getState().referenceValues.params.OutcomeType)},
-            }];
-            res = _.union(res,
-              _.map(binaryOptions,
-                mo => {
-                  return {
-                    id: mo,
-                    label: mo,
-                    isActive: () => {return (mo === viewers.getState().referenceValues.params.OutcomeType)},
-                    isAvailable: () => {
-                      return viewers.getState().referenceValues.params.measurement === 'binary';
-                    }
-                  }
-              })
-            );
-            res = _.union(res,
-              _.map(continuousOptions,
-                mo => {
-                  return {
-                    id: mo,
-                    label: mo,
-                    isActive: () => {return (mo === viewers.getState().referenceValues.params.OutcomeType)},
-                    isAvailable: () => {
-                      return viewers.getState().referenceValues.params.measurement === 'continuous';
-                    }
-                  }
-              })
-            );
-            return _.flatten(res);
+          { id :'binary',
+            label: 'binary',
+            isAvailable: true
+          },
+          { id :'continuous',
+            label: 'continuous',
+            isAvailable: true
           }
+        ]
+      },
+      {
+        id: "InterventionType",
+        label: "Intervention Type",
+        selections: [
+          { id: "notset",
+            label: "--",
+            isDisabled: true,
+          },
+          { id: "Pharmacological",
+            label: "Pharmacological",
+          },
+          { id: "Placebo/Control",
+            label: "Placebo/Control",
+          },
+          { id: "Non-pharmacological",
+            label: "Non-pharmacological",
+          },
+        ]
+      },
+      {
+        id: 'InterventionComparisonType',
+        label: 'Intervention comparison type',
+        isAvailable: true,
+        selections: [
+          { id : 'nothing',
+            label: '--',
+            isDisabled: true,
+            isAvailable: true
+          },
+          { id : 'Pharmacological vs Placebo/Control',
+            label: 'Pharmacological vs Placebo/Control',
+            isAvailable: true
+          },
+          { id :'Pharmacological vs Pharmacological',
+            label: 'Pharmacological vs Pharmacological',
+            isAvailable: true
+          },
+          { id : 'Non-pharmacological vs any',
+            label: 'Non-pharmacological vs any',
+            isAvailable: true
+          }
+        ]
+      },
+      {
+        id: 'OutcomeType',
+        label: 'Outcome type',// from text file
+        isAvailable: () => {
+          return viewers.getState().referenceValues.params.measurement !== 'nothing';
         },
-      ]
+        selections: () => {
+          let binaryOptions = ['Objective','Semi-objective','Subjective'];
+          let continuousOptions = ['Obstetric outcome', 
+                'Resource use and hospital stay/process', 
+                'Internal and external structure-related outcome',
+                'General physical health and adverse event and pain and quality of life/functioning',
+                'Signs/symptoms reflecting continuation/end of condition and infection/onset of new acute/chronic disease',
+                'Mental health outcome',
+                'Biological marker',
+                'Various subjectively measured outcomes'];
+          let res = [
+          { id : 'nothing',
+            label: '--',
+            isDisabled: true,
+            isAvailable: true,
+            isActive: () => {return ('nothing' === viewers.getState().referenceValues.params.OutcomeType)},
+          }];
+          res = _.union(res,
+            _.map(binaryOptions,
+              mo => {
+                return {
+                  id: mo,
+                  label: mo,
+                  isActive: () => {return (mo === viewers.getState().referenceValues.params.OutcomeType)},
+                  isAvailable: () => {
+                    return viewers.getState().referenceValues.params.measurement === 'binary';
+                  }
+                }
+            })
+          );
+          res = _.union(res,
+            _.map(continuousOptions,
+              mo => {
+                return {
+                  id: mo,
+                  label: mo,
+                  isActive: () => {return (mo === viewers.getState().referenceValues.params.OutcomeType)},
+                  isAvailable: () => {
+                    return viewers.getState().referenceValues.params.measurement === 'continuous';
+                  }
+                }
+            })
+          );
+          return _.flatten(res);
+        }
+      },
+    ],
+    rfvParams: () => {
+      let dfp = viewers.defaultParameters;
+      let prs = _.without(dfp, _.findWhere(dfp, {
+          id: "InterventionType"
+      }));
+      prs = _.without(prs, _.findWhere(prs, {
+          id: "InterventionComparisonType"
+      }));
       _.map(prs, p => {
         _.map(p.selections, s => {
           s.isActive = (s.id === viewers.getState().referenceValues.params[p.id]);
         })
       });
+      return prs;
+    },
+    interventionTypes: () => {
+      let prs = viewers.defaultParameters[1];
       return prs;
     },
     boxes: () => {
@@ -188,6 +218,10 @@ var View = (model) => {
       });
       return boxes;
     },
+    treatments: () => {
+      let ts = viewers.getState().heters.treatments;  
+      return ts;
+    },
     getRule: () => {
       return viewers.getState().heters.rule;
     },
@@ -240,7 +274,6 @@ var View = (model) => {
           r.isDisabled = true;
         }
       });
-      console.log('the HHHHETTTEROGGENEITY rules',rules);
       return rules;
     },
   }
