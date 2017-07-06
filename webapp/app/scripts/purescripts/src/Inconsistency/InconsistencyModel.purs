@@ -18,6 +18,8 @@ import Data.Lens
 import Data.Lens.Record (prop)
 import Data.Lens.Zoom (Traversal, Traversal', Lens, Lens', zoom)
 
+import ComparisonModel
+
 opts = defaultOptions { unwrapSingleConstructors = true }
 
 -- Inconsistency <
@@ -25,6 +27,7 @@ newtype Inconsistency = Inconsistency
     { route :: String
     , status :: String
     , incoherence :: Incoherence
+    , heterogeneity :: Heterogeneity
     }
 _Inconsistency :: Lens' Inconsistency (Record _)
 _Inconsistency = lens (\(Inconsistency s) -> s) (\_ -> Inconsistency)
@@ -35,6 +38,8 @@ instance decodeInconsistency :: Decode Inconsistency where
   decode = genericDecode opts
 incoherence :: forall a b r. Lens { incoherence :: a | r } { incoherence :: b | r } a b
 incoherence = prop (SProxy :: SProxy "incoherence")
+heterogeneity :: forall a b r. Lens { heterogeneity :: a | r } { heterogeneity :: b | r } a b
+heterogeneity = prop (SProxy :: SProxy "heterogeneity")
 -- Inconsistency >
 -- Incoherence <
 newtype Incoherence = Incoherence
@@ -93,3 +98,45 @@ instance decodeIncoherenceLevel :: Decode IncoherenceLevel where
   decode = genericDecode opts
 -- IncoherenceLevel >
 
+
+-- Heterogeneity <
+newtype Heterogeneity = Heterogeneity
+    { heters :: Heters
+    , referenceValues :: ReferenceValues
+    }
+_Heterogeneity :: Lens' Heterogeneity (Record _)
+_Heterogeneity = lens (\(Heterogeneity s) -> s) (\_ -> Heterogeneity)
+derive instance genericHeterogeneity :: Rep.Generic Heterogeneity _
+instance showHeterogeneity :: Show Heterogeneity where
+    show = genericShow
+instance decodeHeterogeneity :: Decode Heterogeneity where
+  decode = genericDecode opts
+heters :: forall a b r. Lens { heters :: a | r } { heters :: b | r } a b
+heters = prop (SProxy :: SProxy "heters")
+referenceValues :: forall a b r. Lens { referenceValues :: a | r } { referenceValues :: b | r } a b
+referenceValues = prop (SProxy :: SProxy "referenceValues")
+-- Heterogeneity >
+
+newtype Heters = Heters
+    { status :: String
+    }
+_Heters :: Lens' Heters (Record _)
+_Heters = lens (\(Heters s) -> s) (\_ -> Heters)
+derive instance genericHeters :: Rep.Generic Heters _
+instance showHeters :: Show Heters where
+    show = genericShow
+instance decodeHeters :: Decode Heters where
+  decode = genericDecode opts
+
+
+newtype ReferenceValues = ReferenceValues
+    { status :: String
+    , treatments :: Array Node
+    }
+_ReferenceValues :: Lens' ReferenceValues (Record _)
+_ReferenceValues = lens (\(ReferenceValues s) -> s) (\_ -> ReferenceValues)
+derive instance genericReferenceValues :: Rep.Generic ReferenceValues _
+instance showReferenceValues :: Show ReferenceValues where
+    show = genericShow
+instance decodeReferenceValues :: Decode ReferenceValues where
+  decode = genericDecode opts

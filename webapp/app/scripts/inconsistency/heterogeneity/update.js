@@ -6,7 +6,9 @@ var Report = require('../../purescripts/output/Report');
 Report.view = require('../../purescripts/output/Report.View');
 Report.update = require('../../purescripts/output/Report.Update');
 Report.Actions = require('../../purescripts/output/Report.Actions');
-var Nodes = require('../../purescripts/output/Nodes');
+var Nodes = require('../../purescripts/output/Heterogeneity.Nodes');
+var ClinImp = require('../../purescripts/output/ClinImp');
+ClinImp.update = require('../../purescripts/output/ClinImp.update');
 
 var children = [
   Report
@@ -49,39 +51,83 @@ var Update = (model) => {
       }
       return isready;
     },
+    clinImpReady: () => {
+      let isready = false;
+      if (deepSeek(model,'getState().project.clinImp.status')==='ready'){
+        isready = true;
+        // console.log('contribution matrix ready');
+      }
+      return isready;
+    },
     fetchRFV: () => {
       return new Promise((resolve, reject) => {
-      ocpu.seturl('http://ec2-35-156-97-18.eu-central-1.compute.amazonaws.com:8004/ocpu/library/contribution/R');
-      // ocpu.seturl('http://localhost:8004/ocpu/library/contribution/R');
-      let params = updaters.getState().referenceValues.params;
-      updaters.getState().referenceValues.status = 'loading';
-      let hmc = ocpu.call('ReferenceValues',params, (sessionh) => {
-        sessionh.getObject( (rfv) => {
-          console.log('server returned ',rfv);
+        let mdl = model.getState();
+        let clinImp = Number(document.getElementById('clinImpInput').value);
+        ClinImp.showValid(model.getState().project.clinImp)(clinImp)();
+        let isValid = ClinImp.isValid(model.getState().project.clinImp)(clinImp);
+        if(! isValid.value1){
+          reject('Error in setting Clinically Important value: '+isValid.value0);
+        }else{
+          ClinImp.update.set(model.getState().project.clinImp)(Number(clinImp))();
+          // ocpu.seturl('http://ec2-52-28-232-32.eu-central-1.compute.amazonaws.com:8004/ocpu/library/contribution/R');
+          ocpu.seturl('http://localhost:8004/ocpu/library/contribution/R');
+          let params = updaters.getState().referenceValues.params;
+
+          updaters.getState().referenceValues.status = 'loading';
           let res = {
             tauSquareNetwork: model.getState().project.CM.currentCM.hatmatrix.NMAheterResults[0][0].toFixed(3),
-            first: rfv.quantiles[0][0].toFixed(3),
-            median: rfv.quantiles[0][1].toFixed(3),
-            third: rfv.quantiles[0][2].toFixed(3),
+            rfvs : []
+          }
+          let cm = model.getState().project.CM.currentCM;
+          let studies = cm.selectedComparisons;
+          let ocpuPromises = () => {
+            return _.map(studies, sid => {
+              return new Promise((oresolve, oreject) => {
+                let comparisonType = Nodes.getComparisonType(mdl)(sid);
+                if (comparisonType === "") {
+                  oreject("Didn't get comparison type");
+                }else{
+                  console.log("CCOCCOCOCOCOMMMMarison type", comparisonType);
+                }
+                params.InterventionComparisonType = comparisonType;
+                let hmc = ocpu.call('ReferenceValues', params, (sessionh) => {
+                  sessionh.getObject( (rfv) => {
+                    console.log('server returned ',rfv);
+                    res.rfvs.push({
+                      id: sid,
+                      first: rfv.quantiles[0][0].toFixed(3),
+                      median: rfv.quantiles[0][1].toFixed(3),
+                      third: rfv.quantiles[0][2].toFixed(3),
+                    });
+                    oresolve("success");
+                });
+                  hmc.fail( () => {
+                    updaters.getState().referenceValues.status = 'editing';
+                    Messages.alertify().error(hmc.responseText);
+                    oreject('R returned an error: ' + hmc.responseText);
+                  });
+                });
+              })
+            });
           };
-          updaters.getState().referenceValues.results = res;
-          updaters.getState().referenceValues.status = 'ready';
-          updaters.setHetersState(updaters.hetersSkeletonModel());
-          updaters.saveState();
-          resolve(res);
-      });
-        hmc.fail( () => {
-          updaters.getState().referenceValues.status = 'editing';
-          Messages.alertify().error(hmc.responseText);
-          reject('R returned an error: ' + hmc.responseText);
-        });
-      });
+          Promise.all(ocpuPromises()).then(() => {
+            updaters.getState().referenceValues.results = res;
+            updaters.getState().referenceValues.status = 'ready';
+            updaters.setHetersState(updaters.hetersSkeletonModel());
+            updaters.saveState();
+            resolve(res);
+          }).catch(reason => {
+            reject(reason);
+          });
+        }
+      }).catch(reason => {
+        Messages.alertify().error(reason);
       });
     },
     treatments: () => {
       let mdl = model.getState();
       // Nodes.getState(mdl)();
-      return Nodes.getNodes(mdl);
+      return Nodes.setNodes(mdl);
     },
     rfvChanged: () => {
       return  (updaters.getState().referenceValues.status !== 'empty');
@@ -98,8 +144,14 @@ var Update = (model) => {
     updateState: (model) => {
       let cm = model.getState().project.CM.currentCM;
       if (updaters.cmReady()) {
-        if ((updaters.getState().referenceValues.status === 'ready')
+        if ((updaters.getState().referenceValues.status === 'ready') 
         || (updaters.getState().referenceValues.status === 'edited')){
+          if ((updaters.clinImpReady())) {
+          }else{
+            if (updaters.getState().referenceValues.status === 'ready'){
+              updaters.getState().referenceValues.status = 'edited';
+            }
+          }
         }else{
           updaters.setRFVState(updaters.rfvEmptyModel());
         }
@@ -137,6 +189,7 @@ var Update = (model) => {
       let NMAValues =  model.getState().project.CM.currentCM.hatmatrix.NMA;
       let NMANames =  model.getState().project.CM.currentCM.hatmatrix.rowNamesNMA;
       let NMAs = _.zip(NMANames,NMAValues);
+      let references = updaters.getState().referenceValues.results.rfvs;
       let makeBoxes = (studies) => {
         let res = _.map(studies, s => {
           let pairRow = _.find(pairWises, pw => {
@@ -153,6 +206,17 @@ var Update = (model) => {
             (model.getState().project.CM.currentCM.params.sm === 'RR')
           );
           let contents = {}
+            console.log("BOX id",s[0]);
+            let quantiles = _.find(references, (ref) => {
+              let res = false;
+              if (typeof ref.id !== 'undefined'){
+                let nres = Nodes.isTheSameComparison(ref.id)(s[0]);
+                return nres;
+              }else{
+                res = false;
+              }
+              return false;
+            });
             contents =  {
                 id: s[0],
                 CI,
@@ -161,7 +225,6 @@ var Update = (model) => {
                 CIs: useExps?Math.exp(CI[1]).toFixed(3):CI[1],
                 PrIf: useExps?Math.exp(PrI[0]).toFixed(3):PrI[0],
                 PrIs: useExps?Math.exp(PrI[1]).toFixed(3):PrI[1],
-                judgement: 'nothing'
             }
           if(_.isUndefined(pairRow)){
             _.extend(contents,{
@@ -180,12 +243,21 @@ var Update = (model) => {
                 ISquare
             })
           }
-          let levels = _.union([{
-            id:'nothing',
-            label: '--',
-            isDisabled: true
-          }],updaters.getState().heters.levels);
-          contents.levels = levels;
+          contents.quantiles = [{ label: "first quantile"
+                                  ,value: quantiles.first
+                                },
+                                { label: "median"
+                                  ,value: quantiles.median
+                                },
+                                { label: "third quantile"
+                                  ,value: quantiles.third
+                                }
+                               ];
+          contents.levels = updaters.getState().heters.levels;
+          let clinImp = deepSeek(model,'getState().project.clinImp');
+          let crossParams = [contents.CIf,contents.CIs,contents.PrIf,contents.PrIs,clinImp.lowerBound,clinImp.upperBound].map(n => {return Number(n)});
+          contents.ruleLevel = updaters.getRuleLevel(...crossParams);
+          contents.judgement = contents.ruleLevel;
           return contents;
         });
         return res;
@@ -195,16 +267,15 @@ var Update = (model) => {
       // console.log('mixed',mixed);
       return _.union(mixed,indirect);
     },
-    selectHetersRule: (rule) => {
-      let hstate = updaters.getState().heters;
-      hstate.rule = rule.value;
-      hstate.status = 'ready';
-      let boxes = updaters.getState().heters.boxes; 
-      _.map(boxes, m => {
-        m.judgement = _.find(m.rules,mr =>{return mr.id===rule.value}).level;
-      });
-      updaters.saveState();
-      Messages.alertify().success(model.getState().text.Heterogeneity.HeterogeneitySet);
+    getRuleLevel: (CIf,CIs,PrIf,PrIs,lowerBound,upperBound) => {
+      let ciCrosses = Nodes.numberOfCrosses(CIf)(CIs)(lowerBound)(upperBound);
+      console.log("paw na vrw to rule level",CIf,CIs,PrIf,PrIs,lowerBound,upperBound);
+      console.log("CiCrosses", ciCrosses);
+      let priCrosses = Nodes.numberOfCrosses(PrIf)(PrIs)(lowerBound)(upperBound);
+      console.log("priCrosses", priCrosses);
+      let result = Nodes.ruleLevel(parseInt(ciCrosses))(parseInt(priCrosses));
+      console.log("ruleLevel", result);
+      return result;
     },
     resetHeters: () => {
       updaters.setHetersState(updaters.hetersSkeletonModel());
@@ -214,9 +285,9 @@ var Update = (model) => {
         status: 'empty',
         params: {
           measurement: 'nothing',
-          OutcomeType: 'nothing',
-          InterventionComparisonType: 'nothing'
-        }
+          OutcomeType: 'nothing'
+        },
+        treatments: updaters.treatments()
       };
     },
     hetersSkeletonModel: () => {
@@ -228,12 +299,8 @@ var Update = (model) => {
       }
       return { 
         levels: HeterogeneityLevels,
-        availablerules: HeterogeneityThresholds,
-        rules: HeterogeneityRule,
-        rule: 'noRule',
-        status: 'noRule',
+        status: 'ready',
         boxes,
-        treatments: updaters.treatments()
       }
     },
     selectRFVparam: (param) => {
@@ -248,8 +315,23 @@ var Update = (model) => {
       updaters.setHetersState(updaters.hetersSkeletonModel());
       updaters.saveState();
     },
-    getRule: () => {
-      return updaters.getState().heters.rule;
+    resetClinImp: (emtype) => {
+      let [title,msg,successmsg] = model.getState().text.ClinImp.reset;
+      console.log("the emtype is",emtype);
+      return new Promise (function(resolve,reject) {
+        Messages.alertify().confirm
+          ( title
+          , msg
+          , function () {
+            ClinImp.update.reSet(emtype)();
+            Messages.alertify().message(successmsg);
+            resolve(true);
+        }, function () {reject(false);});
+        }).then(function(res){
+          console.log("result",res);
+      }).catch(function(reason){
+        console.log("error in confirmation promise",reason);
+      })
     },
     selectIntervensionType: (value) => {
       let mdl = model.getState();
@@ -258,24 +340,15 @@ var Update = (model) => {
     },
     selectIndividual: (value) => {
       let [tid,tv] = value.value.split('σδel');
-      let boxes = updaters.getState().boxes;
+      let boxes = updaters.getState().heters.boxes;
       let tbc = _.find(boxes, m => {
-        return m.id === tid;
+        return Nodes.isTheSameComparison(m.id)(tid);
       });
-      console.log('tid tv',tid,tv,'rule',rulevalue);
-      let rulevalue = deepSeek(_.find(tbc.rules, r => {return r.id === updaters.getRule()}),'value');
-      if(parseInt(tv) !== rulevalue){
-        if((tbc.judgement === 'nothing')||(tbc.judgement === rulevalue)){
-          updaters.getState().customized += 1;
-        }      
-      }else{
-        updaters.getState().customized -= 1;
-      }
+      let rulevalue = tbc.ruleLevel;
       tbc.judgement = parseInt(tv);
       updaters.getState().status = 'selecting';
       updaters.saveState();
       updaters.getState().status = 'ready';
-      Messages.alertify().success(model.getState().text.NetRob.LimitationsSet);
       updaters.saveState();
     },
   }

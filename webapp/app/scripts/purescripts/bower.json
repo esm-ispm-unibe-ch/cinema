@@ -16,7 +16,9 @@
     "purescript-datetime": "^3.0.0",
     "purescript-profunctor-lenses": "^3.2.0",
     "purescript-handlebars": "^2.0.0",
-    "purescript-smolder": "^7.0.0"
+    "purescript-smolder": "^7.0.0",
+    "purescript-aff": "^3.1.0",
+    "purescript-aff-promise": "^0.5.0"
   },
   "devDependencies": {
     "purescript-psci-support": "^3.0.0"

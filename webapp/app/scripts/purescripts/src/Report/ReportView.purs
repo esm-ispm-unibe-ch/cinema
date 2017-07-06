@@ -27,10 +27,11 @@ import Partial.Unsafe (unsafePartial)
 
 import Report.Actions
 import Report.Template as T
-import Model
-import Text.Model
+import ComparisonModel
 import StudyLimitationsModel
 import InconsistencyModel
+import Model
+import Text.Model
 import Report.Model
 
 opts = defaultOptions { unwrapSingleConstructors = true }

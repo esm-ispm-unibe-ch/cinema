@@ -13,6 +13,9 @@ var Heterogeneity = {
     fetchRFV: () => {
       Update(Heterogeneity.model).fetchRFV();
     },
+    resetClinImp: (emtype) => {
+      Update(Heterogeneity.model).resetClinImp(emtype);
+    },
     resetRFV: () => {
       let [title,msg,successmsg] = Heterogeneity.model.getState().text.Heterogeneity.resetConfirm;
       Messages.alertify().confirm(title,msg,
@@ -40,6 +43,9 @@ var Heterogeneity = {
       Messages.alertify().message(updated);
         Update(Heterogeneity.model).selectIndividual(value);
     },
+    updateState: () => {
+      Update(Heterogeneity.model).updateState(Heterogeneity.model);
+    }
   },
   view: {
     register: (model) => {

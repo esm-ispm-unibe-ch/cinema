@@ -1,8 +1,28 @@
 <!-- <div id='hetercontainer' class='col-xs-12'> -->
   <blockquote id="refvals" class='col-xs-12'>
-    <h4 id="referenceValuesTitle">Reference Values for τ<sup>2</sup></h4>
+    <ul class='list-inline col-xs-12'>
+      <li>
+          <label class='controls-title mr-sm-2'>
+            Define clinically important value for the effect measure you have
+            chosen
+          </label>
+      </li>
+      <li>
+        <input id="clinImpInput" name="clinImp" value="{{clinImp}}"
+           class='mr-sm-2 form-inline form-control' {{#if clinImpReady}}
+             disabled {{/if}}>
+      </li>
+      {{#if clinImpReady}}
+        <li>
+          <button onClick="Actions.Heterogeneity.resetClinImp('{{emType}}')" class="btn btn-default
+            {{#unless clinImpReady}} disabled{{/unless}}">Reset</button>
+        </li>
+      {{/if}}
+    </ul>
+    <h4 id="referenceValuesTitle">Select type for each intervention</h4>
     <div class='form-inline col-xs-12'>
       <ul class='list-inline'>
+        <li>
         <ul class='list-inline'>
           {{#each treatments}}
           <li class='well compRobSelector {{#if customized}} customized {{/if}}'
@@ -12,23 +32,23 @@
             {{{label}}}:
               </li>
               <li>
-                {{#with ../interventionTypes}}
-                  <select
-          onChange="Actions.Heterogeneity.selectIntervensionType(this)" {{#if
-          rfvReady}}
-                    disabled {{/if}} class='mr-sm-2 form-inline form-control'>
-                    {{#each selections}}
-                      <option value="{{{../../label}}}σδel{{id}}" {{#if isDisabled}} disabled {{/if}}  {{#if isActive}} selected{{/if}}>
-                        {{{label}}}
-                      </option>
-                    {{/each}}
-                  </select>
-                {{/with}}
+                <select
+                  onChange="Actions.Heterogeneity.selectIntervensionType(this)" 
+                  {{#if ../rfvReady}}
+                    disabled 
+                  {{/if}} class='mr-sm-2 form-inline form-control'>
+                  {{#each interventionType}}
+                    <option value="{{{../label}}}σδel{{id}}" {{#if isDisabled}} disabled {{/if}}  {{#if isActive}} selected{{/if}}>
+                      {{{label}}}
+                    </option>
+                  {{/each}}
+                </select>
               </li>
             </ul>
           </li>
           {{/each}}
         </ul>
+        </li>
         {{#each rfvParams}}
           <li>
             {{#if isAvailable}}
@@ -51,52 +71,9 @@
         {{/each}}
       </ul>
     </div>
-    {{#if rfvReady}}
-    {{#unless heterReady}}
-      <div class='col-xs-12'>
-        <ul class='list-inline'>
-          <li>
-              <label class='controls-title mr-sm-2'>
-        Values greater than the
-              </label>
-          </li>
-          <li>
-          <select onChange="Actions.Heterogeneity.selectHetersRule(this)" {{#if heterReady}}
-            disabled {{/if}} class='mr-sm-2 form-inline form-control'>
-            {{#each rules}}
-              <option value="{{id}}" {{#if isDisabled}} disabled {{/if}} {{#if isActive}} selected{{/if}}>
-                {{{label}}}
-              </option>
-            {{/each}}
-          </select>
-          </li>
-          <li>
-            <label class='controls-title mr-sm-2'>
-          define large heterogeneity
-            </label>
-          </li>
-        </ul>
-      </div>
-    {{/unless}}
-    <div class='col-xs-12 rftable'>
-      <table class='table'>
-        <tr><th colspan="3">Expected heterogeneity</th></tr>
-        <tr>
-          <th>25<sup>th</sup> quantile</th>
-          <th>median</th>
-          <th>75<sup>th</sup> quantile</th>
-        </tr>
-        <tr>
-          <td>{{rfvsFirst}}</td>
-          <td>{{rfvsMedian}}</td>
-          <td>{{rfvsThird}}</td>
-        </tr>
-      </table>
-    </div>
-    {{/if}}
     <div class='buttoner col-xs-12'>
       <button onClick="Actions.Heterogeneity.fetchRFV()" class="pull-right btn btn-default
-        {{#unless canFetch}} disabled{{/unless}}">Fetch Values</button>
+        {{#unless canFetch}} disabled{{/unless}}">Confirm</button>
       <button onClick="Actions.Heterogeneity.resetRFV()" class="pull-right btn btn-default
         {{#unless rfvReady}} disabled{{/unless}}">Reset Values</button>
     </div>
@@ -107,26 +84,20 @@
           <label class=' controls-title mr-sm-2'>
             {{text.selectionTitle}}
           </label>
-          {{#if heterReady}}
+          {{#if customized}}
+            <br>
             <label class=' controls-title mr-sm-2'>
-              {{text.defaultTitle}}
-              {{{ruleName}}}
+              {{numberCustomized}}
+              {{#if customizedSingular}}
+                {{text.customizedTitleSingular}}
+              {{else}}
+                {{text.customizedTitlePlural}}
+              {{/if}}
             </label>
-            {{#if customized}}
-              <br>
-              <label class=' controls-title mr-sm-2'>
-                {{numberCustomized}}
-                {{#if customizedSingular}}
-                  {{text.customizedTitleSingular}}
-                {{else}}
-                  {{text.customizedTitlePlural}}
-                {{/if}}
-              </label>
-            {{/if}}
           {{/if}}
-        <button onClick="Actions.Heterogeneity.resetHeters()" class="pull-right btn btn-default
-          {{#unless heterReady}} disabled{{/unless}}"> {{text.resetButton}} </button>
       </div>
+    <button onClick="Actions.Heterogeneity.resetHeters()" class="pull-right btn btn-default
+          {{#unless heterReady}} disabled{{/unless}}"> {{text.resetButton}} </button>
     </blockquote>
     <div id="heterBoxes" class='col-xs-12 well collapse in'>
     <blockquote class='col-xs-12'>
@@ -141,7 +112,7 @@
     </blockquote>
       <ul class='list-inline'>
         {{#each boxes}}
-        <li class='well compRobSelector {{#if customized}} customized {{/if}}' id="comp-{{id}}">
+        <li  style='border-color:{{color}}' class='well compRobSelector {{#if customized}} customized {{/if}}' id="comp-{{id}}">
             <ul>
               <li>
                 <strong>
@@ -154,6 +125,12 @@
                   <hr>
               </li>
               {{#if isMixed}}
+                <li class="align-right">
+                  <strong>
+                    Heterogeneity measures <br> 
+                    from pairwise meta-analysis
+                  </strong>
+                </li>
                 <li>
                   τ<sup>2</sup>: <strong class='pull-right'>{{tauSquare}}</strong>
                 </li>
@@ -162,24 +139,36 @@
                   <hr>
                 </li>
               {{/if}}
-                <li>
-                  CI: <strong class='pull-right'>({{CIf}},{{CIs}})</strong>
+                <li class="align-right">
+                  <strong>
+                    Reference Values for τ<sup>2</sup>
+                  </strong>
                 </li>
-                <li>
-                  PrI: <strong class='pull-right'>({{PrIf}},{{PrIs}})</strong>
-                  <hr>
+              {{#each quantiles}}
+                <li class=" {{#unless isActive}} robLabel{{/unless}}">
+                  {{{label}}}:<strong class='pull-right'>{{value}}</strong>
                 </li>
-              {{#each rules}}
-              <li class=" {{#unless isActive}} robLabel{{/unless}}">
-                  {{{label}}}:<strong class='pull-right'>{{levelLabel}}</strong>
-               </li>
               {{/each}}
-                  <hr>
+                <li>
+              <hr>
+                  <strong>
+                    NMA treatment effect intervals
+                  </strong>
+                </li>
+                <li>
+                  Confidence interval: <strong class='pull-right'>({{CIf}},{{CIs}})</strong>
+                </li>
+                <li>
+                  Predictive interval: <strong class='pull-right'>({{PrIf}},{{PrIs}})</strong>
+                </li>
+                <li>
+                  Null effect interval: <strong
+                    class='pull-right'>({{../clinImpLow}},{{../clinImpHigh}})</strong>
+                </li>
+                <hr>
               <li>
               {{../../text.judgementField}} 
-                <!-- <select onChange="Actions.Heterogeneity.selectIndividual(this)" -->
-                <select 
-                  {{#unless ../../heterReady}} disabled {{/unless}} class='mr-sm-2 controls-container'>
+                <select onChange="Actions.Heterogeneity.selectIndividual(this)" class='mr-sm-2 controls-container'>
                   {{#each levels}}
                   <option value="{{../id}}σδel{{id}}" {{#if isDisabled}} disabled {{/if}} {{#if isActive}} selected{{/if}}>
                         {{label}}

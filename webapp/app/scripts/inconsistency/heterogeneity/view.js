@@ -1,4 +1,6 @@
 var deepSeek = require('safe-access');
+var clone = require('../../lib/mixins.js').clone;
+var Nodes = require('../../purescripts/output/Heterogeneity.Nodes');
 
 var View = (model) => {
   let modelPosition = 'project.inconsistency.heterogeneity';
@@ -34,21 +36,7 @@ var View = (model) => {
       {
         id: "InterventionType",
         label: "Intervention Type",
-        selections: [
-          { id: "notset",
-            label: "--",
-            isDisabled: true,
-          },
-          { id: "Pharmacological",
-            label: "Pharmacological",
-          },
-          { id: "Placebo/Control",
-            label: "Placebo/Control",
-          },
-          { id: "Non-pharmacological",
-            label: "Non-pharmacological",
-          },
-        ]
+        selections: []
       },
       {
         id: 'InterventionComparisonType',
@@ -146,81 +134,56 @@ var View = (model) => {
       let prs = viewers.defaultParameters[1];
       return prs;
     },
+    customized: () => {
+      return viewers.numberCustomized() > 0;
+    },
+    customizedSingular: () => {
+      return viewers.numberCustomized() === 1;
+    },
+    numberCustomized: () => {
+      let vboxes = clone(viewers.getState().heters.boxes);
+      let result = _.size(_.filter(vboxes, box => {
+          return box.judgement !== box.ruleLevel;
+        })
+      );
+      return result;
+    },
     boxes: () => {
-      let ruleLevel = (argsss) => {
-        let [rule,CI,PrI,tauSquare] = argsss;
-        let baseValue = viewers.getState().referenceValues.results[rule.id];
-        let tauNet = viewers.getState().referenceValues.results.tauSquareNetwork;
-        let tauExists = () => {
-          return ! isNaN(tauSquare);
-        };
-        let tauBigger = () => {
-          return tauSquare > baseValue;
-        };
-        let PrIProblem = () => {
-          let CIcrosses = CI[0] * CI[1] < 0;
-          let PrIcrosses = PrI[0] * PrI[1] < 0;
-          return !((CIcrosses && PrIcrosses) || (! CIcrosses && ! PrIcrosses));
-        };
-        console.log('baseValue',rule,baseValue);
-        let res = 0;
-        if(tauNet < baseValue) {
-          if(tauExists()) {
-            res = viewers.getState().heters.rules[0][PrIProblem()?0:1][tauBigger()?0:1];
-          }else{
-            if(PrIProblem()){
-              res = 2;
-            }else{
-              res = 1;
-            }
-          }
-        }else{
-          if(tauExists()) {
-            res = viewers.getState().heters.rules[1][PrIProblem()?0:1][tauBigger()?0:1];
-          }else{
-            if(PrIProblem()){
-              res = 3;
-            }else{
-              res = 2;
-            }
-          }
-        }
-        return res;
-      };
-      let boxes = viewers.getState().heters.boxes;
-      _.map(boxes, box => {
-        box.rules = _.map(viewers.getState().heters.availablerules, rule => {
-          if(box.tauSquare === 'nothing'){
-            return {
-              id: rule.id,
-              level: ruleLevel([rule,box.CI,box.PrI])
-            }
-          }else{
-            return {
-              id: rule.id,
-              level: ruleLevel([rule,box.CI,box.PrI,box.tauSquare])
-            }
-          }
-        });
-        _.map(box.rules, r => {
-          r.isActive = r.id === viewers.getState().heters.rule;
-        });
-        _.map(box.levels, l => {
-          if(l.id !=='nothing'){
+      let vboxes = clone(viewers.getState().heters.boxes);
+      return _.map(vboxes, box => {
+        box.customized = box.judgement !== box.ruleLevel;
+        box.color = deepSeek (_.find(box.levels, l => {return l.id === box.judgement}),'color');
+        box.levels = _.map(box.levels, l => {
+            let isActive = parseInt(l.id) === parseInt(box.judgement);
             l.label= model.getState().text.Heterogeneity.levels[l.id-1];
+            l.isActive = isActive;
+            return l;
+          });
+        box.quantiles = _.map(box.quantiles, q => {
+          q.isActive = false;
+          if((typeof box.tauSquare !== 'undefined') && (! isNaN(box.tauSquare))) {
+            q.isActive = Number(box.tauSquare) > q.value;
           }
-            l.isActive = () => {return l.id === box.judgement;}
+          return q;
         });
-        _.map(box.rules, r => {
-          r.label = model.getState().text.Heterogeneity.rules[r.id];
-          r.levelLabel = model.getState().text.Heterogeneity.levels[r.level-1];
-        });
+        return box;
       });
-      return boxes;
     },
     treatments: () => {
-      let ts = viewers.getState().heters.treatments;  
+      let ts = viewers.getState().referenceValues.treatments;  
       return ts;
+    },
+    clinImp: () => {
+      return model.getState().project.clinImp.baseValue;
+    },
+    clinImpLow: () => {
+      return model.getState().project.clinImp.lowerBound.toFixed(3);
+    },
+    clinImpHigh: () => {
+      return model.getState().project.clinImp.upperBound.toFixed(3);
+    },
+    clinImpReady: () => {
+      return model.getState().project.clinImp.status === "ready";
     },
     getRule: () => {
       return viewers.getState().heters.rule;
@@ -237,12 +200,18 @@ var View = (model) => {
       let res = viewers.getState().referenceValues.results.third;
       return res;
     },
+    emType: () => {
+      return model.getState().project.clinImp.emtype;
+    },
     rfvsTauSquare: () => {
       let res = viewers.getState().referenceValues.results.tauSquareNetwork;
       return res;
     },
     rfvFilled: () => {
-      return _.all(_.toArray(viewers.getState().referenceValues.params), p=> { return p!== 'nothing'});
+      return _.all(_.toArray(viewers.getState().referenceValues.params), 
+        p => { return (p !== 'nothing') && 
+          Nodes.hasSelectedAll(model.getState());
+        });
     },
     canFetch: () => {
       return viewers.rfvFilled() && (! viewers.rfvReady());
@@ -251,7 +220,7 @@ var View = (model) => {
       return viewers.getState().referenceValues.status === 'ready';
     },
     getState: () => {
-      return deepSeek(model.getState(),modelPosition);
+      return deepSeek(model.getState(), modelPosition);
     },
     heterReady: () => {
       return viewers.getState().heters.status === 'ready';

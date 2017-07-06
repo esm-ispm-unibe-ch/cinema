@@ -112,7 +112,11 @@
       "saveButton": "Save Chart"
     },
     "ClinImp" : {
-      "question" : "Define threshold of clinical importance"
+      "question" : "Define threshold of clinical importance",
+      "reset" : [ "Reset?" 
+                , "Clinical importance value will be set to default"
+                , "Reset successful"
+                ]
     },
     "NetRob": {
       "levels":[
@@ -151,6 +155,7 @@
         "Very Serious"
       ],
       "title": "Heterogeneity",
+      "selectionTitle": "Heterogeneity evaluation",
       "referenceValues": "Reference Values",
       "ruleButton": "Select default rule",
       "mixedtitle": "mixed",
