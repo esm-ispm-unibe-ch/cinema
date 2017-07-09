@@ -69,8 +69,8 @@ var Update = (model) => {
           reject('Error in setting Clinically Important value: '+isValid.value0);
         }else{
           ClinImp.update.set(model.getState().project.clinImp)(Number(clinImp))();
-          // ocpu.seturl('http://ec2-52-28-232-32.eu-central-1.compute.amazonaws.com:8004/ocpu/library/contribution/R');
-          ocpu.seturl('http://localhost:8004/ocpu/library/contribution/R');
+          ocpu.seturl('http://ec2-52-28-232-32.eu-central-1.compute.amazonaws.com:8004/ocpu/library/contribution/R');
+          // ocpu.seturl('http://localhost:8004/ocpu/library/contribution/R');
           let params = updaters.getState().referenceValues.params;
 
           updaters.getState().referenceValues.status = 'loading';
@@ -87,12 +87,12 @@ var Update = (model) => {
                 if (comparisonType === "") {
                   oreject("Didn't get comparison type");
                 }else{
-                  console.log("CCOCCOCOCOCOMMMMarison type", comparisonType);
+                  // console.log("CCOCCOCOCOCOMMMMarison type", comparisonType);
                 }
                 params.InterventionComparisonType = comparisonType;
                 let hmc = ocpu.call('ReferenceValues', params, (sessionh) => {
                   sessionh.getObject( (rfv) => {
-                    console.log('server returned ',rfv);
+                    // console.log('server returned ',rfv);
                     res.rfvs.push({
                       id: sid,
                       first: rfv.quantiles[0][0].toFixed(3),
@@ -142,6 +142,7 @@ var Update = (model) => {
       return  (updaters.getState().heters.status === 'ready');
     },
     updateState: (model) => {
+      console.log("UPATING HETER");
       let cm = model.getState().project.CM.currentCM;
       if (updaters.cmReady()) {
         if ((updaters.getState().referenceValues.status === 'ready') 
@@ -151,6 +152,7 @@ var Update = (model) => {
             if (updaters.getState().referenceValues.status === 'ready'){
               updaters.getState().referenceValues.status = 'edited';
             }
+            updaters.setHetersState(updaters.hetersSkeletonModel());
           }
         }else{
           updaters.setRFVState(updaters.rfvEmptyModel());
@@ -162,7 +164,7 @@ var Update = (model) => {
       }else{
         model.getState().project.inconsistency.heterogeneity = {};
         updaters.setRFVState(updaters.rfvEmptyModel());
-        updaters.setHetersState(updaters.hetersSkeletonModel());
+        updaters.setHetersState(updaters.hetersEmptyModel());
       }
       let mdl = model.getState();
       _.map(children, c => {
@@ -179,7 +181,8 @@ var Update = (model) => {
     },
     saveState: () => {
       model.saveState();
-      _.map(children, c => { c.update.updateState();});
+      let mdl = model.getState();
+      _.map(children, c => { c.update.updateState(mdl)(mdl);});
     },
     createEstimators: () => {
       let cm = model.getState().project.CM.currentCM;
@@ -206,7 +209,7 @@ var Update = (model) => {
             (model.getState().project.CM.currentCM.params.sm === 'RR')
           );
           let contents = {}
-            console.log("BOX id",s[0]);
+            // console.log("BOX id",s[0]);
             let quantiles = _.find(references, (ref) => {
               let res = false;
               if (typeof ref.id !== 'undefined'){
@@ -264,17 +267,12 @@ var Update = (model) => {
       };
       let mixed = makeBoxes(_.zip(cm.directRowNames,cm.directStudies));
       let indirect = makeBoxes(_.zip(cm.indirectRowNames,cm.indirectStudies));
-      // console.log('mixed',mixed);
       return _.union(mixed,indirect);
     },
     getRuleLevel: (CIf,CIs,PrIf,PrIs,lowerBound,upperBound) => {
       let ciCrosses = Nodes.numberOfCrosses(CIf)(CIs)(lowerBound)(upperBound);
-      console.log("paw na vrw to rule level",CIf,CIs,PrIf,PrIs,lowerBound,upperBound);
-      console.log("CiCrosses", ciCrosses);
       let priCrosses = Nodes.numberOfCrosses(PrIf)(PrIs)(lowerBound)(upperBound);
-      console.log("priCrosses", priCrosses);
       let result = Nodes.ruleLevel(parseInt(ciCrosses))(parseInt(priCrosses));
-      console.log("ruleLevel", result);
       return result;
     },
     resetHeters: () => {
@@ -290,6 +288,14 @@ var Update = (model) => {
         treatments: updaters.treatments()
       };
     },
+    hetersEmptyModel: () => {
+      let boxes = [];
+      return { 
+        levels: HeterogeneityLevels,
+        status: 'not-ready',
+        boxes,
+      }
+    },
     hetersSkeletonModel: () => {
       let boxes = [];
       if(updaters.rfvReady()){
@@ -304,7 +310,7 @@ var Update = (model) => {
       }
     },
     selectRFVparam: (param) => {
-      console.log('picked',param.value,param.getAttribute('data-id'),param);
+      // console.log('picked',param.value,param.getAttribute('data-id'),param);
       let paramkey = param.getAttribute('data-id');
       updaters.getState().referenceValues.params[paramkey] = param.value;
       updaters.getState().referenceValues.status = 'edited';
@@ -317,7 +323,6 @@ var Update = (model) => {
     },
     resetClinImp: (emtype) => {
       let [title,msg,successmsg] = model.getState().text.ClinImp.reset;
-      console.log("the emtype is",emtype);
       return new Promise (function(resolve,reject) {
         Messages.alertify().confirm
           ( title
@@ -328,9 +333,7 @@ var Update = (model) => {
             resolve(true);
         }, function () {reject(false);});
         }).then(function(res){
-          console.log("result",res);
       }).catch(function(reason){
-        console.log("error in confirmation promise",reason);
       })
     },
     selectIntervensionType: (value) => {

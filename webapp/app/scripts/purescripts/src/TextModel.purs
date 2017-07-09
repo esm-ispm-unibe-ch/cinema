@@ -26,6 +26,7 @@ newtype TextContent = TextContent
   , errorPage :: String
   , "Report" :: ReportText
   , "ClinImp" :: ClinImpText
+  , "Heterogeneity" :: HeterogeneityText
   }
 derive instance genericTextContent :: Rep.Generic TextContent _
 instance showTextContent :: Show TextContent where
@@ -43,6 +44,9 @@ reportText = prop (SProxy :: SProxy "Report")
 
 clinImpText :: forall a b r. Lens { "ClinImp" :: a | r } { "ClinImp" :: b | r } a b
 clinImpText = prop (SProxy :: SProxy "ClinImp")
+
+heterogeneityText :: forall a b r. Lens { "Heterogeneity" :: a | r } { "Heterogeneity" :: b | r } a b
+heterogeneityText = prop (SProxy :: SProxy "Heterogeneity")
 -- TextContent >
 
 -- ClinImpText <
@@ -57,6 +61,7 @@ instance decodeClinImpText :: Decode ClinImpText where
 _ClinImpText :: Lens' ClinImpText (Record _)
 _ClinImpText = lens (\(ClinImpText s) -> s) (\_ -> ClinImpText)
 --ClinImpText >
+
 
 
 -- NetRobText <
@@ -74,6 +79,19 @@ _NetRobText = lens (\(NetRobText s) -> s) (\_ -> NetRobText)
 netRobRulesText :: forall a b r. Lens { rules :: a | r } { rules :: b | r } a b
 netRobRulesText = prop (SProxy :: SProxy "rules")
 --NetRobText >
+
+-- HeterogeneityText <
+newtype HeterogeneityText = HeterogeneityText 
+  { levels :: Array String
+  }
+derive instance genericHeterogeneityText :: Rep.Generic HeterogeneityText _
+instance showHeterogeneityText :: Show HeterogeneityText where
+    show = genericShow
+instance decodeHeterogeneityText :: Decode HeterogeneityText where
+  decode = genericDecode opts
+_HeterogeneityText :: Lens' HeterogeneityText (Record _)
+_HeterogeneityText = lens (\(HeterogeneityText s) -> s) (\_ -> HeterogeneityText)
+--HeterogeneityText >
 
 -- RuleTextx <
 newtype RuleTexts = RuleTexts 

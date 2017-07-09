@@ -57,14 +57,13 @@
                   {{numberOfStudies}}
                 </td>
                 <td style="background-color:{{studyLimitation.color}}" {{# if studyLimitation.customized}} class='customized-report'{{/if}}>
-                    
                   {{studyLimitation.label}}
                 </td>
                 <td>
                   --
                 </td>
-                <td>
-                  --
+                <td style="background-color:{{heterogeneity.color}}"  {{# if heterogeneity.customized}} class='customized-report'{{/if}}>
+                  {{heterogeneity.label}}
                 </td>
                 <td style="background-color:{{incoherence.color}}"  {{# if incoherence.customized}} class='customized-report'{{/if}}>
                   {{incoherence.label}}
@@ -106,8 +105,8 @@
                 <td>
                   --
                 </td>
-                <td>
-                  --
+                <td style="background-color:{{heterogeneity.color}}"  {{# if heterogeneity.customized}} class='customized-report'{{/if}}>
+                  {{heterogeneity.label}}
                 </td>
                 <td style="background-color:{{incoherence.color}}"  {{# if incoherence.customized}} class='customized-report'{{/if}}>
                   {{incoherence.label}}

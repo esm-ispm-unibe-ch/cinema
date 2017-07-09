@@ -5,7 +5,10 @@ const browserSync = require('browser-sync');
 const del = require('del');
 const wiredep = require('wiredep').stream;
 const runSequence = require('run-sequence');
+const assign = require('lodash.assign');
 const browserify = require('browserify');
+const watchify = require('watchify');
+const gutil = require('gulp-util');
 const babelify = require('babelify');
 const buffer = require('vinyl-buffer');
 const source = require('vinyl-source-stream');
@@ -52,22 +55,31 @@ gulp.task('styles', () => {
     .pipe(reload({stream: true}));
 });
 
-gulp.task('scripts', () => {
-  const b = browserify({
+  // add custom browserify options here
+  const customOpts = {
     entries: 'app/scripts/main.js',
-    transform: babelify,
     debug: true
-  });
+  };
+  var bopts = assign({}, watchify.args, customOpts);
+  var b = watchify(browserify(bopts));
 
-  return b.bundle()
-    .pipe(source('bundle.js'))
-    .pipe($.plumber())
-    .pipe(buffer())
-    .pipe($.sourcemaps.init({loadMaps: true}))
-    .pipe($.sourcemaps.write('.'))
-    .pipe(gulp.dest('.tmp/scripts'))
-    .pipe(reload({stream: true}));
-});
+  b.transform(babelify);
+
+  function bundle () {
+    return b.bundle()
+      .on('error', gutil.log.bind(gutil, 'Browserify Error'))
+      .pipe(source('bundle.js'))
+      .pipe($.plumber())
+      .pipe(buffer())
+      .pipe($.sourcemaps.init({loadMaps: true}))
+      .pipe($.sourcemaps.write('.'))
+      .pipe(gulp.dest('.tmp/scripts'))
+      .pipe(reload({stream: true}));
+  }
+
+  gulp.task('scripts', bundle);
+  b.on('update', bundle); // on any dep update, runs the bundler
+  b.on('log', gutil.log); // output build logs to terminal
 
 function lint(files, options) {
   return gulp.src(files)

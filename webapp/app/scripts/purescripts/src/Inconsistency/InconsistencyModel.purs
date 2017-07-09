@@ -2,6 +2,7 @@ module InconsistencyModel where
 
 import Prelude
 import Control.Monad.Eff 
+import Data.Array
 import Data.Foreign 
 import Data.Foreign.Class (class Decode, encode, decode)
 import Data.Foreign.Index ((!))
@@ -9,15 +10,17 @@ import Data.Foreign.Generic (defaultOptions, genericDecode, genericDecodeJSON)
 import Data.Generic.Rep as Rep 
 import Data.Generic.Rep.Show (genericShow)
 import Control.Monad.Except (runExcept)
-import Data.Maybe (Maybe(..))
-import Data.Either (Either(..))
+import Data.Maybe
+import Data.Either
 import Data.Int
 import Data.Newtype
 import Data.Symbol
 import Data.Lens
 import Data.Lens.Record (prop)
 import Data.Lens.Zoom (Traversal, Traversal', Lens, Lens', zoom)
+import Partial.Unsafe (unsafePartial)
 
+import Text.Model
 import ComparisonModel
 
 opts = defaultOptions { unwrapSingleConstructors = true }
@@ -119,6 +122,7 @@ referenceValues = prop (SProxy :: SProxy "referenceValues")
 
 newtype Heters = Heters
     { status :: String
+    , boxes :: Array HeterogeneityBox
     }
 _Heters :: Lens' Heters (Record _)
 _Heters = lens (\(Heters s) -> s) (\_ -> Heters)
@@ -140,3 +144,69 @@ instance showReferenceValues :: Show ReferenceValues where
     show = genericShow
 instance decodeReferenceValues :: Decode ReferenceValues where
   decode = genericDecode opts
+
+-- HeterogeneityBox <
+newtype HeterogeneityBox = HeterogeneityBox
+    { id :: String
+    , judgement :: Int
+    , label :: String
+    , levels :: Array HeterogeneityLevel
+    , color :: String
+    , ruleLevel :: Int
+    , customized :: Boolean
+    }
+_HeterogeneityBox :: Lens' HeterogeneityBox (Record _)
+_HeterogeneityBox = lens (\(HeterogeneityBox s) -> s) (\_ -> HeterogeneityBox)
+derive instance genericHeterogeneityBox :: Rep.Generic HeterogeneityBox _
+instance showHeterogeneityBox :: Show HeterogeneityBox where
+    show = genericShow
+skeletonHeterogeneityBox = HeterogeneityBox { id : "None"
+                                        , judgement : -1
+                                        , label : "--"
+                                        , levels : []
+                                        , color : ""
+                                        , ruleLevel : -1
+                                        , customized : false
+                                        }
+instance decodeHeterogeneityBox :: Decode HeterogeneityBox where
+  decode p = do
+    id <- p ! "id" >>= readString
+    judgement <- p ! "judgement" >>= readInt
+    ruleLevel <- p ! "ruleLevel" >>= readInt
+    levels <- p ! "levels" >>= decode
+    let color = ""
+    let label = "--"
+    customized <- pure false
+    pure $ HeterogeneityBox { id
+                            , levels
+                            , judgement
+                            , ruleLevel
+                            , label
+                            , customized
+                            , color }
+heterboxlabel :: forall a b r. Lens { label :: a | r } { label :: b | r } a b
+heterboxlabel = prop (SProxy :: SProxy "label")
+heterboxcolor :: forall a b r. Lens { color :: a | r } { color :: b | r } a b
+heterboxcolor = prop (SProxy :: SProxy "color")
+heterboxcustomized :: forall a b r. Lens { customized :: a | r } { customized :: b | r } a b
+heterboxcustomized = prop (SProxy :: SProxy "customized")
+-- HeterogeneityBox >
+
+
+-- HeterogeneityLevel <
+newtype HeterogeneityLevel = HeterogeneityLevel
+    { id :: Int
+    , color :: String
+    }
+_HeterogeneityLevel :: Lens' HeterogeneityLevel (Record _)
+_HeterogeneityLevel = lens (\(HeterogeneityLevel s) -> s) (\_ -> HeterogeneityLevel)
+derive instance genericHeterogeneityLevel :: Rep.Generic HeterogeneityLevel _
+instance showHeterogeneityLevel :: Show HeterogeneityLevel where
+    show = genericShow
+instance decodeHeterogeneityLevel :: Decode HeterogeneityLevel where
+  decode p = do
+    id <- p ! "id" >>= readInt
+    color <- p ! "color" >>= readString
+    pure $ HeterogeneityLevel { id
+                              , color }
+-- HeterogeneityLevel >

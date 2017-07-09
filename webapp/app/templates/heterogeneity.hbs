@@ -14,6 +14,12 @@
       </li>
       {{#if clinImpReady}}
         <li>
+          <label class='controls-title mr-sm-2'>
+          null effect interval
+          ({{clinImpLow}},{{clinImpHigh}})
+          </label>
+        </li>
+        <li>
           <button onClick="Actions.Heterogeneity.resetClinImp('{{emType}}')" class="btn btn-default
             {{#unless clinImpReady}} disabled{{/unless}}">Reset</button>
         </li>

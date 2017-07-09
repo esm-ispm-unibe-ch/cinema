@@ -125,8 +125,8 @@ var Update = (model) => {
     },
     fetchContributionMatrix: (ncm) => {
       return new Promise((resolve, reject) => {
-        // ocpu.seturl('http://ec2-52-28-232-32.eu-central-1.compute.amazonaws.com:8004/ocpu/library/contribution/R');
-        ocpu.seturl('http://localhost:8004/ocpu/library/contribution/R');
+        ocpu.seturl('http://ec2-52-28-232-32.eu-central-1.compute.amazonaws.com:8004/ocpu/library/contribution/R');
+        // ocpu.seturl('http://localhost:8004/ocpu/library/contribution/R');
         let cms = model.getState().project.CM.contributionMatrices;
         var result = {};
         let ncmparams = params;

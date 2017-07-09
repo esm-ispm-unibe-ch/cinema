@@ -67,7 +67,8 @@ register s = unit
 isReady :: State -> Boolean
 isReady s =
   (hasIncoherence s) ||
-  (hasStudyLimitations s)
+  (hasStudyLimitations s) || 
+  (hasHeterogeneity s)
 
 type ViewModel r = 
   { isReady :: Boolean
@@ -126,6 +127,7 @@ type ReportRow =
   , armB :: String
   , numberOfStudies :: Int
   , studyLimitation :: StudyLimitation
+  , heterogeneity :: HeterogeneityBox
   , incoherence :: IncoherenceBox
   , levels :: Array ReportLevel
   , judgement :: ReportLevel
@@ -145,6 +147,13 @@ hasIncoherence :: State -> Boolean
 hasIncoherence st = (st ^. _State <<< project <<< _Project 
                     <<< inconsistency <<< _Inconsistency 
                     <<< incoherence <<< _Incoherence)
+                   ."status" == "ready"
+
+hasHeterogeneity :: State -> Boolean
+hasHeterogeneity st = (st ^. _State <<< project <<< _Project 
+                    <<< inconsistency <<< _Inconsistency 
+                    <<< heterogeneity <<< _Heterogeneity
+                    <<< heters <<< _Heters)
                    ."status" == "ready"
 
 hasStudyLimitations :: State -> Boolean
@@ -250,6 +259,58 @@ getIncoherence st c = do
     else
     skeletonIncoherenceBox
 
+getHeterogeneity :: State -> Comparison -> HeterogeneityBox
+getHeterogeneity st c = do
+  let heterboxes = st  ^. _State <<< project <<< _Project 
+                     <<< inconsistency <<< _Inconsistency
+                     <<< heterogeneity <<< _Heterogeneity
+                     <<< heters <<< _Heters
+                     <<< boxes
+  if hasHeterogeneity st then
+    let mbox = find (\ib -> 
+              isIdOfComparison (ib ^. _HeterogeneityBox)."id" c
+              ) heterboxes 
+        levelsText = (st ^. _State <<< text <<< _TextContent
+                     <<< heterogeneityText <<< _HeterogeneityText)."levels"
+        getcolor = do
+           case mbox of 
+               Nothing -> "grey"
+               Just box -> let mlevel = (box ^. _HeterogeneityBox)."levels" !! 
+                                        ((box ^. _HeterogeneityBox)."judgement"
+                                        - 1)
+                             in case mlevel of 
+                                   Nothing -> "grey"
+                                   Just level -> (level ^.
+                                   _HeterogeneityLevel)."color"
+        getLabel = do 
+          case mbox of 
+               Nothing -> "error"
+               Just box -> let mlabel = levelsText !!
+                                        ((box ^. _HeterogeneityBox)."judgement"
+                                        - 1)
+                             in case mlabel of 
+                                   Nothing -> "error"
+                                   Just label -> label
+        getCustomized = do
+          case mbox of
+               Nothing -> false
+               Just box -> 
+                 (box ^. _HeterogeneityBox)."judgement" /= 
+                   (box ^. _HeterogeneityBox)."ruleLevel"
+     in case mbox of
+                 Nothing -> skeletonHeterogeneityBox
+                 Just r -> (_HeterogeneityBox <<< heterboxcustomized .~
+                 getCustomized) (
+                           (_HeterogeneityBox <<< heterboxcolor .~ getcolor)(
+                  _HeterogeneityBox <<< heterboxlabel .~ getLabel $ r)
+                  )
+    {--let label = let level = find (\l -> (l ^. _HeterogeneityLevel)."id" == judgement)--}
+    {--                  levels--}
+    {--                        in case level of--}
+    {--                           Nothing -> "--"--}
+    {--                           Just lvl -> (lvl ^. _HeterogeneityLevel)."label"--}
+    else
+    skeletonHeterogeneityBox
 
 getRows :: State -> Array Comparison -> Array ReportRow
 getRows a comps = 
@@ -262,6 +323,7 @@ getRows a comps =
              , numberOfStudies: c."numStudies"
              , levels : getReportLevels a
              , studyLimitation: getStudyLimitation a s
+             , heterogeneity: getHeterogeneity a s
              , incoherence: getIncoherence a s
              , judgement: skeletonReportLevel
              }) 

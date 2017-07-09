@@ -41,7 +41,7 @@ updateState mdl = do
           {--let rows = foldl (<>) "" $ map (\c -> isSelectedComparison c--}
           {--                (getSelected st) <> "\n" ) (getDirects st)  --}
           {--log $ "Report Ready selected rows" <> rows--}
-          log $ "Report Ready"
+          log $ "Updated Report State"
         else do
           saveState "report" (Report { status : "notReady"
                                      , levels : [] })
