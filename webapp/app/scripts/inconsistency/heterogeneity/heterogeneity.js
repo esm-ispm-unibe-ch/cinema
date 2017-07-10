@@ -16,6 +16,12 @@ var Heterogeneity = {
     resetClinImp: (emtype) => {
       Update(Heterogeneity.model).resetClinImp(emtype);
     },
+    selectAllInterventionTypes: (itv) => {
+      Update(Heterogeneity.model).selectAllInterventionTypes(itv);
+    },
+    deselectIntTypes: () => {
+      Update(Heterogeneity.model).deselectIntTypes();
+    },
     resetRFV: () => {
       let [title,msg,successmsg] = Heterogeneity.model.getState().text.Heterogeneity.resetConfirm;
       Messages.alertify().confirm(title,msg,

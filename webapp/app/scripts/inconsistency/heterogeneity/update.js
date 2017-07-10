@@ -1,6 +1,7 @@
 var deepSeek = require('safe-access');
 var clone = require('../../lib/mixins.js').clone;
 var uniqId = require('../../lib/mixins.js').uniqId;
+var sortStudies = require('../../lib/mixins.js').sortStudies;
 var Messages = require('../../messages.js').Messages;
 var Report = require('../../purescripts/output/Report');
 Report.view = require('../../purescripts/output/Report.View');
@@ -9,6 +10,9 @@ Report.Actions = require('../../purescripts/output/Report.Actions');
 var Nodes = require('../../purescripts/output/Heterogeneity.Nodes');
 var ClinImp = require('../../purescripts/output/ClinImp');
 ClinImp.update = require('../../purescripts/output/ClinImp.update');
+var ComparisonModel = require('../../purescripts/output/ComparisonModel');
+var InconsistencyModel = require('../../purescripts/output/InconsistencyModel');
+//
 
 var children = [
   Report
@@ -85,6 +89,7 @@ var Update = (model) => {
               return new Promise((oresolve, oreject) => {
                 let comparisonType = Nodes.getComparisonType(mdl)(sid);
                 if (comparisonType === "") {
+                  console.log("Didn't get comparison type");
                   oreject("Didn't get comparison type");
                 }else{
                   // console.log("CCOCCOCOCOCOMMMMarison type", comparisonType);
@@ -142,7 +147,6 @@ var Update = (model) => {
       return  (updaters.getState().heters.status === 'ready');
     },
     updateState: (model) => {
-      console.log("UPATING HETER");
       let cm = model.getState().project.CM.currentCM;
       if (updaters.cmReady()) {
         if ((updaters.getState().referenceValues.status === 'ready') 
@@ -265,8 +269,13 @@ var Update = (model) => {
         });
         return res;
       };
-      let mixed = makeBoxes(_.zip(cm.directRowNames,cm.directStudies));
-      let indirect = makeBoxes(_.zip(cm.indirectRowNames,cm.indirectStudies));
+      // let mixed = InconsistencyModel.sortByComparison(
+      //   makeBoxes(_.zip(cm.directRowNames,cm.directStudies)));
+      console.log('directRownames,studies',cm.directRowNames,cm.directStudies);
+      let mixed = makeBoxes(
+        sortStudies(cm.directRowNames,cm.directStudies));
+      let indirect = makeBoxes(sortStudies(cm.indirectRowNames,cm.indirectStudies));
+      console.log("BOXES Names naoume",mixed,indirect);
       return _.union(mixed,indirect);
     },
     getRuleLevel: (CIf,CIs,PrIf,PrIs,lowerBound,upperBound) => {
@@ -278,11 +287,29 @@ var Update = (model) => {
     resetHeters: () => {
       updaters.setHetersState(updaters.hetersSkeletonModel());
     },
+    getMeasureType: () => {
+      let mdl = model.getState();
+      let mt = deepSeek(mdl,'project.type');
+      let result = "nothing";
+      if (typeof mt === 'undefined'){
+        result = "nothing";
+      }else{
+        switch(mt) {
+          case "binary":
+              result = "binary";
+              break;
+          case "continuous":
+              result = "continuous";
+              break;
+        } 
+      }
+      return result;
+    },
     rfvEmptyModel: () => {
       return {
         status: 'empty',
         params: {
-          measurement: 'nothing',
+          measurement: updaters.getMeasureType(),
           OutcomeType: 'nothing'
         },
         treatments: updaters.treatments()
@@ -336,9 +363,20 @@ var Update = (model) => {
       }).catch(function(reason){
       })
     },
+    selectAllInterventionTypes: (itv) => {
+      console.log("selecting all to" + itv);
+      let mdl = model.getState();
+      Nodes.setAllNodesIntType(mdl)(itv)();
+    },
+    deselectIntTypes: () => {
+      let mdl = model.getState();
+      console.log("deselecting everything");
+      Nodes.deselectIntTypes(mdl)();
+    },
     selectIntervensionType: (value) => {
       let mdl = model.getState();
       let [node_label, itv] = value.value.split('σδel');
+      console.log('selecting',node_label,itv);
       Nodes.setNodeIntType(mdl)(node_label)(itv)();
     },
     selectIndividual: (value) => {

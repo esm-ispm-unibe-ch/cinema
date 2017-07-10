@@ -2,6 +2,7 @@ module ComparisonModel where
 
 import Prelude
 import Control.Monad.Eff 
+import Control.Monad.Eff.Console (CONSOLE, log, logShow)
 import Data.Array
 import Data.Foreign 
 import Data.Foreign.Class (class Decode, encode, decode)
@@ -26,7 +27,7 @@ opts = defaultOptions { unwrapSingleConstructors = true }
 -- Comparison <
 data TreatmentId = StringId String | IntId Int
 instance showTreatmentId :: Show TreatmentId where
-  show (StringId a) = show a
+  show (StringId a) = a
   show (IntId a) = show a
 
 instance equalTreatmentId :: Eq TreatmentId where
@@ -168,6 +169,27 @@ isSelectedNode selected node = do
                   ) selected
   isSelected
 
+sortStringComparisonIds :: Foreign -> Foreign
+sortStringComparisonIds fsids = do
+  let eids = decode fsids
+  let ids = case runExcept eids of
+           Left _ -> []
+           Right (idss :: (Array String)) -> idss
+  toForeign $ sortBy (\id1 id2 -> 
+    comparisonsOrdering (stringToComparison ":" id1)
+      (stringToComparison ":" id2)) ids
+
+{--fixComparisonId :: forall eff. Foreign -> Eff (console :: CONSOLE | eff) Unit --}
+fixComparisonId :: Foreign -> Foreign
+fixComparisonId fsid = do
+  let esid = readString fsid
+      sid = case runExcept esid of
+        Left _ -> "error"
+        Right id -> show ((stringToComparison ":" id) ^. _Comparison)."t1" <>
+                                                  ":" <>
+            show ((stringToComparison ":" id) ^. _Comparison)."t2"
+  {--logShow $ "TO SID POUT VGANEI EINAI" <>  sid--}
+  toForeign sid
 -- Comparison >
 
 -- InterventionType <

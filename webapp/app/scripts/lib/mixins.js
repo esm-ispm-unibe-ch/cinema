@@ -1,3 +1,5 @@
+var ComparisonModel = require('../purescripts/output/ComparisonModel');
+
 var htmlEntities = (str) => {
   return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 };
@@ -75,6 +77,20 @@ var clone = (obj) =>{
   throw new Error('Unable to copy obj! Its type isn\'t supported.');
 };
 
+let sortStudies = (rownames, studies) => {
+  let distance = (rowNames, comp) => {
+    return ComparisonModel.sortStringComparisonIds(rowNames).indexOf(comp);
+  }
+  let fixednames = _.map(rownames, sid => {
+    return ComparisonModel.fixComparisonId(sid);
+  });
+  let sortedStudies = _.zip(fixednames,studies).sort(
+    (z1, z2) => {
+      return distance(fixednames,z1[0]) -
+             distance(fixednames,z2[0])
+    });
+  return sortedStudies;
+}
 
 module.exports = {
   focusTo: focusTo,
@@ -83,6 +99,7 @@ module.exports = {
   sumBy: sumBy,
   accumulate: accumulate,
   htmlEntities: htmlEntities,
-  clone: clone
+  clone: clone,
+  sortStudies: sortStudies
 }
 

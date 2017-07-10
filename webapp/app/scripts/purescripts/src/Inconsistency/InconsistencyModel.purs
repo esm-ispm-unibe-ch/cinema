@@ -190,6 +190,12 @@ heterboxcolor :: forall a b r. Lens { color :: a | r } { color :: b | r } a b
 heterboxcolor = prop (SProxy :: SProxy "color")
 heterboxcustomized :: forall a b r. Lens { customized :: a | r } { customized :: b | r } a b
 heterboxcustomized = prop (SProxy :: SProxy "customized")
+
+
+{--type StringComparisonIds = Array String--}
+  
+{--instance decodeStringComparisonIds :: Decode StringComparisonIds where--}
+  {--decode = genericDecode opts--}
 -- HeterogeneityBox >
 
 

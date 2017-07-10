@@ -1,6 +1,7 @@
 var deepSeek = require('safe-access');
 var clone = require('../../lib/mixins.js').clone;
 var uniqId = require('../../lib/mixins.js').uniqId;
+var sortStudies = require('../../lib/mixins.js').sortStudies;
 var Messages = require('../../messages.js').Messages;
 var Report = require('../../purescripts/output/Report');
 Report.view = require('../../purescripts/output/Report.View');
@@ -148,7 +149,7 @@ var Update = (model) => {
       };
       let makeRules = (rownames,colnames,studies) => {
         let project =  deepSeek(model,'getState().project');
-        return _.map(_.zip(rownames,studies), d => {
+        return _.map(sortStudies(rownames,studies), d => {
           let contributions = _.object(colnames,(d[1]));
           contributions = _.mapObject(contributions, (amount,id) => {
             return {

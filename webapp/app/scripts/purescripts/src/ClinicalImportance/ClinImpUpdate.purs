@@ -34,7 +34,7 @@ updateState mdl = do
   let (s :: Either String State) = readState mdl
   case s of
     Left err -> do saveState "clinImp" $ sanitizeClinImp emptyClinImp
-                   logShow $ "reading state in Report error: " <> err
+                   {--logShow $ "reading state in Report error: " <> err--}
     Right st -> do
       if isReady st then do
           saveState "clinImp" $ sanitizeClinImp (skeletonClinImp $ getEffectMeasureType st)
@@ -42,11 +42,11 @@ updateState mdl = do
           {--let rows = foldl (<>) "" $ map (\c -> isSelectedComparison c--}
           {--                (getSelected st) <> "\n" ) (getDirects st)  --}
           {--log $ "Report Ready selected rows" <> rows--}
-          log $ "Clincal Importance Ready"
+          {--log $ "Clincal Importance Ready"--}
         else do
           saveState "clinImp" $ sanitizeClinImp emptyClinImp
           updateChildren
-          log $ "Clinical Importance  Not Ready"
+          {--log $ "Clinical Importance  Not Ready"--}
 
 
 set :: forall eff. Foreign -> Foreign -> Eff (console :: CONSOLE 

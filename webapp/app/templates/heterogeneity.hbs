@@ -28,7 +28,22 @@
     <h4 id="referenceValuesTitle">Select type for each intervention</h4>
     <div class='form-inline col-xs-12'>
       <ul class='list-inline'>
-        <li>
+        {{#unless rfvReady}}
+          <li>
+          <button
+          onClick="Actions.Heterogeneity.selectAllInterventionTypes('Pharmacological')" class="pull-right btn btn-default
+          ">All Pharmacological</button>
+          </li>
+          <li>
+          <button onClick="Actions.Heterogeneity.selectAllInterventionTypes('Non-pharmacological')" class="pull-right btn btn-default
+          ">All Non-pharmacological</button>
+          </li>
+          <li>
+          <button onClick="Actions.Heterogeneity.deselectIntTypes()" class="pull-right btn btn-default
+          ">Deselect all</button>
+          </li>
+          <li>
+        {{/unless}}
         <ul class='list-inline'>
           {{#each treatments}}
           <li class='well compRobSelector {{#if customized}} customized {{/if}}'

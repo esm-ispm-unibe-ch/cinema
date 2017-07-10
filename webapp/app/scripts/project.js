@@ -6,6 +6,7 @@ var convertHTML = require('html-to-vdom')({
      VNode: VNode,
      VText: VText
 });
+var sortStudies = require('./lib/mixins.js').sortStudies;
 var Messages = require('./messages.js').Messages;
 var htmlEntities = require('./lib/mixins.js').htmlEntities;
 var FR = require('./lib/readFile.js').FR;
@@ -163,9 +164,12 @@ var PR = {
         //nodes are the combined treatments (which correspond to netplot nodes)
         mdl.nodes = PR.model.makeNodes(project.type, mdl.long);
         //directComparisons correspond to netplot edges
-        mdl.directComparisons = PR.update.makeDirectComparisons(project.type, mdl.wide);
+        let dcomps = PR.update.makeDirectComparisons(project.type, mdl.wide);
+        mdl.directComparisons = _.unzip(sortStudies(_.map(dcomps, comp => {return comp.t1+":"+comp.t2}),dcomps))[1];
         //indirectComparisons are the complement of the netplot edges
-        mdl.indirectComparisons = PR.update.makeIndirectComparisons(mdl.nodes,mdl.directComparisons);
+        let indirects = PR.update.makeIndirectComparisons(mdl.nodes,mdl.directComparisons);
+        // mdl.indirectComparisons = _.unzip(sortStudies(_.map(indirects, comp => {return comp.replace(",",":")}),indirects))[1];
+        mdl.indirectComparisons = indirects;
         prj.studies = mdl;
         prj.title = filename;
         prj.filename = filename;

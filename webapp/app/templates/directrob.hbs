@@ -43,7 +43,7 @@
 <div id="robSelector" class='col-xs-12 well collapse'>
   <ul class='list-inline'>
     {{#each directComparisons}}
-    <li class='well compRobSelector {{#if customized}} customized {{/if}}' id="comp-{{id}}">
+    <li style='border-color:{{color}}' class='well compRobSelector {{#if customized}} customized {{/if}}' id="comp-{{id}}">
         <ul>
           {{#if tn1}}
             <li>
@@ -60,7 +60,7 @@
             </li>
           {{else}}
             <li>
-            Comparison: <span class='pull-right'><strong>{{t1}}</strong> : <strong>{{t2}}</strong></span>
+            Comparison: <span class='pull-right'><strong>{{niceid}}</strong></span>
               <hr>
             </li>
             {{/if}}

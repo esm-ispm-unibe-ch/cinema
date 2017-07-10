@@ -34,15 +34,15 @@ updateState mdl = do
   let (s :: Either String State) = readState mdl
   case s of
     Left err -> do saveState "report" ( Report { status : "notReady", levels: [] })
-                   logShow $ "reading state in Report error: " <> err
+                   {--logShow $ "reading state in Report error: " <> err--}
     Right st -> do
       if isReady st then do
           saveState "report" skeletonReport
           {--let rows = foldl (<>) "" $ map (\c -> isSelectedComparison c--}
           {--                (getSelected st) <> "\n" ) (getDirects st)  --}
           {--log $ "Report Ready selected rows" <> rows--}
-          log $ "Updated Report State"
+          {--log $ "Updated Report State"--}
         else do
           saveState "report" (Report { status : "notReady"
                                      , levels : [] })
-          log $ "Report Not Ready"
+          {--log $ "Report Not Ready"--}

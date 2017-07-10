@@ -1,6 +1,7 @@
 var deepSeek = require('safe-access');
 var clone = require('../../lib/mixins.js').clone;
 var uniqId = require('../../lib/mixins.js').uniqId;
+var sortStudies = require('../../lib/mixins.js').sortStudies;
 var Messages = require('../../messages.js').Messages;
 var Report = require('../../purescripts/output/Report');
 Report.view = require('../../purescripts/output/Report.View');
@@ -118,8 +119,8 @@ var Update = (model) => {
         });
         return res;
       };
-      let mixed = makeBoxes(_.zip(cm.directRowNames,cm.directStudies));
-      let indirect = makeBoxes(_.zip(cm.indirectRowNames,cm.indirectStudies));
+      let mixed = makeBoxes(sortStudies(cm.directRowNames,cm.directStudies));
+      let indirect = makeBoxes(sortStudies(cm.indirectRowNames,cm.indirectStudies));
       return _.union(mixed, indirect);
     },
     selectIndividual: (value) => {

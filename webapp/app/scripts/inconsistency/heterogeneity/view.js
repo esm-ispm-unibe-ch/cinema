@@ -12,11 +12,32 @@ var View = (model) => {
       }
       return isReady;
     },
+    getMeasureType: () => {
+      let mdl = model.getState();
+      let mt = deepSeek(mdl,'project.type');
+      let result = "nothing";
+      if (typeof mt === 'undefined'){
+        result = "nothing";
+      }else{
+        switch(mt) {
+          case "binary":
+              result = "binary";
+              break;
+          case "continuous":
+              result = "continuous";
+              break;
+        } 
+      }
+      return result;
+    },
     defaultParameters :  [
       {
         id: 'measurement',
         label: 'Measurement',// from text file
-        isAvailable: true,
+        isAvailable: () => {
+          let mt = viewers.getMeasureType();
+          return !((mt === "binary") || (mt === "continuous"));
+        },
         selections: [
           { id : 'nothing',
             label: '--',

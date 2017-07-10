@@ -78,14 +78,14 @@ getNodes mdl = do
 
 
 chooseInterventionType :: String -> Array InterventionType
-chooseInterventionType label = do
+chooseInterventionType id = do
   let defaults = over (ix 0) 
           (\it -> InterventionType $ (it ^. _InterventionType) 
             { isActive = false
             , isSelected = false
             } ) 
           defaultInterventionTypes
-      chosen = findIndex (\it -> (it ^. _InterventionType)."label" == label)
+      chosen = findIndex (\it -> (it ^. _InterventionType)."id" == id)
           defaults
       out = case chosen of 
              Nothing -> defaults
@@ -96,6 +96,39 @@ chooseInterventionType label = do
                  } 
                ) defaults 
   out
+  
+deselectIntTypes :: forall eff. Foreign -> 
+                      Eff (console :: CONSOLE 
+                        , modelOut :: SAVE_STATE 
+                        | eff
+                      ) Unit
+deselectIntTypes mdl = do
+  let nds = getNodes mdl
+  let out = map (\node -> _Node <<< interventionType .~
+                defaultInterventionTypes $ node) nds 
+  {--logShow $ "changing node" <> (show out) <> it--}
+  {--saveState "inconsistency.heterogeneity.referenceValues.status" "not-set"--}
+  saveState "inconsistency.heterogeneity.referenceValues.treatments" $
+    nodesToForeign out
+                  
+
+setAllNodesIntType :: forall eff. Foreign -> Foreign -> 
+                      Eff (console :: CONSOLE 
+                        , modelOut :: SAVE_STATE 
+                        | eff
+                      ) Unit
+setAllNodesIntType mdl intype = do
+  let nds = getNodes mdl
+  let it = case runExcept (readString intype) of
+            Left _ -> "undefined"
+            Right t -> t 
+  let out = map (\node -> _Node <<< interventionType .~
+                (chooseInterventionType it) $ node) nds 
+  {--logShow $ "changing node" <> (show out) <> it--}
+  saveState "inconsistency.heterogeneity.referenceValues.status" "edited"
+  saveState "inconsistency.heterogeneity.referenceValues.treatments" $
+    nodesToForeign out
+                  
 
 setNodeIntType :: forall eff. Foreign -> Foreign -> Foreign -> 
                       Eff (console :: CONSOLE 
@@ -118,7 +151,7 @@ setNodeIntType mdl nodeLabel intype = do
                             (chooseInterventionType it)
                             $ node
                            ) nds 
-  logShow $ "changing node" <> (show out) <> it
+  {--logShow $ "changing node" <> (show out) <> it--}
   saveState "inconsistency.heterogeneity.referenceValues.status" "edited"
   saveState "inconsistency.heterogeneity.referenceValues.treatments" $
     nodesToForeign out

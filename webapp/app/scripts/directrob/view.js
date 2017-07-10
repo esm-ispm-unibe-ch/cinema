@@ -1,4 +1,5 @@
 var deepSeek = require('safe-access');
+var ComparisonModel = require('../purescripts/output/ComparisonModel');
 
 var View = (model) => {
   let DirectRobModelPosition = 'getState().project.DirectRob';
@@ -11,6 +12,17 @@ var View = (model) => {
           maxrobName : project.robLevels[dc.maxrob-1].label,
           meanrobName : project.robLevels[dc.meanrob-1].label,
           majrobName : project.robLevels[dc.majrob-1].label,
+          color: () => {
+            let level = _.find(model.getState().defaults.robLevels,
+              rob => {
+                return rob.id === dc.directRob;
+            });
+            let out = "";
+            if(typeof level !== 'undefined'){
+              out = level.color;
+            }
+            return out;
+          },
           customized: () => {
             if ((dc.directRob !== 'nothing')&&(dc[viewers.getRule()] !== dc.directRob)){
               return true;
@@ -34,6 +46,10 @@ var View = (model) => {
             return robsels;
           },
         });
+        dc.niceid = ComparisonModel.fixComparisonId(dc.id.replace(",",":"));
+      });
+      let sids = _.map(directs, dir => {
+        return (dir.t1+":"+dir.t2);
       });
       return directs;
     },
