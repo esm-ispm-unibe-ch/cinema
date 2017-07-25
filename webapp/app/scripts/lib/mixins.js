@@ -77,19 +77,31 @@ var clone = (obj) =>{
   throw new Error('Unable to copy obj! Its type isn\'t supported.');
 };
 
+
 let sortStudies = (rownames, studies) => {
-  let distance = (rowNames, comp) => {
-    return ComparisonModel.sortStringComparisonIds(rowNames).indexOf(comp);
-  }
   let fixednames = _.map(rownames, sid => {
     return ComparisonModel.fixComparisonId(sid);
   });
+  let sortedIds = ComparisonModel.sortStringComparisonIds(fixednames); 
+  let distance = (comp) => {
+    return sortedIds.indexOf(comp);
+  }
   let sortedStudies = _.zip(fixednames,studies).sort(
     (z1, z2) => {
-      return distance(fixednames,z1[0]) -
-             distance(fixednames,z2[0])
+      return distance(z1[0]) -
+             distance(z2[0])
     });
   return sortedStudies;
+
+  // return _.zip(rownames,studies);
+}
+
+let sortComparisonIds = (rownames) => {
+  let fixednames = _.map(rownames, sid => {
+    return ComparisonModel.fixComparisonId(sid);
+  });
+  let sortedIds = ComparisonModel.sortStringComparisonIds(fixednames); 
+  return sortedIds;
 }
 
 module.exports = {
@@ -100,6 +112,7 @@ module.exports = {
   accumulate: accumulate,
   htmlEntities: htmlEntities,
   clone: clone,
+  sortComparisonIds: sortComparisonIds,
   sortStudies: sortStudies
 }
 

@@ -11,6 +11,7 @@ import Data.Foreign.Generic (defaultOptions, genericDecode, genericDecodeJSON)
 import Data.Generic.Rep as Rep 
 import Data.Generic.Rep.Show (genericShow)
 import Control.Monad.Except (runExcept)
+import Data.List.Types
 import Data.Maybe
 import Data.Either (Either(..))
 import Data.Int
@@ -190,6 +191,15 @@ fixComparisonId fsid = do
             show ((stringToComparison ":" id) ^. _Comparison)."t2"
   {--logShow $ "TO SID POUT VGANEI EINAI" <>  sid--}
   toForeign sid
+  
+orderIds :: Foreign -> Foreign
+orderIds ftids = do
+  let (eids :: (Either (NonEmptyList ForeignError) (Array TreatmentId))) = runExcept $ decode ftids
+      res = case eids of 
+             Left _ -> ftids
+             Right ids -> toForeign $ map show (sort ids)
+  res
+
 -- Comparison >
 
 -- InterventionType <

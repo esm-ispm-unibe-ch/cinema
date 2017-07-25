@@ -25,7 +25,6 @@ import Data.Lens.Traversal
 import Text.Smolder.Renderer.String (render) as S 
 import Partial.Unsafe (unsafePartial)
 
-import Report.Actions
 import Report.Template as T
 import ComparisonModel
 import StudyLimitationsModel

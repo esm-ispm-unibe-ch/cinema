@@ -120,6 +120,7 @@ var CM = {
               rule: {},
               tau: 0
             },
+            allComparisonIds: Update(CM.model).computeComparisonIds(),
             status: 'empty', //empty, loading, canceling, ready
             progress: 0,
             currentRow: 'Contribution Matrix'

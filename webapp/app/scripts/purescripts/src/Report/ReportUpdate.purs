@@ -12,7 +12,7 @@ import Data.Lens.Record (prop)
 import Data.Lens.Zoom (Traversal, Traversal', Lens, Lens', zoom)
 
 import Report.Model
-import Report.Actions
+{--import Report.Actions--}
 import Report.View
 import Model
 import Text.Model

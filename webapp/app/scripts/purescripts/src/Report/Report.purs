@@ -21,7 +21,6 @@ import Data.Lens.Zoom
 import Model 
 import StudyLimitationsModel
 import Report.View as V
-import Report.Actions as A
 
 {--main :: String -> Eff (console :: CONSOLE) Unit--}
 {--main = do--}

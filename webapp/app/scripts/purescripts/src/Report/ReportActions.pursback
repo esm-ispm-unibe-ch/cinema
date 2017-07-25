@@ -18,15 +18,15 @@ import Text.Smolder.Renderer.String (render)
 
 import Report.Template as T
 import Model
-import ReadModel
+{--import ReadModel--}
 import SaveModel
 
-testAction :: forall e. Foreign -> Eff (console :: CONSOLE
-                                       , modelOut :: SAVE_STATE | e) Unit
-testAction a = do 
-  let s = readState a 
-  case (s :: Either String State) of
-    Left err -> logShow $ "error" <> err
-    Right st -> do
-        logShow $ "Test Report Action " <> (st ^. _State <<< project <<< _Project)."title"
+{--testAction :: forall e. Foreign -> Eff (console :: CONSOLE--}
+{--                                       , modelOut :: SAVE_STATE | e) Unit--}
+{--testAction a = do --}
+{--  let s = readState a --}
+{--  case (s :: Either String State) of--}
+{--    Left err -> logShow $ "error" <> err--}
+{--    Right st -> do--}
+{--        logShow $ "Test Report Action " <> (st ^. _State <<< project <<< _Project)."title"--}
         {--saveState $ Report { status : "notReady" }--}

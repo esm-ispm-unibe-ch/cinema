@@ -2,7 +2,6 @@ module UpdateHeterogeneity where
 
 import Prelude
 import Control.Monad.Eff 
-import Data.Foreign 
 
 foreign import data UPDATE_HETER :: Effect
 

@@ -1,3 +1,4 @@
+//module UpdateHeterogeneity
 "use strict";
 
 exports.updateHeter = function () {
@@ -6,4 +7,4 @@ exports.updateHeter = function () {
       Actions.Heterogeneity.updateState();
     }
   }
-}
+};

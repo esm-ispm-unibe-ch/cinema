@@ -117,14 +117,15 @@ var View = (model) => {
           c.isAvailable = true;
         }
       });
-      let intvs = _.map(project.studies.nodes, pn => {
+      let intvs = 
+        _.map(project.studies.nodes, pn => {
         return {
           label: pn.name?pn.name:pn.id,
           value: pn.id,
           isAvailable: true,
           tag: 'intvs'
         };
-      });
+      })
       _.map(intvs, intv => {
         if(_.find(currentCM.params.intvs, cint => {return cint === intv.value})){
           intv.isSelected = true;
@@ -134,28 +135,28 @@ var View = (model) => {
       return cntrs;
     },
     selectedComparisons: () =>{
-      let rows = _.union(_.pluck(model.getState().project.studies.directComparisons,'id'),
-        model.getState().project.studies.indirectComparisons);
       let intvs = model.getState().project.CM.currentCM.params.intvs;
       let rule = model.getState().project.CM.currentCM.params.rule;
+      let allComps = model.getState().project.CM.currentCM.allComparisonIds;
       let res = [];
       switch(rule){
         case 'every':
-          res = _.filter(rows, r =>{
-            let [t1,t2] = r.split(',');
+          res = _.filter(allComps, r =>{
+            let [t1,t2] = r.split(':');
             return (_.contains(intvs,t1)||_.contains(intvs,t2));
           });
           break;
         case 'between':
-          res = _.filter(rows, r =>{
-            let [t1,t2] = r.split(',');
+          res = _.filter(allComps, r =>{
+            let [t1,t2] = r.split(':');
             return (_.contains(intvs,t1)&&_.contains(intvs,t2));
           });
           break;
       }
-      return _.map(res, r => () => {
-        return r.replace(',',' vs ');
+      let result = _.map(res, r => {
+        return r.replace(":", " vs ");
       });
+      return result;
     },
     numSelectedComparisons: () => {
       let res = viewers.selectedComparisons();

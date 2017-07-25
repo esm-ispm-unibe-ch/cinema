@@ -6,12 +6,12 @@ var Messages = require('../../messages.js').Messages;
 var Report = require('../../purescripts/output/Report');
 Report.view = require('../../purescripts/output/Report.View');
 Report.update = require('../../purescripts/output/Report.Update');
-Report.Actions = require('../../purescripts/output/Report.Actions');
 var Nodes = require('../../purescripts/output/Heterogeneity.Nodes');
 var ClinImp = require('../../purescripts/output/ClinImp');
 ClinImp.update = require('../../purescripts/output/ClinImp.update');
 var ComparisonModel = require('../../purescripts/output/ComparisonModel');
 var InconsistencyModel = require('../../purescripts/output/InconsistencyModel');
+var RFVQ = require('../../purescripts/output/Heterogeneity.ReferenceValues');
 //
 
 var children = [
@@ -19,8 +19,72 @@ var children = [
   ];
 
 var Update = (model) => {
-  //update functions will only change state in that node of the model DAG
   let modelPosition = 'project.inconsistency.heterogeneity';
+  let availableParameters =  [
+    {
+      id: 'measurement',
+      label: 'Measurement',// from text file
+      selections: [
+        { id : 'nothing',
+          label: '--',
+          isAvailable: true,
+          isDisabled: true
+        },
+        { id :'binary',
+          label: 'binary',
+          isAvailable: true
+        },
+        { id :'continuous',
+          label: 'continuous',
+          isAvailable: true
+        }
+      ]
+    },
+    {
+      id: "InterventionType",
+      label: "Intervention Type",
+      selections: []
+    },
+    {
+      id: 'InterventionComparisonType',
+      label: 'Intervention comparison type',
+      isAvailable: true,
+      selections: [
+        { id : 'nothing',
+          label: '--',
+          isDisabled: true,
+          isAvailable: true
+        },
+        { id : 'Pharmacological vs Placebo/Control',
+          label: 'Pharmacological vs Placebo/Control',
+          isAvailable: true
+        },
+        { id :'Pharmacological vs Pharmacological',
+          label: 'Pharmacological vs Pharmacological',
+          isAvailable: true
+        },
+        { id : 'Non-pharmacological vs any',
+          label: 'Non-pharmacological vs any',
+          isAvailable: true
+        }
+      ]
+    },
+    {
+        id: 'OutcomeType',
+        label: 'Outcome type',
+        options: {
+          binaryOptions : ['Objective','Semi-objective','Subjective'],
+          continuousOptions : ['Obstetric outcome', 
+                'Resource use and hospital stay/process', 
+                'Internal and external structure-related outcome',
+                'General physical health and adverse event and pain and quality of life/functioning',
+                'Signs/symptoms reflecting continuation/end of condition and infection/onset of new acute/chronic disease',
+                'Mental health outcome',
+                'Biological marker',
+                'Various subjectively measured outcomes']
+        }
+      }
+  ];
   let HeterogeneityLevels = [
     { id: 1,
       color: '#7CC9AE'
@@ -59,9 +123,32 @@ var Update = (model) => {
       let isready = false;
       if (deepSeek(model,'getState().project.clinImp.status')==='ready'){
         isready = true;
-        // console.log('contribution matrix ready');
       }
       return isready;
+    },
+    makeReferenceTable: () => {
+      let params = _.filter(availableParameters,
+        p => {
+          return p.id !== "InterventionType";
+        }
+      );
+      let par = _.reduce(params, (m,p) => {
+        let ob = {};
+        let sels = [];
+        if (p.id === "OutcomeType"){
+          sels = _.union(p.options.binaryOptions, p.options.continuousOptions);
+        }else{
+          sels = _.filter(_.map(p.selections, s => {return s.id}),
+            f => {
+             return f !== "nothing";
+            });
+        }
+        console.log("pid",p.id);
+        ob[p.id] = sels;
+        return _.extend(m, ob); 
+      },{});
+      let combs = RFVQ.makeQueries(par);
+      console.log("available parameters",par,combs);
     },
     fetchRFV: () => {
       return new Promise((resolve, reject) => {
@@ -95,6 +182,7 @@ var Update = (model) => {
                   // console.log("CCOCCOCOCOCOMMMMarison type", comparisonType);
                 }
                 params.InterventionComparisonType = comparisonType;
+                console.log("parametteerrss", params);
                 let hmc = ocpu.call('ReferenceValues', params, (sessionh) => {
                   sessionh.getObject( (rfv) => {
                     // console.log('server returned ',rfv);
@@ -308,6 +396,7 @@ var Update = (model) => {
     rfvEmptyModel: () => {
       return {
         status: 'empty',
+        availableParameters: availableParameters,
         params: {
           measurement: updaters.getMeasureType(),
           OutcomeType: 'nothing'

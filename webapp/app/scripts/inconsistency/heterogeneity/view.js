@@ -30,75 +30,16 @@ var View = (model) => {
       }
       return result;
     },
-    defaultParameters :  [
-      {
-        id: 'measurement',
-        label: 'Measurement',// from text file
-        isAvailable: () => {
-          let mt = viewers.getMeasureType();
-          return !((mt === "binary") || (mt === "continuous"));
-        },
-        selections: [
-          { id : 'nothing',
-            label: '--',
-            isAvailable: true,
-            isDisabled: true
-          },
-          { id :'binary',
-            label: 'binary',
-            isAvailable: true
-          },
-          { id :'continuous',
-            label: 'continuous',
-            isAvailable: true
-          }
-        ]
-      },
-      {
-        id: "InterventionType",
-        label: "Intervention Type",
-        selections: []
-      },
-      {
-        id: 'InterventionComparisonType',
-        label: 'Intervention comparison type',
-        isAvailable: true,
-        selections: [
-          { id : 'nothing',
-            label: '--',
-            isDisabled: true,
-            isAvailable: true
-          },
-          { id : 'Pharmacological vs Placebo/Control',
-            label: 'Pharmacological vs Placebo/Control',
-            isAvailable: true
-          },
-          { id :'Pharmacological vs Pharmacological',
-            label: 'Pharmacological vs Pharmacological',
-            isAvailable: true
-          },
-          { id : 'Non-pharmacological vs any',
-            label: 'Non-pharmacological vs any',
-            isAvailable: true
-          }
-        ]
-      },
-      {
-        id: 'OutcomeType',
-        label: 'Outcome type',// from text file
-        isAvailable: () => {
+    availableParameters: () => {
+      let ap = deepSeek(model.getState(), ".project.inconsistency.heterogeneity.referenceValues.availableParameters");
+      let result = [];
+      if (typeof ap !== "undefined"){
+        result = clone(ap);
+        let ot = _.findWhere(result, {id :"OutcomeType"});
+        ot.isAvailable = () => {
           return viewers.getState().referenceValues.params.measurement !== 'nothing';
-        },
-        selections: () => {
-          let binaryOptions = ['Objective','Semi-objective','Subjective'];
-          let continuousOptions = ['Obstetric outcome', 
-                'Resource use and hospital stay/process', 
-                'Internal and external structure-related outcome',
-                'General physical health and adverse event and pain and quality of life/functioning',
-                'Signs/symptoms reflecting continuation/end of condition and infection/onset of new acute/chronic disease',
-                'Mental health outcome',
-                'Biological marker',
-                'Various subjectively measured outcomes'];
+        };
+        ot.selections = () => {
           let res = [
           { id : 'nothing',
             label: '--',
@@ -107,7 +48,7 @@ var View = (model) => {
             isActive: () => {return ('nothing' === viewers.getState().referenceValues.params.OutcomeType)},
           }];
           res = _.union(res,
-            _.map(binaryOptions,
+            _.map(ot.options.binaryOptions,
               mo => {
                 return {
                   id: mo,
@@ -120,7 +61,7 @@ var View = (model) => {
             })
           );
           res = _.union(res,
-            _.map(continuousOptions,
+            _.map(ot.options.continuousOptions,
               mo => {
                 return {
                   id: mo,
@@ -134,10 +75,17 @@ var View = (model) => {
           );
           return _.flatten(res);
         }
-      },
-    ],
+        _.findWhere(result, {id:"measurement"}).isAvailable = () => {
+          let mt = viewers.getMeasureType();
+          return !((mt === "binary") || (mt === "continuous"));
+        };
+      }else{
+        result = [];
+      }
+      return result;
+    },
     rfvParams: () => {
-      let dfp = viewers.defaultParameters;
+      let dfp = viewers.availableParameters();
       let prs = _.without(dfp, _.findWhere(dfp, {
           id: "InterventionType"
       }));
@@ -152,7 +100,7 @@ var View = (model) => {
       return prs;
     },
     interventionTypes: () => {
-      let prs = viewers.defaultParameters[1];
+      let prs = viewers.availableParameters()[1];
       return prs;
     },
     customized: () => {

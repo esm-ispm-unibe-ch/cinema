@@ -19,6 +19,9 @@ var Heterogeneity = {
     selectAllInterventionTypes: (itv) => {
       Update(Heterogeneity.model).selectAllInterventionTypes(itv);
     },
+    makeReferenceTable: () => {
+      Update(Heterogeneity.model).makeReferenceTable();
+    },
     deselectIntTypes: () => {
       Update(Heterogeneity.model).deselectIntTypes();
     },
@@ -56,6 +59,7 @@ var Heterogeneity = {
   view: {
     register: (model) => {
       Heterogeneity.model = model;
+
       model.Actions.Heterogeneity = Heterogeneity.actions;
     },
   },

@@ -6,7 +6,6 @@ var Messages = require('../../messages.js').Messages;
 var Report = require('../../purescripts/output/Report');
 Report.view = require('../../purescripts/output/Report.View');
 Report.update = require('../../purescripts/output/Report.Update');
-Report.Actions = require('../../purescripts/output/Report.Actions');
 
 
 var children = [

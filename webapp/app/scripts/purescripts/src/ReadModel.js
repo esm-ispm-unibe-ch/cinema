@@ -6,4 +6,4 @@ exports.readModel = function () {
       return   window.Model.state;
     }
   }
-}
+};

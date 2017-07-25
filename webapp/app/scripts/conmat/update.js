@@ -4,6 +4,7 @@ var uniqId = require('../lib/mixins.js').uniqId;
 var deepSeek = require('safe-access');
 var Messages = require('../messages.js').Messages;
 var clone = require('../lib/mixins.js').clone;
+var sortComparisonIds = require('../lib/mixins.js').sortComparisonIds;
 var json2csv = require('json2csv');
 var download = require('downloadjs');
 var Heterogeneity = require('../inconsistency/heterogeneity/heterogeneity.js')();
@@ -68,6 +69,7 @@ var Update = (model) => {
               rule: {},
               tau: 0
             },
+            allComparisonIds: updaters.computeComparisonIds(),
             status: 'empty', //empty, loading, canceling, ready
             progress: 0,
             currentRow: 'Contribution Matrix'
@@ -99,6 +101,20 @@ var Update = (model) => {
         // console.log("found", foundCM);
         return foundCM;
       }
+    },
+    computeComparisonIds: () => {
+      let directs = deepSeek(model.getState(),'.project.studies.directComparisons');
+      let sorted = [];
+      if(typeof directs !== "undefined") {
+        let rows = _.union(_.pluck(directs,'id'),
+          model.getState().project.studies.indirectComparisons);
+        sorted = sortComparisonIds(
+          _.map(rows, r => {
+            return r.replace(',',':');
+          })
+        )
+      }
+      return sorted;
     },
     checkAllIntvs: () => {
       let project = model.getState().project;
