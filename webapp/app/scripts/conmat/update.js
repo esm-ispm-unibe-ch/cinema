@@ -141,7 +141,8 @@ var Update = (model) => {
     },
     fetchContributionMatrix: (ncm) => {
       return new Promise((resolve, reject) => {
-        ocpu.seturl('http://ec2-52-28-232-32.eu-central-1.compute.amazonaws.com:8004/ocpu/library/contribution/R');
+        // ocpu.seturl('http://481059c4-5c4f-4b5d-a969-51ed46988d3b.node.dockerapp.io:8004/ocpu/library/contribution/R');
+        ocpu.seturl('http://cinema-ispm.ch:8004/ocpu/library/contribution/R');
         // ocpu.seturl('http://localhost:8004/ocpu/library/contribution/R');
         let cms = model.getState().project.CM.contributionMatrices;
         var result = {};

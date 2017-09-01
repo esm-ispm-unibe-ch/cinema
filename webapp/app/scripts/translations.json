@@ -108,7 +108,8 @@
       "resetConfirm": ["Reset?","All changes will be lost"]
     },
     "ConChart": {
-      "title": "Contribution Bar Chart",
+      "title": "Risk of bias contributions",
+      "subtitle": "The bar chart shows the contributions of each piece of direct evidence to the network estimate",
       "saveButton": "Save Chart"
     },
     "ClinImp" : {
@@ -125,7 +126,7 @@
         "Very Serious"
       ],
       "title": "Evaluate Study Limitations",
-      "selectionTitle": "Define how to summarize the risk of bias bar for each comparison",
+      "selectionTitle": "Select how to summarize risk of bias across contributions for each network estimate",
       "mixedtitle": "mixed",
       "indirecttitle": "indirect",
       "directtitle": "direct",
@@ -155,7 +156,7 @@
         "Very Serious"
       ],
       "title": "Heterogeneity",
-      "selectionTitle": "Heterogeneity evaluation",
+      "selectionTitle": "Evaluation of heterogeneity",
       "referenceValues": "Reference Values",
       "ruleButton": "Select default rule",
       "mixedtitle": "mixed",
@@ -181,11 +182,11 @@
         "Very Serious"
       ],
       "changedJudgement": "Judgement saved",
-      "title": "Global text for incoherence",
+      "title": "Global test for incoherence",
       "subTitle": "Based on a random-effects design-by-treatment interaction model",
-      "QstatisticLabel": "Q statistic",
-      "df": "df",
-      "pvalueLabel": "p-value",
+      "QstatisticLabel": "χ<sup>2</sup> statistic",
+      "df": "degrees of freedom",
+      "pvalueLabel": "P value",
       "boxesTitle" : "Local tests for incoherence",
       "boxesSubTitle" : "Separating indirect from direct evidence",
       "mixedtitle": "mixed",
@@ -197,8 +198,8 @@
       "resetConfirm": ["Reset?","All changes will be lost","Incoherence selections cleared"],
       "judgementField": "Incoherence judgement",
       "IncoherenceSet": "Incoherence Updated",
-      "IFLabel": "Inconsistency factor",
-      "ZLabel": "Z test"
+      "IFLabel": "Inconsistency measures",
+      "ZLabel": "Z statistic"
     },
     "Report": {
       "levels":[

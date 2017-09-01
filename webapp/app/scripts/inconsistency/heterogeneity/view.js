@@ -214,6 +214,17 @@ var View = (model) => {
       });
       return rules;
     },
+    smtitle: () => {
+      let sm = model.getState().project.CM.currentCM.params.sm;
+      let outtext = {
+        OR: "Odds ratio",
+        RR: "Risk ratio",
+        RD: "Risk difference",
+        MD: "Mean difference",
+        SMD: "Standardised mean difference"
+      };
+      return outtext[sm];
+    }
   }
   return viewers;
 }

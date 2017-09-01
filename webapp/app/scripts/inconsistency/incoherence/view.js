@@ -120,9 +120,14 @@ var View = (model) => {
     boxes: () => {
       return viewers.getState().boxes;
     },
-    rfvs: () => {
-      let res = viewers.getState().referenceValues; 
-      return res;
+    rfvsq: () => {
+      return viewers.getState().referenceValues[0]; 
+    },
+    rfvsdf: () => {
+      return viewers.getState().referenceValues[1]; 
+    },
+    rfvsp: () => {
+      return viewers.getState().referenceValues[2]; 
     },
     rfvFilled: () => {
       return _.all(_.toArray(viewers.getState().referenceValues.params), p=> { return p!== 'nothing'});
@@ -139,6 +144,17 @@ var View = (model) => {
     heterReady: () => {
       return viewers.getState().heters.status === 'ready'
     },
+    boxSideTitle: () => {
+      let sm = model.getState().project.CM.currentCM.params.sm;
+      let outtext = {
+        OR: "Ratio of odds ratios",
+        RR: "Ratio of risk ratios",
+        RD: "Difference of risk differences",
+        MD: "Difference of mean differences",
+        SMD: "Difference of standardised mean differences"
+      };
+      return outtext[sm];
+    }
   }
   return viewers;
 }

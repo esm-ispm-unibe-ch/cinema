@@ -160,7 +160,8 @@ var Update = (model) => {
           reject('Error in setting Clinically Important value: '+isValid.value0);
         }else{
           ClinImp.update.set(model.getState().project.clinImp)(Number(clinImp))();
-          ocpu.seturl('http://ec2-52-28-232-32.eu-central-1.compute.amazonaws.com:8004/ocpu/library/contribution/R');
+          // ocpu.seturl('http://481059c4-5c4f-4b5d-a969-51ed46988d3b.node.dockerapp.io:8004/ocpu/library/contribution/R');
+        ocpu.seturl('http://cinema-ispm.ch:8004/ocpu/library/contribution/R');
           // ocpu.seturl('http://localhost:8004/ocpu/library/contribution/R');
           let params = updaters.getState().referenceValues.params;
 
@@ -330,7 +331,7 @@ var Update = (model) => {
             let ISquare = pairRow[1][7];
             if(! isNaN(tauSquare)){
               tauSquare = pairRow[1][6].toFixed(3);
-              ISquare = pairRow[1][7].toFixed(3);
+              ISquare = (pairRow[1][7] * 100).toFixed(1);
             }
             _.extend(contents,{
                 isMixed: true,

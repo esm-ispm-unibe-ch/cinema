@@ -1,10 +1,10 @@
 <blockquote id="netRob" class='col-xs-12'>
-  <h3 id="netrobTitle">{{text.title}}</h3>
+  <!-- <h3 id="netrobTitle">{{text.title}}</h3> -->
   <div class='form-inline'>
     {{#unless statusReady}}
-      <label class=' controls-title mr-sm-2'>
+      <h4 class=' controls-title mr-sm-2'>
         {{text.selectionTitle}}
-      </label>
+      </h4>
       <select onChange="Actions.NetRob.selectRule(this)" {{#if statusReady}}
         disabled {{/if}} class='mr-sm-2 form-inline form-control'>
         {{#each rulesselections}}
@@ -47,18 +47,23 @@
         <ul>
           <li>
             <strong>
-              {{#if isMixed}}{{../../text.mixedtitle}}{{else}}{{../../text.indirecttitle}}{{/if}}
+              Comparison
             </strong>
             <span class='pull-right'>
               <strong>
                 {{id}}
             </strong></span>
-              <hr>
+          </li>
+          <li>
+            <strong>
+             Evidence: {{#if isMixed}}{{../../text.mixedtitle}}{{else}}{{../../text.indirecttitle}}{{/if}}
+            </strong>
+            <hr>
           </li>
           {{#each rules}}
           <li class=" {{#unless isActive}} robLabel{{/unless}}">
               {{name}}:<strong class='pull-right'>{{label}}</strong>
-           </li>
+          </li>
           {{/each}}
               <hr>
           <li>

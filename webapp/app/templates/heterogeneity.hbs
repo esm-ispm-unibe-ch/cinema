@@ -2,9 +2,11 @@
   <blockquote id="refvals" class='col-xs-12'>
     <ul class='list-inline col-xs-12'>
       <li>
+            Importance of heterogeneity depends on the variability of effects in
+            relation to a clinically important size of effect
+            <br>
           <label class='controls-title mr-sm-2'>
-            Define clinically important value for the effect measure you have
-            chosen
+            Define clinically important size of effect: {{smtitle}}
           </label>
       </li>
       <li>
@@ -14,10 +16,9 @@
       </li>
       {{#if clinImpReady}}
         <li>
-          <label class='controls-title mr-sm-2'>
-          null effect interval
-          ({{clinImpLow}},{{clinImpHigh}})
-          </label>
+            Effects lower than <strong> {{clinImpLow}}</strong> and larger than
+            <strong> {{clinImpHigh}} </strong>
+            are considered to be clinically important
         </li>
         <li>
           <button onClick="Actions.Heterogeneity.resetClinImp('{{emType}}')" class="btn btn-default
@@ -25,7 +26,9 @@
         </li>
       {{/if}}
     </ul>
-    <h4 id="referenceValuesTitle">Select type for each intervention</h4>
+    <h4 id="referenceValuesTitle">To view between-study variance estimates for
+      each direct comparison along with reference intervals, select type of
+      intervention and outcome</h4>
     <div class='form-inline col-xs-12'>
       <ul class='list-inline'>
         {{#unless rfvReady}}
@@ -122,14 +125,9 @@
     </blockquote>
     <div id="heterBoxes" class='col-xs-12 well collapse in'>
     <blockquote class='col-xs-12'>
-    <div class=' rftable'>
-      <table class='table'>
-          <tr><th>Estimated heterogeneity</th><tr>
-          <tr><th>τ<sup>2</sup><sub>common in
-                NMA</sub></th></tr>
-          <tr><td>{{rfvsTauSquare}}</td></tr>
-      </table>
-    </div>
+      The estimated value of between-study variance for the network
+      meta-analysis is
+      <strong>{{rfvsTauSquare}}</strong>
     </blockquote>
       <ul class='list-inline'>
         {{#each boxes}}
@@ -137,26 +135,31 @@
             <ul>
               <li>
                 <strong>
-                  {{#if isMixed}}{{../../text.mixedtitle}}{{else}}{{../../text.indirecttitle}}{{/if}}
+                  Comparison
                 </strong>
                 <span class='pull-right'>
                   <strong>
                     {{id}}
                 </strong></span>
+              </li>
+              <li>
+                <strong>
+                  Evidence:
+                  {{#if isMixed}}{{../../text.mixedtitle}}{{else}}{{../../text.indirecttitle}}{{/if}}
+                </strong>
                   <hr>
               </li>
               {{#if isMixed}}
                 <li class="align-right">
                   <strong>
-                    Heterogeneity measures <br> 
-                    from pairwise meta-analysis
+                    Between-study heterogeneity for each direct comparison
                   </strong>
                 </li>
                 <li>
-                  τ<sup>2</sup>: <strong class='pull-right'>{{tauSquare}}</strong>
+                  I<sup>2</sup>: <strong class='pull-right'>{{ISquare}}</strong>
                 </li>
                 <li>
-                  I<sup>2</sup>: <strong class='pull-right'>{{ISquare}}</strong>
+                  Estimated τ<sup>2</sup>: <strong class='pull-right'>{{tauSquare}}</strong>
                   <hr>
                 </li>
               {{/if}}
@@ -173,14 +176,14 @@
                 <li>
               <hr>
                   <strong>
-                    NMA treatment effect intervals
+                    95% intervals for NMA estimate
                   </strong>
                 </li>
                 <li>
                   Confidence interval: <strong class='pull-right'>({{CIf}},{{CIs}})</strong>
                 </li>
                 <li>
-                  Predictive interval: <strong class='pull-right'>({{PrIf}},{{PrIs}})</strong>
+                  Prediction interval: <strong class='pull-right'>({{PrIf}},{{PrIs}})</strong>
                 </li>
                 <li>
                   Null effect interval: <strong

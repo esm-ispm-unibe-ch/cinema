@@ -65,6 +65,21 @@ var Update = (model) => {
         c.update.updateState(mdl)(mdl);
       });
     },
+    isRatio: () => {
+      let sm = model.getState().project.CM.currentCM.params.sm;
+      let res = false;
+      if((sm === "OR")||(sm==="RR")){
+        res = true;
+      }
+      return res;
+    },
+    expIt: (value) => {
+      let out = value;
+      if(updaters.isRatio()){
+        out = Math.exp(value);
+      }
+      return out;
+    },
     createEstimators: () => {
       let cm = window.Model.getState().project.CM.currentCM;
       let sideValues = cm.hatmatrix.side;
@@ -96,9 +111,9 @@ var Update = (model) => {
                   isMixed: true,
                   isDirect: false,
                   isIndirect: false,
-                  sideIF: sideRow[1].SideIF.toFixed(3),
-                  sideIFLower: sideRow[1].SideIFlower.toFixed(3),
-                  sideIFUpper: sideRow[1].SideIFupper.toFixed(3),
+                  sideIF: updaters.expIt(sideRow[1].SideIF).toFixed(3),
+                  sideIFLower: updaters.expIt(sideRow[1].SideIFlower).toFixed(3),
+                  sideIFUpper: updaters.expIt(sideRow[1].SideIFupper).toFixed(3),
                   Ztest: sideRow[1].SideZ.toFixed(3),
                   pvalue: sideRow[1].SidePvalue.toFixed(3),
               })
