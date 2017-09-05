@@ -1,6 +1,6 @@
 # Use builds from launchpad
 # FROM opencpu/base:latest
-FROM tosku/cinema:0.1.0
+FROM tosku/cinema-rserver:0.1
 
 # RUN apt-get update
 
