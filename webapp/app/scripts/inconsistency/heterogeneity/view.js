@@ -128,13 +128,37 @@ var View = (model) => {
             l.isActive = isActive;
             return l;
           });
-        box.quantiles = _.map(box.quantiles, q => {
-          q.isActive = false;
-          if((typeof box.tauSquare !== 'undefined') && (! isNaN(box.tauSquare))) {
-            q.isActive = Number(box.tauSquare) > q.value;
-          }
-          return q;
-        });
+        if(viewers.rfvReady()){
+          let references = deepSeek(viewers.getState(),'referenceValues.results.rfvs');
+          let quantiles = _.find(references, (ref) => {
+            let res = false;
+            if (typeof ref.id !== 'undefined'){
+              let nres = Nodes.isTheSameComparison(ref.id)(box.id);
+              return nres;
+            }else{
+              res = false;
+            }
+            return false;
+          });
+          box.quantiles = [{ label: "first quantile"
+                                  ,value: quantiles.first
+                                },
+                                { label: "median"
+                                  ,value: quantiles.median
+                                },
+                                { label: "third quantile"
+                                  ,value: quantiles.third
+                                }
+                               ];
+          box.quantiles = _.map(box.quantiles, q => {
+            q.isActive = false;
+            if((typeof box.tauSquare !== 'undefined') && (! isNaN(box.tauSquare))) {
+              q.isActive = Number(box.tauSquare) > q.value;
+            }
+            return q;
+          });
+        }
+        box.crosses = model.getState().text.Heterogeneity.nullText[box.crosses[0]][box.crosses[1]];
         return box;
       });
     },
@@ -173,7 +197,7 @@ var View = (model) => {
       return model.getState().project.clinImp.emtype;
     },
     rfvsTauSquare: () => {
-      let res = viewers.getState().referenceValues.results.tauSquareNetwork;
+      let res = model.getState().project.CM.currentCM.hatmatrix.NMAheterResults[0][0].toFixed(3);
       return res;
     },
     rfvFilled: () => {

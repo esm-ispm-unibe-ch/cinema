@@ -148,26 +148,30 @@ var Update = (model) => {
         return _.extend(m, ob); 
       },{});
       let combs = RFVQ.makeQueries(par);
-      console.log("available parameters",par,combs);
+      // console.log("available parameters",par,combs);
     },
-    fetchRFV: () => {
-      return new Promise((resolve, reject) => {
+    setClinImp: () => {
         let mdl = model.getState();
         let clinImp = Number(document.getElementById('clinImpInput').value);
         ClinImp.showValid(model.getState().project.clinImp)(clinImp)();
         let isValid = ClinImp.isValid(model.getState().project.clinImp)(clinImp);
         if(! isValid.value1){
-          reject('Error in setting Clinically Important value: '+isValid.value0);
+          Messages.alertify().error('Error in setting Clinically Important value: '+isValid.value0);
         }else{
           ClinImp.update.set(model.getState().project.clinImp)(Number(clinImp))();
-          // ocpu.seturl('http://481059c4-5c4f-4b5d-a969-51ed46988d3b.node.dockerapp.io:8004/ocpu/library/contribution/R');
+          updaters.setHetersState(updaters.hetersSkeletonModel());
+        }
+    },
+    fetchRFV: () => {
+      return new Promise((resolve, reject) => {
+        let mdl = model.getState();
+        // ocpu.seturl('http://481059c4-5c4f-4b5d-a969-51ed46988d3b.node.dockerapp.io:8004/ocpu/library/contribution/R');
         ocpu.seturl('http://52.28.184.220:8004/ocpu/library/contribution/R');
           // ocpu.seturl('http://cinema-rserver:8004/ocpu/library/contribution/R');
           let params = updaters.getState().referenceValues.params;
 
           updaters.getState().referenceValues.status = 'loading';
           let res = {
-            tauSquareNetwork: model.getState().project.CM.currentCM.hatmatrix.NMAheterResults[0][0].toFixed(3),
             rfvs : []
           }
           let cm = model.getState().project.CM.currentCM;
@@ -183,7 +187,7 @@ var Update = (model) => {
                   // console.log("CCOCCOCOCOCOMMMMarison type", comparisonType);
                 }
                 params.InterventionComparisonType = comparisonType;
-                console.log("parametteerrss", params);
+                // console.log("parametteerrss", params);
                 let hmc = ocpu.call('ReferenceValues', params, (sessionh) => {
                   sessionh.getObject( (rfv) => {
                     // console.log('server returned ',rfv);
@@ -207,13 +211,11 @@ var Update = (model) => {
           Promise.all(ocpuPromises()).then(() => {
             updaters.getState().referenceValues.results = res;
             updaters.getState().referenceValues.status = 'ready';
-            updaters.setHetersState(updaters.hetersSkeletonModel());
             updaters.saveState();
             resolve(res);
           }).catch(reason => {
             reject(reason);
           });
-        }
       }).catch(reason => {
         Messages.alertify().error(reason);
       });
@@ -285,7 +287,6 @@ var Update = (model) => {
       let NMAValues =  model.getState().project.CM.currentCM.hatmatrix.NMA;
       let NMANames =  model.getState().project.CM.currentCM.hatmatrix.rowNamesNMA;
       let NMAs = _.zip(NMANames,NMAValues);
-      let references = updaters.getState().referenceValues.results.rfvs;
       let makeBoxes = (studies) => {
         let res = _.map(studies, s => {
           let pairRow = _.find(pairWises, pw => {
@@ -303,16 +304,6 @@ var Update = (model) => {
           );
           let contents = {}
             // console.log("BOX id",s[0]);
-            let quantiles = _.find(references, (ref) => {
-              let res = false;
-              if (typeof ref.id !== 'undefined'){
-                let nres = Nodes.isTheSameComparison(ref.id)(s[0]);
-                return nres;
-              }else{
-                res = false;
-              }
-              return false;
-            });
             contents =  {
                 id: s[0],
                 CI,
@@ -331,7 +322,7 @@ var Update = (model) => {
             let ISquare = pairRow[1][7];
             if(! isNaN(tauSquare)){
               tauSquare = pairRow[1][6].toFixed(3);
-              ISquare = (pairRow[1][7] * 100).toFixed(1);
+              ISquare = ((pairRow[1][7] * 100).toFixed(1)).toString()+"%";
             }
             _.extend(contents,{
                 isMixed: true,
@@ -339,20 +330,11 @@ var Update = (model) => {
                 ISquare
             })
           }
-          contents.quantiles = [{ label: "first quantile"
-                                  ,value: quantiles.first
-                                },
-                                { label: "median"
-                                  ,value: quantiles.median
-                                },
-                                { label: "third quantile"
-                                  ,value: quantiles.third
-                                }
-                               ];
           contents.levels = updaters.getState().heters.levels;
           let clinImp = deepSeek(model,'getState().project.clinImp');
           let crossParams = [contents.CIf,contents.CIs,contents.PrIf,contents.PrIs,clinImp.lowerBound,clinImp.upperBound].map(n => {return Number(n)});
           contents.ruleLevel = updaters.getRuleLevel(...crossParams);
+          contents.crosses = updaters.getNumberOfCrosses(...crossParams);
           contents.judgement = contents.ruleLevel;
           return contents;
         });
@@ -360,17 +342,23 @@ var Update = (model) => {
       };
       // let mixed = InconsistencyModel.sortByComparison(
       //   makeBoxes(_.zip(cm.directRowNames,cm.directStudies)));
-      console.log('directRownames,studies',cm.directRowNames,cm.directStudies);
+      // console.log('directRownames,studies',cm.directRowNames,cm.directStudies);
       let mixed = makeBoxes(
         sortStudies(cm.directRowNames,cm.directStudies));
       let indirect = makeBoxes(sortStudies(cm.indirectRowNames,cm.indirectStudies));
-      console.log("BOXES Names naoume",mixed,indirect);
+      // console.log("BOXES Names naoume",mixed,indirect);
       return _.union(mixed,indirect);
     },
     getRuleLevel: (CIf,CIs,PrIf,PrIs,lowerBound,upperBound) => {
       let ciCrosses = Nodes.numberOfCrosses(CIf)(CIs)(lowerBound)(upperBound);
       let priCrosses = Nodes.numberOfCrosses(PrIf)(PrIs)(lowerBound)(upperBound);
       let result = Nodes.ruleLevel(parseInt(ciCrosses))(parseInt(priCrosses));
+      return result;
+    },
+    getNumberOfCrosses: (CIf,CIs,PrIf,PrIs,lowerBound,upperBound) => {
+      let ciCrosses = Nodes.numberOfCrosses(CIf)(CIs)(lowerBound)(upperBound);
+      let priCrosses = Nodes.numberOfCrosses(PrIf)(PrIs)(lowerBound)(upperBound);
+      let result = [parseInt(ciCrosses),parseInt(priCrosses)];
       return result;
     },
     resetHeters: () => {
@@ -394,6 +382,13 @@ var Update = (model) => {
       }
       return result;
     },
+    tauSquareNetwork: () => {
+      let tauSquareNetwork = 0;
+      if (deepSeek(model,"getState().project.CM.currentCM.hatmatrix.NMAheterResult") !== undefined){
+        tauSquareNetwork = model.getState().project.CM.currentCM.hatmatrix.NMAheterResults[0][0].toFixed(3);
+      }
+      return tauSquareNetwork;
+    },
     rfvEmptyModel: () => {
       return {
         status: 'empty',
@@ -415,7 +410,7 @@ var Update = (model) => {
     },
     hetersSkeletonModel: () => {
       let boxes = [];
-      if(updaters.rfvReady()){
+      if(updaters.clinImpReady()){
         boxes = updaters.createEstimators();
       }else{
         boxes = [];
@@ -454,19 +449,19 @@ var Update = (model) => {
       })
     },
     selectAllInterventionTypes: (itv) => {
-      console.log("selecting all to" + itv);
+      // console.log("selecting all to" + itv);
       let mdl = model.getState();
       Nodes.setAllNodesIntType(mdl)(itv)();
     },
     deselectIntTypes: () => {
       let mdl = model.getState();
-      console.log("deselecting everything");
+      // console.log("deselecting everything");
       Nodes.deselectIntTypes(mdl)();
     },
     selectIntervensionType: (value) => {
       let mdl = model.getState();
       let [node_label, itv] = value.value.split('σδel');
-      console.log('selecting',node_label,itv);
+      // console.log('selecting',node_label,itv);
       Nodes.setNodeIntType(mdl)(node_label)(itv)();
     },
     selectIndividual: (value) => {

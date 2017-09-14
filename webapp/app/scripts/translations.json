@@ -173,7 +173,14 @@
       "resetButton": "Reset",
       "resetConfirm": ["Reset?","All changes will be lost","Heterogeneity selections cleared"],
       "judgementField": "Heterogeneity judgement",
-      "HeterogeneitySet": "Heterogeneity Updated"
+      "HeterogeneitySet": "Heterogeneity Updated",
+      "nullText": [["Confidence and prediction intervals <strong>agree</strong> in relation to clinically important effect",
+          "Prediction interval <strong>extends into clinically important or unimportant effects</strong>",
+          "Prediction interval extends into clinically important effects in <strong>both</strong> directions"],
+          ["error", "Confidence and prediction intervals <strong>agree</strong> in relation to clinically important effect",
+           "Prediction interval <strong>extends</strong> into clinically important or unimportant effects"],
+          ["error","error","Confidence and prediction intervals <strong>agree</strong> in relation to clinically important effect"
+        ]]
     },
     "Incoherence": {
       "levels":[

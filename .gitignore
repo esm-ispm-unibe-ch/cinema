@@ -5,6 +5,7 @@ node_modules/
 */test/bower_components
 .Rproj.user
 *.swp
+cinema-web/design/
 <<<<<<< HEAD
 *.swo
 =======

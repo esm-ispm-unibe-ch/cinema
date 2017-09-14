@@ -36,7 +36,7 @@
     {{#each boxes}}
       <li style='border-color:{{color}}' class='well compRobSelector {{#if customized}} customized {{/if}}' id="comp-{{id}}">
         <ul>
-          <li>
+          <li  style="clear:both" >
             <strong>
               Comparison
             </strong>
@@ -46,7 +46,7 @@
               </strong>
             </span>
           </li>
-          <li>
+          <li  style="clear:both" >
             <strong>
               Evidence:
               {{#if isMixed}}{{../../text.mixedtitle}}{{/if}}
@@ -56,6 +56,11 @@
             <hr>
           </li>
           {{#if isMixed}}
+            <li>
+              Direct contribution: <strong
+                class='pull-right'>{{dcont}}%</strong>
+              <hr>
+            </li>
             <li>
             <ul>
             <li>

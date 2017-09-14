@@ -81,7 +81,7 @@ var Update = (model) => {
       return out;
     },
     createEstimators: () => {
-      let cm = window.Model.getState().project.CM.currentCM;
+      let cm = model.getState().project.CM.currentCM;
       let sideValues = cm.hatmatrix.side;
       let sideRowNames = cm.hatmatrix.rowNamesSide;
       let sideColNames = cm.hatmatrix.colNamesSide;
@@ -116,6 +116,7 @@ var Update = (model) => {
                   sideIFUpper: updaters.expIt(sideRow[1].SideIFupper).toFixed(3),
                   Ztest: sideRow[1].SideZ.toFixed(3),
                   pvalue: sideRow[1].SidePvalue.toFixed(3),
+                  directContribution: sideRow[1].PropDir
               })
             }else{
               _.extend(contents,{
@@ -175,7 +176,7 @@ var Update = (model) => {
       });
     },
     mixedRuleTable : [
-      [1,2,2],
+      [1,1,2],
       [2,2,3],
       [2,3,3]
     ],
@@ -197,13 +198,19 @@ var Update = (model) => {
         return xr;
       };
       if (comparison.isMixed) {
-        level = updaters.mixedRuleTable[pindex(sidepvalue)][pindex(netpvalue)];
+        let dcont = comparison.directContribution;
+        if (dcont > 0.9){
+          level = 1;
+        }else{
+          level = updaters.mixedRuleTable[pindex(sidepvalue)][pindex(netpvalue)];
+        }
       }else{
         if (comparison.isDirect) {
           level = 1;
         }else{
           if (comparison.isIndirect) {
-            level = updaters.mixedRuleTable[1][pindex(netpvalue)];
+            let rule = [1,2,3];
+            level = rule[pindex(netpvalue)];
           }else{
             level = 0;
           }

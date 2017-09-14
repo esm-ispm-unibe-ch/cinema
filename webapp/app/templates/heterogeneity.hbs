@@ -14,22 +14,22 @@
            class='mr-sm-2 form-inline form-control' {{#if clinImpReady}}
              disabled {{/if}}>
       </li>
-      {{#if clinImpReady}}
-        <li>
-            Effects lower than <strong> {{clinImpLow}}</strong> and larger than
-            <strong> {{clinImpHigh}} </strong>
-            are considered to be clinically important
-        </li>
-        <li>
-          <button onClick="Actions.Heterogeneity.resetClinImp('{{emType}}')" class="btn btn-default
-            {{#unless clinImpReady}} disabled{{/unless}}">Reset</button>
-        </li>
-      {{/if}}
+      <li>
+          Effects lower than <strong> {{clinImpLow}} </strong> and larger than
+          <strong> {{clinImpHigh}} </strong>
+          are considered to be clinically important
+      </li>
+      <li>
+        <button onClick="Actions.Heterogeneity.setClinImp()" class="btn btn-default
+          {{#if clinImpReady}} disabled{{/if}}">Set</button>
+        <button onClick="Actions.Heterogeneity.resetClinImp('{{emType}}')" class="btn btn-default
+          {{#unless clinImpReady}} disabled{{/unless}}">Reset</button>
+      </li>
     </ul>
-    <h4 id="referenceValuesTitle">To view between-study variance estimates for
+    <h4 id="referenceValuesTitle" class="pointer" data-toggle="collapse" data-target="#rfvSelector">To view between-study variance estimates for
       each direct comparison along with reference intervals, select type of
-      intervention and outcome</h4>
-    <div class='form-inline col-xs-12'>
+      intervention and outcome (optional)</h4>
+    <div id="rfvSelector" class='form-inline col-xs-12 collapse'>
       <ul class='list-inline'>
         {{#unless rfvReady}}
           <li>
@@ -94,15 +94,19 @@
           </li>
         {{/each}}
       </ul>
-    </div>
-    <div class='buttoner col-xs-12'>
-      <button onClick="Actions.Heterogeneity.fetchRFV()" class="pull-right btn btn-default
-        {{#unless canFetch}} disabled{{/unless}}">Confirm</button>
-      <button onClick="Actions.Heterogeneity.resetRFV()" class="pull-right btn btn-default
-        {{#unless rfvReady}} disabled{{/unless}}">Reset Values</button>
+      <div class='buttoner col-xs-12'>
+        {{#if clinImpReady}} 
+          <button onClick="Actions.Heterogeneity.fetchRFV()" class="pull-right
+            btn btn-default {{#unless canFetch}} disabled{{/unless}}">
+            View
+          </button>
+        {{/if}}
+        <button onClick="Actions.Heterogeneity.resetRFV()" class="pull-right btn btn-default
+          {{#unless rfvReady}} disabled{{/unless}}">Reset</button>
+      </div>
     </div>
   </blockquote>
-  {{#if rfvReady}}
+  {{#if clinImpReady}}
     <blockquote id="heterogeneityBoxes" class='col-xs-12'>
       <div class='form-inline'>
           <label class=' controls-title mr-sm-2'>
@@ -149,32 +153,36 @@
                 </strong>
                   <hr>
               </li>
-              {{#if isMixed}}
-                <li class="align-right">
-                  <strong>
-                    Between-study heterogeneity for each direct comparison
-                  </strong>
-                </li>
-                <li>
-                  I<sup>2</sup>: <strong class='pull-right'>{{ISquare}}</strong>
-                </li>
-                <li>
-                  Estimated τ<sup>2</sup>: <strong class='pull-right'>{{tauSquare}}</strong>
-                  <hr>
-                </li>
+              {{#if ../../rfvReady}}
+                {{#if isMixed}}
+                  <li class="align-right">
+                    <strong>
+                      Between-study heterogeneity for each direct comparison
+                    </strong>
+                  </li>
+                  <li>
+                    I<sup>2</sup>: <strong class='pull-right'>{{ISquare}}</strong>
+                  </li>
+                  <li>
+                    Estimated τ<sup>2</sup>: <strong class='pull-right'>{{tauSquare}}</strong>
+                    <hr>
+                  </li>
+                {{/if}}
+                  <li class="align-right">
+                    <strong>
+                      Reference Values for τ<sup>2</sup>
+                    </strong>
+                  </li>
+                {{#each quantiles}}
+                  <li class=" {{#unless isActive}} robLabel{{/unless}}">
+                    {{{label}}}:<strong class='pull-right'>{{value}}</strong>
+                  </li>
+                {{/each}}
               {{/if}}
-                <li class="align-right">
-                  <strong>
-                    Reference Values for τ<sup>2</sup>
-                  </strong>
-                </li>
-              {{#each quantiles}}
-                <li class=" {{#unless isActive}} robLabel{{/unless}}">
-                  {{{label}}}:<strong class='pull-right'>{{value}}</strong>
-                </li>
-              {{/each}}
-                <li>
-              <hr>
+                  <li>
+              {{#if ../../rfvReady}}
+                  <hr>
+              {{/if}}
                   <strong>
                     95% intervals for NMA estimate
                   </strong>
@@ -184,11 +192,15 @@
                 </li>
                 <li>
                   Prediction interval: <strong class='pull-right'>({{PrIf}},{{PrIs}})</strong>
+                  <hr>
                 </li>
                 <li>
-                  Null effect interval: <strong
-                    class='pull-right'>({{../clinImpLow}},{{../clinImpHigh}})</strong>
+                  <em>{{{crosses}}}</em>
                 </li>
+                <!-- <li> -->
+                <!--   Null effect interval: <strong -->
+                <!--     class='pull-right'>({{../clinImpLow}},{{../clinImpHigh}})</strong> -->
+                <!-- </li> -->
                 <hr>
               <li>
               {{../../text.judgementField}} 

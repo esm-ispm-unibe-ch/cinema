@@ -118,7 +118,8 @@ var View = (model) => {
       return prs;
     },
     boxes: () => {
-      return viewers.getState().boxes;
+      let boxs = viewers.getState().boxes;
+      return _.map(boxs, box => {box.dcont = (box.directContribution * 100).toFixed(1); return box;});
     },
     rfvsq: () => {
       return viewers.getState().referenceValues[0]; 

@@ -13,6 +13,9 @@ var Heterogeneity = {
     fetchRFV: () => {
       Update(Heterogeneity.model).fetchRFV();
     },
+    setClinImp: (value) => {
+      Update(Heterogeneity.model).setClinImp();
+    },
     resetClinImp: (emtype) => {
       Update(Heterogeneity.model).resetClinImp(emtype);
     },
