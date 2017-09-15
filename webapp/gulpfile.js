@@ -17,6 +17,21 @@ const $ = gulpLoadPlugins();
 const reload = browserSync.reload;
 const transform = require('gulp-transform');
 const ext_replace = require('gulp-ext-replace');
+const replace = require('gulp-replace');
+const randomstring = require('randomstring');
+const fs = require('fs');
+
+var config = {};
+
+if(fs.existsSync("config.json")){
+  config = require('./config.json');
+}else{
+  config = {
+    version: "0.0.0",
+    ganalID: "UA-XXXXXXXXX-X"
+  }
+}
+
 
 gulp.task('hbsTojs', () => {
   let modulify = c => {
@@ -107,21 +122,30 @@ gulp.task('lint:test', () => {
 
 gulp.task('html', ['styles', 'scripts', 'templates', 'hbsTojs'], () => {
   var inject = require('gulp-inject-string');
+  var postfix = config.version==='0.0.0'?randomstring.generate():config.version;
+  var ganal = config.version==='0.0.0'?'':`<script async src='https://www.googletagmanager.com/gtag/js?id=`+config.ganalID+`'></script>
+   <script>
+      window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments)};
+    gtag('js', new Date());
+
+    gtag('config', '`+config.ganalID+`');
+  </script>`;
+
   return gulp.src('app/*.html')
     .pipe($.useref({searchPath: ['.tmp', 'app', '.']}))
     .pipe($.if('*.js', $.uglify()))
     .pipe($.if('*.css', $.cssnano({safe: true, autoprefixer: false})))
     .pipe($.if('*.html', $.htmlmin({collapseWhitespace: true})))
-    // .pipe($.if('index.html', inject.after('<!-- inject:js -->',
-    // `<script>
-    //   if ('serviceWorker' in navigator) {
-    //       navigator.serviceWorker.register('/sw.js').then(function() {
-    //               console.log("Service Worker Registered");
-    //                 });
-    //   }
-    //   </script>`)))
+    .pipe($.if('index.html', replace("main.js","main.js?"+postfix)))
+    .pipe($.if('index.html', replace("plugins.js","plugins.js?"+postfix)))
+    .pipe($.if('index.html', replace("vendor.js","vendor.js?"+postfix)))
+    .pipe($.if('index.html', replace("vendor.css","vendor.css?"+postfix)))
+    .pipe($.if('index.html', inject.after('<!-- analytics:js -->', ganal)))
     .pipe(gulp.dest('dist'));
 });
+
+
 
 gulp.task('images', () => {
   return gulp.src('app/images/**/*')
