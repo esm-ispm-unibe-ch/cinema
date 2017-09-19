@@ -1,2 +1,95 @@
-Nothing here yet :(
-  <img src="images/dog-chasing-butterfly-small.gif"/>
+  <blockquote id="refvals" class='col-xs-12'>
+    <ul class='list-inline col-xs-12'>
+      <li>
+        Imprecision
+            <br>
+          <label class='controls-title mr-sm-2'>
+            Define clinically important size of effect: {{smtitle}}
+          </label>
+      </li>
+      <li>
+        <input id="clinImpInput" name="clinImp" value="{{clinImp}}"
+           class='mr-sm-2 form-inline form-control' {{#if clinImpReady}}
+             disabled {{/if}}>
+      </li>
+      <li>
+          Effects lower than <strong> {{clinImpLow}} </strong> and larger than
+          <strong> {{clinImpHigh}} </strong>
+          are considered to be clinically important
+      </li>
+      <li>
+        <button onClick="Actions.Imprecision.setClinImp()" class="btn btn-default
+          {{#if clinImpReady}} disabled{{/if}}">Set</button>
+        <button onClick="Actions.Imprecision.resetClinImp('{{emType}}')" class="btn btn-default
+          {{#unless clinImpReady}} disabled{{/unless}}">Reset</button>
+      </li>
+    </ul>
+    </div>
+  </blockquote>
+  {{#if clinImpReady}}
+    <blockquote id="imprecisionBoxes" class='col-xs-12'>
+      <div class='form-inline'>
+          <label class=' controls-title mr-sm-2'>
+            {{text.selectionTitle}}
+          </label>
+          {{#if customized}}
+            <br>
+            <label class=' controls-title mr-sm-2'>
+              {{numberCustomized}}
+              {{#if customizedSingular}}
+                {{text.customizedTitleSingular}}
+              {{else}}
+                {{text.customizedTitlePlural}}
+              {{/if}}
+            </label>
+          {{/if}}
+      </div>
+    <button onClick="Actions.Imprecision.resetBoxes()" class="pull-right btn btn-default
+          {{#unless imprecisionReady}} disabled{{/unless}}"> {{text.resetButton}} </button>
+    </blockquote>
+    <div id="ImprecisionBoxes" class='col-xs-12 well collapse in'>
+      <ul class='list-inline'>
+        {{#each boxes}}
+        <li  style='border-color:{{color}}' class='well compRobSelector {{#if customized}} customized {{/if}}' id="comp-{{id}}">
+            <ul>
+              <li>
+                <strong>
+                  Comparison
+                </strong>
+                <span class='pull-right'>
+                  <strong>
+                    {{id}}
+                </strong></span>
+              </li>
+              <li>
+                <strong>
+                  Evidence:
+                  {{#if isMixed}}{{../../text.mixedtitle}}{{else}}{{../../text.indirecttitle}}{{/if}}
+                </strong>
+                  <hr>
+                <li>
+                  95% Confidence interval: <strong class='pull-right'>({{CIf}},{{CIs}})</strong>
+                </li>
+                <li>
+                  <em>{{{crosses}}}</em>
+                </li>
+                <!-- <li> -->
+                <!--   Null effect interval: <strong -->
+                <!--     class='pull-right'>({{../clinImpLow}},{{../clinImpHigh}})</strong> -->
+                <!-- </li> -->
+                <hr>
+              <li>
+              {{../../text.judgementField}} 
+                <select onChange="Actions.Imprecision.selectIndividual(this)" class='mr-sm-2 controls-container'>
+                  {{#each levels}}
+                  <option value="{{../id}}σδel{{id}}" {{#if isDisabled}} disabled {{/if}} {{#if isActive}} selected{{/if}}>
+                        {{label}}
+                    </option>
+                  {{/each}}
+                </select>
+              </li>
+            </ul>
+        {{/each}}
+      </ul>
+    </div>
+  {{/if}}

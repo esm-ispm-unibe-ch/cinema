@@ -15,6 +15,7 @@ var General = require('./general.js')();
 var RoB = require('./rob/rob.js')();
 var ConChart = require('./rob/conchart/conchart.js')();
 var Inconsistency = require('./inconsistency/inconsistency.js')();
+var Imprecision = require('./imprecision/imprecision.js')();
 var Report = require('./purescripts/output/Report');
 
 var Router = {
@@ -26,6 +27,7 @@ var Router = {
         let conmatStatus = deepSeek(Router,'model.getState().project.CM.currentCM.status'); 
         let directRobStatus = deepSeek(Router,'model.getState().project.DirectRob.status'); 
         let reportStatus = deepSeek(Router,'model.getState().project.report.status'); 
+        let imprecisionStatus = deepSeek(Router,'model.getState().project.imprecision.status'); 
         switch(route) {
           case 'general':
             if(Router.model.getState().project && typeof Router.model.getState().project.studies !== 'undefined'){
@@ -38,6 +40,9 @@ var Router = {
             return ((conmatStatus==='ready')&&(directRobStatus==='ready'));
             break;
           case 'inconsistency':
+            return (conmatStatus==='ready');
+            break;
+          case 'imprecision':
             return (conmatStatus==='ready');
             break;
           case 'report':
@@ -202,6 +207,9 @@ var Router = {
     },
     { route: 'inconsistency',
       module: Inconsistency,
+    },
+    { route: 'imprecision',
+      module: Imprecision,
     },
     { route: 'report',
       module: Report,

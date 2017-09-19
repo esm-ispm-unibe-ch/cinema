@@ -25,6 +25,7 @@ import Text.Model
 import ComparisonModel
 import StudyLimitationsModel
 import InconsistencyModel
+import ImprecisionModel
 import Report.Model
 
 opts = defaultOptions { unwrapSingleConstructors = true }
@@ -68,6 +69,7 @@ newtype Project = Project
   , "CM" :: CMContainer
   , netRob :: NetRobModel
   , inconsistency :: Inconsistency
+  , imprecision :: Imprecision
   }
 derive instance genericProject :: Rep.Generic Project _
 instance showProject :: Show Project where
@@ -84,6 +86,7 @@ instance decodeProject :: Decode Project where
     cm <- p ! "CM" >>= decode
     netRob <- p ! "netRob" >>= decode
     inconsistency <- p ! "inconsistency" >>= decode
+    imprecision <- p ! "imprecision" >>= decode
     pure $ Project { title
                    , format
                    , "type" : tp
@@ -93,6 +96,7 @@ instance decodeProject :: Decode Project where
                    , studies 
                    , "CM" : cm
                    , netRob 
+                   , imprecision
                    , inconsistency }
 _Project :: Lens' Project (Record _)
 _Project = lens (\(Project s) -> s) (\_ -> Project)
@@ -100,6 +104,8 @@ netRob :: forall a b r. Lens { netRob :: a | r } { netRob :: b | r } a b
 netRob = prop (SProxy :: SProxy "netRob")
 inconsistency :: forall a b r. Lens { inconsistency :: a | r } { inconsistency :: b | r } a b
 inconsistency = prop (SProxy :: SProxy "inconsistency")
+imprecision :: forall a b r. Lens { imprecision :: a | r } { imprecision :: b | r } a b
+imprecision = prop (SProxy :: SProxy "imprecision")
 studies :: forall a b r. Lens { studies :: a | r } { studies :: b | r } a b
 studies = prop (SProxy :: SProxy "studies")
 cmContainer :: forall a b r. Lens { "CM" :: a | r } { "CM" :: b | r } a b

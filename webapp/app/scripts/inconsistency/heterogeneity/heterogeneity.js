@@ -56,7 +56,7 @@ var Heterogeneity = {
         Update(Heterogeneity.model).selectIndividual(value);
     },
     updateState: () => {
-      Update(Heterogeneity.model).updateState(Heterogeneity.model);
+      Heterogeneity.update.updateState(Heterogeneity.model);
     }
   },
   view: {

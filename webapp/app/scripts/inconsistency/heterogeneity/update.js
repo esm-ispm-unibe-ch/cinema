@@ -143,7 +143,6 @@ var Update = (model) => {
              return f !== "nothing";
             });
         }
-        console.log("pid",p.id);
         ob[p.id] = sels;
         return _.extend(m, ob); 
       },{});
@@ -181,7 +180,6 @@ var Update = (model) => {
               return new Promise((oresolve, oreject) => {
                 let comparisonType = Nodes.getComparisonType(mdl)(sid);
                 if (comparisonType === "") {
-                  console.log("Didn't get comparison type");
                   oreject("Didn't get comparison type");
                 }else{
                   // console.log("CCOCCOCOCOCOMMMMarison type", comparisonType);
@@ -240,21 +238,20 @@ var Update = (model) => {
     updateState: (model) => {
       let cm = model.getState().project.CM.currentCM;
       if (updaters.cmReady()) {
-        if ((updaters.getState().referenceValues.status === 'ready') 
-        || (updaters.getState().referenceValues.status === 'edited')){
-          if ((updaters.clinImpReady())) {
+        if ((updaters.clinImpReady())) {
+          if (updaters.getState().heters.status === 'ready'){
           }else{
-            if (updaters.getState().referenceValues.status === 'ready'){
-              updaters.getState().referenceValues.status = 'edited';
-            }
             updaters.setHetersState(updaters.hetersSkeletonModel());
           }
         }else{
+          model.getState().project.inconsistency.heterogeneity = {};
           updaters.setRFVState(updaters.rfvEmptyModel());
+          updaters.setHetersState(updaters.hetersEmptyModel());
         }
-        if (updaters.getState().heters.status === 'ready'){
+        if ((updaters.getState().referenceValues.status === 'ready') 
+        || (updaters.getState().referenceValues.status === 'edited')){
         }else{
-          updaters.setHetersState(updaters.hetersSkeletonModel());
+          updaters.setRFVState(updaters.rfvEmptyModel());
         }
       }else{
         model.getState().project.inconsistency.heterogeneity = {};

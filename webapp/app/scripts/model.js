@@ -107,19 +107,28 @@ var Model = {
     Model.saveState();
     // View.updateSelections();
   },
-  init: () => {
+  init: (version) => {
     Router.register(Model);
     View.init(Model);
     // localStorage.clear();
     if (typeof localStorage.state === 'undefined'){
       // console.log('no cached state');
-      Model.setState({
-        text : Locales[Model.defaults.locale],
-        defaults: Model.defaults,
-      });
+      Model.setState(Model.skeletonModel(version));
     }else{
-      Model.setState(JSON.parse(localStorage.state));
+      let savedModel = JSON.parse(localStorage.state);
+      if ((typeof savedModel.version !== 'undefined') && (savedModel.version === version)){
+        Model.setState(savedModel);
+      }else{
+        Model.setState(Model.skeletonModel(version));
+      }
       // console.log('found cache state',Model.getState());
+    }
+  },
+  skeletonModel: (version) => {
+    return {
+      version: version,
+      text: Locales[Model.defaults.locale],
+      defaults: Model.defaults
     }
   },
   children: [

@@ -29,6 +29,7 @@ import Report.Template as T
 import ComparisonModel
 import StudyLimitationsModel
 import InconsistencyModel
+import ImprecisionModel
 import Model
 import Text.Model
 import Report.Model
@@ -65,8 +66,9 @@ register s = unit
 
 isReady :: State -> Boolean
 isReady s =
-  (hasIncoherence s) ||
   (hasStudyLimitations s) || 
+  (hasImprecision s) ||
+  (hasIncoherence s) ||
   (hasHeterogeneity s)
 
 type ViewModel r = 
@@ -76,6 +78,7 @@ type ViewModel r =
   , hasDirects :: Boolean
   , hasIndirects :: Boolean
   , hasStudyLimitations :: Boolean
+  , hasImprecision :: Boolean
   , hasIncoherence :: Boolean
   , studyLimitationsRule :: RobRule
   | r
@@ -130,10 +133,9 @@ type ReportRow =
   , incoherence :: IncoherenceBox
   , levels :: Array ReportLevel
   , judgement :: ReportLevel
-  {--, imprecision :: Maybe Imprecision--}
-  {--, heterogeneity :: Maybe Heterogeneity--}
-  {--, indirectness :: Maybe Indirectness--}
-  {--, pubBias :: Maybe PubBias--}
+  , imprecision :: ImprecisionBox
+  {--, indirectness :: IndirectnessBox--}
+  {--, pubBias :: PubBiasBox--}
   }
 
 hasDirects :: State -> Boolean
@@ -141,6 +143,12 @@ hasDirects st = length (directRows st) > 0
 
 hasIndirects :: State -> Boolean
 hasIndirects st = length (indirectRows st) > 0
+
+hasImprecision :: State -> Boolean
+hasImprecision st = (st ^. _State <<< project <<< _Project 
+                    <<< imprecision <<< _Imprecision)
+                   ."status" == "ready"
+
 
 hasIncoherence :: State -> Boolean
 hasIncoherence st = (st ^. _State <<< project <<< _Project 
@@ -241,6 +249,52 @@ getStudyLimitation st c = do
     else
     skeletonStudyLimitation
 
+getImprecision :: State -> Comparison -> ImprecisionBox
+getImprecision st c = do
+  let boxs = st  ^. _State <<< project <<< _Project 
+                     <<< imprecision <<< _Imprecision
+                     <<< boxes
+  if hasImprecision st then
+    let mbox = find (\ib -> 
+              isIdOfComparison (ib ^. _ImprecisionBox)."id" c
+              ) boxs 
+        levelsText = (st ^. _State <<< text <<< _TextContent
+                     <<< imprecisionText <<< _ImprecisionText)."levels"
+        getcolor = do
+           case mbox of 
+               Nothing -> "grey"
+               Just box -> let mlevel = (box ^. _ImprecisionBox)."levels" !! 
+                                        ((box ^. _ImprecisionBox)."judgement"
+                                        - 1)
+                             in case mlevel of 
+                                   Nothing -> "grey"
+                                   Just level -> (level ^.
+                                   _ImprecisionLevel)."color"
+        getLabel = do 
+          case mbox of 
+               Nothing -> "error"
+               Just box -> let mlabel = levelsText !!
+                                        ((box ^. _ImprecisionBox)."judgement"
+                                        - 1)
+                             in case mlabel of 
+                                   Nothing -> "error"
+                                   Just label -> label
+        getCustomized = do
+          case mbox of
+               Nothing -> false
+               Just box -> 
+                 (box ^. _ImprecisionBox)."judgement" /= 
+                   (box ^. _ImprecisionBox)."ruleLevel"
+     in case mbox of
+                 Nothing -> skeletonImprecisionBox
+                 Just r -> (_ImprecisionBox <<< imprecisionboxcustomized .~
+                 getCustomized) (
+                           (_ImprecisionBox <<< imprecisionboxcolor .~ getcolor)(
+                  _ImprecisionBox <<< imprecisionboxlabel .~ getLabel $ r)
+                  )
+    else
+    skeletonImprecisionBox
+
 
 getIncoherence :: State -> Comparison -> IncoherenceBox
 getIncoherence st c = do
@@ -324,6 +378,7 @@ getRows a comps =
              , studyLimitation: getStudyLimitation a s
              , heterogeneity: getHeterogeneity a s
              , incoherence: getIncoherence a s
+             , imprecision: getImprecision a s
              , judgement: skeletonReportLevel
              }) 
              $ filter (isSelectedComparison selects) comps
@@ -346,6 +401,7 @@ template a =
             , hasIndirects : hasIndirects a
             , hasStudyLimitations : hasStudyLimitations a
             , hasIncoherence : hasIncoherence a
+            , hasImprecision : hasImprecision a
             , studyLimitationsRule : getStudyLimitationsRule a
           }
         viewData = b

@@ -27,6 +27,7 @@ newtype TextContent = TextContent
   , "Report" :: ReportText
   , "ClinImp" :: ClinImpText
   , "Heterogeneity" :: HeterogeneityText
+  , "Imprecision" :: ImprecisionText
   }
 derive instance genericTextContent :: Rep.Generic TextContent _
 instance showTextContent :: Show TextContent where
@@ -47,6 +48,9 @@ clinImpText = prop (SProxy :: SProxy "ClinImp")
 
 heterogeneityText :: forall a b r. Lens { "Heterogeneity" :: a | r } { "Heterogeneity" :: b | r } a b
 heterogeneityText = prop (SProxy :: SProxy "Heterogeneity")
+
+imprecisionText :: forall a b r. Lens { "Imprecision" :: a | r } { "Imprecision" :: b | r } a b
+imprecisionText = prop (SProxy :: SProxy "Imprecision")
 -- TextContent >
 
 -- ClinImpText <
@@ -92,6 +96,19 @@ instance decodeHeterogeneityText :: Decode HeterogeneityText where
 _HeterogeneityText :: Lens' HeterogeneityText (Record _)
 _HeterogeneityText = lens (\(HeterogeneityText s) -> s) (\_ -> HeterogeneityText)
 --HeterogeneityText >
+
+-- ImprecisionText <
+newtype ImprecisionText = ImprecisionText 
+  { levels :: Array String
+  }
+derive instance genericImprecisionText :: Rep.Generic ImprecisionText _
+instance showImprecisionText :: Show ImprecisionText where
+    show = genericShow
+instance decodeImprecisionText :: Decode ImprecisionText where
+  decode = genericDecode opts
+_ImprecisionText :: Lens' ImprecisionText (Record _)
+_ImprecisionText = lens (\(ImprecisionText s) -> s) (\_ -> ImprecisionText)
+--ImprecisionText >
 
 -- RuleTextx <
 newtype RuleTexts = RuleTexts 

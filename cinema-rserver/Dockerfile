@@ -37,10 +37,10 @@ ADD toRoot /root
 # RUN d=d sh -c 'cd /root/cinema/webapp/ && gulp'
 # RUN d=d sh -c 'rm -rf /root/cinema/webapp/www/'
 # RUN d=d sh -c 'mv /root/cinema/webapp/dist /root/cinema/webapp/www'
-RUN i=i sh -c 'rm -rf /usr/local/lib/R/site-library/contribution/www/'
-RUN i=i sh -c 'cp -rf /root/www/ /usr/local/lib/R/site-library/contribution/www/'
+RUN ij=ij sh -c 'rm -rf /usr/local/lib/R/site-library/contribution/www/'
+RUN ij=ij sh -c 'cp -rf /root/www/ /usr/local/lib/R/site-library/contribution/www/'
 # RUN d=d sh -c 'cp -rf /root/cinema/webapp/www/ /usr/local/lib/R/site-library/contribution/www/'
-RUN i=i sh -c 'Rscript /root/installContribution/rgrade.batch'
+RUN ij=ij sh -c 'Rscript /root/installContribution/rgrade.batch'
 #restarting opencpu service
 RUN sh -c 'service opencpu stop'
 RUN sh -c 'service opencpu restart'

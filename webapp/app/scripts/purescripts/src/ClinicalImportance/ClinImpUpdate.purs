@@ -18,18 +18,18 @@ import Text.Model
 import SaveModel as S
 import ClinImp.Model
 import ClinImp.View
-import UpdateHeterogeneity
+import UpdateClinImpChildren
 
 saveState :: forall eff. String -> SanitizedClinImp -> 
   Eff ( modelOut    :: S.SAVE_STATE 
-      , updateheter :: UPDATE_HETER| eff) Unit
+      , updateClinImpChildren :: UPDATE_CHILDREN | eff) Unit
 saveState s c = do
   S.saveState s c
   updateChildren
 
 updateState :: forall eff. Foreign -> Eff (console :: CONSOLE 
                    , modelOut :: S.SAVE_STATE 
-                   , updateheter :: UPDATE_HETER| eff) Unit
+                   , updateClinImpChildren :: UPDATE_CHILDREN | eff) Unit
 updateState mdl = do
   let (s :: Either String State) = readState mdl
   case s of
@@ -51,20 +51,22 @@ updateState mdl = do
 
 set :: forall eff. Foreign -> Foreign -> Eff (console :: CONSOLE 
                    , modelOut :: S.SAVE_STATE 
-                   , updateheter :: UPDATE_HETER| eff) Unit
+                   , updateClinImpChildren :: UPDATE_CHILDREN | eff) Unit
 set fci fbv = do
   let eci = runExcept $ readClinImp fci
       ebv = runExcept $ readNumber fbv
   case eci of
-       Left err -> do logShow $ "Clin imp setting error: " <> show err
+       {--Left err -> do logShow $ "Clin imp setting error: " <> show err--}
+       Left err -> do pure unit
        Right ci -> do
          case ebv of 
-           Left er -> logShow $ "Clin imp setting error on value" <> show er
+           {--Left er -> logShow $ "Clin imp setting error on value" <> show er--}
+           Left er -> do pure unit
            Right bv -> do
              let nci = setBaseValue bv ci
-             logShow $ "CLIN IMP TO CHANGE" <> show ci
-             logShow $ "new CLIN  IMP" <> show nci
-             logShow $ "Setting base value to " <> show bv
+             {--logShow $ "CLIN IMP TO CHANGE" <> show ci--}
+             {--logShow $ "new CLIN  IMP" <> show nci--}
+             {--logShow $ "Setting base value to " <> show bv--}
              saveState "clinImp" $ sanitizeClinImp nci
 
 
@@ -92,18 +94,19 @@ setBaseValue measure ci =
                                 , status = "ready"
                                 }
 
-updateChildren :: forall eff. Eff ( updateheter :: UPDATE_HETER | eff ) Unit
-updateChildren = updateHeter
+updateChildren :: forall eff. Eff ( updateClinImpChildren :: UPDATE_CHILDREN | eff ) Unit
+updateChildren = updateClinImpChildren
 
 
 reSet :: forall eff. Foreign -> 
   Eff ( modelOut    :: S.SAVE_STATE 
       , console     :: CONSOLE
-      , updateheter :: UPDATE_HETER | eff) Unit
+      , updateClinImpChildren :: UPDATE_CHILDREN | eff) Unit
 reSet fmt = do
   let emt = runExcept $ readEffectMeasureType fmt
   case emt of
-       Left err -> do  logShow $ "Clin imp reSetting error: " <> show err
+       {--Left err -> do  return () logShow $ "Clin imp reSetting error: " <> show err--}
+       Left err -> do pure unit
        Right mt -> do
          let nci = skeletonClinImp mt
          saveState "clinImp" $ sanitizeClinImp nci

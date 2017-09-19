@@ -208,6 +208,29 @@
       "IFLabel": "Inconsistency measures",
       "ZLabel": "Z statistic"
     },
+    "Imprecision": {
+      "levels":[
+        "No serious",
+        "Serious",
+        "Very Serious"
+      ],
+      "title": "Imprecision",
+      "selectionTitle": "Evaluation of imprecision",
+      "referenceValues": "Reference Values",
+      "mixedtitle": "mixed",
+      "indirecttitle": "indirect",
+      "defaultTitle": "Selected:",
+      "customizedTitleSingular": "comparison was manually updated",
+      "customizedTitlePlural": "comparisons were manually updated",
+      "resetButton": "Reset",
+      "resetConfirm": ["Reset?","All changes will be lost","Imprecision selections cleared"],
+      "judgementField": "Imprecision judgement",
+      "ImprecisionSet": "Imprecision Updated",
+      "nullText": ["Confidence interval does not cross clinically important effect",
+                   "Confidence interval extends into clinically important effects",
+                   "Confidence interval extends into clinically important effects in <strong>both</strong> directions"
+                   ]
+    },
     "Report": {
       "levels":[
         "High",

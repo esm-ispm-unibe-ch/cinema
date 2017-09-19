@@ -1,4 +1,5 @@
 var RoB = require('../rob/rob.js')();
+var Imprecision = require('../imprecision/imprecision.js')();
 var Inconsistency = require('../inconsistency/inconsistency.js')();
 var uniqId = require('../lib/mixins.js').uniqId;
 var deepSeek = require('safe-access');
@@ -136,6 +137,7 @@ var Update = (model) => {
     updateChildren: (model) => {
       let mdl = model.getState();
       RoB.update.updateState(model),
+      Imprecision.update.updateState(model);
       Inconsistency.update.updateState(model);
       ClinicalImportance.update.updateState(mdl)(mdl);
     },
@@ -515,10 +517,12 @@ var Update = (model) => {
   return updaters;
 };
 
+//have to updatechildren manually!
 var children = [
   RoB,
-  Inconsistency,
-  ClinicalImportance
+  ClinicalImportance,
+  Imprecision,
+  Inconsistency
   ];
 
 module.exports = () => {
