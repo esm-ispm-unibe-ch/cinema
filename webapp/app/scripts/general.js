@@ -1,7 +1,6 @@
 var h = require('virtual-dom/h');
 var Netplot = require('./netplot.js')();
 var ConMat = require('./conmat/conmat.js')();
-var DirectRob = require('./directrob/directrob.js')();
 
 var General = {
   view: {
@@ -25,7 +24,6 @@ var General = {
   },
   renderChildren: [
     Netplot,
-    DirectRob,
     ConMat,
   ]
 }

@@ -502,7 +502,7 @@ var NP = {
         });
         NP.hasChanged = true;
       }else{
-        console.log('init state netplot already initiated');
+        //console.log('init state netplot already initiated');
       }
     },
     setState: (np) => {

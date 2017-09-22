@@ -19,7 +19,6 @@ var getCombinations = require('./lib/combinations.js').getCombinations;
 var accumulate = require('./lib/mixins.js').accumulate;
 var Netplot = require('./netplot.js')();
 var ConMat = require('./conmat/conmat.js')();
-var DirectRob = require('./directrob/directrob.js')();
 var ComparisonModel = require('./purescripts/output/ComparisonModel');
 
 var PR = {
@@ -60,8 +59,8 @@ var PR = {
           studyLimitationLevels: studyLimitationLevels
         });
       }else{
-        _.map(PR.children, c => { c.update.updateState(model);});
       }
+      _.map(PR.children, c => { c.update.updateState(model);});
     },
     setProject: (pr) => {
       PR.model.getState().project = pr;
@@ -166,7 +165,7 @@ var PR = {
         mdl.nodes = PR.model.makeNodes(project.type, mdl.long);
         let ids = _.pluck(mdl.nodes,'id');
         let sortedIds = ComparisonModel.orderIds(ids);
-        console.log("sortedNodeids", sortedIds);
+        //console.log("sortedNodeids", sortedIds);
         //directComparisons correspond to netplot edges
         let dcomps = PR.update.makeDirectComparisons(project.type, mdl.wide);
         mdl.directComparisons = _.unzip(sortStudies(_.map(dcomps, comp => {return comp.t1+":"+comp.t2}),dcomps))[1];
@@ -251,7 +250,6 @@ var PR = {
   children: [
     Netplot,
     ConMat,
-    DirectRob,
   ],
 };
 

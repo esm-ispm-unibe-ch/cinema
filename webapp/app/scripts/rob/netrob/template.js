@@ -9,7 +9,7 @@ var convertHTML = require('html-to-vdom')({
 
 var Template = (model,children) => {
     var tmpl = GRADE.templates.netrob(
-      _.extend(View(model),{ text:model.getState().text.NetRob})
+      _.extend(View(model),{text:model.getState().text.NetRob})
     );
     return h('div#directRob.col-xs-12',convertHTML(tmpl));
 }

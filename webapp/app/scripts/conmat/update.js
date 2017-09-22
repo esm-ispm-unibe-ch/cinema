@@ -1,4 +1,4 @@
-var RoB = require('../rob/rob.js')();
+var RoB = require('../directRob/directRob.js')();
 var Imprecision = require('../imprecision/imprecision.js')();
 var Inconsistency = require('../inconsistency/inconsistency.js')();
 var uniqId = require('../lib/mixins.js').uniqId;
@@ -136,7 +136,7 @@ var Update = (model) => {
     },
     updateChildren: (model) => {
       let mdl = model.getState();
-      RoB.update.updateState(model),
+      RoB.update.updateState(model);
       Imprecision.update.updateState(model);
       Inconsistency.update.updateState(model);
       ClinicalImportance.update.updateState(mdl)(mdl);

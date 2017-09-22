@@ -29,15 +29,14 @@ var NetRob = {
   },
   update: {
     updateState: (model) => {
-        Update(NetRob.model).updateState(model);
+      Update(NetRob.model).updateState(model);
     },
   },
   render: (model) => {
     if(View(model).isReady()){
-      let children = _.map(NetRob.renderChildren, c => { c.render(model);});
+      let children = _.map(NetRob.renderChildren, c => {return c.render(model);});
       return Template(model,children);
     }else{
-      // console.log('NetRob not ready to render');
     }
   },
   afterRender: () => {

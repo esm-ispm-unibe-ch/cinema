@@ -72,12 +72,20 @@ var View = (model) => {
     numberCustomized: () => {
       return deepSeek(model, NetRobModelPosition+'.customized');
     },
-    isReady: () => {
-      let isReady = false;
-      if (! _.isUndefined(deepSeek(model, NetRobModelPosition))){
-        isReady = true;
+    drobReady: () => {
+      let isready = false;
+      if (deepSeek(model,'getState().project.DirectRob.status')==='ready'){
+        isready = true;
       }
-      return isReady;
+      return isready;
+    },
+    isReady: () => {
+      let isready = false;
+      let  NetRobState = deepSeek(model,'getState().project.netRob.studyLimitations');
+      if (viewers.drobReady() && (typeof NetRobState !== 'undefined')){
+        isready = true;
+      }
+      return isready;
     },
     statusReady: () => {
       return viewers.getStatus() === 'ready';

@@ -1,10 +1,10 @@
-var RoB = require('../rob/rob.js')();
 var deepSeek = require('safe-access');
 var clone = require('../lib/mixins.js').clone;
 var Messages = require('../messages.js').Messages;
+var NetRoB = require('../rob/rob.js')();
 
 var children = [
-  RoB
+  NetRoB
   ];
 
 var Update = (model) => {
@@ -13,19 +13,23 @@ var Update = (model) => {
   let directComparisons = deepSeek(model.getState(),'project.studies.directComparisons');
   let updaters = {
     getState: () => {
-      return deepSeek(model.getState(),modelPosition);
+      return deepSeek(model,'getState().project.DirectRob');
     },
-    updateState: () => {
-      console.log('updating state form directrob');
-      let isReady = _.any(directComparisons, dc => {
-        return _.isUndefined(dc.directRob);
-      });
-      if ((isReady===true)|| _.isUndefined(updaters.getState())){
-        updaters.resetDirectRob();
+    updateState: (model) => {
+      //console.log('updating state form directrob');
+      if (deepSeek(model,'getState().project.CM.currentCM.status') !== 'ready'){
+	updaters.setState(updaters.skeletonModel());
       }else{
-        console.log('DirectRob model ready');
-        _.map(children, c => { c.update.updateState(model);});
+	let isReady = _.any(directComparisons, dc => {
+	  return _.isUndefined(dc.directRob);
+	});
+	if ((isReady===true)|| _.isUndefined(updaters.getState())){
+	  updaters.resetDirectRob();
+	}else{
+	  //console.log('DirectRob model ready');
+	}
       }
+      _.map(children, c => { c.update.updateState(model);});
     },
     resetDirectRob: () => {
       _.map(directComparisons, dc => {
@@ -48,7 +52,7 @@ var Update = (model) => {
       });
       updaters.saveState();
       Messages.alertify().success(model.getState().text.directRob.directRobSet);
-      console.log('the rule you picked was', rule.value);
+      //console.log('the rule you picked was', rule.value);
     },
     selectIndividual: (value) => {
       let [tid,tv] = value.value.split('σδel');
@@ -81,7 +85,7 @@ var Update = (model) => {
       }
     },
     clickedMe: () => {
-      console.log('clicked me');
+      //console.log('clicked me');
     }
   }
   return updaters;

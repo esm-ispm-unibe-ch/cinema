@@ -25,7 +25,6 @@ var ConChart = {
       let children = _.map(ConChart.renderChildren, c => { c.render(model);});
       return Template(model,ConChart.renderChildren);
     }else{
-      console.log('ConChart not ready to render');
     }
   },
   afterRender: (model) => {

@@ -35,7 +35,7 @@
         "info": "Howtos, FAQs and Demo material."
       },
       "general": {
-        "label": "General",
+        "label": "Configuration",
         "title": "General Info",
         "info": "NetPlot and Contribution page"
       },
@@ -91,8 +91,8 @@
       "high"
     ],
     "directRob": {
-      "title": "Evaluate risk of bias in direct comparisons",
-      "selectionTitle": "Define how to summarize study-level risk of bias within comparisons",
+      "title": "Evaluate study limitations",
+      "selectionTitle": "Select how to summarize risk of bias across studies for each direct estimate",
       "defaultTitle": "Selected rule:",
       "customizedpreSingular": "Judgement for",
       "customizedprePlural": "Judgements for",

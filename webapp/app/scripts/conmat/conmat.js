@@ -106,7 +106,7 @@ var CM = {
   update: {
     updateState: (model) => {
       // console.log("updatingState in conmat");
-      if ( _.isUndefined(deepSeek(CM,'model.getState().project.CM'))){
+      if ( _.isUndefined(deepSeek(model,'getState().project.CM'))){
         CM.model = model;
         Update(CM.model).setState({
           contributionMatrices: [],
@@ -120,7 +120,7 @@ var CM = {
               rule: {},
               tau: 0
             },
-            allComparisonIds: Update(CM.model).computeComparisonIds(),
+            allComparisonIds: Update(model).computeComparisonIds(),
             status: 'empty', //empty, loading, canceling, ready
             progress: 0,
             currentRow: 'Contribution Matrix'
@@ -128,12 +128,12 @@ var CM = {
         });
       }else{
         if( (deepSeek(CM,'model.getState().project.CM.currentCM.status')==='loading')){
-          Update(CM.model).createMatrix();
+          Update(model).createMatrix();
         }
         if( (deepSeek(CM,'model.getState().project.CM.currentCM.status')==='ready')){
         }
-        Update(CM.model).updateChildren(CM.model);
       }
+      Update(model).updateChildren(model);
     },
   },
   render: (model) => {

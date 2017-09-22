@@ -5,12 +5,20 @@ var uniqId = require('../../lib/mixins.js').uniqId;
 var View = (model) => {
   let modelPosition = 'getState().project.netRob.ConChart';
   let viewers = {
-    isReady: () => {
-      let isReady = false;
-      if (! _.isUndefined(deepSeek(model, modelPosition))){
-        isReady = true;
+    drobReady: () => {
+      let isready = false;
+      if (deepSeek(model,'getState().project.DirectRob.status')==='ready'){
+        isready = true;
       }
-      return isReady;
+      return isready;
+    },
+    isReady: () => {
+      let isready = false;
+      let  conchartstate = deepSeek(model,'getState().project.netRob.ConChart');
+      if (viewers.drobReady() && (typeof conchartstate !== 'undefined')){
+        isready = true;
+      }
+      return isready;
     },
     createChart: () => {
       let m = model.getState().project;
@@ -80,7 +88,6 @@ var View = (model) => {
           labels: rowNames,
           datasets: dtsts
       };
-      console.log('chartdata',chartData);
       return chartData;
     },
   }

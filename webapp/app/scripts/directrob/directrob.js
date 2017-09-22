@@ -2,6 +2,7 @@ var Messages = require('../messages.js').Messages;
 var Update = require('./update.js')();
 var View = require('./view.js')();
 var Template = require('./template.js')();
+var RoB = require('../rob/rob.js')();
 
 var DirectRob = {
   //actions will trigered by hml actions and other msgs 
@@ -25,25 +26,26 @@ var DirectRob = {
     register: (model) => {
       DirectRob.model = model;
       model.Actions.DirectRob = DirectRob.actions;
+      _.map(DirectRob.renderChildren, c => {c.view.register(model)});
+      RoB.view.register(model);
     },
   },
   update: {
     updateState: (model) => {
-        Update(model).updateState();
+        Update(model).updateState(model);
     },
   },
   render: (model) => {
     if(View(model).isReady()){
-      let children = _.map(DirectRob.renderChildren, c => { c.render(model);});
-      return Template(model,children);
+      return Template(model,DirectRob.renderChildren);
     }else{
-      console.log('DirectRob not ready to render');
     }
   },
-  afterRender: () => {
-    //hope won't need it!
+  afterRender: (model) => {
+    _.map(DirectRob.renderChildren, c => {return c.afterRender(model);});
   },
   renderChildren: [
+    RoB
   ],
 }
 

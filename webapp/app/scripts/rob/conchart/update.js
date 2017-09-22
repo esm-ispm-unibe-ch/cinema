@@ -11,14 +11,18 @@ var Update = (model) => {
     getState: () => {
       return deepSeek(model,modelPosition);
     },
-    updateState: () => {
-      if ( _.isUndefined(updaters.getState())){
-        // console.log('ConChart model not ready');
-        updaters.setState(updaters.skeletonModel());
-      }else{
-        // console.log('ConChart model ready');
-        _.map(children, c => { c.update.updateState(model);});
+    drobReady: () => {
+      let isready = false;
+      if (deepSeek(model,'getState().project.DirectRob.status')==='ready'){
+        isready = true;
       }
+      return isready;
+    },
+    updateState: () => {
+      if ( updaters.drobReady() ){
+        updaters.setState(updaters.skeletonModel());
+      }
+      _.map(children, c => { c.update.updateState(model);});
     },
     // this affects the whole node in the state.
     setState: (newState) => {

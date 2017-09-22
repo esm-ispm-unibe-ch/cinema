@@ -17,7 +17,7 @@ var Update = (model) => {
   let modelPosition = 'project.netRob.studyLimitations';
   let updaters = {
     getState: () => {
-      return deepSeek(model.getState(),modelPosition);
+      return deepSeek(model,'getState().project.netRob.studyLimitations');
     },
     cmReady: () => {
       let isready = false;
@@ -31,31 +31,29 @@ var Update = (model) => {
       let isready = false;
       if (deepSeek(model,'getState().project.DirectRob.status')==='ready'){
         isready = true;
-        // console.log('direct robs ready');
       }
       return isready;
     },
     updateState: (model) => {
-      // console.log('updating study limitations and Report',model.getState());
       let mdl = model.getState();
-      _.map(children, c => {
-        c.update.updateState(mdl)(mdl);
-      });
-      if (updaters.cmReady() && updaters.drobReady()){
-        if (updaters.getState().status === 'ready'){
-          _.map(children, c => {c.update.updateState(model);});
+      if (updaters.drobReady()){
+        if (deepSeek(updaters,'getState().status') === 'ready'){
         }else{
           updaters.setState(updaters.completeModel());
         }
       }else{
         updaters.setState(updaters.skeletonModel());
       }
+      _.map(children, c => {
+        c.update.updateState(mdl)(mdl);
+      });
     },
     setState: (newState) => {
-      // this affects the whole node in the state.
-      let  NetRobState = deepSeek(model.getState(),'project');
-      NetRobState.netRob.studyLimitations = newState;
-      updaters.saveState();
+      if(deepSeek(model,"getState().project.netRob")){
+	model.getState().project.netRob.studyLimitations = newState;
+	updaters.saveState();
+      }else{
+      }
     },
     getRule: () => {
       return deepSeek(model.getState(), modelPosition+'.rule');
@@ -201,7 +199,7 @@ var Update = (model) => {
     },
     skeletonModel: () => {
       return { 
-        status: 'noRule',// noRule, editing, ready
+        status: 'not-ready',// noRule, editing, ready
         rule: 'noRule', // noRule, majRule, meanRule, maxRule
         customized: 0,
         boxes: [],

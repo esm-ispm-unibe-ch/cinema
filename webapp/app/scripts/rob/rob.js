@@ -31,8 +31,8 @@ var RoB = {
         RoB.model = model;
         RoB.update.setState(RoB.update.skeletonModel());
       }else{
-        _.map(RoB.children, c => { c.update.updateState(model);});
       }
+      _.map(RoB.children, c => { c.update.updateState(model);});
     },
     setState: (newState) => {
       let RoBstate = deepSeek(RoB.model,RoB.modelPosition);
@@ -54,7 +54,6 @@ var RoB = {
       let children = _.map(RoB.renderChildren, c => {return c.render(model);});
       return h('div#contentStudyLimitations.row',children);
     }else{
-      // console.log('RoB not ready to render');
     }
   },
   afterRender: (model) => {

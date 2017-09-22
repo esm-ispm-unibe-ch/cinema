@@ -12,7 +12,7 @@ var Project = require('./project.js')();
 var Doc = require('./doc.js')();
 var Error = require('./error.js')();
 var General = require('./general.js')();
-var RoB = require('./rob/rob.js')();
+var RoB = require('./directrob/directrob.js')();
 var ConChart = require('./rob/conchart/conchart.js')();
 var Inconsistency = require('./inconsistency/inconsistency.js')();
 var Imprecision = require('./imprecision/imprecision.js')();
@@ -37,7 +37,7 @@ var Router = {
             }
             break;
           case 'rob':
-            return ((conmatStatus==='ready')&&(directRobStatus==='ready'));
+            return (conmatStatus==='ready');
             break;
           case 'inconsistency':
             return (conmatStatus==='ready');
@@ -97,11 +97,11 @@ var Router = {
         }
         model.saveState();
       }else{
-        console.log('found cached route', Router.view.currentRoute());
+        //console.log('found cached route', Router.view.currentRoute());
       }
     },
     gotoRoute: (route) => {
-      console.log('routing to ', route);
+      //console.log('routing to ', route);
       window.scrollTo(0,0);
       if((Router.view.currentRoute()!==route)){
         if(Router.view.checkAvailability(route)){

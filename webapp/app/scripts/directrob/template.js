@@ -9,9 +9,10 @@ var convertHTML = require('html-to-vdom')({
 
 var Template = (model,children) => {
     var tmpl = GRADE.templates.directrob(
-      _.extend(View(model),{ text:model.getState().text.directRob})
+      _.extend(View(model),{text:model.getState().text.directRob})
     );
-    return h('div#directRob.col-xs-12',convertHTML(tmpl));
+    let tmplchildren = _.map(children, c => {return c.render(model);});
+    return [h('div#directRob.col-xs-12',convertHTML(tmpl))].concat(_.flatten(tmplchildren));
 }
 
 module.exports = () => {
