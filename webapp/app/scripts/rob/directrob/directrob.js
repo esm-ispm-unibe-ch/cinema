@@ -1,8 +1,8 @@
-var Messages = require('../messages.js').Messages;
+var Messages = require('../../messages.js').Messages;
 var Update = require('./update.js')();
 var View = require('./view.js')();
 var Template = require('./template.js')();
-var RoB = require('../rob/rob.js')();
+var RoB = require('../rob.js')();
 
 var DirectRob = {
   //actions will trigered by hml actions and other msgs 

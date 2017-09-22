@@ -1,4 +1,4 @@
-var RoB = require('../directRob/directRob.js')();
+var RoB = require('../rob/directRob/directRob.js')();
 var Imprecision = require('../imprecision/imprecision.js')();
 var Inconsistency = require('../inconsistency/inconsistency.js')();
 var uniqId = require('../lib/mixins.js').uniqId;
