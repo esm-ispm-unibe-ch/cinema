@@ -104,7 +104,39 @@ let sortComparisonIds = (rownames) => {
   return sortedIds;
 }
 
+let majrule = (values) => {
+  let sbv =  _.sortBy(
+      _.sortBy(
+        _.groupBy(values),
+        vss => {
+          return -vss[0];
+        }
+      ),
+      vs => {
+        return -vs.length;
+      }
+    );
+  console.log("sbv",sbv);
+  return sbv[0][0];
+}
+
+let meanrule = (values) => {
+  let out = _.reduce(values, (memo,v) => {
+      return memo + v;
+  },0) / values.length;
+  return  Math.round(out);
+}
+
+let maxrule = (values) => {
+  return _.reduce(values, (memo,rob) => {
+    return memo > rob ? memo : rob;
+  },0);
+}
+
 module.exports = {
+  majrule,
+  meanrule,
+  maxrule,
   focusTo: focusTo,
   bindTableResize: bindTableResize,
   uniqId: uniqId,

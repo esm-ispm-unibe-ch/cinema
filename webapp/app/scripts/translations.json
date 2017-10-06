@@ -90,6 +90,33 @@
       "moderate",
       "high"
     ],
+    "indrLevels":[
+      "low",
+      "moderate",
+      "high",
+      "--"
+    ],
+    "directIndr": {
+      "title": "Evaluate indirectness",
+      "selectionTitle": "Specify indirectness assessments for each direct estimate",
+      "defaultTitle": "Selected rule:",
+      "customizedpreSingular": "Judgement for",
+      "customizedprePlural": "Judgements for",
+      "customizedTitleSingular": "comparison was manually updated",
+      "customizedTitlePlural": "comparisons were manually updated",
+      "setAllTitle": "Set all to",
+      "allLow": "low indirectness",
+      "allModerate": "moderate indirectness",
+      "allHigh": "high indirectness",
+      "majindr": "Majority",
+      "meanindr": "Average",
+      "maxindr": "Highest",
+      "norob": "--",
+      "customrob": "custom",
+      "resetButton": "Reset",
+      "directIndrSet": "Direct Indiretness Updated",
+      "resetConfirm": ["Reset?","All changes will be lost"]
+    },
     "directRob": {
       "title": "Evaluate study limitations",
       "selectionTitle": "Select how to summarize risk of bias across studies for each direct estimate",

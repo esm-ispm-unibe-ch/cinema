@@ -1,6 +1,7 @@
 var RoB = require('../rob/directRob/directRob.js')();
 var Imprecision = require('../imprecision/imprecision.js')();
 var Inconsistency = require('../inconsistency/inconsistency.js')();
+var Indirectness = require('../indirectness/directIndr/directIndr.js')();
 var uniqId = require('../lib/mixins.js').uniqId;
 var deepSeek = require('safe-access');
 var Messages = require('../messages.js').Messages;

@@ -16,6 +16,7 @@ var RoB = require('./rob/directrob/directrob.js')();
 var ConChart = require('./rob/conchart/conchart.js')();
 var Inconsistency = require('./inconsistency/inconsistency.js')();
 var Imprecision = require('./imprecision/imprecision.js')();
+var Indirectness = require('./indirectness/directIndr/directIndr.js')();
 var Report = require('./purescripts/output/Report');
 
 var Router = {
@@ -43,6 +44,9 @@ var Router = {
             return (conmatStatus==='ready');
             break;
           case 'imprecision':
+            return (conmatStatus==='ready');
+            break;
+          case 'indirectness':
             return (conmatStatus==='ready');
             break;
           case 'report':
@@ -210,6 +214,9 @@ var Router = {
     },
     { route: 'imprecision',
       module: Imprecision,
+    },
+    { route: 'indirectness',
+      module: Indirectness,
     },
     { route: 'report',
       module: Report,

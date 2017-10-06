@@ -7,6 +7,9 @@ var convertHTML = require('html-to-vdom')({
      VText: VText
 });
 var sortStudies = require('./lib/mixins.js').sortStudies;
+var majrule = require('./lib/mixins.js').majrule;
+var meanrule = require('./lib/mixins.js').meanrule;
+var maxrule = require('./lib/mixins.js').maxrule;
 var Messages = require('./messages.js').Messages;
 var htmlEntities = require('./lib/mixins.js').htmlEntities;
 var FR = require('./lib/readFile.js').FR;
@@ -97,31 +100,21 @@ var PR = {
           numStudies: comp.length,
           rob: accumulate(comp,'rob'),
         };
+        if (typeof comp[0].indirectness !== 'undefined'){
+          row.indirectness = accumulate(comp,'indirectness');
+          row.majindr = majrule(row.indirectness);
+          row.meanindr = meanrule(row.indirectness);
+          row.maxindr = maxrule(row.indirectness);
+        }else{
+          row.majindr = -1;
+          row.meanindr = -1;
+          row.maxindr = -1;
+        };
         row.tn1 = row.t1===comp[0].t1?comp[0].tn1:comp[0].tn2;
         row.tn2 = row.t2===comp[0].t2?comp[0].tn2:comp[0].tn1;
-        let majrob = _.first(
-            _.sortBy(
-              _.sortBy(
-                _.groupBy(row.rob, rob => {return rob}),
-                robs => {
-                  return -robs[0];
-                }
-              ),
-              robs => {
-                return -robs.length;
-              }
-            )
-          )[0];
-        row.majrob = majrob;
-        let meanrob = _.reduce(row.rob, (memo,rob) => {
-          return memo + rob;
-        },0) / row.rob.length;
-        meanrob = Math.round(meanrob);
-        row.meanrob = meanrob;
-        let maxrob = _.reduce(row.rob, (memo,rob) => {
-          return memo > rob ? memo : rob;
-        },0);
-        row.maxrob = maxrob;
+        row.majrob = majrule(row.rob);
+        row.meanrob = meanrule(row.rob);
+        row.maxrob = maxrule(row.rob);
         if(type !== 'iv'){
           row.sampleSize = sumBy(comp,['n1','n2']);
         }else{
@@ -130,6 +123,7 @@ var PR = {
             return iv + au;
           },0);
         }
+        console.log("comparison",row);
         return row;
         });
       return _.sortBy(edges,e =>{return e.id});
