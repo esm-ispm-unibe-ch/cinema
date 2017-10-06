@@ -18,7 +18,8 @@
     "purescript-handlebars": "^2.0.0",
     "purescript-smolder": "^7.0.0",
     "purescript-aff": "^3.1.0",
-    "purescript-aff-promise": "^0.5.0"
+    "purescript-aff-promise": "^0.5.0",
+    "purescript-numbers": "^5.0.0"
   },
   "devDependencies": {
     "purescript-psci-support": "^3.0.0"

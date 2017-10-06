@@ -141,6 +141,7 @@ gulp.task('html', ['styles', 'scripts', 'templates', 'hbsTojs'], () => {
     .pipe($.if('index.html', replace("plugins.js","plugins.js?"+postfix)))
     .pipe($.if('index.html', replace("vendor.js","vendor.js?"+postfix)))
     .pipe($.if('index.html', replace("vendor.css","vendor.css?"+postfix)))
+    .pipe($.if('index.html', replace("main.css","main.css?"+postfix)))
     .pipe($.if('index.html', inject.after('<!-- analytics:js -->', ganal)))
     .pipe(gulp.dest('dist'));
 });
