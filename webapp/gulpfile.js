@@ -146,6 +146,10 @@ gulp.task('html', ['styles', 'scripts', 'templates', 'hbsTojs'], () => {
 });
 
 
+gulp.task('model', () => {
+  return gulp.src('app/model/**/*')
+    .pipe(gulp.dest('dist/model'));
+});
 
 gulp.task('images', () => {
   return gulp.src('app/images/**/*')
@@ -274,7 +278,7 @@ gulp.task('buildToDocker', ['build'], () => {
   );
 });
 
-gulp.task('build', ['html', 'images', 'fonts', 'extras'], () => {
+gulp.task('build', ['html', 'model', 'images', 'fonts', 'extras'], () => {
   return gulp.src('dist/**/*').pipe($.size({title: 'build', gzip: true}));
 });
 

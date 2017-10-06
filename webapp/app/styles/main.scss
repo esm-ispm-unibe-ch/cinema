@@ -24,6 +24,16 @@ $icon-font-path: '../fonts/';
   font-family: serif;
   text-align: end;
 }
+.supporters{
+  padding-top:10px;
+  list-style-type: none;
+  li{
+    padding:4px;
+    img {
+      height:50px;
+    }
+  }
+}
 
 /* Space out content a bit */
 body {
@@ -43,6 +53,13 @@ body {
   p {
     padding-left: 33px;
     padding-right: 15px;
+  }
+}
+
+.license {
+  margin-top: 30px;
+  img{
+    height:20px;
   }
 }
 

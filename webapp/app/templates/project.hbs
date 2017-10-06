@@ -17,6 +17,7 @@
              
         </div>
        <!-- <a id="popoverData" action='tools' class="btn routes btn-default" data-content="Upload a valid csv file to proceed" rel="popover" data-placement="bottom" data-trigger="hover">Proceed</a> -->
+
       {{else}}
       <ul class="list-group">
         <li class="list-group-item active">
@@ -64,4 +65,16 @@
         Save
       </button> -->
   </div>
+
+      {{#if view.canUpload}}
+  <div class='col-xs-12 col-md-offset-2 col-md-8'>
+    A demo dataset can be downloaded <a href="model/Elliott_2007.csv"
+      download="diabetes.csv">here</a>. It is a network of six intervention for
+    diabetes mellitus by Elliot et.al 
+    <br>
+    <a href="https://www.ncbi.nlm.nih.gov/pubmed/17240286" >W. J. Elliott and P. M. Meyer. Incident diabetes in clinical
+      trials of antihypertensive drugs: a network meta-analysis. The Lancet,
+      369(9557):201 – 207, 2007</a>
+  </div>
+      {{/if}}
 </div>
