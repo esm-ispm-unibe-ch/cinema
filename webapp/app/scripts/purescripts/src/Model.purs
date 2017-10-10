@@ -24,6 +24,7 @@ import Partial.Unsafe (unsafePartial)
 import Text.Model
 import ComparisonModel
 import StudyLimitationsModel
+import IndirectnessModel
 import InconsistencyModel
 import ImprecisionModel
 import Report.Model
@@ -69,6 +70,7 @@ newtype Project = Project
   , "CM" :: CMContainer
   , netRob :: NetRobModel
   , inconsistency :: Inconsistency
+  , indirectness :: Indirectness
   , imprecision :: Imprecision
   }
 derive instance genericProject :: Rep.Generic Project _
@@ -87,6 +89,8 @@ instance decodeProject :: Decode Project where
     netRob <- p ! "netRob" >>= decode
     inconsistency <- p ! "inconsistency" >>= decode
     imprecision <- p ! "imprecision" >>= decode
+    indr <- p ! "indirectness"
+    indirectness <- indr ! "netindr" >>= decode
     pure $ Project { title
                    , format
                    , "type" : tp
@@ -96,6 +100,7 @@ instance decodeProject :: Decode Project where
                    , studies 
                    , "CM" : cm
                    , netRob 
+                   , indirectness
                    , imprecision
                    , inconsistency }
 _Project :: Lens' Project (Record _)
@@ -106,6 +111,8 @@ inconsistency :: forall a b r. Lens { inconsistency :: a | r } { inconsistency :
 inconsistency = prop (SProxy :: SProxy "inconsistency")
 imprecision :: forall a b r. Lens { imprecision :: a | r } { imprecision :: b | r } a b
 imprecision = prop (SProxy :: SProxy "imprecision")
+indirectness :: forall a b r. Lens { indirectness :: a | r } { indirectness :: b | r } a b
+indirectness = prop (SProxy :: SProxy "indirectness")
 studies :: forall a b r. Lens { studies :: a | r } { studies :: b | r } a b
 studies = prop (SProxy :: SProxy "studies")
 cmContainer :: forall a b r. Lens { "CM" :: a | r } { "CM" :: b | r } a b

@@ -30,6 +30,7 @@ import ComparisonModel
 import StudyLimitationsModel
 import InconsistencyModel
 import ImprecisionModel
+import IndirectnessModel
 import Model
 import Text.Model
 import Report.Model
@@ -69,6 +70,7 @@ isReady s =
   (hasStudyLimitations s) || 
   (hasImprecision s) ||
   (hasIncoherence s) ||
+  (hasIndirectness s) ||
   (hasHeterogeneity s)
 
 type ViewModel r = 
@@ -80,6 +82,7 @@ type ViewModel r =
   , hasStudyLimitations :: Boolean
   , hasImprecision :: Boolean
   , hasIncoherence :: Boolean
+  , hasIndirectness :: Boolean
   , studyLimitationsRule :: RobRule
   | r
   }
@@ -134,7 +137,7 @@ type ReportRow =
   , levels :: Array ReportLevel
   , judgement :: ReportLevel
   , imprecision :: ImprecisionBox
-  {--, indirectness :: IndirectnessBox--}
+  , indirectness :: IndirectnessBox
   {--, pubBias :: PubBiasBox--}
   }
 
@@ -144,11 +147,16 @@ hasDirects st = length (directRows st) > 0
 hasIndirects :: State -> Boolean
 hasIndirects st = length (indirectRows st) > 0
 
+
 hasImprecision :: State -> Boolean
 hasImprecision st = (st ^. _State <<< project <<< _Project 
                     <<< imprecision <<< _Imprecision)
                    ."status" == "ready"
 
+hasIndirectness :: State -> Boolean
+hasIndirectness st = (st ^. _State <<< project <<< _Project 
+                      <<< indirectness <<< _Indirectness)
+                     ."status" == "ready"
 
 hasIncoherence :: State -> Boolean
 hasIncoherence st = (st ^. _State <<< project <<< _Project 
@@ -182,6 +190,54 @@ getIndirects st =
                  <<< studies <<< _Studies
                  <<< indirectComparisons 
      in (sortBy comparisonsOrdering (map (stringToComparison ",") indirects))
+
+
+getIndirectness :: State -> Comparison -> IndirectnessBox
+getIndirectness st c = do
+  let boxs = st  ^. _State <<< project <<< _Project 
+              <<< indirectness <<< _Indirectness
+              <<< boxes
+  if hasIndirectness st then
+    let mbox = find (\ib -> 
+              isIdOfComparison (ib ^. _IndirectnessBox)."id" c
+              ) boxs 
+        levelsText = (st ^. _State <<< text <<< _TextContent
+                     <<< indirectnessText <<< _IndirectnessText)."levels"
+        getcolor = do
+           case mbox of 
+               Nothing -> "grey"
+               Just box -> let mlevel = (box ^. _IndirectnessBox)."levels" !! 
+                                        ((box ^. _IndirectnessBox)."judgement"
+                                        - 1)
+                             in case mlevel of 
+                                   Nothing -> "grey"
+                                   Just level -> (level ^.
+                                   _IndirectnessLevel)."color"
+        getLabel = do 
+          case mbox of 
+               Nothing -> "error"
+               Just box -> let mlabel = levelsText !!
+                                        ((box ^. _IndirectnessBox)."judgement"
+                                        - 1)
+                             in case mlabel of 
+                                   Nothing -> "error"
+                                   Just label -> label
+        getCustomized = do
+          case mbox of
+               Nothing -> false
+               Just box -> 
+                 (box ^. _IndirectnessBox)."judgement" /= 
+                   (box ^. _IndirectnessBox)."ruleLevel"
+     in case mbox of
+                 Nothing -> skeletonIndirectnessBox
+                 Just r -> (_IndirectnessBox <<< imprecisionboxcustomized .~
+                 getCustomized) (
+                           (_IndirectnessBox <<< imprecisionboxcolor .~ getcolor)(
+                  _IndirectnessBox <<< imprecisionboxlabel .~ getLabel $ r)
+                  )
+    else
+    skeletonIndirectnessBox
+
 
 
 getStudyLimitations :: State -> Array NetRob
@@ -379,6 +435,7 @@ getRows a comps =
              , heterogeneity: getHeterogeneity a s
              , incoherence: getIncoherence a s
              , imprecision: getImprecision a s
+             , indirectness: getIndirectness a s
              , judgement: skeletonReportLevel
              }) 
              $ filter (isSelectedComparison selects) comps
@@ -402,6 +459,7 @@ template a =
             , hasStudyLimitations : hasStudyLimitations a
             , hasIncoherence : hasIncoherence a
             , hasImprecision : hasImprecision a
+            , hasIndirectness: hasIndirectness a
             , studyLimitationsRule : getStudyLimitationsRule a
           }
         viewData = b

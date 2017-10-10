@@ -58,15 +58,14 @@ var Update = (model) => {
     getRule: () => {
       return updaters.getState().rule;
     },
-    selectRule: (rule) => {
-    },
     selectIndividual: (value) => {
       let [tid,tv] = value.value.split('σδel');
       let boxes = updaters.getState().boxes;
       let tbc = _.find(boxes, m => {
         return m.id === tid;
       });
-      let rulevalue = deepSeek(_.find(tbc.rules, r => {return r.id === updaters.getRule()}),'value');
+      let rulevalue = tbc.ruleLevel;
+      tbc.customized = tbc.judgement === tbc.ruleLevel;
       // console.log('tid tv',tid,tv,'rule',rulevalue);
       if(parseInt(tv) !== rulevalue){
         if((tbc.judgement === 'nothing')||(tbc.judgement === rulevalue)){
@@ -156,9 +155,12 @@ var Update = (model) => {
           });
           return {
             id: d[0],
-            judgement: 'nothing',
+            judgement: -1,
+            customized: false,
+            ruleLevel: -1,
             color: '',
             contributions,
+            levels : deepSeek(model,'getState().defaults.netIndrLevels'),
             rules: [{ 
                 id: 'majRule',
                 name: model.getState().text.NetIndr.rules.majRule, 
@@ -210,12 +212,13 @@ var Update = (model) => {
     },
     selectRule: (rule) => {
       let nrstate = updaters.getState();
-      console.log("RURLRRRLLRLSLSLSSEEE",rule.value,updaters.getState());
       nrstate.rule = rule.value;
       nrstate.status = 'ready';
       let boxes = updaters.getState().boxes; 
       _.map(boxes, m => {
         m.judgement = _.find(m.rules,mr =>{return mr.id===rule.value}).value;
+        m.ruleLevel = m.judgement; 
+        m.customized = false;
       });
       updaters.saveState();
       Messages.alertify().success(model.getState().text.NetIndr.LimitationsSet);

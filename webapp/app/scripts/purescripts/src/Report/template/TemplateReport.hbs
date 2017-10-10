@@ -19,8 +19,6 @@
             <th>Number of Studies</th>
             <th>
               Study Limitations
-            <br>
-              Rule: {{studyLimitationsRule.label}}
             </th>
             <th>
               Imprecision
@@ -37,9 +35,9 @@
             <th>
               Publication bias
             </th>
-            <th>
-              Confidence rating
-            </th>
+            {{!-- <th> --}}
+              {{!-- Confidence rating --}}
+            {{!-- </th> --}}
           </tr>
         </thead>
         <tbody>
@@ -69,22 +67,22 @@
                 <td style="background-color:{{incoherence.color}}"  {{# if incoherence.customized}} class='customized-report'{{/if}}>
                   {{incoherence.label}}
                 </td>
-                <td>
-                  --
+                <td style="background-color:{{indirectness.color}}"  {{# if indirectness.customized}} class='customized-report'{{/if}}>
+                  {{indirectness.label}}
                 </td>
                 <td>
                   --
                 </td>
-                <td>
-                  High
-                  <!-- <select> -->
-                  <!--   {{#each levels}} -->
-                  <!--     <option value="{{id}}σδεl{{../id}}"> -->
-                  <!--       {{label}} -->
-                  <!--     </option> -->
-                  <!--   {{/each}} -->
-                  <!-- </select> -->
-                </td>
+                {{!-- <td> --}}
+                  {{!-- High --}}
+                  {{!-- <!-- <select> --> --}}
+                  {{!-- <!--   {{#each levels}} --> --}}
+                  {{!-- <!--     <option value="{{id}}σδεl{{../id}}"> --> --}}
+                  {{!-- <!--       {{label}} --> --}}
+                  {{!-- <!--     </option> --> --}}
+                  {{!-- <!--   {{/each}} --> --}}
+                  {{!-- <!-- </select> --> --}}
+                {{!-- </td> --}}
               </tr>
             {{/each}}
           {{/if}}
@@ -114,22 +112,22 @@
                 <td style="background-color:{{incoherence.color}}"  {{# if incoherence.customized}} class='customized-report'{{/if}}>
                   {{incoherence.label}}
                 </td>
-                <td>
-                  --
+                <td style="background-color:{{indirectness.color}}"  {{# if indirectness.customized}} class='customized-report'{{/if}}>
+                  {{indirectness.label}}
                 </td>
                 <td>
                   --
                 </td>
-                <td>
-                  High
-                  <!-- <select> -->
-                  <!--   {{#each levels}} -->
-                  <!--     <option value="{{id}}σδεl{{../id}}"> -->
-                  <!--       {{label}} -->
-                  <!--     </option> -->
-                  <!--   {{/each}} -->
-                  <!-- </select> -->
-                </td>
+                {{!-- <td> --}}
+                  {{!-- High --}}
+                  {{!-- <!-- <select> --> --}}
+                  {{!-- <!--   {{#each levels}} --> --}}
+                  {{!-- <!--     <option value="{{id}}σδεl{{../id}}"> --> --}}
+                  {{!-- <!--       {{label}} --> --}}
+                  {{!-- <!--     </option> --> --}}
+                  {{!-- <!--   {{/each}} --> --}}
+                  {{!-- <!-- </select> --> --}}
+                {{!-- </td> --}}
               </tr>
             {{/each}}
           {{/if}}

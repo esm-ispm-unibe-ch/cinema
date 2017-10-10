@@ -20,13 +20,6 @@ var View = (model) => {
         });
         let rulevalue = deepSeek(_.find(dc.rules, r => {return r.id === viewers.getRule()}),'value');
         return _.extend(dc,{ 
-          customized: () => {
-            if ((dc.judgement !== 'nothing')&&(rulevalue !== dc.judgement)){
-              return true;
-            }else{
-              return false;
-            }
-          },
           judgements: () => {
             let lims = _.union([{
               id:'nothing',

@@ -1,5 +1,5 @@
 var Model = require('./model.js').Model;
-let version = "0.0.6";
+let version = "0.0.7";
 
 Model.init(version);
 window.Actions = Model.Actions;
