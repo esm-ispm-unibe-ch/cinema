@@ -140,6 +140,7 @@ var Update = (model) => {
       RoB.update.updateState(model);
       Imprecision.update.updateState(model);
       Inconsistency.update.updateState(model);
+      Indirectness.update.updateState(model);
       ClinicalImportance.update.updateState(mdl)(mdl);
     },
     fetchContributionMatrix: (ncm) => {
@@ -522,8 +523,9 @@ var Update = (model) => {
 var children = [
   RoB,
   ClinicalImportance,
+  Indirectness,
   Imprecision,
-  Inconsistency
+  Inconsistency,
   ];
 
 module.exports = () => {

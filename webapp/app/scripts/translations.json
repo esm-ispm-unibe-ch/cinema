@@ -117,6 +117,11 @@
       "directIndrSet": "Direct Indiretness Updated",
       "resetConfirm": ["Reset?","All changes will be lost"]
     },
+    "IndrChart": {
+      "title": "Indirectness contributions",
+      "subtitle": "The bar chart shows the contributions of each piece of direct evidence to the network estimate",
+      "saveButton": "Save Chart"
+    },
     "directRob": {
       "title": "Evaluate study limitations",
       "selectionTitle": "Select how to summarize risk of bias across studies for each direct estimate",
@@ -145,6 +150,33 @@
                 , "Clinical importance value will be set to default"
                 , "Reset successful"
                 ]
+    },
+    "NetIndr": {
+      "levels":[
+        "No serious",
+        "Serious",
+        "Very Serious"
+      ],
+      "title": "Evaluate indirectness",
+      "selectionTitle": "Select how to summarize indirectness across contributions for each network estimate",
+      "mixedtitle": "mixed",
+      "indirecttitle": "indirect",
+      "directtitle": "direct",
+      "rules": {
+        "noRule": "--",
+        "majRule": "Majority",
+        "meanRule": "Average",
+        "maxRule": "Highest"
+      },
+      "defaultTitle": "Selected rule:",
+      "customizedpreSingular": "Judgement for",
+      "customizedprePlural": "Judgements for",
+      "customizedTitleSingular": "comparison was manually updated",
+      "customizedTitlePlural": "comparisons were manually updated",
+      "resetButton": "Reset",
+      "resetConfirm": ["Reset?","All changes will be lost","Indirectness cleared"],
+      "judgementField": "NMA judgement",
+      "LimitationsSet": "Indirectness Updated"
     },
     "NetRob": {
       "levels":[

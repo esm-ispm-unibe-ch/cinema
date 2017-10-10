@@ -3,19 +3,18 @@ var uniqId = require('../../lib/mixins.js').uniqId;
 
 
 var View = (model) => {
-  let modelPosition = 'getState().project.netRob.ConChart';
+  let modelPosition = 'getState().project.indirectness.IndrChart';
   let viewers = {
-    drobReady: () => {
+    dirsReady: () => {
       let isready = false;
-      if (deepSeek(model,'getState().project.DirectRob.status')==='ready'){
+      if (deepSeek(model,'getState().project.indirectness.directs.status')==="ready"){
         isready = true;
       }
       return isready;
     },
     isReady: () => {
       let isready = false;
-      let  conchartstate = deepSeek(model,'getState().project.netRob.ConChart');
-      if (viewers.drobReady() && (typeof conchartstate !== 'undefined')){
+      if (viewers.dirsReady()){
         isready = true;
       }
       return isready;
@@ -38,17 +37,18 @@ var View = (model) => {
           rowNames = rowNames.concat(cm.indirectRowNames);
         }
         // rowNames = rowNames.concat('Entire network');
-      let comps = m.studies.directComparisons;
+      let comps = deepSeek(model,'getState().project.indirectness.directs.directBoxes');
+      let levels = deepSeek(model,'getState().project.indirectness.netindr.levels');
       let cc = _.map(colNames, cn =>{
         let dc = _.find(comps, c => {
           let cid = uniqId([c.t1.toString(),c.t2.toString()]);
           let cnid = uniqId(cn.split(':'));
           return _.isEqual(cid,cnid);
         });
-        return {id:cn, rob:dc.directRob};
+        return {id:cn, indr:dc.judgement};
       });
       let ccm = _.object(rowNames,_.map(pers,per=>{
-        let a = _.zip(_.map(cc,cdc=>{return {comp:cdc.id,rob:cdc.rob};}),
+        let a = _.zip(_.map(cc,cdc=>{return {comp:cdc.id,indr:cdc.indr};}),
         _.map(per,p=>{return {cont:p};}));
         a = _.map(a, aa =>{
           return _.extend(aa[0],aa[1]);
@@ -57,7 +57,7 @@ var View = (model) => {
       }));
       let dts = _.map(ccm, r => {
         return _.sortBy(r, c => {
-          return c.rob;
+          return c.indr;
         });
       });
       let dtsps = _.map(dts[0], (r,i) => {
@@ -65,15 +65,15 @@ var View = (model) => {
       });
       let dtsts = _.map(dts[0], (c,i) => {
         let dt = {};
-        switch(c.rob){
+        switch(parseInt(c.indr)){
           case 1:
-            dt.backgroundColor = m.robLevels[0].color;
+            dt.backgroundColor = levels[0].color;
           break;
           case 2:
-            dt.backgroundColor = m.robLevels[1].color;
+            dt.backgroundColor = levels[1].color;
           break;
           case 3:
-            dt.backgroundColor = m.robLevels[2].color;
+            dt.backgroundColor = levels[2].color;
           break;
         }
         dt.label = c.comp;

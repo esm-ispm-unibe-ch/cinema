@@ -8,10 +8,10 @@ var convertHTML = require('html-to-vdom')({
 });
 
 var Template = (model,children) => {
-    var tmpl = GRADE.templates.netrob(
-      _.extend(View(model),{text:model.getState().text.NetRob})
+    var tmpl = GRADE.templates.netindr(
+      _.extend(View(model),{text:model.getState().text.NetIndr})
     );
-    return h('div#directRob.col-xs-12',convertHTML(tmpl));
+    return h('div#NetIndr.col-xs-12',convertHTML(tmpl));
 }
 
 module.exports = () => {

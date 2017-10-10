@@ -1,33 +1,30 @@
 var deepSeek = require('safe-access');
 var clone = require('../../lib/mixins.js').clone;
 var Messages = require('../../messages.js').Messages;
-//var NetIndr = require('../netIndr.js')();
+var NetIndr = require('../netboxes/netboxes.js')();
+var IndrChart = require('../indrchart/indrchart.js')();
 
 var children = [
-  //NetRoB
+    IndrChart
+  , NetIndr
   ];
 
 var Update = (model) => {
   //update functions will only change state in that node of the model DAG
-  let modelPosition = 'project.indirectness';
+  let modelPosition = 'project.indirectness.directs';
   let directComparisons = deepSeek(model.getState(),'project.studies.directComparisons');
   let updaters = {
     getState: () => {
-      return deepSeek(model,'getState().project.indirectness');
+      return deepSeek(model,'getState().project.indirectness.directs');
     },
     updateState: (model) => {
-      //console.log('updating state form directindr');
       if (deepSeek(model,'getState().project.CM.currentCM.status') !== 'ready'){
 	updaters.setState(updaters.skeletonModel());
-        console.log('updating state indir',updaters.getState());
       }else{
-	let isReady = _.any(directComparisons, dc => {
-	  return _.isUndefined(dc.directIndr);
-	});
-	if ((isReady===true)|| _.isUndefined(updaters.getState())){
-	  updaters.resetindirectness();
+	if (_.isUndefined(updaters.getState())){
+          updaters.setState(updaters.skeletonModel());
 	}else{
-	  //console.log('indirectness model ready');
+          //console.log("Direct indirectness READY");
 	}
       }
       _.map(children, c => { c.update.updateState(model);});
@@ -39,38 +36,42 @@ var Update = (model) => {
       });
       return indrs;
     },
-    resetindirectness: () => {
-      _.map(directComparisons, dc => {
-        dc.directIndr = 'nothing';
-      });
-      updaters.setState(updaters.skeletonModel());
-    },
     setState: (newState) => {
       if(typeof deepSeek(model,'getState().project') !== 'undefined'){
-        model.getState().project.indirectness = newState;
+        model.getState().project.indirectness = {
+          directs: newState
+        };
         updaters.saveState();
       }else{
-        console.log("lathos!!")
+        console.log("lathos!! indirectness")
       }
     },
     selectindr: (rule) => {
       let drstate = updaters.getState();
       drstate.rule = rule.value;
       drstate.status = 'ready';
-      _.map(deepSeek(model.getState(),'project.studies.directComparisons'), dc => {
+      _.map(updaters.getState().directBoxes, dc => {
         dc.directIndr = dc[rule.value];
       });
       updaters.saveState();
       Messages.alertify().success(model.getState().text.directIndr.directIndrSet);
       //console.log('the rule you picked was', rule.value);
     },
-    selectAll: value => {
-      console.log("you have selected all to be", value);
+    setAll: value => {
+      let v = value.value;
+      let out = updaters.getState();
+      let dcs = _.map(updaters.getState().directBoxes,box => {
+        box.judgement = v;
+        return box
+      });
+      out.directBoxes = dcs;
+      out.status = "ready";
+      updaters.setState(out);
     },
     selectIndividual: (value) => {
       let [tid,tv] = value.value.split('σδel');
-      let tbc = _.find(directComparisons, dc => {
-        return dc.id === tid;
+      let tbc = _.find(updaters.getState().directBoxes, dc => {
+        return dc.id.toString() === tid.toString();
       });
       if(parseInt(tv) !== tbc[updaters.getState().rule]){
         if((tbc.directIndr === 'nothing')||(tbc.directIndr === tbc[updaters.getState().rule])){
@@ -79,12 +80,15 @@ var Update = (model) => {
       }else{
         updaters.getState().customized -= 1;
       }
-      tbc.directIndr = parseInt(tv);
+      tbc.judgement = parseInt(tv);
       updaters.getState().status = 'selecting';
       updaters.saveState();
       updaters.getState().status = 'ready';
       Messages.alertify().success(tid.replace(',',':')+' '+model.getState().text.directIndr.directIndrSet);
       updaters.saveState();
+    },
+    resetDirectIndr: () => {
+      updaters.setState(updaters.skeletonModel());
     },
     saveState: () => {
       model.saveState();
@@ -92,11 +96,25 @@ var Update = (model) => {
     },
     skeletonModel: () => {
       let levels = updaters.indrLevels();
+      let directBoxes = clone(deepSeek(model,'getState().project.studies.directComparisons'));
+      _.map(directBoxes, box => {box.judgement = "nothing"; return box});
+      let hd = (() => {
+        let out = false;
+        if (typeof deepSeek(directBoxes,'[0].majindr') !== 'undefined'){
+          out = directBoxes[0].majindr !== -1;
+        }else{
+          out = false;
+        }
+        return out;
+      })();
       return { 
         status: 'noindr',// noindr, editing, ready
-        rule: 'noindr', // noindr, majindr, meanindr, maxindr
+        rule: 'noindr', // noindr, manual, majindr, meanindr, maxindr
         levels,
-        customized: 0
+        hasData: false, //
+        //hasData: hd, 
+        directBoxes,
+        customized: 0,
       }
     },
     clickedMe: () => {

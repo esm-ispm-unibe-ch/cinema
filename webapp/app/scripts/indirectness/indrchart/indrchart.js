@@ -12,7 +12,7 @@ var ConChart = {
   view: {
     register: (model) => {
       ConChart.model = model;
-      model.Actions.ConChart = ConChart.actions;
+      model.Actions.IndrChart = ConChart.actions;
     },
   },
   update: {
@@ -28,14 +28,14 @@ var ConChart = {
     }
   },
   afterRender: (model) => {
-    if($('#barChartContainer').is(':empty')){
+    if($('#IndrChartContainer').is(':empty')){
       ConChart.destroyRender(model);
       let chartData = View(model).createChart();
       let nrows = chartData.labels.length;
       let ndirects = chartData.datasets.length;
       let chartHeight = 15 * nrows;
-      $('#barChartContainer').append('<canvas style="display:none" id=\'barChartPrinterFriendly\' width=\'300\' height=\''+chartHeight+'\'></chart>');
-      let ctxp = document.getElementById('barChartPrinterFriendly');
+      $('#IndrChartContainer').append('<canvas style="display:none" id=\'IndrChartPrinterFriendly\' width=\'300\' height=\''+chartHeight+'\'></chart>');
+      let ctxp = document.getElementById('IndrChartPrinterFriendly');
       ConChart.barChart = new Chart(ctxp, {
         type: 'horizontalBar',
         data:  chartData,
@@ -59,8 +59,8 @@ var ConChart = {
           },
         }
       })
-      $('#barChartContainer').append('<canvas style="display:visible" id=\'barChart\' width=\'400\' height=\''+chartHeight+'\'></chart>');
-      let ctx = document.getElementById('barChart');
+      $('#IndrChartContainer').append('<canvas style="display:visible" id=\'IndrChart\' width=\'400\' height=\''+chartHeight+'\'></chart>');
+      let ctx = document.getElementById('IndrChart');
       ConChart.barChart = new Chart(ctx, {
         type: 'horizontalBar',
         data:  chartData,
@@ -85,7 +85,6 @@ var ConChart = {
         }
       })
     }else{
-      // console.log('already rendered bar chart');
     }
   },
   destroyRender: (model) => {
@@ -93,7 +92,7 @@ var ConChart = {
     if (! _.isUndefined(ConChart.barChart)){
       ConChart.barChart.destroy();
     }
-    $('#barChartContainer').empty();
+    $('#IndrChartContainer').empty();
   },
   renderChildren: [
   ],

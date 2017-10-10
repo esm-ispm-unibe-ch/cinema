@@ -2,55 +2,69 @@
   <h3 id="directIndrTitle" data-toggle="collapse"
     data-parent="#directSelectionWrapper"
     class="directTitle"
-    data-target="#indrSelector">{{text.title}}</h3>
+    data-target="#indrSelector">
+    {{#if statusReady}}
+      Indirectness for direct evidence is evaluated
+    {{else}}
+      {{text.title}}
+    {{/if}}
+  </h3>
   <div class='form-inline'>
+    {{#if hasData}}
     {{#unless statusReady}}
       <label class=' controls-title mr-sm-2'>
         {{text.selectionTitle}}
       </label>
-      <select onChange="Actions.DirectIndr.selectindr(this)" {{#if statusReady}}
-        disabled {{/if}} class='mr-sm-2 form-inline form-control'>
-        {{#each rulesselections}}
-          {{#if isAvailable}}
-            <option value="{{value}}" {{#if isDisabled}} disabled {{/if}} {{#if isActive}} selected{{/if}}>
-            {{label}}
-            </option>
-          {{/if}}
-        {{/each}}
-      </select>
-      {{/unless}}
-      {{#if statusReady}}
-        <label class=' controls-title mr-sm-2'>
-          {{text.defaultTitle}}
-          {{ruleName}}
-        </label>
-        {{#if customized}}
-          <br>
-          <label class=' controls-title mr-sm-2'>
-            {{#if customizedSingular}}
-              {{text.customizedPreSingular}}
-              {{numberCustomized}}
-              {{text.customizedTitleSingular}}
-            {{else}}
-              {{text.customizedPrePlural}}
-              {{numberCustomized}}
-              {{text.customizedTitlePlural}}
+        <select onChange="Actions.DirectIndr.selectindr(this)" {{#if statusReady}}
+          disabled {{/if}} class='mr-sm-2 form-inline form-control'>
+          {{#each rulesselections}}
+            {{#if isAvailable}}
+              <option value="{{value}}" {{#if isDisabled}} disabled {{/if}} {{#if isActive}} selected{{/if}}>
+              {{label}}
+              </option>
             {{/if}}
+          {{/each}}
+        </select>
+        {{/unless}}
+        {{#if statusReady}}
+          <label class=' controls-title mr-sm-2'>
+            {{text.defaultTitle}}
+            {{ruleName}}
           </label>
+          {{#if customized}}
+            <br>
+            <label class=' controls-title mr-sm-2'>
+              {{#if customizedSingular}}
+                {{text.customizedPreSingular}}
+                {{numberCustomized}}
+                {{text.customizedTitleSingular}}
+              {{else}}
+                {{text.customizedPrePlural}}
+                {{numberCustomized}}
+                {{text.customizedTitlePlural}}
+              {{/if}}
+            </label>
+          {{/if}}
         {{/if}}
-      {{/if}}
-    {{text.setAllTitle}}
-    <select  onchange="Actions.DirectIndr.setAll(this);" class="{{#if statusReady}} disabled{{/if}}"> 
-      <option value="low">
-      {{text.allLow}}
-      </option>
-      <option value="moderate">
-      {{text.allModerate}}
-      </option>
-      <option value="high">
-      {{text.allHigh}}
-      </option>
-    </select>
+    {{else}}
+      {{#unless statusReady}}
+        {{text.setAllTitle}}
+        <select  onchange="Actions.DirectIndr.setAll(this);" class="{{#if statusReady}} disabled{{/if}}"> 
+          <option value="--" disabled selected>
+            --
+          </option>
+          <option value="1">
+            {{text.allLow}}
+          </option>
+          <option value="2">
+            {{text.allModerate}}
+          </option>
+          <option value="3">
+            {{text.allHigh}}
+          </option>
+        </select>
+      {{/unless}}
+    {{/if}}
     <button onClick="Actions.DirectIndr.resetDirectIndr()" class="pull-right btn btn-default
       {{#unless statusReady}} disabled{{/unless}}"> {{text.resetButton}} </button>
   </div>
@@ -86,7 +100,13 @@
             Sample size: <strong class='pull-right'>{{sampleSize}}</strong>
             {{/if}}
               <hr>
-          </li><li>
+          </li>
+          {{#if ../hasData}}
+            <li>
+              has datat blkjsf
+            </li>
+          {{/if}}
+          <li>
             Judgement:
             <select onChange="Actions.DirectIndr.selectIndividual(this)"
               {{#unless ../statusReady}} disabled {{/unless}} class='pull-right mr-sm-2 controls-container'>

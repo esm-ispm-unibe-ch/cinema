@@ -1,20 +1,21 @@
 var deepSeek = require('safe-access');
 
 var View = (model) => {
-  let NetRobModelPosition = 'getState().project.netRob.studyLimitations';
+  let NetIndrModelPosition = 'getState().project.indirectness.netindr';
   let viewers = {
     makeBoxes: (comparisons) => {
       let project =  deepSeek(model,'getState().project');
       let boxes = _.map(comparisons, dc => {
         dc.color = (() => {
           let color = '';
-          let level = _.find(model.getState().project.studyLimitationLevels, l => {return l.id === dc.judgement});
+          let level = _.find(viewers.getState().levels, l => {return l.id === dc.judgement});
           if (typeof level !== 'undefined'){
             color = level.color;
           }
           return color;
         })(),
         _.map(dc.rules, r => {
+          r.label = model.getState().text.NetIndr.levels[r.value - 1]; 
           return r.isActive = viewers.getRule()===r.id;
         });
         let rulevalue = deepSeek(_.find(dc.rules, r => {return r.id === viewers.getRule()}),'value');
@@ -31,9 +32,10 @@ var View = (model) => {
               id:'nothing',
               label: '--',
               isDisabled: true
-            }], model.getState().project.studyLimitationLevels);
+            }], model.getState().project.indirectness.netindr.levels);
             _.map(lims, r => {
-              if( dc.judgement === r.id){
+              r.label = model.getState().text.NetIndr.levels[r.id - 1]; 
+              if(parseInt(dc.judgement) === parseInt(r.id)){
                 r.isActive = true;
               }else{
                 r.isActive = false;
@@ -45,44 +47,45 @@ var View = (model) => {
       });
       return boxes;
     },
-    boxes: () => {
-      return viewers.makeBoxes(viewers.getState().boxes);
+    boxs: () => {
+      let out = viewers.makeBoxes(viewers.getState().boxes);
+      return out;
     },
     indirect: () => {
       return viewers.makeBoxes(viewers.getState().indirect);
     },
     ruleName: () => {
-      return model.getState().text.NetRob.rules[viewers.getRule()]; 
+      return model.getState().text.NetIndr.rules[viewers.getRule()]; 
     },
     getState: () => {
-      return deepSeek(model, NetRobModelPosition);
+      return deepSeek(model, NetIndrModelPosition);
     },
     getRule: () => {
-      return deepSeek(model, NetRobModelPosition+'.rule');
+      return deepSeek(model, NetIndrModelPosition+'.rule');
     },
     getStatus: () => {
-      return deepSeek(model, NetRobModelPosition+'.status');
+      return deepSeek(model, NetIndrModelPosition+'.status');
     },
     customized: () => {
-      return deepSeek(model, NetRobModelPosition+'.customized')>0;
+      return deepSeek(model, NetIndrModelPosition+'.customized')>0;
     },
     customizedSingular: () => {
       return viewers.numberCustomized()===1;
     },
     numberCustomized: () => {
-      return deepSeek(model, NetRobModelPosition+'.customized');
+      return deepSeek(model, NetIndrModelPosition+'.customized');
     },
-    drobReady: () => {
+    dindrReady: () => {
       let isready = false;
-      if (deepSeek(model,'getState().project.DirectRob.status')==='ready'){
+      if (deepSeek(model,'getState().project.indirectness.directs.status')==='ready'){
         isready = true;
       }
       return isready;
     },
     isReady: () => {
       let isready = false;
-      let  NetRobState = deepSeek(model,'getState().project.netRob.studyLimitations');
-      if (viewers.drobReady() && (typeof NetRobState !== 'undefined')){
+      let  NetIndrState = deepSeek(model,'getState().project.indirectness.netindr');
+      if (viewers.dindrReady() && (typeof NetIndrState !== 'undefined')){
         isready = true;
       }
       return isready;
@@ -93,26 +96,26 @@ var View = (model) => {
     rulesselections: () => {
       return [
         {
-          label: model.getState().text.NetRob.rules.noRule, 
+          label: model.getState().text.NetIndr.rules.noRule, 
           value: 'noRule',
           isActive: viewers.getStatus() === 'noRule',
           isAvailable: viewers.getStatus() === 'noRule',
           isDisabled: true
         },
         {
-          label: model.getState().text.NetRob.rules.majRule, 
+          label: model.getState().text.NetIndr.rules.majRule, 
           value: 'majRule',
           isActive: viewers.getRule() === 'majRule',
           isAvailable: true
         },
         {
-          label: model.getState().text.NetRob.rules.meanRule, 
+          label: model.getState().text.NetIndr.rules.meanRule, 
           value: 'meanRule',
           isActive: viewers.getRule() === 'meanRule',
           isAvailable: true
         },
         {
-          label: model.getState().text.NetRob.rules.maxRule, 
+          label: model.getState().text.NetIndr.rules.maxRule, 
           value: 'maxRule',
           isActive: viewers.getRule() === 'maxRule',
           isAvailable: true

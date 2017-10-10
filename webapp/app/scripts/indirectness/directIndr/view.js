@@ -2,24 +2,23 @@ var deepSeek = require('safe-access');
 var ComparisonModel = require('../../purescripts/output/ComparisonModel');
 
 var View = (model) => {
-  let DirectIndrModelPosition = 'getState().project.indirectness';
+  let DirectIndrModelPosition = 'getState().project.indirectness.directs';
   let viewers = {
     getState: () => {
-      return deepSeek(model,'getState().project.indirectness');
+      return deepSeek(model,'getState().project.indirectness.directs');
     },
     directComparisons: () => {
-      let directs = deepSeek(model,'getState().project.studies.directComparisons');
+      let directs = viewers.getState().directBoxes;
       let project =  deepSeek(model,'getState().project');
-      console.log("project",project);
       _.map(directs, dc => {
         dc = _.extend(dc,{
-          maxindrName: viewers.getState().levels[dc.maxindr-1].label,
-          meanindrName: viewers.getState().levels[dc.meanindr-1].label,
-          majindrName: viewers.getState().levels[dc.meanindr-1].label,
+          maxindrName: dc.maxindr !== -1? viewers.getState().levels[dc.maxindr-1].label:"--",
+          meanindrName: dc.meanindr !== -1? viewers.getState().levels[dc.meanindr-1].label:"--",
+          majindrName: dc.meanindr !== -1? viewers.getState().levels[dc.meanindr-1].label:"--",
           color: () => {
-            let level = _.find(model.getState().defaults.indrLevels,
+            let level = _.find(viewers.getState().levels,
               indr => {
-                return indr.id === dc.directIndr;
+                return indr.id.toString() === dc.judgement.toString();
             });
             let out = "";
             if(typeof level !== 'undefined'){
@@ -28,8 +27,12 @@ var View = (model) => {
             return out;
           },
           customized: () => {
-            if ((dc.directIndr !== 'nothing')&&(dc[viewers.getRule()] !== dc.directIndr)){
-              return true;
+            if (viewers.hasData()){
+              if ((dc.judgement !== 'nothing')&&(dc[viewers.getRule()] !== dc.judgement)){
+                return true;
+              }else{
+                return false;
+              }
             }else{
               return false;
             }
@@ -39,9 +42,9 @@ var View = (model) => {
               id:'nothing',
               label: '--',
               isDisabled: true
-            }],model.getState().project.indrLevels);
+            }],viewers.getState().levels);
             _.map(indrsels, r => {
-              if( dc.directIndr === r.id){
+              if( dc.judgement.toString() === r.id.toString()){
                 r.isActive = true;
               }else{
                 r.isActive = false;
@@ -82,6 +85,9 @@ var View = (model) => {
       }
       return isReady;
     },
+    hasData: () => {
+      return deepSeek(model, 'getState().project.indirectness.directs.hasData');
+    },
     statusReady: () => {
       return viewers.getStatus() === 'ready';
     },
@@ -94,7 +100,7 @@ var View = (model) => {
           label: model.getState().text.directIndr.noindr, 
           value: 'noindr',
           isActive: viewers.getStatus() === 'noindr',
-          isAvailable: viewers.getStatus() === 'noindr',
+          isAvailable: true,
           isDisabled: true
         },
         {

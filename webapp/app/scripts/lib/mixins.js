@@ -116,7 +116,6 @@ let majrule = (values) => {
         return -vs.length;
       }
     );
-  console.log("sbv",sbv);
   return sbv[0][0];
 }
 
@@ -134,8 +133,8 @@ let maxrule = (values) => {
 }
 
 module.exports = {
-  majrule,
   meanrule,
+  majrule,
   maxrule,
   focusTo: focusTo,
   bindTableResize: bindTableResize,

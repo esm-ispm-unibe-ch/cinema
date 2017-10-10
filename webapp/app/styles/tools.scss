@@ -85,7 +85,7 @@ col.rowHeader {
 
 //ROB selector
 
-.compRobSelector, .compSelector{
+.compIndrSelector, .compRobSelector, .compSelector{
   width:310px;
   margin: 6px;
   padding:5px 11px 5px 11px!important;
@@ -102,7 +102,7 @@ col.rowHeader {
       margin-bottom:2px!important;
     }
   }
-  .robLabel{
+  .indrLabel, .robLabel{
     color:grey;
   }
   .isSelected{

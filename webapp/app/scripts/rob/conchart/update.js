@@ -39,8 +39,8 @@ var Update = (model) => {
       }
     },
     save: () => {
-      $('#barChartPrinterFriendly').get(0).toBlob(function(blob) {
-        saveAs(blob, model.getState().project.filename+'_chart.png');
+      $('#barChart').get(0).toBlob(function(blob) {
+        saveAs(blob, model.getState().project.filename+'_RoB_chart.png');
       });
     }
   }

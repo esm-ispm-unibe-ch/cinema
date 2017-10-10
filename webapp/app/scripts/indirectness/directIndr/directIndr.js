@@ -2,7 +2,8 @@ var Messages = require('../../messages.js').Messages;
 var Update = require('./update.js')();
 var View = require('./view.js')();
 var Template = require('./template.js')();
-//var NetIndr = require('../netIndr.js')();
+var NetIndr = require('../netboxes/netboxes.js')();
+var IndrChart = require('../indrchart/indrchart.js')();
 
 var DirectIndr = {
   //actions will trigered by hml actions and other msgs 
@@ -30,8 +31,7 @@ var DirectIndr = {
       DirectIndr.model = model;
       model.Actions.DirectIndr = DirectIndr.actions;
       _.map(DirectIndr.renderChildren, c => {c.view.register(model)});
-      //NetIndr.view.register(model);
-      console.log("uncomment directIndr line 30");
+      NetIndr.view.register(model);
     },
   },
   update: {
@@ -49,7 +49,8 @@ var DirectIndr = {
     _.map(DirectIndr.renderChildren, c => {return c.afterRender(model);});
   },
   renderChildren: [
-    //NetIndr
+    IndrChart
+  , NetIndr
   ],
 }
 

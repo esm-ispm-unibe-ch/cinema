@@ -3,38 +3,38 @@ var Update = require('./update.js')();
 var View = require('./view.js')();
 var Template = require('./template.js')();
 
-var NetRob = {
+var NetIndr = {
   //actions will trigered by hml actions and other msgs 
   actions: {
-    resetNetRob: () => {
-      let [title,msg,successmsg] = NetRob.model.getState().text.NetRob.resetConfirm;
+    resetNetIndr: () => {
+      let [title,msg,successmsg] = NetIndr.model.getState().text.NetIndr.resetConfirm;
       Messages.alertify().confirm(title,msg,
         () => {
-          Update(NetRob.model).resetNetRob();
+          Update(NetIndr.model).resetNetIndr();
           Messages.alertify().message(successmsg);
         },() => {});
     },
     selectRule: (rule) => {
-      Update(NetRob.model).selectRule(rule);
+      Update(NetIndr.model).selectRule(rule);
     },
     selectIndividual: (judgement) => {
-      Update(NetRob.model).selectIndividual(judgement);
+      Update(NetIndr.model).selectIndividual(judgement);
     },
   },
   view: {
     register: (model) => {
-      NetRob.model = model;
-      model.Actions.NetRob = NetRob.actions;
+      NetIndr.model = model;
+      model.Actions.NetIndr = NetIndr.actions;
     },
   },
   update: {
     updateState: (model) => {
-      Update(NetRob.model).updateState(model);
+      Update(NetIndr.model).updateState(model);
     },
   },
   render: (model) => {
     if(View(model).isReady()){
-      let children = _.map(NetRob.renderChildren, c => {return c.render(model);});
+      let children = _.map(NetIndr.renderChildren, c => {return c.render(model);});
       return Template(model,children);
     }else{
     }
@@ -47,5 +47,5 @@ var NetRob = {
 }
 
 module.exports = () => {
-  return NetRob;
+  return NetIndr;
 }

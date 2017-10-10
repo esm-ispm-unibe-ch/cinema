@@ -14,10 +14,10 @@ var children = [
 
 var Update = (model) => {
   //update functions will only change state in that node of the model DAG
-  let modelPosition = 'project.netRob.studyLimitations';
+  let modelPosition = 'project.indirectness.netindr';
   let updaters = {
     getState: () => {
-      return deepSeek(model,'getState().project.netRob.studyLimitations');
+      return deepSeek(model,'getState().project.indirectness.netindr');
     },
     cmReady: () => {
       let isready = false;
@@ -27,16 +27,16 @@ var Update = (model) => {
       }
       return isready;
     },
-    drobReady: () => {
+    dindrReady: () => {
       let isready = false;
-      if (deepSeek(model,'getState().project.DirectRob.status')==='ready'){
+      if (deepSeek(model,'getState().project.indirectness.directs.status')==='ready'){
         isready = true;
       }
       return isready;
     },
     updateState: (model) => {
       let mdl = model.getState();
-      if (updaters.drobReady()){
+      if (updaters.dindrReady()){
         if (deepSeek(updaters,'getState().status') === 'ready'){
         }else{
           updaters.setState(updaters.completeModel());
@@ -49,14 +49,14 @@ var Update = (model) => {
       });
     },
     setState: (newState) => {
-      if(deepSeek(model,"getState().project.netRob")){
-	model.getState().project.netRob.studyLimitations = newState;
+      if(typeof deepSeek(model,"getState().project.indirectness") !== 'undefined'){
+        model.getState().project.indirectness.netindr = newState;
 	updaters.saveState();
       }else{
       }
     },
     getRule: () => {
-      return deepSeek(model.getState(), modelPosition+'.rule');
+      return updaters.getState().rule;
     },
     selectRule: (rule) => {
     },
@@ -79,7 +79,7 @@ var Update = (model) => {
       updaters.getState().status = 'selecting';
       updaters.saveState();
       updaters.getState().status = 'ready';
-      Messages.alertify().success(model.getState().text.NetRob.LimitationsSet);
+      Messages.alertify().success(model.getState().text.NetIndr.LimitationsSet);
       updaters.saveState();
     },
     saveState: () => {
@@ -93,21 +93,20 @@ var Update = (model) => {
     },
     createEstimates: () => {
       let cm = model.getState().project.CM.currentCM;
-      let directRobs = _.object(_.map(model.getState().project.studies.directComparisons,
+      let directIndrs = _.object(_.map(model.getState().project.indirectness.directs.directBoxes,
         dc => {
           let colname = _.find(cm.colNames,cname => {
             let cid = uniqId([dc.t1.toString(),dc.t2.toString()]);
             let cnid = uniqId(cname.split(':'));
             return _.isEqual(cid,cnid);
           });
-          return [colname,dc.directRob];
+          return [colname,dc.judgement];
       }));
-      // console.log('cmdirectrows',cm,'directrobs',directRobs);
       let groupContributions = (contributions) => {
-        let res =  _.groupBy(_.toArray(contributions),'rob');
+        let res =  _.groupBy(_.toArray(contributions),'indr');
         res = _.map(res, r => {
           return {
-            rob: r[0].rob,
+            indr: parseInt(r[0].indr),
             percentage: _.reduce(_.pluck(r,'amount'), function(memo, num){ return memo + num; }, 0),
           };
         });
@@ -118,17 +117,17 @@ var Update = (model) => {
         res = _.reduce(res, (memo, r) => {
           let per = r.percentage;
           if(per > memo[1]){
-            return [r.rob,r.percentage];
+            return [r.indr,r.percentage];
           }else{
             return memo;
           }
         },[0,0]);
-        return {rob:res[0],percentage:res[1]};
+        return {indr:res[0],percentage:res[1]};
       };
       let meanRule = (contributions) => {
         let res = groupContributions(contributions);
         res = _.reduce(res, (memo,r) => {
-          return memo + (r.rob * r.percentage / 100);
+          return memo + (r.indr * r.percentage / 100);
         },0);
         // console.log(res,Math.round(res),'res');
         return Math.round(res);
@@ -136,8 +135,8 @@ var Update = (model) => {
       let maxRule = (contributions) => {
         let res = groupContributions(contributions);
         res = _.reduce(res, (memo, r) => {
-          if (r.rob > memo){
-            return r.rob;
+          if (r.indr > memo){
+            return r.indr;
           }else{
             memo;
           }
@@ -146,11 +145,12 @@ var Update = (model) => {
       };
       let makeRules = (rownames,colnames,studies) => {
         let project =  deepSeek(model,'getState().project');
+        let levels = deepSeek(model,'getState().defaults.netIndrLevels');
         return _.map(sortStudies(rownames,studies), d => {
           let contributions = _.object(colnames,(d[1]));
           contributions = _.mapObject(contributions, (amount,id) => {
             return {
-              rob: directRobs[id],
+              indr: directIndrs[id],
               amount
             }
           });
@@ -161,20 +161,20 @@ var Update = (model) => {
             contributions,
             rules: [{ 
                 id: 'majRule',
-                name: model.getState().text.NetRob.rules.majRule, 
-                label: project.studyLimitationLevels[majRule(contributions).rob-1].label,
-                value: majRule(contributions).rob,
+                name: model.getState().text.NetIndr.rules.majRule, 
+                label: levels[majRule(contributions).indr-1].label,
+                value: majRule(contributions).indr,
                 isActive : false
               },
               { id: 'meanRule',
-                name: model.getState().text.NetRob.rules.meanRule, 
-                label: project.studyLimitationLevels[meanRule(contributions)-1].label,
+                name: model.getState().text.NetIndr.rules.meanRule, 
+                label: levels[meanRule(contributions)-1].label,
                 value: meanRule(contributions),
                 isActive : false
               },
               { id: 'maxRule',
-                name: model.getState().text.NetRob.rules.maxRule, 
-                label: project.studyLimitationLevels[maxRule(contributions)-1].label,
+                name: model.getState().text.NetIndr.rules.maxRule, 
+                label: levels[maxRule(contributions)-1].label,
                 value: maxRule(contributions),
                 isActive : false
             }],
@@ -189,24 +189,28 @@ var Update = (model) => {
     },
     completeModel: () => {
       let boxes = updaters.createEstimates();
-      // console.log('boxes',boxes);
+      let levels = deepSeek(model,'getState().defaults.netIndrLevels');
       return { 
         status: 'noRule',// noRule, editing, ready
         rule: 'noRule', // noRule, majRule, meanRule, maxRule
         customized: 0,
+        levels, 
         boxes,
       }
     },
     skeletonModel: () => {
+      let levels = deepSeek(model,'getState().defaults.netIndrLevels');
       return { 
         status: 'not-ready',// noRule, editing, ready
         rule: 'noRule', // noRule, majRule, meanRule, maxRule
+        levels, 
         customized: 0,
         boxes: [],
       }
     },
     selectRule: (rule) => {
       let nrstate = updaters.getState();
+      console.log("RURLRRRLLRLSLSLSSEEE",rule.value,updaters.getState());
       nrstate.rule = rule.value;
       nrstate.status = 'ready';
       let boxes = updaters.getState().boxes; 
@@ -214,9 +218,9 @@ var Update = (model) => {
         m.judgement = _.find(m.rules,mr =>{return mr.id===rule.value}).value;
       });
       updaters.saveState();
-      Messages.alertify().success(model.getState().text.NetRob.LimitationsSet);
+      Messages.alertify().success(model.getState().text.NetIndr.LimitationsSet);
     },
-    resetNetRob: () => {
+    resetNetIndr: () => {
       updaters.setState(updaters.completeModel());
     },
   }

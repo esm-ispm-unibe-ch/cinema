@@ -9,10 +9,10 @@ var convertHTML = require('html-to-vdom')({
 
 var Template = (model,children) => {
   let view = View(model);
-    var tmpl = GRADE.templates.conchart(
-     _.extend(View(model),{ text:model.getState().text.ConChart})
+    var tmpl = GRADE.templates.indrchart(
+     _.extend(View(model),{ text:model.getState().text.IndrChart})
     );
-  return h('div#conChartContainer.col-md-offset-2.col-md-8.col-xs-12',convertHTML(tmpl));
+  return h('div#IndrChartWrapper.col-md-offset-2.col-md-8.col-xs-12',convertHTML(tmpl));
 }
 
 module.exports = () => {

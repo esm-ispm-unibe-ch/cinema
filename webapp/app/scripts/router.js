@@ -178,6 +178,9 @@ var Router = {
         if(child.route === 'rob'){
           RoB.afterRender(model);
         }
+        if(child.route === 'indirectness'){
+          Indirectness.afterRender(model);
+        }
       }
     }
   },

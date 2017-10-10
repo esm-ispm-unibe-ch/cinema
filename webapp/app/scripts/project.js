@@ -123,7 +123,6 @@ var PR = {
             return iv + au;
           },0);
         }
-        console.log("comparison",row);
         return row;
         });
       return _.sortBy(edges,e =>{return e.id});
