@@ -1,5 +1,5 @@
-var View = require('./view.js')();
 var h = require('virtual-dom/h');
+var View = require('./view.js')();
 var VNode = require('virtual-dom/vnode/vnode');
 var VText = require('virtual-dom/vnode/vtext');
 var convertHTML = require('html-to-vdom')({
@@ -8,11 +8,11 @@ var convertHTML = require('html-to-vdom')({
 });
 
 var Template = (model,children) => {
-    var tmpl = GRADE.templates.directrob(
-      _.extend(View(model),{text:model.getState().text.directRob})
+  let view = View(model);
+    var tmpl = GRADE.templates.indrchart(
+     _.extend(View(model),{ text:model.getState().text.IndrChart})
     );
-    let tmplchildren = _.map(children, c => {return c.render(model);});
-    return [h('div#directRob.col-xs-12',convertHTML(tmpl))].concat(_.flatten(tmplchildren));
+  return h('div#IndrChartWrapper.col-md-offset-2.col-md-8.col-xs-12',convertHTML(tmpl));
 }
 
 module.exports = () => {

@@ -1,5 +1,5 @@
 var deepSeek = require('safe-access');
-var ComparisonModel = require('../purescripts/output/ComparisonModel');
+var ComparisonModel = require('../../purescripts/output/ComparisonModel');
 
 var View = (model) => {
   let DirectRobModelPosition = 'getState().project.DirectRob';

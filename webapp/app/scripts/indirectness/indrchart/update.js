@@ -6,27 +6,27 @@ var children = [
 
 var Update = (model) => {
   //update functions will only change state in that node of the model DAG
-  let modelPosition = 'getState().project.netRob.ConChart';
+  let modelPosition = 'getState().project.indirectness.IndrChart';
   let updaters = {
     getState: () => {
       return deepSeek(model,modelPosition);
     },
-    drobReady: () => {
+    dirsReady: () => {
       let isready = false;
-      if (deepSeek(model,'getState().project.DirectRob.status')==='ready'){
+      if (deepSeek(model,'getState().project.indirectness.directs.status')==='ready'){
         isready = true;
       }
       return isready;
     },
     updateState: () => {
-      if ( updaters.drobReady() ){
+      if ( updaters.dirsReady() ){
         updaters.setState(updaters.skeletonModel());
       }
       _.map(children, c => { c.update.updateState(model);});
     },
     // this affects the whole node in the state.
     setState: (newState) => {
-      model.getState().project.netRob.ConChart = newState;
+      model.getState().project.indirectness.IndrChart = newState;
       updaters.saveState();
     },
     saveState: () => {
@@ -39,8 +39,9 @@ var Update = (model) => {
       }
     },
     save: () => {
-      $('#barChart').get(0).toBlob(function(blob) {
-        saveAs(blob, model.getState().project.filename+'_RoB_chart.png');
+      //$('#IndrChartPrinterFriendly').get(0).toBlob(function(blob) {
+      $('#IndrChart').get(0).toBlob(function(blob) {
+        saveAs(blob, model.getState().project.filename+'_indirectness_chart.png');
       });
     }
   }

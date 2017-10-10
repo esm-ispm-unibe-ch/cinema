@@ -507,7 +507,6 @@ var NP = {
     },
     setState: (np) => {
       NP.model.getState().project.NP = np;
-      console.log('npstate',NP.hasChanged);
       _.map(NP.children, c => {c.update.updateState()});
       NP.model.saveState();
     },
@@ -521,7 +520,6 @@ var NP = {
       var tmpl = GRADE.templates.netplot({text:NP.model.state,view:NP.view});
       return h('div#netplotContainer.col-xs-12',convertHTML(tmpl));
     }else{
-      console.log('netplot not ready');
     }
   },
   afterRender: () => {

@@ -12,10 +12,11 @@ var Project = require('./project.js')();
 var Doc = require('./doc.js')();
 var Error = require('./error.js')();
 var General = require('./general.js')();
-var RoB = require('./directrob/directrob.js')();
+var RoB = require('./rob/directrob/directrob.js')();
 var ConChart = require('./rob/conchart/conchart.js')();
 var Inconsistency = require('./inconsistency/inconsistency.js')();
 var Imprecision = require('./imprecision/imprecision.js')();
+var Indirectness = require('./indirectness/directIndr/directIndr.js')();
 var Report = require('./purescripts/output/Report');
 
 var Router = {
@@ -43,6 +44,9 @@ var Router = {
             return (conmatStatus==='ready');
             break;
           case 'imprecision':
+            return (conmatStatus==='ready');
+            break;
+          case 'indirectness':
             return (conmatStatus==='ready');
             break;
           case 'report':
@@ -174,6 +178,9 @@ var Router = {
         if(child.route === 'rob'){
           RoB.afterRender(model);
         }
+        if(child.route === 'indirectness'){
+          Indirectness.afterRender(model);
+        }
       }
     }
   },
@@ -210,6 +217,9 @@ var Router = {
     },
     { route: 'imprecision',
       module: Imprecision,
+    },
+    { route: 'indirectness',
+      module: Indirectness,
     },
     { route: 'report',
       module: Report,

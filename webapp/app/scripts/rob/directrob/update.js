@@ -1,7 +1,7 @@
 var deepSeek = require('safe-access');
-var clone = require('../lib/mixins.js').clone;
-var Messages = require('../messages.js').Messages;
-var NetRoB = require('../rob/rob.js')();
+var clone = require('../../lib/mixins.js').clone;
+var Messages = require('../../messages.js').Messages;
+var NetRoB = require('../rob.js')();
 
 var children = [
   NetRoB
