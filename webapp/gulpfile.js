@@ -146,7 +146,6 @@ gulp.task('html', ['styles', 'scripts', 'templates', 'hbsTojs'], () => {
     .pipe(gulp.dest('dist'));
 });
 
-
 gulp.task('model', () => {
   return gulp.src('app/model/**/*')
     .pipe(gulp.dest('dist/model'));
