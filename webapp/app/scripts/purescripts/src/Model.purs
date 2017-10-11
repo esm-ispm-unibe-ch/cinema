@@ -27,6 +27,7 @@ import StudyLimitationsModel
 import IndirectnessModel
 import InconsistencyModel
 import ImprecisionModel
+import PubbiasModel
 import Report.Model
 
 opts = defaultOptions { unwrapSingleConstructors = true }
@@ -72,6 +73,7 @@ newtype Project = Project
   , inconsistency :: Inconsistency
   , indirectness :: Indirectness
   , imprecision :: Imprecision
+  , pubbias :: Pubbias
   }
 derive instance genericProject :: Rep.Generic Project _
 instance showProject :: Show Project where
@@ -91,6 +93,7 @@ instance decodeProject :: Decode Project where
     imprecision <- p ! "imprecision" >>= decode
     indr <- p ! "indirectness"
     indirectness <- indr ! "netindr" >>= decode
+    pubbias <- p ! "pubbias" >>= decode
     pure $ Project { title
                    , format
                    , "type" : tp
@@ -102,6 +105,7 @@ instance decodeProject :: Decode Project where
                    , netRob 
                    , indirectness
                    , imprecision
+                   , pubbias
                    , inconsistency }
 _Project :: Lens' Project (Record _)
 _Project = lens (\(Project s) -> s) (\_ -> Project)
@@ -113,6 +117,8 @@ imprecision :: forall a b r. Lens { imprecision :: a | r } { imprecision :: b | 
 imprecision = prop (SProxy :: SProxy "imprecision")
 indirectness :: forall a b r. Lens { indirectness :: a | r } { indirectness :: b | r } a b
 indirectness = prop (SProxy :: SProxy "indirectness")
+pubbias :: forall a b r. Lens { pubbias :: a | r } { pubbias :: b | r } a b
+pubbias = prop (SProxy :: SProxy "pubbias")
 studies :: forall a b r. Lens { studies :: a | r } { studies :: b | r } a b
 studies = prop (SProxy :: SProxy "studies")
 cmContainer :: forall a b r. Lens { "CM" :: a | r } { "CM" :: b | r } a b

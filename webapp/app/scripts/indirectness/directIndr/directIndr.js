@@ -45,6 +45,9 @@ var DirectIndr = {
     }else{
     }
   },
+  destroyRender: (model) => {
+    IndrChart.destroyRender(model);
+  },
   afterRender: (model) => {
     _.map(DirectIndr.renderChildren, c => {return c.afterRender(model);});
   },

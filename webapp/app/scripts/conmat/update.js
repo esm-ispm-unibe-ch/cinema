@@ -11,6 +11,7 @@ var json2csv = require('json2csv');
 var download = require('downloadjs');
 var Heterogeneity = require('../inconsistency/heterogeneity/heterogeneity.js')();
 var Incoherence = require('../inconsistency/incoherence/incoherence.js')();
+var Pubbias = require('../pubbias/pubbias.js')();
 var ClinicalImportance = require('../purescripts/output/ClinImp');
 ClinicalImportance.update = require('../purescripts/output/ClinImp.Update');
 
@@ -141,6 +142,7 @@ var Update = (model) => {
       Imprecision.update.updateState(model);
       Inconsistency.update.updateState(model);
       Indirectness.update.updateState(model);
+      Pubbias.update.updateState(model);
       ClinicalImportance.update.updateState(mdl)(mdl);
     },
     fetchContributionMatrix: (ncm) => {
@@ -526,6 +528,7 @@ var children = [
   Indirectness,
   Imprecision,
   Inconsistency,
+  Pubbias
   ];
 
 module.exports = () => {

@@ -1,2 +1,50 @@
-Nothing here yet :(
-  <img src="images/dog-chasing-butterfly-small.gif"/>
+    <blockquote id="pubbiasBoxes" class='col-xs-12'>
+      <h3>
+        {{text.selectionTitle}}
+      </h3>
+      {{#if pubbiasReady}}
+        <div>
+          <button onClick="Actions.Pubbias.reset()" class="pull-right btn btn-default"> {{text.resetButton}} </button>
+        {{else}}
+          <button onClick="Actions.Pubbias.allUndetected()" class="pull-left btn
+            btn-default"> {{text.allUndetected}} </button>
+          <button onClick="Actions.Pubbias.allDetected()" class="pull-left btn btn-default"> {{text.allDetected}} </button>
+        </div>
+      {{/if}}
+    </blockquote>
+    {{#if pubbiasReady}}
+    <div id="PubbiasBoxes" class='col-xs-12 well collapse in'>
+      <ul class='list-inline'>
+        {{#each boxes}}
+        <li  style='border-color:{{color}}' class='well compRobSelector {{#if customized}} customized {{/if}}' id="comp-{{id}}">
+            <ul>
+              <li>
+                <strong>
+                  Comparison
+                </strong>
+                <span class='pull-right'>
+                  <strong>
+                    {{id}}
+                </strong></span>
+              </li>
+              <li>
+                <strong>
+                  Evidence:
+                  {{#if isMixed}}{{../../text.mixedtitle}}{{else}}{{../../text.indirecttitle}}{{/if}}
+                </strong>
+                <hr>
+              <li>
+              {{../../text.judgementField}} 
+                <select onChange="Actions.Pubbias.selectIndividual(this)" class='mr-sm-2 controls-container'>
+                  {{#each levels}}
+                  <option value="{{../id}}σδel{{id}}" {{#if isDisabled}} disabled {{/if}} {{#if isActive}} selected{{/if}}>
+                        {{label}}
+                    </option>
+                  {{/each}}
+                </select>
+              </li>
+            </ul>
+        {{/each}}
+      </ul>
+    </div>
+    {{/if}}

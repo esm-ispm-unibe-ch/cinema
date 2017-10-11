@@ -17,6 +17,7 @@ var ConChart = require('./rob/conchart/conchart.js')();
 var Inconsistency = require('./inconsistency/inconsistency.js')();
 var Imprecision = require('./imprecision/imprecision.js')();
 var Indirectness = require('./indirectness/directIndr/directIndr.js')();
+var Pubbias = require('./pubbias/pubbias.js')();
 var Report = require('./purescripts/output/Report');
 
 var Router = {
@@ -49,6 +50,9 @@ var Router = {
           case 'indirectness':
             return (conmatStatus==='ready');
             break;
+          case 'pubbias':
+            return (conmatStatus==='ready');
+            break;
           case 'report':
             return (reportStatus==='ready');
             break;
@@ -57,7 +61,7 @@ var Router = {
       }
     },
     menuRoutes: ['welcome', 'project', 'doc'],
-    evalRoutes: ['general', 'rob', 'imprecision', 'inconsistency', 'indirectness', 'pubBias', 'report'],
+    evalRoutes: ['general', 'rob', 'imprecision', 'inconsistency', 'indirectness', 'pubbias', 'report'],
     dependencies: {
       project: [],
       general: ['projectName'],
@@ -147,6 +151,9 @@ var Router = {
           if(Router.view.currentRoute() !=='rob'){
              ConChart.destroyRender(model);
           }
+          if(Router.view.currentRoute() !=='indirectness'){
+             Indirectness.destroyRender(model);
+          }
           if(Router.view.currentRoute() === 'report'){
             let state = model.getState();
               cnode = convertHTML(child.module.render(state));
@@ -220,6 +227,9 @@ var Router = {
     },
     { route: 'indirectness',
       module: Indirectness,
+    },
+    { route: 'pubbias',
+      module: Pubbias,
     },
     { route: 'report',
       module: Report,

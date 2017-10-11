@@ -139,11 +139,10 @@
         id="downloadAnchorElem">Download Contribution Matrix</a>
       <a id="clearCM" onClick="Actions.ConMat.resetAnalysis()" class="btn
         pull-right btn-default " >Reset your evaluation</a>
-      {{#if robReady}}
+      {{#if tableReady}}
         <div class='row top-buffer'></div>
-          <h5> You can now go to evaluate <a href="#rob"
-              onClick="Actions.Router.gotoRoute('rob')" >Study Limitations</a> or <a
-              href="#inconsistency" onClick="Actions.Router.gotoRoute('inconsistency')" >Inconsistency</a>
+          <h5> Go to next step: <a href="#rob"
+                                   onClick="Actions.Router.gotoRoute('rob')" >Study Limitations</a> 
           </h5>
         </div>
       {{/if}}

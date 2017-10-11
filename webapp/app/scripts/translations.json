@@ -1,6 +1,6 @@
 {
   "EN":{
-    "headerTitle": "Confidence In Network Meta Analysis - <span class='cinema'>CINeMA</span> - DEVELOPMENT VERSION",
+    "headerTitle": "Confidence In Network Meta Analysis - <span class='cinema'>CINeMA</span>",
     "headerTitleShort": "<span class='cinema'>CINeMA</span>",
     "uploaderShort":{
       "title": "Upload project",
@@ -59,7 +59,7 @@
         "title": "Indirectness",
         "info": "Indirectness evaluation"
       },
-      "pubBias": {
+      "pubbias": {
         "label": "Publication Bias",
         "title": "Publication Bias",
         "info": "Publication Bias evaluation page"
@@ -289,6 +289,24 @@
                    "Confidence interval extends into clinically important effects",
                    "Confidence interval extends into clinically important effects in <strong>both</strong> directions"
                    ]
+    },
+    "Pubbias": {
+      "levels":[
+        "Undetected",
+        "Suspected"
+      ],
+      "title": "Publication bias",
+      "selectionTitle": "Evaluation of publication bias",
+      "mixedtitle": "mixed",
+      "indirecttitle": "indirect",
+      "defaultTitle": "Selected:",
+      "resetButton": "Reset",
+      "resetConfirm": ["Reset?","All changes will be lost","Publication bias selections cleared"],
+      "PubbiasSet": "Publication bias Updated",
+      "judgementField": "Publication bias judgement",
+      "ImprecisionSet": "Publication bias Updated",
+      "allUndetected": "Set all undetected",
+      "allDetected": "Set all suspected"
     },
     "Report": {
       "levels":[

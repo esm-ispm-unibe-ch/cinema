@@ -88,7 +88,6 @@ var ConChart = {
     }
   },
   destroyRender: (model) => {
-    // console.log('destroying barchart');
     if (! _.isUndefined(ConChart.barChart)){
       ConChart.barChart.destroy();
     }

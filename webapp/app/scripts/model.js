@@ -50,6 +50,13 @@ var Model = {
       { id: 3,
         color: '#E0685C'
     }],
+    pubbiasLevels: [
+      { id: 1,
+        color: '#7CC9AE'
+      },
+      { id: 2,
+        color: '#E0685C'
+    }],
     locale: 'EN',
   },
   setState: (state) => {
@@ -78,10 +85,8 @@ var Model = {
     // console.log('the state', Model.getState());
   },
   factorySettings: () => {
-    Model.setState({
-      text : Locales[Model.defaults.locale],
-      defaults: Model.defaults,
-    });
+    let v = Model.getState().version;
+    Model.setState(Model.skeletonModel(v));
   },
   getState: () => {
     return Model.state;

@@ -31,6 +31,7 @@ import StudyLimitationsModel
 import InconsistencyModel
 import ImprecisionModel
 import IndirectnessModel
+import PubbiasModel
 import Model
 import Text.Model
 import Report.Model
@@ -71,6 +72,7 @@ isReady s =
   (hasImprecision s) ||
   (hasIncoherence s) ||
   (hasIndirectness s) ||
+  (hasPubbias s) ||
   (hasHeterogeneity s)
 
 type ViewModel r = 
@@ -83,6 +85,7 @@ type ViewModel r =
   , hasImprecision :: Boolean
   , hasIncoherence :: Boolean
   , hasIndirectness :: Boolean
+  , hasPubbias :: Boolean
   , studyLimitationsRule :: RobRule
   | r
   }
@@ -138,7 +141,7 @@ type ReportRow =
   , judgement :: ReportLevel
   , imprecision :: ImprecisionBox
   , indirectness :: IndirectnessBox
-  {--, pubBias :: PubBiasBox--}
+  , pubbias :: PubbiasBox
   }
 
 hasDirects :: State -> Boolean
@@ -176,6 +179,12 @@ hasStudyLimitations st = (st ^. _State <<< project <<< _Project
                  <<< netRob <<< _NetRobModel 
                  <<< studyLimitations <<< _StudyLimitations)
                  ."status" == "ready"
+
+hasPubbias :: State -> Boolean
+hasPubbias st = (st ^. _State <<< project <<< _Project 
+                 <<< pubbias <<< _Pubbias)
+                 ."status" == "ready"
+
 
 getDirects :: State -> Array Comparison
 getDirects st = 
@@ -421,6 +430,50 @@ getHeterogeneity st c = do
     else
     skeletonHeterogeneityBox
 
+getPubbias :: State -> Comparison -> PubbiasBox
+getPubbias st c = do
+  let boxs = st  ^. _State <<< project <<< _Project 
+                     <<< pubbias <<< _Pubbias
+                     <<< boxes
+  if hasPubbias st then
+    let mbox = find (\ib -> 
+              isIdOfComparison (ib ^. _PubbiasBox)."id" c
+              ) boxs 
+        levelsText = (st ^. _State <<< text <<< _TextContent
+                     <<< pubbiasText <<< _PubbiasText)."levels"
+        getcolor = do
+           case mbox of 
+               Nothing -> "grey"
+               Just box -> let mlevel = (box ^. _PubbiasBox)."levels" !! 
+                                        ((box ^. _PubbiasBox)."judgement"
+                                        - 1)
+                             in case mlevel of 
+                                   Nothing -> "grey"
+                                   Just level -> (level ^.
+                                   _PubbiasLevel)."color"
+        getLabel = do 
+          case mbox of 
+               Nothing -> "error"
+               Just box -> let mlabel = levelsText !!
+                                        ((box ^. _PubbiasBox)."judgement"
+                                        - 1)
+                             in case mlabel of 
+                                   Nothing -> "error"
+                                   Just label -> label
+        getCustomized = do
+          case mbox of
+               Nothing -> false
+               Just box -> false
+     in case mbox of
+                 Nothing -> skeletonPubbiasBox
+                 Just r -> (_PubbiasBox <<< pubbiasboxcustomized .~
+                 getCustomized) (
+                           (_PubbiasBox <<< pubbiasboxcolor .~ getcolor)(
+                  _PubbiasBox <<< pubbiasboxlabel .~ getLabel $ r)
+                  )
+    else
+    skeletonPubbiasBox
+
 getRows :: State -> Array Comparison -> Array ReportRow
 getRows a comps = 
   let selects = getSelected a
@@ -436,6 +489,7 @@ getRows a comps =
              , incoherence: getIncoherence a s
              , imprecision: getImprecision a s
              , indirectness: getIndirectness a s
+             , pubbias: getPubbias a s
              , judgement: skeletonReportLevel
              }) 
              $ filter (isSelectedComparison selects) comps
@@ -460,6 +514,7 @@ template a =
             , hasIncoherence : hasIncoherence a
             , hasImprecision : hasImprecision a
             , hasIndirectness: hasIndirectness a
+            , hasPubbias: hasPubbias a
             , studyLimitationsRule : getStudyLimitationsRule a
           }
         viewData = b
