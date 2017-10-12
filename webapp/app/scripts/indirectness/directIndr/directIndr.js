@@ -19,6 +19,9 @@ var DirectIndr = {
     selectrob: (rule) => {
       Update(DirectIndr.model).selectrob(rule);
     },
+    selectDirectRule: (rule) => {
+      Update(DirectIndr.model).selectDirectRule(rule);
+    },
     selectIndividual: (rule) => {
       Update(DirectIndr.model).selectIndividual(rule);
     },

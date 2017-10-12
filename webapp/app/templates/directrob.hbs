@@ -1,8 +1,19 @@
 <blockquote id="directRobSelectCont" class='col-xs-12'>
-  <h3 id="directRobTitle" data-parent="#directSelectionWrapper" data-toggle="collapse"
+  <h3 id="directRobTitle" data-parent="#directSelectionWrapper" 
                            class="directTitle"
    data-target="#robSelector">{{text.title}}</h3>
   <div class='form-inline'>
+      <div>
+        <strong>{{totalStudies}}</strong> total studies
+          <ul class='list-inline'>
+          {{#each totalLevels}}
+            <li>
+              <strong>{{amount}}</strong> :<span style='color:{{color}}'>
+                                                 {{name}} </span>
+            </li>
+          {{/each}}
+          </ul>
+      </div>
     {{#unless statusReady}}
       <label class=' controls-title mr-sm-2'>
         {{text.selectionTitle}}
@@ -38,11 +49,14 @@
           </label>
         {{/if}}
       {{/if}}
-    <button onClick="Actions.DirectRob.resetDirectRob()" class="pull-right btn btn-default
+    {{#if statusReady}}
+      <a class="pull-right btn btn-default btn-pad" href="#directRob">Proceed</a>
+      <button onClick="Actions.DirectRob.resetDirectRob()" class="pull-right btn btn-default
       {{#unless statusReady}} disabled{{/unless}}"> {{text.resetButton}} </button>
+    {{/if}}
   </div>
 </blockquote>
-<div id="robSelector" class='col-xs-12 well collapse'>
+<div id="robSelector" class='col-xs-12 well'>
   <ul class='list-inline'>
     {{#each directComparisons}}
     <li style='border-color:{{color}}' class='well compRobSelector {{#if customized}} customized {{/if}}' id="comp-{{id}}">

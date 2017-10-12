@@ -8,7 +8,7 @@ var Settings = {
     continuousWide: ['id','t1','y1','sd1','n1','t2','y2','sd2','n2','rob'],
     ivWide: ['id','t1','t2','effect','se','rob'],
   },
-  optional: ['sn','tfn','tn','tfn1','tn1','tfn2','tn2'],
+  optional: ['sn','tfn','tn','tfn1','tn1','tfn2','tn2','indirectness'],
 };
 
 var fileChecker = {
@@ -48,11 +48,7 @@ var fileChecker = {
       if (answer === "Nothing"){
         reject('Wrong column names or missing columns');
       }else{
-        if( answer.type === "iv" ) {
-          resolve(answer);
-        }else{
-          resolve(answer);
-        }
+        resolve(answer);
       }
     });
   },
@@ -87,6 +83,32 @@ var fileChecker = {
                 if(isNaN(r.sd1)){reject('Found non number value in column <strong>sd1</strong>')};
                 if(isNaN(r.y2)){reject('Found non number value in column <strong>y2</strong>')};
                 if(isNaN(r.sd2)){reject('Found non number value in column <strong>sd2</strong>')};
+              break;
+            }
+          }
+        }
+        if("indirectness" in r){
+          if(r.indirectness!=='l'&&r.indirectness!=='u'&&r.indirectness!=='h'&&r.indirectness!=='L'&&r.indirectness!=='U'&&r.indirectness!=='H'&&r.indirectness!==1&&r.indirectness!==2&&r.indirectness!==3){
+            reject('<strong>indirectness</strong> can be 1, 2, 3 or L, U, H')
+          }else{
+            switch(r.indirectness){
+              case 'L':
+              r.indirectness =1;
+              break;
+              case 'l':
+              r.indirectness =1;
+              break;
+              case 'U':
+              r.indirectness =2;
+              break;
+              case 'u':
+              r.indirectness =2;
+              break;
+              case 'H':
+              r.indirectness =3;
+              break;
+              case 'h':
+              r.indirectness =3;
               break;
             }
           }
@@ -174,7 +196,7 @@ var fileChecker = {
       };
       let st = Object.keys(pdata[0]);
       //check Inconsistency in the studies
-      checkCons(pdata,['id','study',['sn','rob']]);
+      checkCons(pdata,['id','study',['sn','rob','indirectness']]);
       if(project.format==='long'){
         if(checkUniqueness(pdata,['id','t'])===false){
           reject('Multiple entries with the same id and t');

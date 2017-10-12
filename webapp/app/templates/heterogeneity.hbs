@@ -124,8 +124,12 @@
             </label>
           {{/if}}
       </div>
+      {{#if heterReady}}
+        <button class="pull-right btn btn-default btn-pad"
+          onClick="Actions.Inconsistency.gotoRoute('incoherence')" >Proceed</button>
     <button onClick="Actions.Heterogeneity.resetHeters()" class="pull-right btn btn-default
           {{#unless heterReady}} disabled{{/unless}}"> {{text.resetButton}} </button>
+    {{/if}}
     </blockquote>
     <div id="heterBoxes" class='col-xs-12 well collapse in'>
     <blockquote class='col-xs-12'>

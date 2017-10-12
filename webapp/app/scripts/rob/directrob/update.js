@@ -18,12 +18,15 @@ var Update = (model) => {
     updateState: (model) => {
       //console.log('updating state form directrob');
       if (deepSeek(model,'getState().project.CM.currentCM.status') !== 'ready'){
+        _.map(directComparisons, dc => {
+          dc.directRob = 'nothing';
+        });
 	updaters.setState(updaters.skeletonModel());
       }else{
 	let isReady = _.any(directComparisons, dc => {
 	  return _.isUndefined(dc.directRob);
 	});
-	if ((isReady===true)|| _.isUndefined(updaters.getState())){
+	if ((isReady===true) || _.isUndefined(updaters.getState())){
 	  updaters.resetDirectRob();
 	}else{
 	  //console.log('DirectRob model ready');

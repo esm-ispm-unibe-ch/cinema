@@ -137,15 +137,10 @@
         id="hideTableBtn">Hide Contribution Matrix</a>
       <a onClick="Actions.ConMat.downloadCSV()" class="btn btn-default"
         id="downloadAnchorElem">Download Contribution Matrix</a>
+      <button class="pull-right btn btn-default btn-pad"
+          onClick="Actions.Router.gotoRoute('rob')" >Proceed</button>
       <a id="clearCM" onClick="Actions.ConMat.resetAnalysis()" class="btn
         pull-right btn-default " >Reset your evaluation</a>
-      {{#if tableReady}}
-        <div class='row top-buffer'></div>
-          <h5> Go to next step: <a href="#rob"
-                                   onClick="Actions.Router.gotoRoute('rob')" >Study Limitations</a> 
-          </h5>
-        </div>
-      {{/if}}
     {{/if}}
     <br>
     <br>

@@ -3,12 +3,14 @@ var ComparisonModel = require('../../purescripts/output/ComparisonModel');
 
 var View = (model) => {
   let DirectRobModelPosition = 'getState().project.DirectRob';
+  let levels = deepSeek(model,'getState().project.robLevels');
   let viewers = {
+    getlevel: id => {return _.find(levels, l => {return parseInt(l.id)===parseInt(id)})},
     directComparisons: () => {
       let directs = deepSeek(model,'getState().project.studies.directComparisons');
       let project =  deepSeek(model,'getState().project');
       _.map(directs, dc => {
-        dc = _.extend(dc,{ 
+         _.extend(dc,{ 
           maxrobName : project.robLevels[dc.maxrob-1].label,
           meanrobName : project.robLevels[dc.meanrob-1].label,
           majrobName : project.robLevels[dc.majrob-1].label,
@@ -118,7 +120,24 @@ var View = (model) => {
           isActive: viewers.getStatus() === 'customized'
         }
       ];
-    }
+    },
+    totalLevels: () => {
+      let sts = _.groupBy(model.getState().project.studies.long,"id");
+      let levels
+      let grp = _.groupBy(sts, s => {return s[0].rob});
+      let out = _.mapObject(grp,(l,id)=>{
+        let o = {};
+        o.name = deepSeek(viewers.getlevel(parseInt(id)),'label');
+        o.color = deepSeek(viewers.getlevel(parseInt(id)),'color');
+        o.amount = _.size(l);
+        return o;
+      });
+      return out;
+    },
+    totalStudies: () => {
+      let sts = _.groupBy(model.getState().project.studies.long,"id");
+      return _.size(sts);
+    },
   }
   return viewers;
 }

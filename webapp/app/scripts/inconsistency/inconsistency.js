@@ -10,6 +10,10 @@ var Inconsistency = {
     gotoRoute: (route) => {
       Inconsistency.update.gotoRoute(route);
     },
+    directlyToRoute: (route) => {
+      Inconsistency.model.Actions.Router.gotoRoute("inconsistency");
+      Inconsistency.update.gotoRoute(route);
+    },
   },
   modelPosition: 'getState().project.inconsistency',
   view: {

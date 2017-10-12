@@ -1,8 +1,6 @@
 <blockquote id="directIndrSelectCont" class='col-xs-12'>
-  <h3 id="directIndrTitle" data-toggle="collapse"
-    data-parent="#directSelectionWrapper"
-    class="directTitle"
-    data-target="#indrSelector">
+  <h3 id="directIndrTitle" 
+    class="directTitle">
     {{#if statusReady}}
       Indirectness for direct evidence is evaluated
     {{else}}
@@ -11,12 +9,23 @@
   </h3>
   <div class='form-inline'>
     {{#if hasData}}
+      <div>
+        <strong>{{totalStudies}}</strong> total studies
+          <ul class='list-inline'>
+          {{#each totalLevels}}
+            <li>
+              <strong>{{amount}}</strong> :<span style='color:{{color}}'>
+                                                 {{name}} </span>
+            </li>
+          {{/each}}
+          </ul>
+      </div>
     {{#unless statusReady}}
       <label class=' controls-title mr-sm-2'>
         {{text.selectionTitle}}
       </label>
-        <select onChange="Actions.DirectIndr.selectindr(this)" {{#if statusReady}}
-          disabled {{/if}} class='mr-sm-2 form-inline form-control'>
+      <select onChange="Actions.DirectIndr.selectDirectRule(this)" {{#if statusReady}}
+        disabled {{/if}} class='mr-sm-2 form-inline form-control'>
           {{#each rulesselections}}
             {{#if isAvailable}}
               <option value="{{value}}" {{#if isDisabled}} disabled {{/if}} {{#if isActive}} selected{{/if}}>
@@ -25,7 +34,7 @@
             {{/if}}
           {{/each}}
         </select>
-        {{/unless}}
+      {{/unless}}
         {{#if statusReady}}
           <label class=' controls-title mr-sm-2'>
             {{text.defaultTitle}}
@@ -65,11 +74,15 @@
         </select>
       {{/unless}}
     {{/if}}
-    <button onClick="Actions.DirectIndr.resetDirectIndr()" class="pull-right btn btn-default
+    {{#if statusReady}}
+      <a class="pull-right btn btn-default btn-pad" href="#NetIndr">Proceed</a>
+      <button onClick="Actions.DirectIndr.resetDirectIndr()" class="pull-right
+      btn-pad btn btn-default
       {{#unless statusReady}} disabled{{/unless}}"> {{text.resetButton}} </button>
+    {{/if}}
   </div>
 </blockquote>
-<div id="indrSelector" class='col-xs-12 well collapse indent'>
+<div id="indrSelector" class='col-xs-12 well out indent'>
   <ul class='list-inline'>
     {{#each directComparisons}}
     <li style='border-color:{{color}}' class='well compSelector {{#if customized}} customized {{/if}}' id="comp-{{id}}">
@@ -102,8 +115,13 @@
               <hr>
           </li>
           {{#if ../hasData}}
-            <li>
-              has datat blkjsf
+            <li class="majrob  {{#unless ../isMaj}} robLabel{{/unless}}">
+            Majority: <strong class='pull-right'>{{majindrName}} </strong>
+          </li><li class="meanrob {{#unless ../isMean}} robLabel{{/unless}}">
+            Average: <strong class='pull-right'> {{meanindrName}}</strong>
+          </li><li class='maxrob {{#unless ../isMax}} robLabel{{/unless}}'>
+            Highest: <strong class='pull-right'> {{maxindrName}}</strong>
+              <hr>
             </li>
           {{/if}}
           <li>

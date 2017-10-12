@@ -3,18 +3,22 @@ var ComparisonModel = require('../../purescripts/output/ComparisonModel');
 
 var View = (model) => {
   let DirectIndrModelPosition = 'getState().project.indirectness.directs';
+  let levels = deepSeek(model,'getState().project.indirectness.directs.levels');
   let viewers = {
     getState: () => {
       return deepSeek(model,'getState().project.indirectness.directs');
     },
+    getlevel: id => {return _.find(levels, l => {
+      return parseInt(l.id)===parseInt(id);
+    })},
     directComparisons: () => {
       let directs = viewers.getState().directBoxes;
       let project =  deepSeek(model,'getState().project');
       _.map(directs, dc => {
         dc = _.extend(dc,{
-          maxindrName: dc.maxindr !== -1? viewers.getState().levels[dc.maxindr-1].label:"--",
-          meanindrName: dc.meanindr !== -1? viewers.getState().levels[dc.meanindr-1].label:"--",
-          majindrName: dc.meanindr !== -1? viewers.getState().levels[dc.meanindr-1].label:"--",
+          maxindrName: dc.maxindr !== -1? viewers.getlevel(dc.maxindr).label:"--",
+          meanindrName: dc.meanindr !== -1? viewers.getlevel(dc.meanindr).label:"--",
+          majindrName: dc.meanindr !== -1? viewers.getlevel(dc.meanindr).label:"--",
           color: () => {
             let level = _.find(viewers.getState().levels,
               indr => {
@@ -97,7 +101,7 @@ var View = (model) => {
     rulesselections: () => {
       return [
         {
-          label: model.getState().text.directIndr.noindr, 
+          label: '--', 
           value: 'noindr',
           isActive: viewers.getStatus() === 'noindr',
           isAvailable: true,
@@ -128,7 +132,24 @@ var View = (model) => {
           isActive: viewers.getStatus() === 'customized'
         }
       ];
-    }
+    },
+    totalLevels: () => {
+      let sts = _.groupBy(model.getState().project.studies.long,"id");
+      let levels
+      let grp = _.groupBy(sts, s => {return s[0].indirectness});
+      let out = _.mapObject(grp,(l,id)=>{
+        let o = {};
+        o.name = deepSeek(viewers.getlevel(parseInt(id)),'label');
+        o.color = deepSeek(viewers.getlevel(parseInt(id)),'color');
+        o.amount = _.size(l);
+        return o;
+      });
+      return out;
+    },
+    totalStudies: () => {
+      let sts = _.groupBy(model.getState().project.studies.long,"id");
+      return _.size(sts);
+    },
   }
   return viewers;
 }

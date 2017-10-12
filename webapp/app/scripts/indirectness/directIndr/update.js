@@ -94,6 +94,19 @@ var Update = (model) => {
       model.saveState();
       _.map(children, c => { c.update.updateState(model);});
     },
+    selectDirectRule: (rule) => {
+      let ns = updaters.getState();
+      let r = rule.value;
+      let boxs = updaters.getState().directBoxes;
+      let out = _.map(boxs, b => {
+        b.judgement = b[r];
+        return b;
+      });
+      ns.directBoxes = out;
+      ns.status = 'ready';
+      ns.rule = r;
+      updaters.setState(ns);
+    },
     skeletonModel: () => {
       let levels = updaters.indrLevels();
       let directBoxes = clone(deepSeek(model,'getState().project.studies.directComparisons'));
@@ -111,8 +124,8 @@ var Update = (model) => {
         status: 'noindr',// noindr, editing, ready
         rule: 'noindr', // noindr, manual, majindr, meanindr, maxindr
         levels,
-        hasData: false, //
-        //hasData: hd, 
+        //hasData: false, //
+        hasData: hd, 
         directBoxes,
         customized: 0,
       }

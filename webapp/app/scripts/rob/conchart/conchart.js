@@ -33,7 +33,7 @@ var ConChart = {
       let chartData = View(model).createChart();
       let nrows = chartData.labels.length;
       let ndirects = chartData.datasets.length;
-      let chartHeight = 15 * nrows;
+      let chartHeight = 15 * nrows + 20;
       $('#barChartContainer').append('<canvas style="display:none" id=\'barChartPrinterFriendly\' width=\'300\' height=\''+chartHeight+'\'></chart>');
       let ctxp = document.getElementById('barChartPrinterFriendly');
       ConChart.barChart = new Chart(ctxp, {
