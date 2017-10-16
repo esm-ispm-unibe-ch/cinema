@@ -142,18 +142,35 @@ var Model = {
     }else{
       let savedModel = JSON.parse(localStorage.state);
       if ((typeof savedModel.version !== 'undefined') && (savedModel.version === version)){
-        Model.setState(savedModel);
+        // comply with EU cookie law
+        if(Model.hasExpired(savedModel.timestamp)){
+          Model.setState(Model.skeletonModel(version));
+        }else{
+          Model.setState(savedModel);
+        }
       }else{
         Model.setState(Model.skeletonModel(version));
       }
-      // console.log('found cache state',Model.getState());
     }
   },
+  hasExpired: (date) => {
+    let current = new Date();
+    let modelDate = Date(date);
+    //one year expiration perios is set
+    let timeDiff = Math.abs(Date.parse(date) - current.getTime())/ 1000 / 60 / 60 / 24 / 365;
+    let res = false;
+    if (timeDiff > 1) {
+      res = true;
+    }
+    return res;
+  },
   skeletonModel: (version) => {
+    let timestamp = new Date()
     return {
       version: version,
       text: Locales[Model.defaults.locale],
-      defaults: Model.defaults
+      defaults: Model.defaults,
+      timestamp
     }
   },
   children: [
