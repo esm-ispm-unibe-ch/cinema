@@ -135,13 +135,16 @@ var Model = {
   init: (version) => {
     Router.register(Model);
     View.init(Model);
+    let versionsAreCompatible=(v1,v2) => {
+      return v1.split(".").slice(0,2).toString() === v2.split(".").slice(0,2).toString();
+    }
     // localStorage.clear();
     if (typeof localStorage.state === 'undefined'){
       // console.log('no cached state');
       Model.setState(Model.skeletonModel(version));
     }else{
       let savedModel = JSON.parse(localStorage.state);
-      if ((typeof savedModel.version !== 'undefined') && (savedModel.version === version)){
+      if ((typeof savedModel.version !== 'undefined') && versionsAreCompatible(version,savedModel.version)){
         // comply with EU cookie law
         if(Model.hasExpired(savedModel.timestamp)){
           Model.setState(Model.skeletonModel(version));
