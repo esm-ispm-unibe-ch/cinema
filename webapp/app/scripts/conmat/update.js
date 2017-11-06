@@ -186,7 +186,7 @@ var Update = (model) => {
               sm: cm.params.sm,
             }, (sessionh) => {
           sessionh.getObject( (hatmatrix) => {
-            console.log('the hatmatrix returned ',hatmatrix);
+            //console.log('the hatmatrix returned ',hatmatrix);
             cm.hatmatrix = hatmatrix;
             updaters.saveState();
             updaters.fetchRows(ncm).then(res => {

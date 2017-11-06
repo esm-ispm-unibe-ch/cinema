@@ -189,7 +189,7 @@ fixComparisonId fsid = do
         Right id -> show ((stringToComparison ":" id) ^. _Comparison)."t1" <>
                                                   ":" <>
             show ((stringToComparison ":" id) ^. _Comparison)."t2"
-  {--logShow $ "TO SID POUT VGANEI EINAI" <>  sid--}
+  {--logShow $ "TO SID POU VGANEI EINAI" <>  sid--}
   toForeign sid
   
 orderIds :: Foreign -> Foreign

@@ -286,15 +286,13 @@ var Update = (model) => {
           });
           let CI = [nmaRow[1][2].toFixed(3), nmaRow[1][3].toFixed(3)];
           let PrI = [nmaRow[1][4].toFixed(3), nmaRow[1][5].toFixed(3)];
+          let sm = model.getState().project.CM.currentCM.params.sm;
+          let useExps =  ((sm === 'OR') || (sm === 'RR'));
           let tauSquare = 'nothing';
-          let useExps = (updaters.getState().referenceValues.params.measurement === 'binary') && (
-            (model.getState().project.CM.currentCM.params.sm === 'OR') ||
-            (model.getState().project.CM.currentCM.params.sm === 'RR')
-          );
           let contents = {}
             // console.log("BOX id",s[0]);
             contents =  {
-                id: s[0],
+                id: nmaRow[0],
                 CI,
                 PrI,
                 CIf: useExps?Math.exp(CI[0]).toFixed(3):CI[0],

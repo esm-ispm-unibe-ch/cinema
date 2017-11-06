@@ -105,7 +105,7 @@ var Update = (model) => {
           let contents = {}
             // console.log("BOX id",s[0]);
             contents =  {
-                id: s[0],
+                id: nmaRow[0],
                 CI,
                 CIf: useExps?Math.exp(CI[0]).toFixed(3):CI[0],
                 CIs: useExps?Math.exp(CI[1]).toFixed(3):CI[1],
@@ -132,7 +132,7 @@ var Update = (model) => {
       let mixed = makeBoxes(
         sortStudies(cm.directRowNames,cm.directStudies));
       let indirect = makeBoxes(sortStudies(cm.indirectRowNames,cm.indirectStudies));
-      // console.log("BOXES Names naoume",mixed,indirect);
+       //console.log("BOXES Names naoume",mixed,indirect);
       return _.union(mixed,indirect);
     },
     getRuleLevel: (CIf,CIs,lowerBound,upperBound) => {
