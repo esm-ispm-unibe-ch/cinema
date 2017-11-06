@@ -33,14 +33,14 @@ var Update = (model) => {
     },
     cmReady: () => {
       let isready = false;
-      if (deepSeek(model,'getState().project.CM.currentCM.status')==='ready'){
+      if (deepSeek(model, 'getState().project.CM.currentCM.status')==='ready'){
         isready = true;
       }
       return isready;
     },
     clinImpReady: () => {
       let isready = false;
-      if (deepSeek(model,'getState().project.clinImp.status')==='ready'){
+      if (deepSeek(model, 'getState().project.clinImp.status')==='ready'){
         isready = true;
       }
       return isready;

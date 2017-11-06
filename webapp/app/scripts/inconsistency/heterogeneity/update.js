@@ -12,6 +12,7 @@ ClinImp.update = require('../../purescripts/output/ClinImp.update');
 var ComparisonModel = require('../../purescripts/output/ComparisonModel');
 var InconsistencyModel = require('../../purescripts/output/InconsistencyModel');
 var RFVQ = require('../../purescripts/output/Heterogeneity.ReferenceValues');
+let referenceValues = require('./reference.json');
 //
 
 var children = [
@@ -164,9 +165,6 @@ var Update = (model) => {
     fetchRFV: () => {
       return new Promise((resolve, reject) => {
         let mdl = model.getState();
-        // ocpu.seturl('http://481059c4-5c4f-4b5d-a969-51ed46988d3b.node.dockerapp.io:8004/ocpu/library/contribution/R');
-        ocpu.seturl('http://52.28.184.220:8004/ocpu/library/contribution/R');
-          // ocpu.seturl('http://cinema-rserver:8004/ocpu/library/contribution/R');
           let params = updaters.getState().referenceValues.params;
 
           updaters.getState().referenceValues.status = 'loading';
@@ -175,44 +173,38 @@ var Update = (model) => {
           }
           let cm = model.getState().project.CM.currentCM;
           let studies = cm.selectedComparisons;
-          let ocpuPromises = () => {
+          let refPromises = () => {
             return _.map(studies, sid => {
               return new Promise((oresolve, oreject) => {
                 let comparisonType = Nodes.getComparisonType(mdl)(sid);
                 if (comparisonType === "") {
                   oreject("Didn't get comparison type");
                 }else{
-                  // console.log("CCOCCOCOCOCOMMMMarison type", comparisonType);
+                  //console.log("CCOCCOCOCOCOMMMMarison type", sid, comparisonType);
                 }
                 params.InterventionComparisonType = comparisonType;
-                // console.log("parametteerrss", params);
-                let hmc = ocpu.call('ReferenceValues', params, (sessionh) => {
-                  sessionh.getObject( (rfv) => {
-                    // console.log('server returned ',rfv);
-                    res.rfvs.push({
-                      id: sid,
-                      first: rfv.quantiles[0][0].toFixed(3),
-                      median: rfv.quantiles[0][1].toFixed(3),
-                      third: rfv.quantiles[0][2].toFixed(3),
-                    });
-                    oresolve("success");
+                let prms = params.measurement + "." +params.OutcomeType +"."+ comparisonType;
+                let rfv = deepSeek(referenceValues, prms);
+                if (typeof rfv == 'undefined'){
+                  oreject("Reference Values not found"+params);
+                }
+                res.rfvs.push({
+                  id: sid,
+                  first: rfv.first.toFixed(3),
+                  median: rfv.median.toFixed(3),
+                  third: rfv.third.toFixed(3),
                 });
-                  hmc.fail( () => {
-                    updaters.getState().referenceValues.status = 'editing';
-                    Messages.alertify().error(hmc.responseText);
-                    oreject('R returned an error: ' + hmc.responseText);
-                  });
-                });
+                oresolve("success");
               })
             });
           };
-          Promise.all(ocpuPromises()).then(() => {
+          Promise.all(refPromises()).then(() => {
             updaters.getState().referenceValues.results = res;
             updaters.getState().referenceValues.status = 'ready';
             updaters.saveState();
             resolve(res);
           }).catch(reason => {
-            reject(reason);
+            reject(reason+"lkj"+res);
           });
       }).catch(reason => {
         Messages.alertify().error(reason);

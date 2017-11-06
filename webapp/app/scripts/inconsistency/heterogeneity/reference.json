@@ -1,0 +1,193 @@
+﻿{
+"binary":{
+     "Objective": {
+        "Pharmacological vs Placebo/Control":{
+          "first": 0.004177198,
+          "median": 0.01724902,
+          "third": 0.07122686
+        },
+        "Pharmacological vs Pharmacological":{
+          "first": 0.003191059,
+          "median": 0.01398178,
+          "third": 0.06126187
+        },
+        "Non-pharmacological vs any":{
+          "first": 0.004220068,
+          "median": 0.01964367,
+          "third": 0.09143784
+        }
+     },
+     "Semi-objective": {
+        "Pharmacological vs Placebo/Control":{
+          "first": 0.004851627,
+          "median": 0.04880122,
+          "third": 0.4908784
+        },
+        "Pharmacological vs Pharmacological":{
+          "first": 0.003646759,
+          "median": 0.0395575,
+          "third": 0.4290922
+        },
+        "Non-pharmacological vs any":{
+          "first": 0.004745274,
+          "median": 0.05557621,
+          "third": 0.6509035
+        }
+     },
+     "Subjective": {
+        "Pharmacological vs Placebo/Control":{
+          "first": 0.02206426,
+          "median": 0.1188373,
+          "third": 0.6400533
+        },
+        "Pharmacological vs Pharmacological":{
+          "first": 0.01640563,
+          "median": 0.09632764,
+          "third": 0.5655995
+        },
+        "Non-pharmacological vs any":{
+          "first": 0.02183791,
+          "median": 0.1339887,
+          "third": 0.8221007
+        }
+     }
+},
+"continuous": {
+   "Obstetric outcome": {
+      "Pharmacological vs Placebo/Control":{
+        "first": 0.002936763,
+        "median": 0.01608288,
+        "third": 0.08807621
+      },
+      "Pharmacological vs Pharmacological":{
+        "first": 0.002291276,
+        "median": 0.01227734,
+        "third": 0.06578566
+      },
+      "Non-pharmacological vs any":{
+        "first": 0.003992614,
+        "median": 0.01849971,
+        "third": 0.08571814
+      }
+   },
+   "Resource use and hospital stay/process": {
+      "Pharmacological vs Placebo/Control":{
+        "first": 0.0107392,
+        "median": 0.07808167,
+        "third": 0.5677098
+      },
+      "Pharmacological vs Pharmacological":{
+        "first": 0.008295397,
+        "median": 0.05901285,
+        "third": 0.4198132
+      },
+      "Non-pharmacological vs any":{
+        "first": 0.01387613,
+        "median": 0.08981529,
+        "third": 0.5813427
+      }
+   },
+   "Internal and external structure-related outcome": {
+      "Pharmacological vs Placebo/Control":{
+        "first": 0.01431114,
+        "median": 0.08803683,
+        "third": 0.54157
+      },
+      "Pharmacological vs Pharmacological":{
+        "first": 0.01124705,
+        "median": 0.06720551,
+        "third": 0.4015793
+      },
+      "Non-pharmacological vs any":{
+        "first": 0.01876215,
+        "median": 0.1012665,
+        "third": 0.5465735
+      }
+   },
+   "General physical health and adverse event and pain and quality of life/functioning": {
+      "Pharmacological vs Placebo/Control":{
+        "first": 0.006896666,
+        "median": 0.04242574,
+        "third": 0.2609875
+      },
+      "Pharmacological vs Pharmacological":{
+        "first": 0.005444682,
+        "median": 0.03206469,
+        "third": 0.1888345
+      },
+      "Non-pharmacological vs any":{
+        "first": 0.009376215,
+        "median": 0.04880122,
+        "third": 0.254
+      }
+   },
+   "Signs/symptoms reflecting continuation/end of condition and infection/onset of new acute/chronic disease": {
+      "Pharmacological vs Placebo/Control":{
+        "first": 0.008093313,
+        "median": 0.04978707,
+        "third": 0.3062716
+      },
+      "Pharmacological vs Pharmacological":{
+        "first": 0.006314438,
+        "median": 0.03800643,
+        "third": 0.2287596
+      },
+      "Non-pharmacological vs any":{
+        "first": 0.01053365,
+        "median": 0.05726876,
+        "third": 0.3113556
+      }
+   },
+   "Mental health outcome": {
+      "Pharmacological vs Placebo/Control":{
+        "first": 0.01046579,
+        "median": 0.05028744,
+        "third": 0.2416279
+      },
+      "Pharmacological vs Pharmacological":{
+        "first": 0.008025672,
+        "median": 0.03800643,
+        "third": 0.1799835
+      },
+      "Non-pharmacological vs any":{
+        "first": 0.005234387,
+        "median": 0.02127974,
+        "third": 0.08651008
+      }
+   },
+   "Biological marker": {
+      "Pharmacological vs Placebo/Control":{
+        "first": 0.004225897,
+        "median": 0.0330412,
+        "third": 0.2583406
+      },
+      "Pharmacological vs Pharmacological":{
+        "first": 0.003345332,
+        "median": 0.02522297,
+        "third": 0.190175
+      },
+      "Non-pharmacological vs any":{
+        "first": 0.005500111,
+        "median": 0.03800643,
+        "third": 0.262629
+      }
+   },
+   "Various subjectively measured outcomes": {
+      "Pharmacological vs Placebo/Control":{
+        "first": 0.009707543,
+        "median": 0.06329177,
+        "third": 0.4126531
+      },
+      "Pharmacological vs Pharmacological":{
+        "first": 0.007356883,
+        "median": 0.04831564,
+        "third": 0.3173084
+      },
+      "Non-pharmacological vs any":{
+        "first": 0.01263461,
+        "median": 0.07280286,
+        "third": 0.419503
+      }
+   }
+  }
+}
