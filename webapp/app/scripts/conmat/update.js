@@ -148,7 +148,7 @@ var Update = (model) => {
     fetchContributionMatrix: (ncm) => {
       return new Promise((resolve, reject) => {
         ocpu.seturl('http://52.28.184.220:8004/ocpu/library/contribution/R');
-        // ocpu.seturl('http://localhost:8004/ocpu/library/contribution/R');
+         //ocpu.seturl('http://localhost:8004/ocpu/library/contribution/R');
         let cms = model.getState().project.CM.contributionMatrices;
         var result = {};
         let ncmparams = params;
@@ -169,18 +169,27 @@ var Update = (model) => {
         let rtype = '';
         switch(project.type){
           case 'binary':
-          rtype = 'netwide_binary';
+          rtype = 'long_binary';
           break;
           case 'continuous':
-          rtype = 'netwide_continuous';
+          rtype = 'long_continuous';
           break;
           case 'iv':
           rtype = 'iv';
           break;
         }
         if(_.isEmpty(cm.hatmatrix)){
+          let formatData = (tp,studies) =>{
+            let out = {};
+            if(tp === "iv"){
+              out = studies.wide;
+            }else{
+              out = studies.long;
+            }
+              return out;
+          }
           let hmc = ocpu.call('getHatMatrix',{
-              indata: project.studies.wide,
+              indata: formatData(rtype,project.studies),
               type: rtype,
               model: cm.params.MAModel,
               sm: cm.params.sm,

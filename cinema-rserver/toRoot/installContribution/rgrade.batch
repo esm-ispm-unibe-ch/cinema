@@ -8,7 +8,7 @@ install.packages("devtools","/usr/local/lib/R/site-library",repos="http://stat.e
 
 library(devtools)
 # install_github("guido-s/netmeta")
-install_version("netmeta", version = "0.9-5", repos = "http://stat.ethz.ch/CRAN/")
+install_version("netmeta", version = "0.9-6", repos = "http://stat.ethz.ch/CRAN/")
 library(meta)
 library(netmeta)
 library(igraph)

@@ -78,51 +78,65 @@ var Update = (model) => {
       if(updaters.isRatio()){
         out = Math.exp(value);
       }
-      return out;
+      return out.toFixed(3);
     },
     createEstimators: () => {
       let cm = model.getState().project.CM.currentCM;
-      let sideValues = cm.hatmatrix.side;
-      let sideRowNames = cm.hatmatrix.rowNamesSide;
-      let sideColNames = cm.hatmatrix.colNamesSide;
+      let NMAs = model.getState().project.CM.currentCM.hatmatrix.NMAresults;
       let levels = IncoherenceLevels;
-      let sides = _.zip(sideRowNames,_.map(sideValues,sr => {
-        return _.object(sideColNames,sr);
-      }));
       let makeBoxes = (studies) => {
         let res = _.map(studies, s => {
-          let sideRow = _.find(sides, side => {
-            return _.isEqual(uniqId(side[0].split(':')),uniqId(s[0].split(':')));
+          let nmaRow = _.find(NMAs, nma => {
+            return _.isEqual(uniqId(nma["_row"].split(':')),uniqId(s[0].split(':')));
           });
           let contents = {}
             contents =  {
-                id: s[0],
+                id: nmaRow["_row"],
                 levels
             }
-          if(_.isUndefined(sideRow)){
-            _.extend(contents,{
-                isMixed: false,
-                isDirect: false,
-                isIndirect: true,
-            })
-          }else{
-            if (! isNaN(sideRow[1].SideIF)){
-              _.extend(contents,{
-                  isMixed: true,
-                  isDirect: false,
-                  isIndirect: false,
-                  sideIF: updaters.expIt(sideRow[1].SideIF).toFixed(3),
-                  sideIFLower: updaters.expIt(sideRow[1].SideIFlower).toFixed(3),
-                  sideIFUpper: updaters.expIt(sideRow[1].SideIFupper).toFixed(3),
-                  Ztest: sideRow[1].SideZ.toFixed(3),
-                  pvalue: sideRow[1].SidePvalue.toFixed(3),
-                  directContribution: sideRow[1].PropDir
-              })
+          if(_.isUndefined(nmaRow["Direct"])){
+            if(_.isUndefined(nmaRow["Indirect"])){
+              console.log("ERRROORRR indirect direct in Incohrence");
             }else{
+              _.extend(contents,{
+                  isMixed: false,
+                  isDirect: false,
+                  isIndirect: true,
+                  indirect: updaters.expIt(nmaRow.Indirect),
+                  indirectL: updaters.expIt(nmaRow.IndirectL),
+                  indirectU: updaters.expIt(nmaRow.IndirectU),
+              })
+            }
+          }else{
+            if(_.isUndefined(nmaRow["Indirect"])){
               _.extend(contents,{
                   isMixed: false,
                   isDirect: true,
                   isIndirect: false,
+                  direct: updaters.expIt(nmaRow.Direct),
+                  directL: updaters.expIt(nmaRow.DirectL),
+                  directU: updaters.expIt(nmaRow.DirectU),
+              })
+            }else{
+              _.extend(contents,{
+                  isMixed: true,
+                  isDirect: false,
+                  isIndirect: false,
+                  sideIF: updaters.expIt(nmaRow.SideIF),
+                  sideIFLower: updaters.expIt(nmaRow.SideIFlower),
+                  sideIFUpper: updaters.expIt(nmaRow.SideIFupper),
+                  Ztest: nmaRow.SideZ.toFixed(3),
+                  pvalue: nmaRow.SidePvalue.toFixed(3),
+                  directContribution: nmaRow.PropDir,
+                  nma: updaters.expIt(nmaRow["NMA treatment effect"]),
+                  nmaL: updaters.expIt(nmaRow["lower CI"]),
+                  nmaU: updaters.expIt(nmaRow["upper CI"]),
+                  direct: updaters.expIt(nmaRow.Direct),
+                  directL: updaters.expIt(nmaRow.DirectL),
+                  directU: updaters.expIt(nmaRow.DirectU),
+                  indirect: updaters.expIt(nmaRow.Indirect),
+                  indirectL: updaters.expIt(nmaRow.IndirectL),
+                  indirectU: updaters.expIt(nmaRow.IndirectU),
               })
             }
           }

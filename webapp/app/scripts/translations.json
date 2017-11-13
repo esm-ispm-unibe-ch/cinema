@@ -220,6 +220,7 @@
       "ruleButton": "Select default rule",
       "mixedtitle": "mixed",
       "indirecttitle": "indirect",
+      "directtitle": "direct",
       "rules": {
         "noRule": "--",
         "first": "25<sup>th</sup> quantile",
@@ -265,7 +266,10 @@
       "judgementField": "Incoherence judgement",
       "IncoherenceSet": "Incoherence Updated",
       "IFLabel": "Inconsistency measures",
-      "ZLabel": "Z statistic"
+      "ZLabel": "Z statistic",
+      "nma": "NMA",
+      "direct": "Direct",
+      "indirect": "Indirect"
     },
     "Imprecision": {
       "levels":[
@@ -278,6 +282,7 @@
       "referenceValues": "Reference Values",
       "mixedtitle": "mixed",
       "indirecttitle": "indirect",
+      "directtitle": "direct",
       "defaultTitle": "Selected:",
       "customizedTitleSingular": "comparison was manually updated",
       "customizedTitlePlural": "comparisons were manually updated",
@@ -298,6 +303,7 @@
       "title": "Publication bias",
       "selectionTitle": "Evaluation of publication bias",
       "mixedtitle": "mixed",
+      "directtitle": "direct",
       "indirecttitle": "indirect",
       "defaultTitle": "Selected:",
       "resetButton": "Reset",

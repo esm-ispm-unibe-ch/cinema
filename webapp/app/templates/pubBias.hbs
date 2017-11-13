@@ -32,7 +32,9 @@
               <li>
                 <strong>
                   Evidence:
-                  {{#if isMixed}}{{../../text.mixedtitle}}{{else}}{{../../text.indirecttitle}}{{/if}}
+                  {{#if isMixed}}{{../../text.mixedtitle}}{{/if}}
+                  {{#if isDirect}}{{../../text.directtitle}}{{/if}}
+                  {{#if isIndirect}}{{../../text.indirecttitle}}{{/if}}
                 </strong>
                 <hr>
               <li>

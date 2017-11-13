@@ -145,6 +145,17 @@ var View = (model) => {
     heterReady: () => {
       return viewers.getState().heters.status === 'ready'
     },
+    measureSuffix: () => {
+      let sm = model.getState().project.CM.currentCM.params.sm;
+      let outtext = {
+        OR: "odds ratio",
+        RR: "risk ratio",
+        RD: "risk difference",
+        MD: "mean difference",
+        SMD: "standardised mean difference"
+      };
+      return outtext[sm];
+    },
     boxSideTitle: () => {
       let sm = model.getState().project.CM.currentCM.params.sm;
       let outtext = {

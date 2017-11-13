@@ -58,6 +58,18 @@
             <hr>
           </li>
           {{#if isMixed}}
+            <li  style="clear:both" >
+              {{../../text.nma}} {{../../measureSuffix}}: <strong
+                 class='pull-right'>{{nma}}({{nmaL}},{{nmaU}})</strong>
+            </li>
+            <li  style="clear:both" >
+              {{../../text.direct}} {{../../measureSuffix}}: <strong
+                 class='pull-right'>{{direct}}({{directL}},{{directU}})</strong>
+            </li>
+            <li  style="clear:both" >
+              {{../../text.indirect}} {{../../measureSuffix}}: <strong
+                 class='pull-right'>{{indirect}}({{indirectL}},{{indirectU}})</strong>
+            </li>
             <li>
               Direct contribution: <strong
                 class='pull-right'>{{dcont}}%</strong>
@@ -74,16 +86,31 @@
               {{../../boxSideTitle}}: <strong class='pull-right'>{{sideIF}}({{sideIFLower}},{{sideIFUpper}})</strong>
             </li>
             <li  style="clear:both" >
-              {{../../text.ZLabel}}: <strong class='pull-right'>{{Ztest}}</strong>
-            </li>
-            <li>
               {{../../text.pvalueLabel}}: <strong class='pull-right'>{{pvalue}}</strong>
             </li>
             </ul>
               <hr>
             </li>
-            {{else}} 
+          {{/if}}
+          {{#if isDirect}} 
             <ul>
+            <li  style="clear:both" >
+              {{../../text.direct}} {{../../measureSuffix}}: <strong
+                 class='pull-right'>{{direct}}({{directL}},{{directU}})</strong>
+            </li>
+            <li>
+             <strong> {{../../text.IFLabel}}: </strong>
+             Not applicable
+            <hr>
+            </li>
+            </ul>
+          {{/if}}
+          {{#if isIndirect}} 
+            <ul>
+            <li  style="clear:both" >
+              {{../../text.indirect}} {{../../measureSuffix}}: <strong
+                 class='pull-right'>{{indirect}}({{indirectL}},{{indirectU}})</strong>
+            </li>
             <li>
              <strong> {{../../text.IFLabel}}: </strong>
              Not applicable

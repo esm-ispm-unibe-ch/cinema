@@ -40,7 +40,7 @@ ADD toRoot /root
 RUN ji=ji sh -c 'rm -rf /usr/local/lib/R/site-library/contribution/www/'
 RUN ji=ji sh -c 'cp -rf /root/www/ /usr/local/lib/R/site-library/contribution/www/'
 # RUN d=d sh -c 'cp -rf /root/cinema/webapp/www/ /usr/local/lib/R/site-library/contribution/www/'
-RUN ji=ji sh -c 'Rscript /root/installContribution/rgrade.batch'
+RUN jj=jj sh -c 'Rscript /root/installContribution/rgrade.batch'
 #restarting opencpu service
 RUN sh -c 'service opencpu stop'
 RUN sh -c 'service opencpu restart'

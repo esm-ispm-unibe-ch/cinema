@@ -270,46 +270,42 @@ var Update = (model) => {
     },
     createEstimators: () => {
       let cm = model.getState().project.CM.currentCM;
-      let pairWiseValues = model.getState().project.CM.currentCM.hatmatrix.Pairwise;
-      let pairWiseNames = model.getState().project.CM.currentCM.hatmatrix.rowNamesPairwise;
-      let pairWises = _.zip(pairWiseNames,pairWiseValues);
-      let NMAValues =  model.getState().project.CM.currentCM.hatmatrix.NMA;
-      let NMANames =  model.getState().project.CM.currentCM.hatmatrix.rowNamesNMA;
-      let NMAs = _.zip(NMANames,NMAValues);
+      let pairWises = model.getState().project.CM.currentCM.hatmatrix.Pairwise;
+      let NMAs = model.getState().project.CM.currentCM.hatmatrix.NMAresults;
       let makeBoxes = (studies) => {
         let res = _.map(studies, s => {
           let pairRow = _.find(pairWises, pw => {
-            return _.isEqual(uniqId(s[0].split(':')),uniqId(pw[0].split(' vs ')));
+            return _.isEqual(uniqId(s[0].split(':')),uniqId(pw["_row"].split(' : ')));
           });
           let nmaRow = _.find(NMAs, nma => {
-            return _.isEqual(uniqId(nma[0].split(':')),uniqId(s[0].split(':')));
+            return _.isEqual(uniqId(nma["_row"].split(':')),uniqId(s[0].split(':')));
           });
-          let CI = [nmaRow[1][2].toFixed(3), nmaRow[1][3].toFixed(3)];
-          let PrI = [nmaRow[1][4].toFixed(3), nmaRow[1][5].toFixed(3)];
           let sm = model.getState().project.CM.currentCM.params.sm;
           let useExps =  ((sm === 'OR') || (sm === 'RR'));
           let tauSquare = 'nothing';
+          let CIf = useExps ? Math.exp(nmaRow["lower CI"]) : nmaRow["lower CI"];
+          let CIs = useExps ? Math.exp(nmaRow["upper CI"]) : nmaRow["upper CI"];
+          let PrIf = useExps ? Math.exp(nmaRow["lower PrI"]) : nmaRow["lower PrI"];
+          let PrIs = useExps ? Math.exp(nmaRow["upper PrI"]) : nmaRow["upper PrI"];
           let contents = {}
             // console.log("BOX id",s[0]);
             contents =  {
-                id: nmaRow[0],
-                CI,
-                PrI,
-                CIf: useExps?Math.exp(CI[0]).toFixed(3):CI[0],
-                CIs: useExps?Math.exp(CI[1]).toFixed(3):CI[1],
-                PrIf: useExps?Math.exp(PrI[0]).toFixed(3):PrI[0],
-                PrIs: useExps?Math.exp(PrI[1]).toFixed(3):PrI[1],
+                id: nmaRow["_row"],
+                CIf: CIf.toFixed(3), 
+                CIs: CIs.toFixed(3),
+                PrIf: PrIf.toFixed(3), 
+                PrIs: PrIs.toFixed(3)
             }
           if(_.isUndefined(pairRow)){
             _.extend(contents,{
                 isMixed: false,
             })
           }else{
-            tauSquare = pairRow[1][6];
-            let ISquare = pairRow[1][7];
-            if(! isNaN(tauSquare)){
-              tauSquare = pairRow[1][6].toFixed(3);
-              ISquare = ((pairRow[1][7] * 100).toFixed(1)).toString()+"%";
+            tauSquare = pairRow.tau2;
+            let ISquare = pairRow.I2;
+            if((typeof tauSquare !== 'undefined') && (! isNaN(tauSquare))){
+              tauSquare = tauSquare.toFixed(3);
+              ISquare = ((ISquare * 100).toFixed(1)).toString()+"%";
             }
             _.extend(contents,{
                 isMixed: true,

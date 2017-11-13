@@ -88,27 +88,27 @@ var Update = (model) => {
       let pairWiseValues = model.getState().project.CM.currentCM.hatmatrix.Pairwise;
       let pairWiseNames = model.getState().project.CM.currentCM.hatmatrix.rowNamesPairwise;
       let pairWises = _.zip(pairWiseNames,pairWiseValues);
-      let NMAValues =  model.getState().project.CM.currentCM.hatmatrix.NMA;
-      let NMANames =  model.getState().project.CM.currentCM.hatmatrix.rowNamesNMA;
-      let NMAs = _.zip(NMANames,NMAValues);
+      let NMAs = model.getState().project.CM.currentCM.hatmatrix.NMAresults;
+      //let NMANames =  model.getState().project.CM.currentCM.hatmatrix.rowNamesNMAresults;
+      //let NMAs = _.zip(NMANames,NMAValues);
       let makeBoxes = (studies) => {
         let res = _.map(studies, s => {
           let pairRow = _.find(pairWises, pw => {
-            return _.isEqual(uniqId(s[0].split(':')),uniqId(pw[0].split(' vs ')));
+            return _.isEqual(uniqId(s[0].split(':')),uniqId(pw[0].split(' : ')));
           });
           let nmaRow = _.find(NMAs, nma => {
-            return _.isEqual(uniqId(nma[0].split(':')),uniqId(s[0].split(':')));
+            return _.isEqual(uniqId(nma["_row"].split(':')),uniqId(s[0].split(':')));
           });
-          let CI = [nmaRow[1][2].toFixed(3), nmaRow[1][3].toFixed(3)];
           let sm = model.getState().project.CM.currentCM.params.sm;
           let useExps =  ((sm === 'OR') || (sm === 'RR'));
+          let CIf = useExps ? Math.exp(nmaRow["lower CI"]) : nmaRow["lower CI"];
+          let CIs = useExps ? Math.exp(nmaRow["upper CI"]) : nmaRow["upper CI"];
           let contents = {}
             // console.log("BOX id",s[0]);
             contents =  {
-                id: nmaRow[0],
-                CI,
-                CIf: useExps?Math.exp(CI[0]).toFixed(3):CI[0],
-                CIs: useExps?Math.exp(CI[1]).toFixed(3):CI[1],
+                id: nmaRow["_row"],
+                CIf: CIf.toFixed(3), 
+                CIs: CIs.toFixed(3)
             }
           if(_.isUndefined(pairRow)){
             _.extend(contents,{

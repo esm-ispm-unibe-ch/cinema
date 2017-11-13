@@ -67,32 +67,40 @@ var Update = (model) => {
     },
     createEstimators: () => {
       let cm = model.getState().project.CM.currentCM;
-      let pairWiseValues = model.getState().project.CM.currentCM.hatmatrix.Pairwise;
-      let pairWiseNames = model.getState().project.CM.currentCM.hatmatrix.rowNamesPairwise;
-      let pairWises = _.zip(pairWiseNames,pairWiseValues);
-      let NMAValues =  model.getState().project.CM.currentCM.hatmatrix.NMA;
-      let NMANames =  model.getState().project.CM.currentCM.hatmatrix.rowNamesNMA;
-      let NMAs = _.zip(NMANames,NMAValues);
+      let NMAs = model.getState().project.CM.currentCM.hatmatrix.NMAresults;
       let makeBoxes = (studies) => {
         let res = _.map(studies, s => {
-          let pairRow = _.find(pairWises, pw => {
-            return _.isEqual(uniqId(s[0].split(':')),uniqId(pw[0].split(' vs ')));
-          });
           let nmaRow = _.find(NMAs, nma => {
-            return _.isEqual(uniqId(nma[0].split(':')),uniqId(s[0].split(':')));
+            return _.isEqual(uniqId(nma["_row"].split(':')),uniqId(s[0].split(':')));
           });
           let contents = {}
             contents =  {
-                id: s[0],
+                id: nmaRow["_row"],
             }
-          if(_.isUndefined(pairRow)){
-            _.extend(contents,{
-                isMixed: false,
-            })
+          if(_.isUndefined(nmaRow["Direct"])){
+            if(_.isUndefined(nmaRow["Indirect"])){
+              console.log("ERRROORRR indirect direct in Incohrence");
+            }else{
+              _.extend(contents,{
+                  isMixed: false,
+                  isDirect: false,
+                  isIndirect: true,
+              })
+            }
           }else{
-            _.extend(contents,{
-                isMixed: true,
-            })
+            if(_.isUndefined(nmaRow["Indirect"])){
+              _.extend(contents,{
+                  isMixed: false,
+                  isDirect: true,
+                  isIndirect: false,
+              })
+            }else{
+              _.extend(contents,{
+                  isMixed: true,
+                  isDirect: false,
+                  isIndirect: false,
+              })
+            }
           }
           contents.levels = deepSeek(model,'getState().project.pubbias.levels');
           contents.judgement = 1;

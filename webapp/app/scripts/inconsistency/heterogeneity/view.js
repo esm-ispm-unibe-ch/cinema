@@ -197,7 +197,7 @@ var View = (model) => {
       return model.getState().project.clinImp.emtype;
     },
     rfvsTauSquare: () => {
-      let res = model.getState().project.CM.currentCM.hatmatrix.NMAheterResults[0][0].toFixed(3);
+      let res = model.getState().project.CM.currentCM.hatmatrix.NMAheterResults[0]["heterVarNtw"].toFixed(3);
       return res;
     },
     rfvFilled: () => {
