@@ -8,7 +8,7 @@ Report.view = require('../purescripts/output/Report.View');
 Report.update = require('../purescripts/output/Report.Update');
 var Rules = require('../purescripts/output/Imprecision.Rules');
 var ClinImp = require('../purescripts/output/ClinImp');
-ClinImp.update = require('../purescripts/output/ClinImp.update');
+ClinImp.update = require('../purescripts/output/ClinImp.Update');
 var ComparisonModel = require('../purescripts/output/ComparisonModel');
 
 var children = [

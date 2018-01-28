@@ -29,6 +29,7 @@ Install npm packages
 
 ```
 npm install 
+npm rebuild node-sass
 bower install
 ```
 then moving on to purescript dependencies
@@ -39,26 +40,9 @@ bower install
 
 Tested on versions
 ```node v6.10.1``` 
-```gulp 3.9.1```
-```bower 1.8.2```
-and ```pulp 10.0.4``` with ```psc 0.11.3```
+```node v8.9.3``` 
+```node v9.4.0``` 
 
-
-### Serve
-```
-gulp serve
-```
-serves on ```localhost:9000```
-
-For purescript real time compilation fire up another terminal and
-since purescript files are located in ```webapp/app/scripts/purescripts/```
-
-```
-cd app/scripts/purescripts/
-pulp --watch build
-
-```
-Now you can get to work!
 
 ### Build
 First purescript
@@ -74,6 +58,23 @@ gulp build
 ```
 This builds cinema in the folder ```dist```.
 
+
+### Serve
+After you build CINeMA you can serve on ```localhost:9000```
+```
+gulp serve
+```
+serves on ```localhost:9000```
+
+For purescript real time compilation fire up another terminal and
+since purescript files are located in ```webapp/app/scripts/purescripts/```
+
+```
+cd app/scripts/purescripts/
+pulp --watch build
+
+```
+Now you can get to work!
 ### R Server
 Note that you have to set up a back end server running R. The docker image is provided
 in cinema-rserver.

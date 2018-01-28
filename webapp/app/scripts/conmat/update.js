@@ -1,4 +1,4 @@
-var RoB = require('../rob/directRob/directRob.js')();
+var RoB = require('../rob/directrob/directrob.js')();
 var Imprecision = require('../imprecision/imprecision.js')();
 var Inconsistency = require('../inconsistency/inconsistency.js')();
 var Indirectness = require('../indirectness/directIndr/directIndr.js')();
