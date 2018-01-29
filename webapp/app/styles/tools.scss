@@ -9,9 +9,10 @@ $customized: #EBEBEB;
   padding:0!important;
   min-width:$cySize;
   min-height:$cySize;
-  -moz-box-shadow:    inset 0 0 8px grey;
+  /*-moz-box-shadow:    inset 0 0 8px grey;
   -webkit-box-shadow: inset 0 0 8px grey;
   box-shadow:         inset 0 0 8px grey;
+  */
 }
 
 .np-control {
@@ -42,7 +43,7 @@ col.rowHeader {
     }
     .rowHeader{
       // color: #777;
-      font-weight:400;
+      font-weight:40;
       line-height:100%;
       display:block;
     }
@@ -91,7 +92,7 @@ col.rowHeader {
   padding:5px 11px 5px 11px!important;
   border-radius: 0;
   // border-width:1px;
-  border: 0px; 
+  border: 0px;
   border-left: 6px solid grey;
   background-color: white;
   ul{

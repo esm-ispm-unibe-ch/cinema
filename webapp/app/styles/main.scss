@@ -40,8 +40,17 @@ body {
    min-width:768px; /* suppose you want minimun width of 1000px */
    width: auto !important;  /* Firefox will set width as auto */
    padding-bottom:52px;
+   font-family: 'Source Sans Pro', sans-serif!important;
+   font-weight: 400!important;
 }
-
+.well {
+background-color: rgba(0,0,0,0.0)!important;
+border: none!important;
+}
+.well .compRobSelector {
+  background-color: red!important;
+border: none!important;
+}
 /* Everything but the jumbotron gets side spacing for mobile first views */
 .header,
 .marketing,

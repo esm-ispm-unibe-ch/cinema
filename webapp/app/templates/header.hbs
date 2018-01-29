@@ -1,5 +1,17 @@
 <nav class="navbar navbar-default">
+  <div class="mainMenu-container">
+
+  </div>
   <ul class="nav navbar-nav mainMenu">
+    <!-- extra start -->
+    <li>
+      <div class="cinema-logo">
+        <a onClick="Actions.Router.gotoRoute('{{route}}')" href="#{{route}}" >
+          <img class="cinema-logo" src="images/logo.svg">
+        </a>
+      </div>
+    </li>
+    <!-- extra end -->
   {{#each view.mainMenu}}
       <li class="{{#if isActive}}active{{/if}} {{#unless isAvailable}}disabled{{/unless}}">
         <a  onClick="Actions.Router.gotoRoute('{{route}}')" action="{{route}}" class="routes navbar-right {{route}}" href="#{{route}}">
@@ -8,6 +20,10 @@
       </li>
   {{/each}}
   </ul>
+</div>
+<div class="list_container">
+
+
   <ul class="hidden-sm-down nav navbar-nav evaluation-menu">
     {{#each view.evalMenu}}
       <li class="{{#if isActive}}active{{/if}} {{#unless isAvailable}}disabled{{/unless}}">
@@ -17,4 +33,5 @@
       </li>
     {{/each}}
   </ul>
+</div>
 </nav>

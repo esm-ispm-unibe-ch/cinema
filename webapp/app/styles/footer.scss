@@ -2,7 +2,7 @@ $icon-font-path: '../fonts/';
 // bower:scss
 @import "bower_components/bootstrap-sass/assets/stylesheets/_bootstrap.scss";
 // endbower
-
+/*
 .footerContainer{
   padding:0!important;
   background-color: rgba(245,245,245,0.7);
@@ -12,5 +12,107 @@ $icon-font-path: '../fonts/';
 .footer_campbell_logo{
   float: right;
   height: 40px;
+}*/
+/* extra */
+.footer {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: #E6E6E6;
+  text-align: center;
+  z-index: 1;
+  padding: 30px;
+  height: 150px;
+
+}
+.logos {
+	float: left;
+	width: 40%;
+
 }
 
+.bern {
+	float: left;
+	text-transform: uppercase;
+	font-weight: 600;
+	color: #336699;
+	margin-top: 20px;
+	margin-left: 20px;
+	clear: both;
+	text-align: left;
+	font-size: 13px;
+
+}
+
+.rightfooter {
+	float: right;
+	width: 60%;
+
+
+}
+
+#campbell {
+  	display: block;
+ 	float: left;
+	margin-left: 30px;
+	margin-top: 20px;
+}
+
+.campbell_logo {
+  	display: block;
+ 	width: 125px;
+ 	height: 35px;
+  	background: url(campbell_logo_wide.png);
+  	background-size: 125px 35px;
+ 	float: left;
+}
+
+#cochrane {
+  	display: block;
+ 	float: left;
+	margin-left: 30px;
+	margin-top: 20px;
+}
+
+.cochrane_logo {
+  	display: block;
+ 	width: 121px;
+ 	height: 25px;
+  	background: url(cochrane_logo.png);
+  	background-size: 121px 25px;
+ 	float: left;
+
+}
+
+#version {
+  	color: #C7715F;
+	text-align: right;
+	float: right;
+	font-weight: 300;
+	clear: both;
+}
+
+.smalltext {
+	color: #B4B4B4;
+	font-size: 13px;
+	float: right;
+	text-align: right;
+	margin-top: 10px;
+	clear: both;
+}
+
+.smalltext a{
+	text-decoration: none;
+	color: #222;
+}
+
+
+.fontcinema{
+	font-family: limelight;
+}
+
+.license img {
+    height: 20px;
+	vertical-align: middle;
+}
