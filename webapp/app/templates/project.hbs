@@ -1,80 +1,124 @@
 <div class="container-fluid routed" id='project'>
   <div class='projects-container col-xs-12 col-md-offset-4 col-md-4'>
+
+    {{#unless view.hasFile}}
+        <h1> A file uploader</h1>
     <div class='well col-xs-12 project-uploader'>
-      {{#if view.canUpload}}
           <span class="prtitle">
             {{{model.text.uploadProject}}}
           </span>
           <span class="pull-left glyphicon glyphicon-cloud-upload" aria-hidden="true"></span>
           <span id='prinfo' class="info pull-right glyphicon glyphicon-info-sign" aria-hidden="true"></span>
         </h4>
-        <!-- <div class="form-group">
-          <label for="project-name">Project Name</label>
-          <input size='250' type="text" class="form-control" id="project-name" placeholder="My Project's name">
-        </div> -->
         <div class="form-group">
           <input onchange="Actions.Project.fetchProject(this)" type="file" id="files" name="file" accept=".csv,.CSV" />
-             
         </div>
-       <!-- <a id="popoverData" action='tools' class="btn routes btn-default" data-content="Upload a valid csv file to proceed" rel="popover" data-placement="bottom" data-trigger="hover">Proceed</a> -->
-
-      {{else}}
-      <ul class="list-group">
-        <li class="list-group-item active">
-          <h4>
-            {{view.projectTitle}}
-          </h4>
-        </li>
-        <li class="list-group-item">
-          <span class="badge">{{view.numStudies}}</span>
-            Studies
-        </li>
-        <li class="list-group-item">
-          <span class="badge">{{view.interventions}}</span>
-            Interventions
-        </li>
-        <li class="list-group-item">
-          <span class="badge">  {{view.comparisons}}</span>
-          Comparisons
-        </li>
-      </ul>
-        <button  action='clearFile' id='projectClear' class="pull-right btn
-          btn-default">
-          {{{model.text.clearCurrentProject}}}
-        </button>
-      {{/if}}
+        <div class='col-xs-12 col-md-offset-2 col-md-8'>
+          A demo dataset can be downloaded <a href="model/Elliott_2007.csv"
+            download="diabetes.csv">here</a>. It is a network of six intervention for
+          diabetes mellitus by Elliot et.al 
+          <br>
+          <a href="https://www.ncbi.nlm.nih.gov/pubmed/17240286" >W. J. Elliott and P. M. Meyer. Incident diabetes in clinical
+            trials of antihypertensive drugs: a network meta-analysis. The Lancet,
+            369(9557):201 – 207, 2007</a>
+        </div>
     </div>
-  <!--
-    <div id='project-browser' class='well col-xs-12'>
-      <h4>
-        <span class="pull-left glyphicon glyphicon-hdd" aria-hidden="true"></span>
-        <span class="prtitle">Saved Projects</span>
-      </h4>
-      <ul class="list-group">
-        <li class="list-group-item">Cras justo odio</li>
-        <li class="list-group-item">Dapibus ac facilisis in</li>
-        <li class="list-group-item">Morbi leo risus</li>
-        <li class="list-group-item active">Middleton</li>
-        <li class="list-group-item">Vestibulum at eros</li>
-      </ul>
-      <button  action='tools' class="routes btn btn-default">Proceed</button>
-    </div> -->
+  {{/unless}}
 
-      <!-- <button disabled action='saveFile' id='projectSave' class="btn control pull-left btn-default">
-        <span class=" glyphicon glyphicon-save" aria-hidden="true"></span>
-        Save
-      </button> -->
-  </div>
-
-      {{#if view.canUpload}}
-  <div class='col-xs-12 col-md-offset-2 col-md-8'>
-    A demo dataset can be downloaded <a href="model/Elliott_2007.csv"
-      download="diabetes.csv">here</a>. It is a network of six intervention for
-    diabetes mellitus by Elliot et.al 
-    <br>
-    <a href="https://www.ncbi.nlm.nih.gov/pubmed/17240286" >W. J. Elliott and P. M. Meyer. Incident diabetes in clinical
-      trials of antihypertensive drugs: a network meta-analysis. The Lancet,
-      369(9557):201 – 207, 2007</a>
-  </div>
+  {{#if view.hasFile}}
+    <div id="project-settings">
+        <h1> B project settings</h1>
+          <div>
+            <ul>
+              <li class="list-group-item">
+                Filename 
+                <span class="badge">{{view.filename}}</span>
+              </li>
+              <li class="list-group-item active">
+                <h4>
+                  {{view.projectTitle}}
+                </h4>
+                <button onClick="Actions.Project.changeName()">edit</button>
+              </li>
+              <li class="list-group-item">
+                Created 
+                <span class="badge">{{view.creationDate}}</span>
+              </li>
+            </ul>
+          </div>
+          <button  action='clearFile' id='projectClear' class="pull-right btn
+            btn-default">
+            {{{model.text.clearCurrentProject}}}
+          </button>
+      </div>
+      {{#if view.notRecognized}}
+        <h1> Γ field selector </h1>
+        <ul>
+          <li> File format: <input value="type"/></li>
+          <li> Outcome type: <input value="format"/></li>
+        </ul>
+          {{#if view.hasFormatType}}
+            <button class="pull-right btn
+              btn-default">
+              edit
+            </button>
+          {{else}}
+            <button class="pull-right btn
+              btn-default">
+              save
+            </button>
+        {{/if}}
+        {{#if hasFormatType}}
+          <ul>
+            {{#each view.fileFields}}
+              <ul class="list-inline">
+                <li>
+                  {{name}}
+                </li>
+                <li>
+                  {{field}}
+                </li>
+              </ul>
+            {{/each}}
+          </ul>
+          <ul class="available-fields">
+            {{#each view.availableFields}}
+              <ul class="list-inline">
+                <li>
+                  {{name}}
+                </li>
+                <li>
+                  {{optional}}
+                </li>
+              </ul>
+            {{/each}}
+          </ul>
+        {{/if}}
       {{/if}}
+        {{#if canProceed}}
+          <h1> Δ summary </h1>
+          {{#if isReady}}
+            <ul id="project-summary" class="list-group">
+              <li class="list-group-item">
+                <span class="badge">{{view.numStudies}}</span>
+                  Studies
+              </li>
+              <li class="list-group-item">
+                <span class="badge">{{view.interventions}}</span>
+                  Interventions
+              </li>
+              <li class="list-group-item">
+                <span class="badge">  {{view.comparisons}}</span>
+                Comparisons
+              </li>
+            </ul>
+            <button > Proceed </button>
+            <button > Edit </button>
+          {{else}}
+            <button > Save </button>
+          {{/if}}
+        {{/if}}
+    {{/if}}
+
+
 </div>

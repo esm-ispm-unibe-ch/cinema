@@ -7,6 +7,7 @@ var convertHTML = require('html-to-vdom')({
      VText: VText
 });
 var sortStudies = require('./lib/mixins.js').sortStudies;
+var clone = require('./lib/mixins.js').clone;
 var majrule = require('./lib/mixins.js').majrule;
 var meanrule = require('./lib/mixins.js').meanrule;
 var maxrule = require('./lib/mixins.js').maxrule;
@@ -137,10 +138,9 @@ var PR = {
       PR.model.saveState();
       PR.model.factorySettings();
     },
-    getJSON: (infile, filename) => {
-      return FR.handleFileSelect(infile)
-      .then(FR.convertCSVtoJSON)
-      .then(Checker.checkColumnNames)
+    recognizeFile: (dataset) => {
+    return new Promise((resolve,reject) => {
+      Checker.checkColumnNames(dataset)
       .then(Checker.checkTypes)
       .then(Checker.checkMissingValues)
       .then(Checker.checkConsistency)
@@ -150,60 +150,76 @@ var PR = {
         if(project.format === 'long'){
           mdl.long = project.model;
           mdl.wide = Reshaper.longToWide(project.model,project.type);
-        }else{
-          mdl.long = Reshaper.wideToLong(project.model,project.type);
-          mdl.wide = project.model;
-        }
-        //nodes are the combined treatments (which correspond to netplot nodes)
-        mdl.nodes = PR.model.makeNodes(project.type, mdl.long);
-        let ids = _.pluck(mdl.nodes,'id');
-        let sortedIds = ComparisonModel.orderIds(ids);
-        //console.log("sortedNodeids", sortedIds);
-        //directComparisons correspond to netplot edges
-        let dcomps = PR.update.makeDirectComparisons(project.type, mdl.wide);
-        mdl.directComparisons = _.unzip(sortStudies(_.map(dcomps, comp => {return comp.t1+":"+comp.t2}),dcomps))[1];
-        //indirectComparisons are the complement of the netplot edges
-        let indirects = PR.update.makeIndirectComparisons(mdl.nodes,mdl.directComparisons);
-        // mdl.indirectComparisons = _.unzip(sortStudies(_.map(indirects, comp => {return comp.replace(",",":")}),indirects))[1];
-        mdl.indirectComparisons = indirects;
-        prj.studies = mdl;
-        prj.title = filename;
-        prj.filename = filename;
-        PR.update.setProject(PR.update.createProject(prj));
-        return prj;
-      });
+          }else{
+            mdl.long = Reshaper.wideToLong(project.model,project.type);
+            mdl.wide = project.model;
+          }
+          mdl.nodes = PR.model.makeNodes(project.type, mdl.long);
+          let ids = _.pluck(mdl.nodes,'id');
+          let sortedIds = ComparisonModel.orderIds(ids);
+          let dcomps = PR.update.makeDirectComparisons(project.type, mdl.wide);
+          mdl.directComparisons = _.unzip(sortStudies(_.map(dcomps, comp => {return comp.t1+":"+comp.t2}),dcomps))[1];
+          let indirects = PR.update.makeIndirectComparisons(mdl.nodes,mdl.directComparisons);
+          mdl.indirectComparisons = indirects;
+          prj.studies = mdl;
+          return prj;
+        });
+      })
     },
-    createProject: (pr) =>{
+    getJSON: (infile, filename) => {
+      return FR.handleFileSelect(infile)
+      .then(FR.convertCSVtoJSON);
+    },
+    createProject: (filename) =>{
+      let pr = PR.view.getProject();
+      let npr = clone(pr);
       var date = Number(new Date());
       var id = md5(date+Math.random());
       let robLvls = PR.update.robLevels();
       let studyLimitationLevels = PR.update.studyLimitationLevels();
-      return {
-        id: id,
-        title: pr.title,
-        filename: pr.filename,
-        studies: pr.studies,
-        format: pr.format,
-        type: pr.type,
-        creationDate: date,
-        accessDate: date,
-        robLevels: robLvls,
-        studyLimitationLevels: studyLimitationLevels
-      };
+      npr.hasFile = true;
+      npr.filename = filename;
+      npr.title = filename;
+      npr.id = id;
+      npr.creationDate = date;
+      npr.accessDate = date;
+      npr.robLevels = robLvls;
+      npr.studyLimitationLevels = studyLimitationLevels;
+      PR.update.setProject(npr);
     },
     fetchProject: (evt) => {
-        var filename = htmlEntities($('#files').val().replace(/C:\\fakepath\\/i, '')).slice(0, -4);
-        PR.update.getJSON(evt,filename).then(project => {
+      var filename = htmlEntities($('#files').val().replace(/C:\\fakepath\\/i, '')).slice(0, -4);
+      PR.update.getJSON(evt,filename).then(data => {
+        PR.update.createProject(filename);
+        return data;
+      })
+      .then(PR.update.recognizeFile)
+      .then(project => {
+          PR.update.createProject(project);
           Messages.alertify().success(PR.model.state.text.longFileUpload.title,' csv format '+project.format+' '+project.type);
       })
       .catch( err => {
         Messages.alertify().error(PR.model.getState().text.wrongFileFormat+err);
       });
     },
+    changeName: () => {
+      let prevVal = PR.view.getProject().title;
+      Messages.alertify().prompt( 'Change project title', 'Prompt Message', prevVal
+             , function(evt, value) { 
+               let pr = PR.view.getProject();
+               pr.title = value.toString();
+               PR.update.setProject(pr);
+               Messages.alertify().success('Project name updated');
+             }
+             , function() { console.log("canceled naming") });
+    }
   },
   view: {
     getProject: () => {
       return PR.model.getState().project;
+    },
+    hasFile: () => {
+      return PR.view.getProject().hasFile;
     },
     canUpload: () => {
       return _.isUndefined(PR.view.getProject().studies);
@@ -211,9 +227,27 @@ var PR = {
     projectTitle: () => {
       return PR.view.getProject().title;
     },
+    filename: () => {
+      return PR.view.getProject().filename;
+    },
+    type: () => {
+      return PR.view.getProject().type;
+    },
+    format: () => {
+      return PR.view.getProject().format;
+    },
+    creationDate: () => {
+      let creation = new Date(PR.view.getProject().creationDate);
+      let datestring = creation.getHours().toString() +":"+ creation.getMinutes()+" "+creation.toLocaleDateString();
+      return datestring;
+    },
     numStudies: () => {
-      let studies = _.toArray(_.groupBy(PR.view.getProject().studies.long,'id'));
-      return studies.length;
+      let out = 0;
+      if(! _.isUndefined(PR.view.getProject().studies)){
+        let studies = _.toArray(_.groupBy(PR.view.getProject().studies.long,'id'));
+        out = studies.length;
+      }
+      return out;
     },
     interventions: () => {
       return PR.view.getProject().studies.nodes.length;
