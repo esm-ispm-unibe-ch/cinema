@@ -36,6 +36,9 @@ var PR = {
             PR.update.clearProject();
         },()=>{});
       });
+      $(document).on('click','#proceed', {} ,
+        e=>{ console.log("going to configuration");
+      });
     }
   },
   update: {
@@ -132,20 +135,28 @@ var PR = {
       let robLvls = PR.update.robLevels();
       let studyLimitationLevels = PR.update.studyLimitationLevels();
       PR.model.getState().project = {
+          hasFile: false,
+          isSaved: false,
           robLevels: robLvls,
           studyLimitationLevels: studyLimitationLevels
       };
       PR.model.saveState();
       PR.model.factorySettings();
     },
+    makeStudies: (dataset) => {
+    },
     recognizeFile: (dataset) => {
     return new Promise((resolve,reject) => {
       Checker.checkColumnNames(dataset)
-      .then(Checker.checkTypes)
+      .then(dataset => {
+        return Checker.checkTypes(dataset);
+      })
       .then(Checker.checkMissingValues)
       .then(Checker.checkConsistency)
       .then(project => {
-        let prj = project;
+        let prj = PR.view.getProject();
+        prj.format = project.format;
+        prj.type = project.type;
         let mdl = {};
         if(project.format === 'long'){
           mdl.long = project.model;
@@ -162,6 +173,8 @@ var PR = {
           let indirects = PR.update.makeIndirectComparisons(mdl.nodes,mdl.directComparisons);
           mdl.indirectComparisons = indirects;
           prj.studies = mdl;
+          prj.isSaved = true;
+          PR.update.setProject(prj);
           return prj;
         });
       })
@@ -190,12 +203,12 @@ var PR = {
     fetchProject: (evt) => {
       var filename = htmlEntities($('#files').val().replace(/C:\\fakepath\\/i, '')).slice(0, -4);
       PR.update.getJSON(evt,filename).then(data => {
+        console.log("data",data);
         PR.update.createProject(filename);
         return data;
       })
       .then(PR.update.recognizeFile)
       .then(project => {
-          PR.update.createProject(project);
           Messages.alertify().success(PR.model.state.text.longFileUpload.title,' csv format '+project.format+' '+project.type);
       })
       .catch( err => {
@@ -208,7 +221,7 @@ var PR = {
              , function(evt, value) { 
                let pr = PR.view.getProject();
                pr.title = value.toString();
-               PR.update.setProject(pr);
+               PR.model.saveState();
                Messages.alertify().success('Project name updated');
              }
              , function() { console.log("canceled naming") });
@@ -222,7 +235,11 @@ var PR = {
       return PR.view.getProject().hasFile;
     },
     canUpload: () => {
-      return _.isUndefined(PR.view.getProject().studies);
+      return ! PR.view.getProject().hasFile;
+    },
+    canProceed: () => {
+      let hasnoStudies = _.isUndefined(PR.view.getProject().studies);
+      return (! hasnoStudies) && (PR.view.hasFormatType());
     },
     projectTitle: () => {
       return PR.view.getProject().title;
@@ -236,7 +253,12 @@ var PR = {
     format: () => {
       return PR.view.getProject().format;
     },
-    creationDate: () => {
+    hasFormatType: () => {
+      let hasFormat = ! _.isUndefined(PR.view.format());
+      let hasType = ! _.isUndefined(PR.view.type());
+    return hasFormat && hasType;
+  },
+  creationDate: () => {
       let creation = new Date(PR.view.getProject().creationDate);
       let datestring = creation.getHours().toString() +":"+ creation.getMinutes()+" "+creation.toLocaleDateString();
       return datestring;
@@ -254,6 +276,9 @@ var PR = {
     },
     comparisons: () => {
       return PR.view.getProject().studies.directComparisons.length;
+    },
+    isSaved: () => {
+      return PR.view.getProject().isSaved;
     },
     isReady: () => {
       let isReady = false;

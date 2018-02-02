@@ -31,25 +31,40 @@
           <div>
             <ul>
               <li class="list-group-item">
-                Filename 
-                <span class="badge">{{view.filename}}</span>
+                <ul class="list-inline">
+                  <li>
+                  <h4>
+                    {{view.projectTitle}}
+                  </h4>
+                  </li>
+                  <li class="pull-right">
+                  <button onClick="Actions.Project.changeName()" class="btn
+                    btn-default">
+                    rename
+                  </button>
+                  </li>
+                </ul>
               </li>
-              <li class="list-group-item active">
-                <h4>
-                  {{view.projectTitle}}
-                </h4>
-                <button onClick="Actions.Project.changeName()">edit</button>
+              <li class="list-group-item">
+                Filename 
+                <span class="badge">{{view.filename}}.csv</span>
               </li>
               <li class="list-group-item">
                 Created 
                 <span class="badge">{{view.creationDate}}</span>
               </li>
+              {{#if view.format}}
+                <li class="list-group-item">
+                  Format 
+                  <span class="badge">{{view.format}}</span>
+                </li>
+              {{/if}}
             </ul>
           </div>
-          <button  action='clearFile' id='projectClear' class="pull-right btn
-            btn-default">
-            {{{model.text.clearCurrentProject}}}
-          </button>
+        <button id="projectClear" class="btn
+          btn-default bs-danger">
+          Clear Project
+        </button>
       </div>
       {{#if view.notRecognized}}
         <h1> Γ field selector </h1>
@@ -68,7 +83,7 @@
               save
             </button>
         {{/if}}
-        {{#if hasFormatType}}
+        {{#if view.hasFormatType}}
           <ul>
             {{#each view.fileFields}}
               <ul class="list-inline">
@@ -95,29 +110,39 @@
           </ul>
         {{/if}}
       {{/if}}
-        {{#if canProceed}}
-          <h1> Δ summary </h1>
-          {{#if isReady}}
-            <ul id="project-summary" class="list-group">
-              <li class="list-group-item">
-                <span class="badge">{{view.numStudies}}</span>
-                  Studies
-              </li>
-              <li class="list-group-item">
-                <span class="badge">{{view.interventions}}</span>
-                  Interventions
-              </li>
-              <li class="list-group-item">
-                <span class="badge">  {{view.comparisons}}</span>
-                Comparisons
-              </li>
-            </ul>
-            <button > Proceed </button>
-            <button > Edit </button>
-          {{else}}
-            <button > Save </button>
-          {{/if}}
+      {{#if view.canProceed}}
+        <h1> Δ summary </h1>
+          <ul id="project-summary" class="list-group">
+            <li class="list-group-item">
+              Type 
+              <span class="badge">{{view.type}}</span>
+            </li>
+            <li class="list-group-item">
+              <span class="badge">{{view.numStudies}}</span>
+                Studies
+            </li>
+            <li class="list-group-item">
+              <span class="badge">{{view.interventions}}</span>
+                Interventions
+            </li>
+            <li class="list-group-item">
+              <span class="badge">  {{view.comparisons}}</span>
+              Comparisons
+            </li>
+          </ul>
+        {{#if view.isSaved}}
+        <button onClick="Actions.Router.gotoRoute('general')" class="pull-right btn
+          btn-default">
+          Proceed
+        </button>
+        <button  action='edit' id=edit-project' class="pull-right btn
+          btn-default">
+          Edit
+        </button>
+        {{else}}
+          <button > Save </button>
         {{/if}}
+      {{/if}}
     {{/if}}
 
 
