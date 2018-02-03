@@ -26,15 +26,15 @@ var Router = {
       if(_.contains(Router.view.menuRoutes, route)){
         return true;
       }else{
-        let conmatStatus = deepSeek(Router,'model.getState().project.CM.currentCM.status'); 
-        let directRobStatus = deepSeek(Router,'model.getState().project.DirectRob.status'); 
-        let reportStatus = deepSeek(Router,'model.getState().project.report.status'); 
-        let imprecisionStatus = deepSeek(Router,'model.getState().project.imprecision.status'); 
+        let conmatStatus = deepSeek(Router,'model.getState().project.CM.currentCM.status');
+        let directRobStatus = deepSeek(Router,'model.getState().project.DirectRob.status');
+        let reportStatus = deepSeek(Router,'model.getState().project.report.status');
+        let imprecisionStatus = deepSeek(Router,'model.getState().project.imprecision.status');
         switch(route) {
           case 'general':
             if(Router.model.getState().project && typeof Router.model.getState().project.studies !== 'undefined'){
               return true;
-            }else{ 
+            }else{
               return false;
             }
             break;
@@ -166,7 +166,7 @@ var Router = {
         let ptree = [
                      h('div#header.row',hnode),
                      cnode,
-                     h('nav.row.footerContainer.navbar-fixed-bottom',fnode)
+                     h('nav.row.footerContainer',fnode) // + .navbar-fixed-bottom
                    ];
           resolve(ptree);
         }else{

@@ -3,7 +3,11 @@ $icon-font-path: '../fonts/';
 // bower:scss
 @import "bower_components/bootstrap-sass/assets/stylesheets/_bootstrap.scss";
 // endbower
+html{
+  position: relative!important;
+  min-height: 100%!important;
 
+}
 .browserupgrade {
   margin: 0.2em 0;
   background: #ccc;
@@ -39,31 +43,29 @@ $icon-font-path: '../fonts/';
 body {
    min-width:768px; /* suppose you want minimun width of 1000px */
    width: auto !important;  /* Firefox will set width as auto */
-   padding-bottom:52px;
    font-family: 'Source Sans Pro', sans-serif!important;
    font-weight: 400!important;
+   overflow-x: hidden!important;
+   background-color: #fafafa!important;
 }
-.well {
-background-color: rgba(0,0,0,0.0)!important;
-border: none!important;
-}
+
+
+
 .well .compRobSelector {
-  background-color: red!important;
-border: none!important;
+//  background-color: red!important;
+//border: none!important;
 }
 /* Everything but the jumbotron gets side spacing for mobile first views */
 .header,
 .marketing,
-.footerContainer {
-  bottom:0;
-}
-.footer {
+
+/*.footer {
   padding-top:13px!important;
   p {
     padding-left: 33px;
     padding-right: 15px;
   }
-}
+}*/
 
 .license {
   margin-top: 30px;
@@ -90,12 +92,12 @@ span.info {
 }
 
 /* Custom page footer */
-.footer {
+/*.footer {
   padding-top: 19px;
   color: #777;
   border-top: 1px solid #e5e5e5;
 }
-
+*/
 .container-narrow > hr {
   margin: 30px 0;
 }
@@ -147,13 +149,13 @@ user-select: none;
   }
 
   /* Remove the padding we set earlier */
-  .header,
+  /*.header,
   .marketing,
   .footer {
     padding-left: 0;
     padding-right: 0;
   }
-
+*/
   /* Space out the masthead */
   .header {
   }

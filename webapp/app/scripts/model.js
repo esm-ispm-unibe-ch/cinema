@@ -12,50 +12,50 @@ var Model = {
   defaults: {
     robLevels: [
       { id: 1,
-        color: '#7CC9AE'
+        color: '#02c000'
       },
       { id: 2,
-        color: '#FBBC05'
+        color: '#e0df02'
       },
       { id: 3,
-        color: '#E0685C'
+        color: '#c00000'
     }],
     studyLimitationLevels: [
       { id: 1,
-        color: '#7CC9AE'
+        color: '#02c000'
       },
       { id: 2,
-        color: '#FBBC05'
+        color: '#e0df02'
       },
       { id: 3,
-        color: '#E0685C'
+        color: '#c00000'
       }],
     indrLevels: [
       { id: 1,
-        color: '#7CC9AE'
+        color: '#02c000'
       },
       { id: 2,
-        color: '#FBBC05'
+        color: '#e0df02'
       },
       { id: 3,
-        color: '#E0685C'
+        color: '#c00000'
     }],
     netIndrLevels: [
       { id: 1,
-        color: '#7CC9AE'
+        color: '#02c000'
       },
       { id: 2,
-        color: '#FBBC05'
+        color: '#e0df02'
       },
       { id: 3,
-        color: '#E0685C'
+        color: '#c00000'
     }],
     pubbiasLevels: [
       { id: 1,
-        color: '#7CC9AE'
+        color: '#02c000'
       },
       { id: 2,
-        color: '#E0685C'
+        color: '#c00000'
     }],
     locale: 'EN',
   },

@@ -88,13 +88,13 @@ var Update = (model) => {
   ];
   let HeterogeneityLevels = [
     { id: 1,
-      color: '#7CC9AE'
+      color: '#02c000'
     },
     { id: 2,
-      color: '#FBBC05'
+      color: '#e0df02'
     },
     { id: 3,
-      color: '#E0685C'
+      color: '#c00000'
   }];
   let HeterogeneityThresholds = [
     { id: 'first',

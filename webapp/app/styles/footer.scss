@@ -1,118 +1,150 @@
+
 $icon-font-path: '../fonts/';
 // bower:scss
 @import "bower_components/bootstrap-sass/assets/stylesheets/_bootstrap.scss";
 // endbower
-/*
-.footerContainer{
-  padding:0!important;
-  background-color: rgba(245,245,245,0.7);
-}
-.footer{
-}
-.footer_campbell_logo{
-  float: right;
-  height: 40px;
-}*/
-/* extra */
-.footer {
-  position: fixed;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  background-color: #E6E6E6;
-  text-align: center;
-  z-index: 1;
-  padding: 30px;
-  height: 150px;
 
-}
-.logos {
-	float: left;
-	width: 40%;
 
-}
 
 .bern {
 	float: left;
 	text-transform: uppercase;
 	font-weight: 600;
-	color: #336699;
-	margin-top: 20px;
-	margin-left: 20px;
-	clear: both;
+	color: #2c4d6d;
 	text-align: left;
 	font-size: 13px;
+	line-height: 17px;
 
 }
 
-.rightfooter {
-	float: right;
-	width: 60%;
+.disclaimertext {
+	float: left;
+	font-weight: 200;
+	color: #2c4d6d;
+	text-align: left;
+	font-size: 13px;
+	line-height: 17px;
 
+	a {
+		color: #2c4d6d!important;
+		font-weight: 600;
+	}
+
+	a:hover {
+		color: #132635!important;
+		font-weight: 600;
+	}
 
 }
 
-#campbell {
-  	display: block;
- 	float: left;
-	margin-left: 30px;
-	margin-top: 20px;
-}
 
 .campbell_logo {
-  	display: block;
- 	width: 125px;
+  display: block;
  	height: 35px;
-  	background: url(campbell_logo_wide.png);
-  	background-size: 125px 35px;
- 	float: left;
 }
 
-#cochrane {
-  	display: block;
- 	float: left;
-	margin-left: 30px;
-	margin-top: 20px;
+.footer_logo {
+	height: 30px;
+vertical-align: middle;
 }
 
 .cochrane_logo {
-  	display: block;
- 	width: 121px;
- 	height: 25px;
-  	background: url(cochrane_logo.png);
-  	background-size: 121px 25px;
- 	float: left;
-
+  display: block;
+ 	height: 28px;
 }
-
-#version {
-  	color: #C7715F;
-	text-align: right;
-	float: right;
-	font-weight: 300;
-	clear: both;
-}
-
-.smalltext {
-	color: #B4B4B4;
-	font-size: 13px;
-	float: right;
-	text-align: right;
-	margin-top: 10px;
-	clear: both;
-}
-
-.smalltext a{
-	text-decoration: none;
-	color: #222;
-}
-
 
 .fontcinema{
 	font-family: limelight;
 }
 
 .license img {
-    height: 20px;
+    height: 18px;
 	vertical-align: middle;
+}
+
+
+#myFooter {
+    background-color: #e4edf2;
+    color: white;
+    clear: both!important;
+		-webkit-box-shadow: 0px -1px 10px 0px rgba(162,164,171,0.4);
+-moz-box-shadow: 0px -1px 10px 0px rgba(162,164,171,0.4);
+box-shadow: 0px -1px 10px 0px rgba(162,164,171,0.4);
+}
+
+.footer-container {
+  max-width: 1250px!important;
+  margin: 0 auto;
+  padding: 20px;
+  clear: both!important;
+	margin-bottom: 40px!important;
+}
+
+.footer-container2 {
+  max-width: 1000px!important;
+  margin: 0 auto;
+  padding: 5px;
+  clear: both!important;
+	margin-bottom: 10px!important;
+}
+
+#myFooter .info{
+    text-align: justify;
+    color: #afb0b1;
+}
+
+#myFooter ul {
+    list-style-type: none;
+    padding-left: 0;
+    line-height: 1.7;
+}
+
+
+#myFooter .second-bar {
+    background-color: #2c4d6d;
+    bottom: 0!important;
+		clear: both!important;
+	  margin: 0 auto;
+	  padding-bottom: 28px!important;
+		padding-top: 10px!important;
+		font-size: 14px;
+		color: #e4edf2;
+		text-align: center;
+		font-weight: 600;
+		vertical-align: middle!important;
+
+}
+
+#myFooter .second-bar a {
+    font-size: 22px;
+    color: #9fa3a9;
+    padding: 10px;
+    transition: 0.2s;
+    line-height: 68px;
+}
+
+#myFooter .second-bar a:hover {
+    text-decoration: none;
+}
+
+
+@media screen and (max-width: 767px) {
+    #myFooter {
+        text-align: center;
+    }
+
+    #myFooter .info{
+        text-align: center;
+    }
+}
+
+
+
+/* CSS used for positioning the footers at the bottom of the page. */
+/* You can remove this. */
+
+#myFooter{
+//   flex: 0 0 auto;
+  // -webkit-flex: 0 0 auto;
+  position:relative!important;
 }

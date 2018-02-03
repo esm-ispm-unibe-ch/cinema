@@ -96,7 +96,7 @@ getReportLevels st =
                  <<< reportText <<< _ReportText)."levels"
       defaultLevels = [ { id: 0
                         , label: ""
-                        , color: "#7CC9AE"
+                        , color: "#02c000"
                         , isActive: false
                         }
                       , { id: -1
@@ -106,12 +106,12 @@ getReportLevels st =
                         }
                       , { id: -2
                         , label: ""
-                        , color: "#FBBC05"
+                        , color: "#e0df02"
                         , isActive: false
                         }
                       , { id: -2
                         , label: ""
-                        , color: "#E0685C"
+                        , color: "#c00000"
                         , isActive: false
                         }
                       ]

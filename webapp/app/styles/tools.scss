@@ -90,11 +90,14 @@ col.rowHeader {
   width:310px;
   margin: 6px;
   padding:5px 11px 5px 11px!important;
-  border-radius: 0;
+  border-radius:10px;
   // border-width:1px;
   border: 0px;
-  border-left: 6px solid grey;
+  border-left: 16px solid grey;
   background-color: white;
+  -webkit-box-shadow: 3px 4px 10px 0px rgba(173,173,173,0.6);
+-moz-box-shadow: 3px 4px 10px 0px rgba(173,173,173,0.6);
+box-shadow: 3px 4px 10px 0px rgba(173,173,173,0.6);
   ul{
     list-style-type: none;
     padding-left: 0!important;
@@ -110,6 +113,67 @@ col.rowHeader {
     color:black;
   }
 }
+
+#IncoherenceBoxes{
+background-color:#fafafa;
+border: none;
+border-radius: 0;
+-moz-box-shadow:    inset 0 0 0px grey;
+-webkit-box-shadow: inset 0 0 0px grey;
+box-shadow:         inset 0 0 0px grey;
+
+}
+#robSelector {
+background-color:#fafafa;
+border: none;
+border-radius: 0;
+-moz-box-shadow:    inset 0 0 0px grey;
+-webkit-box-shadow: inset 0 0 0px grey;
+box-shadow:         inset 0 0 0px grey;
+
+}
+
+#indrSelector {
+background-color:#fafafa;
+border: none;
+border-radius: 0;
+-moz-box-shadow:    inset 0 0 0px grey;
+-webkit-box-shadow: inset 0 0 0px grey;
+box-shadow:         inset 0 0 0px grey;
+
+}
+
+#PubbiasBoxes {
+background-color:#fafafa;
+border: none;
+border-radius: 0;
+-moz-box-shadow:    inset 0 0 0px grey;
+-webkit-box-shadow: inset 0 0 0px grey;
+box-shadow:         inset 0 0 0px grey;
+
+}
+
+#heterBoxes {
+background-color:#fafafa;
+border: none;
+border-radius: 0;
+-moz-box-shadow:    inset 0 0 0px grey;
+-webkit-box-shadow: inset 0 0 0px grey;
+box-shadow:         inset 0 0 0px grey;
+
+}
+
+#ImprecisionBoxes {
+background-color:#fafafa;
+border: none;
+border-radius: 0;
+-moz-box-shadow:    inset 0 0 0px grey;
+-webkit-box-shadow: inset 0 0 0px grey;
+box-shadow:         inset 0 0 0px grey;
+
+}
+
+
 
 .customized {
   background-color:rgba(225,225,225,0.5);

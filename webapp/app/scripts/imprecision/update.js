@@ -19,13 +19,13 @@ var Update = (model) => {
   let modelPosition = 'project.imprecision';
   let ImprecisionLevels = [
     { id: 1,
-      color: '#7CC9AE'
+      color: '#02c000'
     },
     { id: 2,
-      color: '#FBBC05'
+      color: '#e0df02'
     },
     { id: 3,
-      color: '#E0685C'
+      color: '#c00000'
   }];
   let updaters = {
     getState: () => {
@@ -107,7 +107,7 @@ var Update = (model) => {
             // console.log("BOX id",s[0]);
             contents =  {
                 id: nmaRow["_row"],
-                CIf: CIf.toFixed(3), 
+                CIf: CIf.toFixed(3),
                 CIs: CIs.toFixed(3)
             }
           if(_.isUndefined(pairRow)){
@@ -162,13 +162,13 @@ var Update = (model) => {
           case "continuous":
               result = "continuous";
               break;
-        } 
+        }
       }
       return result;
     },
     emptyModel: () => {
       let boxes = [];
-      return { 
+      return {
         status: 'not-ready',
         boxes,
         levels: ImprecisionLevels
@@ -181,7 +181,7 @@ var Update = (model) => {
       }else{
         boxes = [];
       }
-      return { 
+      return {
         status: 'ready',
         boxes,
         levels: ImprecisionLevels
