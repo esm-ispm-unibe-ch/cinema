@@ -1,6 +1,8 @@
 var Messages = require('../messages.js').Messages;
 
 var Settings = {
+  types: ["continuous","binary"],
+  formats: ["long","wide","iv"],
   required: {
     binaryLong: ['id','t','r','n','rob'],
     continuousLong: ['id','t','y','sd','n','rob'],
@@ -22,38 +24,42 @@ var fileChecker = {
     };
     let titles = Object.keys(json[0]);
     let fileTypes = Object.keys(required);
-    let answer = "Unknown";
+    let answer = {defaults: Settings
+                 , columns: titles};
     _.map(fileTypes, ft => {
       if(checkNames(titles, required[ft])){
         switch (ft) {
           case 'binaryLong':
-            answer = {model:json, format:'long', type:'binary'};
+            answer.model=json; 
+            answer.format='long';
+            answer.type='binary';
           break;
           case 'continuousLong':
-            answer = {model:json, format:'long', type:'continuous'};
+            answer.model=json; 
+            answer.format='long';
+            answer.type='continuous';
           break;
           case 'binaryWide':
-            answer = {model:json, format:'wide', type:'binary'};
+            answer.model=json; 
+            answer.format='wide';
+            answer.type='binary';
           break;
           case 'continuousWide':
-            answer = {model:json, format:'wide', type:'continuous'};
+            answer.model=json; 
+            answer.format='wide';
+            answer.type='continuous';
           break;
           case 'iv':
-            answer = {model:json, format:'iv'};
+            answer.model=json; 
+            answer.format='iv';
           break;
           default:
-            answer = {model:json, columns: titles};
+            answer.model=json; 
           break;
         }
       }
     });
-    return new Promise ((resolve, reject) => {
-      if (answer === "Unknown"){
-        reject('Error parsing json');
-      }else{
-        resolve(answer);
-      }
-    });
+    return answer;
   },
   checkTypes: (project) => {
     var pr = project;

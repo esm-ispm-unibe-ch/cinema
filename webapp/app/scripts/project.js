@@ -143,14 +143,20 @@ var PR = {
       PR.model.saveState();
       PR.model.factorySettings();
     },
-    makeStudies: (dataset) => {
+    initProject: (model) => {
+      let prj = PR.view.getProject();
+      prj.rawData = model;
+      prj.rawData.selected={};
+      if (!_.isUndefined(model.type)){
+        prj.type = model.type;
+      }
+      if (!_.isUndefined(model.format)){
+        prj.format = model.format;
+      }
+      PR.model.saveState();
     },
-    recognizeFile: (dataset) => {
-    return new Promise((resolve,reject) => {
-      Checker.checkColumnNames(dataset)
-      .then(dataset => {
-        return Checker.checkTypes(dataset);
-      })
+    makeStudies: (dataset) => {
+      return Checker.checkTypes(dataset)
       .then(Checker.checkMissingValues)
       .then(Checker.checkConsistency)
       .then(project => {
@@ -169,7 +175,8 @@ var PR = {
           let ids = _.pluck(mdl.nodes,'id');
           let sortedIds = ComparisonModel.orderIds(ids);
           let dcomps = PR.update.makeDirectComparisons(project.type, mdl.wide);
-          mdl.directComparisons = _.unzip(sortStudies(_.map(dcomps, comp => {return comp.t1+":"+comp.t2}),dcomps))[1];
+          mdl.directComparisons = 
+            _.unzip(sortStudies(_.map(dcomps, comp => {return comp.t1+":"+comp.t2}),dcomps))[1];
           let indirects = PR.update.makeIndirectComparisons(mdl.nodes,mdl.directComparisons);
           mdl.indirectComparisons = indirects;
           prj.studies = mdl;
@@ -177,6 +184,10 @@ var PR = {
           PR.update.setProject(prj);
           return prj;
         });
+    },
+    recognizeFile: (dataset) => {
+      return new Promise((resolve,reject) => {
+        resolve(Checker.checkColumnNames(dataset))
       })
     },
     getJSON: (infile, filename) => {
@@ -200,20 +211,28 @@ var PR = {
       npr.studyLimitationLevels = studyLimitationLevels;
       PR.update.setProject(npr);
     },
+    //The main project reading function
     fetchProject: (evt) => {
       var filename = htmlEntities($('#files').val().replace(/C:\\fakepath\\/i, '')).slice(0, -4);
       PR.update.getJSON(evt,filename).then(data => {
-        console.log("data",data);
         PR.update.createProject(filename);
         return data;
       })
       .then(PR.update.recognizeFile)
-      .then(project => {
-          Messages.alertify().success(PR.model.state.text.longFileUpload.title,' csv format '+project.format+' '+project.type);
+      .then(model => {
+        PR.update.initProject(model);
+        let hasFormat = ! _.isUndefined(model.format);
+        let hasType = ! _.isUndefined(model.type);
+        if ( hasFormat && hasType) {
+          PR.update.makeStudies(model);
+        }
       })
-      .catch( err => {
-        Messages.alertify().error(PR.model.getState().text.wrongFileFormat+err);
-      });
+      //.then(project => {
+          //Messages.alertify().success(PR.model.state.text.longFileUpload.title);
+      //})
+      //.catch( err => {
+        //Messages.alertify().error(PR.model.getState().text.wrongFileFormat+err);
+      //});
     },
     changeName: () => {
       let prevVal = PR.view.getProject().title;
@@ -225,7 +244,27 @@ var PR = {
                Messages.alertify().success('Project name updated');
              }
              , function() { console.log("canceled naming") });
-    }
+    },
+    selectType: (rtype) => {
+      let pr = PR.view.getProject();
+      let type = rtype.value;
+      pr.rawData.selected.type = type;
+      PR.model.saveState();
+    },
+    selectFormat: (rformat) => {
+      let pr = PR.view.getProject();
+      let format = rformat.value;
+      pr.rawData.selected.format = format;
+      PR.model.saveState();
+    },
+    saveFormatType: () => {
+      let pr = PR.view.getProject();
+      let format = pr.rawData.selected.format;
+      let type = pr.rawData.selected.type;
+      pr.format = format;
+      pr.type = type;
+      PR.model.saveState();
+    },
   },
   view: {
     getProject: () => {
@@ -292,6 +331,69 @@ var PR = {
       PR.model = model;
       _.mapObject(PR.actions, (f,n) => {f();});
     },
+    rawData: () => {
+      let pr = PR.view.getProject();
+      if( _.isUndefined(pr.rawData)){
+        return {};
+      }else{
+        return PR.view.getProject().rawData;
+      }
+    },
+    rawTypes: () => {
+      let pr = PR.view.getProject();
+      if( _.isUndefined(pr.rawData)){
+        return [];
+      }else{
+        return PR.view.getProject().rawData.defaults.types;
+      }
+    },
+    rawFormats: () => {
+      let pr = PR.view.getProject();
+      if( _.isUndefined(pr.rawData)){
+        return [];
+      }else{
+        return PR.view.getProject().rawData.defaults.formats;
+      }
+    },
+    rawDefaults: () => {
+      let pr = PR.view.getProject();
+      if( _.isUndefined(pr.rawData)){
+        return {};
+      }else{
+        return PR.view.getProject().rawData.defaults.required;
+      }
+    },
+    selectedFormat: () => {
+      let pr = PR.view.getProject();
+      let out = {};
+      if (! _.isUndefined(deepSeek(pr,'rawData.selected.format'))){
+        out = pr.rawData.selected.format;
+      }else{
+        out = pr.format;
+      }
+      return out;
+    },
+    hasSelectedFormat: () => {
+      return ! _.isUndefined(PR.view.selectedFormat());
+    },
+    selectedType: () => {
+      let pr = PR.view.getProject();
+      let out = {};
+      if (! _.isUndefined(deepSeek(pr,'rawData.selected.type'))){
+        out = pr.rawData.selected.type;
+      }else{
+        out = pr.type;
+      }
+      return out;
+    },
+    hasSelectedType: () => {
+      return ! _.isUndefined(PR.view.selectedType());
+    },
+    hasSelectedFormatType: () => {
+      let out = PR.view.hasSelectedFormat() && PR.view.hasSelectedType();
+      console.log("hassleected format adn type",out,PR.view.selectedFormat(),PR.view.selectedType());
+      return out;
+    }
   },
   render: (model) => {
     if (PR.view.isReady()){

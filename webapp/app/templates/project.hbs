@@ -18,7 +18,8 @@
             download="diabetes.csv">here</a>. It is a network of six intervention for
           diabetes mellitus by Elliot et.al 
           <br>
-          <a href="https://www.ncbi.nlm.nih.gov/pubmed/17240286" >W. J. Elliott and P. M. Meyer. Incident diabetes in clinical
+          <a href="https://www.ncbi.nlm.nih.gov/pubmed/17240286">
+            W. J. Elliott and P. M. Meyer. Incident diabetes in clinical
             trials of antihypertensive drugs: a network meta-analysis. The Lancet,
             369(9557):201 – 207, 2007</a>
         </div>
@@ -66,26 +67,47 @@
           Clear Project
         </button>
       </div>
-      {{#if view.notRecognized}}
-        <h1> Γ field selector </h1>
+        {{#unless view.hasFormatType}}
         <ul>
-          <li> File format: <input value="type"/></li>
-          <li> Outcome type: <input value="format"/></li>
-        </ul>
-          {{#if view.hasFormatType}}
-            <button class="pull-right btn
+          {{#unless view.format}}
+            <li>
+              Format 
+            <select onchange="Actions.Project.selectFormat(this)">
+                <option value="nothing" disabled {{#unless
+                        view.hasSelectedFormat}}selected{{/unless}}>--</option>
+              {{#each view.rawFormats}}
+                <option value={{this}} 
+                        {{#if_eq this view.selectedFormat}}
+                          selected
+                        {{/if_eq}}
+                        >{{view.selectedFormat}} {{this}}</option>
+              {{/each}}
+            </select>
+            </li>
+          {{/unless}}
+          {{#unless view.type}}
+            <li>
+              Type 
+            <select onchange="Actions.Project.selectType(this)">
+                <option value="nothing" disabled {{#unless
+                        view.hasSelectedType}}selected{{/unless}}>--</option>
+              {{#each view.rawTypes}}
+                <option value="{{this}}">{{this}}</option>
+              {{/each}}
+            </select>
+            </li>
+          {{/unless}}
+          <ul>
+          {{#if view.hasSelectedFormatType}}
+            <button onClick="Actions.Project.saveFormatType()" class="pull-right btn
               btn-default">
-              edit
+              Save
             </button>
-          {{else}}
-            <button class="pull-right btn
-              btn-default">
-              save
-            </button>
-        {{/if}}
+          {{/if}}
+        {{/unless}}
         {{#if view.hasFormatType}}
           <ul>
-            {{#each view.fileFields}}
+            {{#each view.rawColumns}}
               <ul class="list-inline">
                 <li>
                   {{name}}
@@ -109,7 +131,6 @@
             {{/each}}
           </ul>
         {{/if}}
-      {{/if}}
       {{#if view.canProceed}}
         <h1> Δ summary </h1>
           <ul id="project-summary" class="list-group">
