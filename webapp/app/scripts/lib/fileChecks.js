@@ -10,7 +10,8 @@ var Settings = {
     continuousWide: ['id','t1','y1','sd1','n1','t2','y2','sd2','n2','rob'],
     iv: ['id','t1','t2','effect','se','rob'],
   },
-  optional: ['sn','tfn','tn','tfn1','tn1','tfn2','tn2','indirectness'],
+  //optional: ['sn','tfn','tn','tfn1','tn1','tfn2','tn2','indirectness'],
+  optional: ['indirectness'],
 };
 
 var fileChecker = {

@@ -259,11 +259,82 @@ var PR = {
     },
     saveFormatType: () => {
       let pr = PR.view.getProject();
-      let format = pr.rawData.selected.format;
-      let type = pr.rawData.selected.type;
+      let format = PR.view.selectedFormat();
+      let type = PR.view.selectedType();
+      let getrequired = (fr,tp) => {
+        let out = '';
+        switch (fr) {
+          case "long":
+            switch (tp) {
+              case "continuous":
+                out = "continuousLong";
+                break;
+              case "binary":
+                out = "binaryLong";
+                break;
+            }
+            break;
+          case "wide":
+            switch (tp) {
+              case "continuous":
+                out = "continuousWide";
+                break;
+              case "binary":
+                out = "binaryWide";
+                break;
+            }
+            break;
+          case "iv":
+            out = "iv";
+            break;
+          }
+        return out;
+      };
+      let availables = pr.rawData.columns;
+      let requiredFields = pr.rawData.defaults.required[getrequired(format,type)];
+      let required = _.map(requiredFields, req => {
+              return {name: req, selected:_.contains(availables,req)?req:"--", isActive:false};
+            });
+      let optionalFields = pr.rawData.defaults.optional;
+      let optional = _.map(optionalFields, req => {
+              return {name: req, selected:_.contains(availables,req)?req:"--", isActive:false};
+            });
       pr.format = format;
       pr.type = type;
+      pr.settings = {};
+      pr.settings.format = format; 
+      pr.settings.selectedField = 'none'; 
+      pr.settings.selectedColumn = 'none'; 
+      pr.settings.type = type; 
+      pr.settings.required = required;
+      pr.settings.optional = optional;
       PR.model.saveState();
+    },
+    selectColumn: (rcolumn,field) =>{
+      let pr = PR.view.getProject();
+      let column = rcolumn.value;
+      let reqs = PR.view.requiredFields();
+      let opts = PR.view.optionalFields();
+      let reqsel = _.findLastIndex(reqs, {name: field});
+      let optsel = _.findLastIndex(opts, {name: field});
+      if (reqsel !== -1){
+        reqs[reqsel].selected = column;
+      }
+      if (optsel !== -1){
+        opts[optsel].selected = column;
+      }
+      PR.model.saveState();
+    },
+    editFormatType: () => {
+     Messages.alertify().confirm('Clear Format/Type?','You will have to reselect the file\' fields',
+        () => {
+          delete(PR.view.getProject().type);
+          delete(PR.view.getProject().format);
+          delete(PR.view.getProject().settings.format);
+          delete(PR.view.getProject().settings.type);
+          PR.model.saveState();
+          Messages.alertify().message('Format and type have been reset');
+      },()=>{});
     },
   },
   view: {
@@ -391,9 +462,83 @@ var PR = {
     },
     hasSelectedFormatType: () => {
       let out = PR.view.hasSelectedFormat() && PR.view.hasSelectedType();
-      console.log("hassleected format adn type",out,PR.view.selectedFormat(),PR.view.selectedType());
       return out;
-    }
+    },
+    projectFields: () => {
+      let pr = PR.view.getProject();
+      let reqs = {};
+      let opts = {};
+      let selects = {};
+      let availables = ["--"].concat(PR.view.getProject().rawData.columns);
+      if (! _.isUndefined(deepSeek(pr,'settings.required'))){
+        reqs = PR.view.getProject().settings.required;
+        opts = PR.view.getProject().settings.optional;
+        let fields = [];
+        if(! _.isUndefined(reqs)){
+          if(! _.isUndefined(opts)){
+            fields = reqs.concat(opts);
+          }else{
+            fields = reqs;
+          }
+        }else{
+          if(! _.isUndefined(opts)){
+            fields = opts;
+          }else{
+            fields = [];
+          }
+        }
+        if(! _.isUndefined(fields)){
+          selects = _.filter(fields, f => {
+            return f.selected !== "--";
+          });
+          selects = _.map(selects, f => {return f.selected});
+        }
+        _.map(reqs, req => {
+          let avs = _.map(availables, av => {
+            return { name: av
+                   , isSelected: av === req.selected
+                   , isDisabled: _.contains(selects,av)
+                   }
+          });
+          req.availableColumns = avs;
+        });
+        _.map(opts, opt => {
+          let avs = _.map(availables, av => {
+            return { name: av
+                   , isSelected: av === opt.selected
+                   , isDisabled: _.contains(selects,av)
+                   }
+          });
+          opt.availableColumns = avs;
+        });
+      }
+      return {required:reqs, optional: opts};
+    },
+    requiredFields: () => {
+      return PR.view.projectFields().required;
+    },
+    optionalFields: () => {
+      return PR.view.projectFields().optional;
+    },
+    selectedColumns: () => {
+      let pr = PR.view.getProject();
+      let reqs = PR.view.requiredFields();
+      let opts = PR.view.optionalFields();
+      let fields = reqs.concat(opts);
+      let out = _.filter(fields, f => {
+        return f.selected !== "--";
+      });
+      return _.map(out, f => {return f.selected});
+    },
+    availableColumns: () => {
+      let pr = PR.view.getProject();
+      let selectedColumns = PR.view.selectedColumns();
+      let allColumns = [];
+      if (! _.isUndefined(deepSeek(pr,'rawData.columns'))){
+        allColumns = ["--"].concat(PR.view.getProject().rawData.columns);
+      }
+      return _.difference(allColumns, selectedColumns);
+    },
   },
   render: (model) => {
     if (PR.view.isReady()){

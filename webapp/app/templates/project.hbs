@@ -1,8 +1,8 @@
 <div class="container-fluid routed" id='project'>
-  <div class='projects-container col-xs-12 col-md-offset-4 col-md-4'>
+  <div class='projects-container col-xs-12 col-md-offset-2 col-md-8'>
 
     {{#unless view.hasFile}}
-        <h1> A file uploader</h1>
+        <h3>File uploader</h3>
     <div class='well col-xs-12 project-uploader'>
           <span class="prtitle">
             {{{model.text.uploadProject}}}
@@ -27,72 +27,95 @@
   {{/unless}}
 
   {{#if view.hasFile}}
-    <div id="project-settings">
-        <h1> B project settings</h1>
-          <div>
-            <ul>
-              <li class="list-group-item">
-                <ul class="list-inline">
-                  <li>
-                  <h4>
-                    {{view.projectTitle}}
-                  </h4>
-                  </li>
-                  <li class="pull-right">
-                  <button onClick="Actions.Project.changeName()" class="btn
-                    btn-default">
-                    rename
-                  </button>
-                  </li>
-                </ul>
+    <h3>Project details</h3>
+        <ul>
+          <li class="list-group-item">
+            <ul class="list-inline">
+              <li>
+              <h4>
+                {{view.projectTitle}}
+              </h4>
               </li>
-              <li class="list-group-item">
-                Filename 
-                <span class="badge">{{view.filename}}.csv</span>
+              <li class="pull-right">
+              <button onClick="Actions.Project.changeName()" class="btn
+                btn-default">
+                rename
+              </button>
               </li>
-              <li class="list-group-item">
-                Created 
-                <span class="badge">{{view.creationDate}}</span>
-              </li>
-              {{#if view.format}}
-                <li class="list-group-item">
-                  Format 
-                  <span class="badge">{{view.format}}</span>
-                </li>
-              {{/if}}
             </ul>
-          </div>
-        <button id="projectClear" class="btn
-          btn-default bs-danger">
+          </li>
+          <li class="list-group-item">
+            Filename 
+            <span class="badge">{{view.filename}}.csv</span>
+          </li>
+          <li class="list-group-item">
+            Created 
+            <span class="badge">{{view.creationDate}}</span>
+          </li>
+        </ul>
+        <button id="projectClear" class="pull-right btn btn-default">
           Clear Project
         </button>
-      </div>
-        {{#unless view.hasFormatType}}
+        {{#if view.hasFormatType}}
+          <h3>File format and type</h3>
+          <ul>
+            <li class="list-group-item">
+              Format 
+              <span class="badge">{{view.format}}</span>
+            </li>
+            <li class="list-group-item">
+              Type 
+              <span class="badge">{{view.type}}</span>
+            </li>
+          </ul>
+          <button onClick="Actions.Project.editFormatType()" class="pull-right btn
+            btn-default">
+            reset
+          </button>
+        {{else}}
+        <div id="project-info">
+        </div>
         <ul>
+          <h3>File format and type</h3>
           {{#unless view.format}}
             <li>
               Format 
             <select onchange="Actions.Project.selectFormat(this)">
-                <option value="nothing" disabled {{#unless
+                <option value="nothing" disabled="true" {{#unless
                         view.hasSelectedFormat}}selected{{/unless}}>--</option>
               {{#each view.rawFormats}}
-                <option value={{this}} 
-                        {{#if_eq this view.selectedFormat}}
+                <option value={{this}}
+                        {{#if_eq this (../view.selectedFormat) }}
                           selected
-                        {{/if_eq}}
-                        >{{view.selectedFormat}} {{this}}</option>
+                        {{/if_eq}}>
+                        {{this}}</option>
               {{/each}}
             </select>
+            <ul>
+              <li>
+                long: Single treatment per row
+              </li>
+              <li>
+                wide: Single comparison per row
+              </li>
+              <li>
+                iv: Inverse variance (Comparison per row)
+              </li>
+            </ul>
             </li>
           {{/unless}}
           {{#unless view.type}}
             <li>
               Type 
             <select onchange="Actions.Project.selectType(this)">
-                <option value="nothing" disabled {{#unless
+                <option value="nothing" disabled="true" {{#unless
                         view.hasSelectedType}}selected{{/unless}}>--</option>
               {{#each view.rawTypes}}
-                <option value="{{this}}">{{this}}</option>
+                <option value={{this}} 
+                        {{#if_eq this (../view.selectedType) }}
+                          selected
+                        {{/if_eq}}>
+                {{this}}</option>
               {{/each}}
             </select>
             </li>
@@ -104,35 +127,64 @@
               Save
             </button>
           {{/if}}
-        {{/unless}}
+        {{/if}}
+        {{#unless view.canProceed}}
         {{#if view.hasFormatType}}
-          <ul>
-            {{#each view.rawColumns}}
+        <h3>Associate columns to fields</h3>
+          <ul id="required-columns" class="col-md-6">
+            {{#each view.requiredFields}}
+            <li>
               <ul class="list-inline">
                 <li>
-                  {{name}}
+                  {{name}}*
                 </li>
                 <li>
-                  {{field}}
+                  <select
+                  onchange="Actions.Project.selectColumn(this,'{{name}}')">
+                    {{#each availableColumns}}
+                      <option value={{name}} 
+                        {{#if isSelected}} selected {{/if}}
+                        {{#if isDisabled}} disabled {{/if}}>
+                          {{name}}
+                      </option>
+                    {{/each}}
+                  </select>
                 </li>
               </ul>
+            </li>
             {{/each}}
-          </ul>
-          <ul class="available-fields">
-            {{#each view.availableFields}}
-              <ul class="list-inline">
+            {{#each view.optionalFields}}
+            <li>
+              <ul class='list-inline'>
                 <li>
                   {{name}}
                 </li>
                 <li>
-                  {{optional}}
+                  <select
+                  onchange="Actions.Project.selectColumn(this,'{{name}}')">
+                    {{#each availableColumns}}
+                      <option value={{name}} 
+                        {{#if isSelected}} selected {{/if}}
+                        {{#if isDisabled}} disabled {{/if}}>
+                          {{name}}
+                      </option>
+                    {{/each}}
+                  </select>
                 </li>
               </ul>
+            </li>
             {{/each}}
           </ul>
         {{/if}}
+        {{#if allRequiredSelected}}
+          <button onClick="Actions.Router.checkFile()" class="pull-right btn
+            btn-default">
+            process file
+          </button>
+        {{/if}}
+      {{/unless}}
       {{#if view.canProceed}}
-        <h1> Δ summary </h1>
+        <h3> summary </h3>
           <ul id="project-summary" class="list-group">
             <li class="list-group-item">
               Type 
@@ -156,7 +208,7 @@
           btn-default">
           Proceed
         </button>
-        <button  action='edit' id=edit-project' class="pull-right btn
+        <button  action="edit" id="edit-project" class="pull-right btn
           btn-default">
           Edit
         </button>
