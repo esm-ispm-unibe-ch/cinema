@@ -71,7 +71,7 @@ var PR = {
     },
     setProject: (pr) => {
       PR.model.getState().project = pr;
-      _.map(PR.children, c => { c.update.updateState(PR.model);});
+      _.map(PR.children, c => {c.update.updateState(PR.model);});
       PR.model.saveState();
     },
     makeIndirectComparisons: (nodes,directComparisons) => {
@@ -88,7 +88,7 @@ var PR = {
       });
       return lind;
     },
-    makeDirectComparisons: (type,model) => {
+    makeDirectComparisons: (format,model) => {
       let comparisons = _.groupBy(model, row => {
           return uniqId([row.t1, row.t2]).toString();
         });
@@ -119,7 +119,7 @@ var PR = {
         row.majrob = majrule(row.rob);
         row.meanrob = meanrule(row.rob);
         row.maxrob = maxrule(row.rob);
-        if(type !== 'iv'){
+        if(format !== 'iv'){
           row.sampleSize = sumBy(comp,['n1','n2']);
         }else{
           row.iv = _.reduce(comp, (iv,s) => {
@@ -146,7 +146,9 @@ var PR = {
     initProject: (model) => {
       let prj = PR.view.getProject();
       prj.rawData = model;
+      console.log("model",model);
       prj.rawData.selected={};
+      prj.isRecognized = false;
       if (!_.isUndefined(model.type)){
         prj.type = model.type;
       }
@@ -156,6 +158,7 @@ var PR = {
       PR.model.saveState();
     },
     makeStudies: (dataset) => {
+      console.log("to object gia na kaneis studies",dataset);
       return Checker.checkTypes(dataset)
       .then(Checker.checkMissingValues)
       .then(Checker.checkConsistency)
@@ -168,13 +171,22 @@ var PR = {
           mdl.long = project.model;
           mdl.wide = Reshaper.longToWide(project.model,project.type);
           }else{
-            mdl.long = Reshaper.wideToLong(project.model,project.type);
-            mdl.wide = project.model;
+            if (project.format === "iv"){
+              mdl.long = Reshaper.wideToLong(project.model,"iv");
+              mdl.wide = project.model;
+            }else{
+              mdl.long = Reshaper.wideToLong(project.model,project.type);
+              mdl.wide = project.model;
+            }
           }
-          mdl.nodes = PR.model.makeNodes(project.type, mdl.long);
+          if (project.format === "iv"){
+            mdl.nodes = PR.model.makeNodes("iv", mdl.long);
+          }else{
+            mdl.nodes = PR.model.makeNodes(project.type, mdl.long);
+          }
           let ids = _.pluck(mdl.nodes,'id');
           let sortedIds = ComparisonModel.orderIds(ids);
-          let dcomps = PR.update.makeDirectComparisons(project.type, mdl.wide);
+          let dcomps = PR.update.makeDirectComparisons(project.format, mdl.wide);
           mdl.directComparisons = 
             _.unzip(sortStudies(_.map(dcomps, comp => {return comp.t1+":"+comp.t2}),dcomps))[1];
           let indirects = PR.update.makeIndirectComparisons(mdl.nodes,mdl.directComparisons);
@@ -219,12 +231,13 @@ var PR = {
         return data;
       })
       .then(PR.update.recognizeFile)
-      .then(model => {
-        PR.update.initProject(model);
-        let hasFormat = ! _.isUndefined(model.format);
-        let hasType = ! _.isUndefined(model.type);
-        if ( hasFormat && hasType) {
-          PR.update.makeStudies(model);
+      .then(answer => {
+        PR.update.initProject(answer);
+        let hasFormat = ! _.isUndefined(answer.format);
+        let hasType = ! _.isUndefined(answer.type);
+        if (hasFormat && hasType) {
+          PR.view.getProject().isRecognized = true;
+          PR.update.makeStudies(answer);
         }
       })
       //.then(project => {
@@ -328,13 +341,44 @@ var PR = {
     editFormatType: () => {
      Messages.alertify().confirm('Clear Format/Type?','You will have to reselect the file\' fields',
         () => {
-          delete(PR.view.getProject().type);
-          delete(PR.view.getProject().format);
-          delete(PR.view.getProject().settings.format);
-          delete(PR.view.getProject().settings.type);
+          let pr = PR.view.getProject();
+          delete(pr.type);
+          delete(pr.format);
+          delete(pr.settings.format);
+          delete(pr.settings.type);
           PR.model.saveState();
           Messages.alertify().message('Format and type have been reset');
       },()=>{});
+    },
+    checkFile: () => {
+      return new Promise((resolve,reject) => {
+        let pr = PR.view.getProject();
+        let rawmodel = PR.view.getProject().rawData.model;
+        let reqs = PR.view.requiredFields();
+        let newmodel = _.map(rawmodel, r => {
+          let out = {};
+            _.mapObject(r, (v,k) =>{
+               let field = 
+                _.findWhere(reqs,{selected:k});
+              if(! _.isUndefined(field)){
+                out[field.name] = v; 
+              }else{
+                out[k] = v;
+              }
+            })
+          return out;
+         });
+        pr.model = newmodel;
+        resolve(pr);
+      }).then(
+        PR.update.makeStudies
+      )
+      .then(project => {
+          Messages.alertify().success(PR.model.state.text.longFileUpload.title);
+      })
+      .catch( err => {
+        Messages.alertify().error(PR.model.getState().text.wrongFileFormat+err);
+      });
     },
   },
   view: {
@@ -469,7 +513,10 @@ var PR = {
       let reqs = {};
       let opts = {};
       let selects = {};
-      let availables = ["--"].concat(PR.view.getProject().rawData.columns);
+      let availables = {};
+      if(! _.isUndefined(deepSeek(PR.view.getProject(),"rawData.columns"))){
+        availables = ["--"].concat(PR.view.getProject().rawData.columns);
+      }
       if (! _.isUndefined(deepSeek(pr,'settings.required'))){
         reqs = PR.view.getProject().settings.required;
         opts = PR.view.getProject().settings.optional;
@@ -539,6 +586,28 @@ var PR = {
       }
       return _.difference(allColumns, selectedColumns);
     },
+    allRequiredSelected: () => {
+      let reqs = PR.view.requiredFields();
+      let numreqs = 0
+      if(! _.isUndefined(reqs)){
+        numreqs = reqs.length;
+      }
+      let numSelected = _.countBy(reqs, r => {
+        return r.selected !== "--";
+      })["true"];
+      let res = false;
+      if (_.isUndefined(numSelected) || _.isUndefined(numreqs)){
+        res = false;
+      }else{
+        res = numSelected === numreqs;
+      }
+      console.log('numreqs',numreqs,numSelected,res);
+      return res;
+    },
+    notRecognized: () => {
+      let pr = PR.view.getProject();
+      return ! pr.isRecognized;
+    }
   },
   render: (model) => {
     if (PR.view.isReady()){

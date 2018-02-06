@@ -39,7 +39,7 @@
               <li class="pull-right">
               <button onClick="Actions.Project.changeName()" class="btn
                 btn-default">
-                rename
+                Rename
               </button>
               </li>
             </ul>
@@ -68,10 +68,12 @@
               <span class="badge">{{view.type}}</span>
             </li>
           </ul>
-          <button onClick="Actions.Project.editFormatType()" class="pull-right btn
-            btn-default">
-            reset
-          </button>
+          {{#unless view.canProceed}}
+            <button onClick="Actions.Project.editFormatType()" class="pull-right btn
+              btn-default">
+              Reset
+            </button>
+          {{/unless}}
         {{else}}
         <div id="project-info">
         </div>
@@ -176,20 +178,16 @@
             {{/each}}
           </ul>
         {{/if}}
-        {{#if allRequiredSelected}}
-          <button onClick="Actions.Router.checkFile()" class="pull-right btn
+        {{#if ../view.allRequiredSelected}}
+          <button onClick="Actions.Project.checkFile()" class="pull-right btn
             btn-default">
-            process file
+            Check file
           </button>
         {{/if}}
       {{/unless}}
       {{#if view.canProceed}}
-        <h3> summary </h3>
+        <h3>Summary</h3>
           <ul id="project-summary" class="list-group">
-            <li class="list-group-item">
-              Type 
-              <span class="badge">{{view.type}}</span>
-            </li>
             <li class="list-group-item">
               <span class="badge">{{view.numStudies}}</span>
                 Studies
@@ -207,10 +205,6 @@
         <button onClick="Actions.Router.gotoRoute('general')" class="pull-right btn
           btn-default">
           Proceed
-        </button>
-        <button  action="edit" id="edit-project" class="pull-right btn
-          btn-default">
-          Edit
         </button>
         {{else}}
           <button > Save </button>

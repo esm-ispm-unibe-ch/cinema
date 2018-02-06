@@ -26,40 +26,34 @@ var fileChecker = {
     let titles = Object.keys(json[0]);
     let fileTypes = Object.keys(required);
     let answer = {defaults: Settings
-                 , columns: titles};
+                 , columns: titles
+                 , model: json};
     _.map(fileTypes, ft => {
       if(checkNames(titles, required[ft])){
         switch (ft) {
           case 'binaryLong':
-            answer.model=json; 
             answer.format='long';
             answer.type='binary';
           break;
           case 'continuousLong':
-            answer.model=json; 
             answer.format='long';
             answer.type='continuous';
           break;
           case 'binaryWide':
-            answer.model=json; 
             answer.format='wide';
             answer.type='binary';
           break;
           case 'continuousWide':
-            answer.model=json; 
             answer.format='wide';
             answer.type='continuous';
           break;
           case 'iv':
-            answer.model=json; 
             answer.format='iv';
-          break;
-          default:
-            answer.model=json; 
           break;
         }
       }
     });
+    console.log("answer",answer.model);
     return answer;
   },
   checkTypes: (project) => {

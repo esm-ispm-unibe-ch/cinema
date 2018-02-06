@@ -319,7 +319,8 @@ var NP = {
     ]},
     controls: () => {
       let type = NP.model.getState().project.type;
-      let controls =  NP.view.defaultControls(); if(type === 'iv'){
+      let format = NP.model.getState().project.format;
+      let controls =  NP.view.defaultControls(); if(format === 'iv'){
         controls[0].selections[1].isAvailable = false;
         controls[2].selections[1].isAvailable = false;
         controls[2].selections[3].isAvailable = true;
