@@ -1,14 +1,17 @@
 var Messages = require('../messages.js').Messages;
 
 var Settings = {
+  types: ["continuous","binary"],
+  formats: ["long","wide","iv"],
   required: {
     binaryLong: ['id','t','r','n','rob'],
     continuousLong: ['id','t','y','sd','n','rob'],
     binaryWide: ['id','t1','r1','n1','t2','r2','n2','rob'],
     continuousWide: ['id','t1','y1','sd1','n1','t2','y2','sd2','n2','rob'],
-    ivWide: ['id','t1','t2','effect','se','rob'],
+    iv: ['id','t1','t2','effect','se','rob'],
   },
-  optional: ['sn','tfn','tn','tfn1','tn1','tfn2','tn2','indirectness'],
+  //optional: ['sn','tfn','tn','tfn1','tn1','tfn2','tn2','indirectness'],
+  optional: ['indirectness'],
 };
 
 var fileChecker = {
@@ -22,35 +25,36 @@ var fileChecker = {
     };
     let titles = Object.keys(json[0]);
     let fileTypes = Object.keys(required);
-    let answer = "Nothing";
+    let answer = {defaults: Settings
+                 , columns: titles
+                 , model: json};
     _.map(fileTypes, ft => {
       if(checkNames(titles, required[ft])){
         switch (ft) {
           case 'binaryLong':
-            answer = {model:json, format:'long', type:'binary'};
+            answer.format='long';
+            answer.type='binary';
           break;
           case 'continuousLong':
-            answer = {model:json, format:'long', type:'continuous'};
+            answer.format='long';
+            answer.type='continuous';
           break;
           case 'binaryWide':
-            answer = {model:json, format:'wide', type:'binary'};
+            answer.format='wide';
+            answer.type='binary';
           break;
           case 'continuousWide':
-            answer = {model:json, format:'wide', type:'continuous'};
+            answer.format='wide';
+            answer.type='continuous';
           break;
-          case 'ivWide':
-            answer = {model:json, format:'wide', type:'iv'};
+          case 'iv':
+            answer.format='iv';
           break;
         }
       }
     });
-    return new Promise ((resolve, reject) => {
-      if (answer === "Nothing"){
-        reject('Wrong column names or missing columns');
-      }else{
-        resolve(answer);
-      }
-    });
+    console.log("answer",answer.model);
+    return answer;
   },
   checkTypes: (project) => {
     var pr = project;
@@ -67,7 +71,7 @@ var fileChecker = {
             if(isNaN(r.n)){reject('Found non number value in column <strong>n</strong>')};
         }else{
           //type checks for wide format
-          if(project.type==='iv'){
+          if(project.format==='iv'){
             if(isNaN(r.effect)){reject('Found non number value in column <strong>effect</strong>')};
             if(isNaN(r.se)){reject('Found non number value in column <strong>se</strong>')};
           }else{

@@ -7,6 +7,7 @@ var convertHTML = require('html-to-vdom')({
      VText: VText
 });
 var sortStudies = require('./lib/mixins.js').sortStudies;
+var clone = require('./lib/mixins.js').clone;
 var majrule = require('./lib/mixins.js').majrule;
 var meanrule = require('./lib/mixins.js').meanrule;
 var maxrule = require('./lib/mixins.js').maxrule;
@@ -34,6 +35,9 @@ var PR = {
             Messages.alertify().message('Project cleared');
             PR.update.clearProject();
         },()=>{});
+      });
+      $(document).on('click','#proceed', {} ,
+        e=>{ console.log("going to configuration");
       });
     }
   },
@@ -67,7 +71,7 @@ var PR = {
     },
     setProject: (pr) => {
       PR.model.getState().project = pr;
-      _.map(PR.children, c => { c.update.updateState(PR.model);});
+      _.map(PR.children, c => {c.update.updateState(PR.model);});
       PR.model.saveState();
     },
     makeIndirectComparisons: (nodes,directComparisons) => {
@@ -84,7 +88,7 @@ var PR = {
       });
       return lind;
     },
-    makeDirectComparisons: (type,model) => {
+    makeDirectComparisons: (format,model) => {
       let comparisons = _.groupBy(model, row => {
           return uniqId([row.t1, row.t2]).toString();
         });
@@ -115,7 +119,7 @@ var PR = {
         row.majrob = majrule(row.rob);
         row.meanrob = meanrule(row.rob);
         row.maxrob = maxrule(row.rob);
-        if(type !== 'iv'){
+        if(format !== 'iv'){
           row.sampleSize = sumBy(comp,['n1','n2']);
         }else{
           row.iv = _.reduce(comp, (iv,s) => {
@@ -131,70 +135,246 @@ var PR = {
       let robLvls = PR.update.robLevels();
       let studyLimitationLevels = PR.update.studyLimitationLevels();
       PR.model.getState().project = {
+          hasFile: false,
+          isSaved: false,
           robLevels: robLvls,
           studyLimitationLevels: studyLimitationLevels
       };
       PR.model.saveState();
       PR.model.factorySettings();
     },
-    getJSON: (infile, filename) => {
-      return FR.handleFileSelect(infile)
-      .then(FR.convertCSVtoJSON)
-      .then(Checker.checkColumnNames)
-      .then(Checker.checkTypes)
+    initProject: (model) => {
+      let prj = PR.view.getProject();
+      prj.rawData = model;
+      console.log("model",model);
+      prj.rawData.selected={};
+      prj.isRecognized = false;
+      if (!_.isUndefined(model.type)){
+        prj.type = model.type;
+      }
+      if (!_.isUndefined(model.format)){
+        prj.format = model.format;
+      }
+      PR.model.saveState();
+    },
+    makeStudies: (dataset) => {
+      console.log("to object gia na kaneis studies",dataset);
+      return Checker.checkTypes(dataset)
       .then(Checker.checkMissingValues)
       .then(Checker.checkConsistency)
       .then(project => {
-        let prj = project;
+        let prj = PR.view.getProject();
+        prj.format = project.format;
+        prj.type = project.type;
         let mdl = {};
         if(project.format === 'long'){
           mdl.long = project.model;
           mdl.wide = Reshaper.longToWide(project.model,project.type);
-        }else{
-          mdl.long = Reshaper.wideToLong(project.model,project.type);
-          mdl.wide = project.model;
-        }
-        //nodes are the combined treatments (which correspond to netplot nodes)
-        mdl.nodes = PR.model.makeNodes(project.type, mdl.long);
-        let ids = _.pluck(mdl.nodes,'id');
-        let sortedIds = ComparisonModel.orderIds(ids);
-        //console.log("sortedNodeids", sortedIds);
-        //directComparisons correspond to netplot edges
-        let dcomps = PR.update.makeDirectComparisons(project.type, mdl.wide);
-        mdl.directComparisons = _.unzip(sortStudies(_.map(dcomps, comp => {return comp.t1+":"+comp.t2}),dcomps))[1];
-        //indirectComparisons are the complement of the netplot edges
-        let indirects = PR.update.makeIndirectComparisons(mdl.nodes,mdl.directComparisons);
-        // mdl.indirectComparisons = _.unzip(sortStudies(_.map(indirects, comp => {return comp.replace(",",":")}),indirects))[1];
-        mdl.indirectComparisons = indirects;
-        prj.studies = mdl;
-        prj.title = filename;
-        prj.filename = filename;
-        PR.update.setProject(PR.update.createProject(prj));
-        return prj;
-      });
+          }else{
+            if (project.format === "iv"){
+              mdl.long = Reshaper.wideToLong(project.model,"iv");
+              mdl.wide = project.model;
+            }else{
+              mdl.long = Reshaper.wideToLong(project.model,project.type);
+              mdl.wide = project.model;
+            }
+          }
+          if (project.format === "iv"){
+            mdl.nodes = PR.model.makeNodes("iv", mdl.long);
+          }else{
+            mdl.nodes = PR.model.makeNodes(project.type, mdl.long);
+          }
+          let ids = _.pluck(mdl.nodes,'id');
+          let sortedIds = ComparisonModel.orderIds(ids);
+          let dcomps = PR.update.makeDirectComparisons(project.format, mdl.wide);
+          mdl.directComparisons = 
+            _.unzip(sortStudies(_.map(dcomps, comp => {return comp.t1+":"+comp.t2}),dcomps))[1];
+          let indirects = PR.update.makeIndirectComparisons(mdl.nodes,mdl.directComparisons);
+          mdl.indirectComparisons = indirects;
+          prj.studies = mdl;
+          prj.isSaved = true;
+          PR.update.setProject(prj);
+          return prj;
+        });
     },
-    createProject: (pr) =>{
+    recognizeFile: (dataset) => {
+      return new Promise((resolve,reject) => {
+        resolve(Checker.checkColumnNames(dataset))
+      })
+    },
+    getJSON: (infile, filename) => {
+      return FR.handleFileSelect(infile)
+      .then(FR.convertCSVtoJSON);
+    },
+    createProject: (filename) =>{
+      let pr = PR.view.getProject();
+      let npr = clone(pr);
       var date = Number(new Date());
       var id = md5(date+Math.random());
       let robLvls = PR.update.robLevels();
       let studyLimitationLevels = PR.update.studyLimitationLevels();
-      return {
-        id: id,
-        title: pr.title,
-        filename: pr.filename,
-        studies: pr.studies,
-        format: pr.format,
-        type: pr.type,
-        creationDate: date,
-        accessDate: date,
-        robLevels: robLvls,
-        studyLimitationLevels: studyLimitationLevels
-      };
+      npr.hasFile = true;
+      npr.filename = filename;
+      npr.title = filename;
+      npr.id = id;
+      npr.creationDate = date;
+      npr.accessDate = date;
+      npr.robLevels = robLvls;
+      npr.studyLimitationLevels = studyLimitationLevels;
+      PR.update.setProject(npr);
     },
+    //The main project reading function
     fetchProject: (evt) => {
-        var filename = htmlEntities($('#files').val().replace(/C:\\fakepath\\/i, '')).slice(0, -4);
-        PR.update.getJSON(evt,filename).then(project => {
-          Messages.alertify().success(PR.model.state.text.longFileUpload.title,' csv format '+project.format+' '+project.type);
+      var filename = htmlEntities($('#files').val().replace(/C:\\fakepath\\/i, '')).slice(0, -4);
+      PR.update.getJSON(evt,filename).then(data => {
+        PR.update.createProject(filename);
+        return data;
+      })
+      .then(PR.update.recognizeFile)
+      .then(answer => {
+        PR.update.initProject(answer);
+        let hasFormat = ! _.isUndefined(answer.format);
+        let hasType = ! _.isUndefined(answer.type);
+        if (hasFormat && hasType) {
+          PR.view.getProject().isRecognized = true;
+          PR.update.makeStudies(answer);
+        }
+      })
+      //.then(project => {
+          //Messages.alertify().success(PR.model.state.text.longFileUpload.title);
+      //})
+      //.catch( err => {
+        //Messages.alertify().error(PR.model.getState().text.wrongFileFormat+err);
+      //});
+    },
+    changeName: () => {
+      let prevVal = PR.view.getProject().title;
+      Messages.alertify().prompt( 'Change project title', 'Prompt Message', prevVal
+             , function(evt, value) { 
+               let pr = PR.view.getProject();
+               pr.title = value.toString();
+               PR.model.saveState();
+               Messages.alertify().success('Project name updated');
+             }
+             , function() { console.log("canceled naming") });
+    },
+    selectType: (rtype) => {
+      let pr = PR.view.getProject();
+      let type = rtype.value;
+      pr.rawData.selected.type = type;
+      PR.model.saveState();
+    },
+    selectFormat: (rformat) => {
+      let pr = PR.view.getProject();
+      let format = rformat.value;
+      pr.rawData.selected.format = format;
+      PR.model.saveState();
+    },
+    saveFormatType: () => {
+      let pr = PR.view.getProject();
+      let format = PR.view.selectedFormat();
+      let type = PR.view.selectedType();
+      let getrequired = (fr,tp) => {
+        let out = '';
+        switch (fr) {
+          case "long":
+            switch (tp) {
+              case "continuous":
+                out = "continuousLong";
+                break;
+              case "binary":
+                out = "binaryLong";
+                break;
+            }
+            break;
+          case "wide":
+            switch (tp) {
+              case "continuous":
+                out = "continuousWide";
+                break;
+              case "binary":
+                out = "binaryWide";
+                break;
+            }
+            break;
+          case "iv":
+            out = "iv";
+            break;
+          }
+        return out;
+      };
+      let availables = pr.rawData.columns;
+      let requiredFields = pr.rawData.defaults.required[getrequired(format,type)];
+      let required = _.map(requiredFields, req => {
+              return {name: req, selected:_.contains(availables,req)?req:"--", isActive:false};
+            });
+      let optionalFields = pr.rawData.defaults.optional;
+      let optional = _.map(optionalFields, req => {
+              return {name: req, selected:_.contains(availables,req)?req:"--", isActive:false};
+            });
+      pr.format = format;
+      pr.type = type;
+      pr.settings = {};
+      pr.settings.format = format; 
+      pr.settings.selectedField = 'none'; 
+      pr.settings.selectedColumn = 'none'; 
+      pr.settings.type = type; 
+      pr.settings.required = required;
+      pr.settings.optional = optional;
+      PR.model.saveState();
+    },
+    selectColumn: (rcolumn,field) =>{
+      let pr = PR.view.getProject();
+      let column = rcolumn.value;
+      let reqs = PR.view.requiredFields();
+      let opts = PR.view.optionalFields();
+      let reqsel = _.findLastIndex(reqs, {name: field});
+      let optsel = _.findLastIndex(opts, {name: field});
+      if (reqsel !== -1){
+        reqs[reqsel].selected = column;
+      }
+      if (optsel !== -1){
+        opts[optsel].selected = column;
+      }
+      PR.model.saveState();
+    },
+    editFormatType: () => {
+     Messages.alertify().confirm('Clear Format/Type?','You will have to reselect the file\' fields',
+        () => {
+          let pr = PR.view.getProject();
+          delete(pr.type);
+          delete(pr.format);
+          delete(pr.settings.format);
+          delete(pr.settings.type);
+          PR.model.saveState();
+          Messages.alertify().message('Format and type have been reset');
+      },()=>{});
+    },
+    checkFile: () => {
+      return new Promise((resolve,reject) => {
+        let pr = PR.view.getProject();
+        let rawmodel = PR.view.getProject().rawData.model;
+        let reqs = PR.view.requiredFields();
+        let newmodel = _.map(rawmodel, r => {
+          let out = {};
+            _.mapObject(r, (v,k) =>{
+               let field = 
+                _.findWhere(reqs,{selected:k});
+              if(! _.isUndefined(field)){
+                out[field.name] = v; 
+              }else{
+                out[k] = v;
+              }
+            })
+          return out;
+         });
+        pr.model = newmodel;
+        resolve(pr);
+      }).then(
+        PR.update.makeStudies
+      )
+      .then(project => {
+          Messages.alertify().success(PR.model.state.text.longFileUpload.title);
       })
       .catch( err => {
         Messages.alertify().error(PR.model.getState().text.wrongFileFormat+err);
@@ -205,21 +385,54 @@ var PR = {
     getProject: () => {
       return PR.model.getState().project;
     },
+    hasFile: () => {
+      return PR.view.getProject().hasFile;
+    },
     canUpload: () => {
-      return _.isUndefined(PR.view.getProject().studies);
+      return ! PR.view.getProject().hasFile;
+    },
+    canProceed: () => {
+      let hasnoStudies = _.isUndefined(PR.view.getProject().studies);
+      return (! hasnoStudies) && (PR.view.hasFormatType());
     },
     projectTitle: () => {
       return PR.view.getProject().title;
     },
+    filename: () => {
+      return PR.view.getProject().filename;
+    },
+    type: () => {
+      return PR.view.getProject().type;
+    },
+    format: () => {
+      return PR.view.getProject().format;
+    },
+    hasFormatType: () => {
+      let hasFormat = ! _.isUndefined(PR.view.format());
+      let hasType = ! _.isUndefined(PR.view.type());
+    return hasFormat && hasType;
+  },
+  creationDate: () => {
+      let creation = new Date(PR.view.getProject().creationDate);
+      let datestring = creation.getHours().toString() +":"+ creation.getMinutes()+" "+creation.toLocaleDateString();
+      return datestring;
+    },
     numStudies: () => {
-      let studies = _.toArray(_.groupBy(PR.view.getProject().studies.long,'id'));
-      return studies.length;
+      let out = 0;
+      if(! _.isUndefined(PR.view.getProject().studies)){
+        let studies = _.toArray(_.groupBy(PR.view.getProject().studies.long,'id'));
+        out = studies.length;
+      }
+      return out;
     },
     interventions: () => {
       return PR.view.getProject().studies.nodes.length;
     },
     comparisons: () => {
       return PR.view.getProject().studies.directComparisons.length;
+    },
+    isSaved: () => {
+      return PR.view.getProject().isSaved;
     },
     isReady: () => {
       let isReady = false;
@@ -233,6 +446,168 @@ var PR = {
       PR.model = model;
       _.mapObject(PR.actions, (f,n) => {f();});
     },
+    rawData: () => {
+      let pr = PR.view.getProject();
+      if( _.isUndefined(pr.rawData)){
+        return {};
+      }else{
+        return PR.view.getProject().rawData;
+      }
+    },
+    rawTypes: () => {
+      let pr = PR.view.getProject();
+      if( _.isUndefined(pr.rawData)){
+        return [];
+      }else{
+        return PR.view.getProject().rawData.defaults.types;
+      }
+    },
+    rawFormats: () => {
+      let pr = PR.view.getProject();
+      if( _.isUndefined(pr.rawData)){
+        return [];
+      }else{
+        return PR.view.getProject().rawData.defaults.formats;
+      }
+    },
+    rawDefaults: () => {
+      let pr = PR.view.getProject();
+      if( _.isUndefined(pr.rawData)){
+        return {};
+      }else{
+        return PR.view.getProject().rawData.defaults.required;
+      }
+    },
+    selectedFormat: () => {
+      let pr = PR.view.getProject();
+      let out = {};
+      if (! _.isUndefined(deepSeek(pr,'rawData.selected.format'))){
+        out = pr.rawData.selected.format;
+      }else{
+        out = pr.format;
+      }
+      return out;
+    },
+    hasSelectedFormat: () => {
+      return ! _.isUndefined(PR.view.selectedFormat());
+    },
+    selectedType: () => {
+      let pr = PR.view.getProject();
+      let out = {};
+      if (! _.isUndefined(deepSeek(pr,'rawData.selected.type'))){
+        out = pr.rawData.selected.type;
+      }else{
+        out = pr.type;
+      }
+      return out;
+    },
+    hasSelectedType: () => {
+      return ! _.isUndefined(PR.view.selectedType());
+    },
+    hasSelectedFormatType: () => {
+      let out = PR.view.hasSelectedFormat() && PR.view.hasSelectedType();
+      return out;
+    },
+    projectFields: () => {
+      let pr = PR.view.getProject();
+      let reqs = {};
+      let opts = {};
+      let selects = {};
+      let availables = {};
+      if(! _.isUndefined(deepSeek(PR.view.getProject(),"rawData.columns"))){
+        availables = ["--"].concat(PR.view.getProject().rawData.columns);
+      }
+      if (! _.isUndefined(deepSeek(pr,'settings.required'))){
+        reqs = PR.view.getProject().settings.required;
+        opts = PR.view.getProject().settings.optional;
+        let fields = [];
+        if(! _.isUndefined(reqs)){
+          if(! _.isUndefined(opts)){
+            fields = reqs.concat(opts);
+          }else{
+            fields = reqs;
+          }
+        }else{
+          if(! _.isUndefined(opts)){
+            fields = opts;
+          }else{
+            fields = [];
+          }
+        }
+        if(! _.isUndefined(fields)){
+          selects = _.filter(fields, f => {
+            return f.selected !== "--";
+          });
+          selects = _.map(selects, f => {return f.selected});
+        }
+        _.map(reqs, req => {
+          let avs = _.map(availables, av => {
+            return { name: av
+                   , isSelected: av === req.selected
+                   , isDisabled: _.contains(selects,av)
+                   }
+          });
+          req.availableColumns = avs;
+        });
+        _.map(opts, opt => {
+          let avs = _.map(availables, av => {
+            return { name: av
+                   , isSelected: av === opt.selected
+                   , isDisabled: _.contains(selects,av)
+                   }
+          });
+          opt.availableColumns = avs;
+        });
+      }
+      return {required:reqs, optional: opts};
+    },
+    requiredFields: () => {
+      return PR.view.projectFields().required;
+    },
+    optionalFields: () => {
+      return PR.view.projectFields().optional;
+    },
+    selectedColumns: () => {
+      let pr = PR.view.getProject();
+      let reqs = PR.view.requiredFields();
+      let opts = PR.view.optionalFields();
+      let fields = reqs.concat(opts);
+      let out = _.filter(fields, f => {
+        return f.selected !== "--";
+      });
+      return _.map(out, f => {return f.selected});
+    },
+    availableColumns: () => {
+      let pr = PR.view.getProject();
+      let selectedColumns = PR.view.selectedColumns();
+      let allColumns = [];
+      if (! _.isUndefined(deepSeek(pr,'rawData.columns'))){
+        allColumns = ["--"].concat(PR.view.getProject().rawData.columns);
+      }
+      return _.difference(allColumns, selectedColumns);
+    },
+    allRequiredSelected: () => {
+      let reqs = PR.view.requiredFields();
+      let numreqs = 0
+      if(! _.isUndefined(reqs)){
+        numreqs = reqs.length;
+      }
+      let numSelected = _.countBy(reqs, r => {
+        return r.selected !== "--";
+      })["true"];
+      let res = false;
+      if (_.isUndefined(numSelected) || _.isUndefined(numreqs)){
+        res = false;
+      }else{
+        res = numSelected === numreqs;
+      }
+      console.log('numreqs',numreqs,numSelected,res);
+      return res;
+    },
+    notRecognized: () => {
+      let pr = PR.view.getProject();
+      return ! pr.isRecognized;
+    }
   },
   render: (model) => {
     if (PR.view.isReady()){

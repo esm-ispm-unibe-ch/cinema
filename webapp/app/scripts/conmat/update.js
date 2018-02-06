@@ -174,9 +174,9 @@ var Update = (model) => {
           case 'continuous':
           rtype = 'long_continuous';
           break;
-          case 'iv':
+        }
+        if(project.format === "iv"){
           rtype = 'iv';
-          break;
         }
         if(_.isEmpty(cm.hatmatrix)){
           let formatData = (tp,studies) =>{
