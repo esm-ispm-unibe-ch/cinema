@@ -26,6 +26,7 @@
     </ul>
     </div>
   </blockquote>
+  <div class="container-fluid">
   {{#if clinImpReady}}
     <blockquote id="imprecisionBoxes" class='col-xs-12'>
       <div class='form-inline'>
@@ -83,7 +84,7 @@
                 <!-- </li> -->
                 <hr>
               <li>
-              {{../../text.judgementField}} 
+              {{../../text.judgementField}}
                 <select onChange="Actions.Imprecision.selectIndividual(this)" class='mr-sm-2 controls-container'>
                   {{#each levels}}
                   <option value="{{../id}}σδel{{id}}" {{#if isDisabled}} disabled {{/if}} {{#if isActive}} selected{{/if}}>
@@ -96,4 +97,5 @@
         {{/each}}
       </ul>
     </div>
+  </div>
   {{/if}}

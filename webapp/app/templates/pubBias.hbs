@@ -1,3 +1,4 @@
+<div class="container-fluid">
     <blockquote id="pubbiasBoxes" class='col-xs-12'>
       <h3>
         {{text.selectionTitle}}
@@ -38,7 +39,7 @@
                 </strong>
                 <hr>
               <li>
-              {{../../text.judgementField}} 
+              {{../../text.judgementField}}
                 <select onChange="Actions.Pubbias.selectIndividual(this)" class='mr-sm-2 controls-container'>
                   {{#each levels}}
                   <option value="{{../id}}σδel{{id}}" {{#if isDisabled}} disabled {{/if}} {{#if isActive}} selected{{/if}}>
@@ -51,4 +52,5 @@
         {{/each}}
       </ul>
     </div>
+  </div>
     {{/if}}

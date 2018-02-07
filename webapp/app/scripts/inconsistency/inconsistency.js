@@ -59,7 +59,7 @@ var Inconsistency = {
       _.map(Inconsistency.children, c => { c.update.updateState(Inconsistency.model);});
     },
     skeletonModel: () => {
-      return { 
+      return {
         route: 'heterogeneity',
         status: 'ready',
       }
@@ -77,9 +77,9 @@ var Inconsistency = {
     if(Inconsistency.view.isReady(model)){
       let child = _.find(Inconsistency.renderChildren, c => {return c.route === Inconsistency.model.getState().project.inconsistency.route;}).module.render(model);
       let hetli ='li';
-      hetli+= Inconsistency.view.isActive('heterogeneity')?'.active':''; 
+      hetli+= Inconsistency.view.isActive('heterogeneity')?'.active':'';
       let incli ='li';
-      incli+= Inconsistency.view.isActive('incoherence')?'.active':''; 
+      incli+= Inconsistency.view.isActive('incoherence')?'.active':'';
       return [h('ul.nav.nav-tabs', [
           h(hetli, [
                 h('a', {
@@ -123,4 +123,3 @@ var Inconsistency = {
 module.exports = () => {
   return Inconsistency;
 }
-

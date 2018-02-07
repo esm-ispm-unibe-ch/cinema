@@ -1,4 +1,5 @@
 <!-- <div id='hetercontainer' class='col-xs-12'> -->
+<div class="container-fluid">
   <blockquote id="refvals" class='col-xs-12'>
     <ul class='list-inline col-xs-12'>
       <li>
@@ -57,9 +58,9 @@
               </li>
               <li>
                 <select
-                  onChange="Actions.Heterogeneity.selectIntervensionType(this)" 
+                  onChange="Actions.Heterogeneity.selectIntervensionType(this)"
                   {{#if ../rfvReady}}
-                    disabled 
+                    disabled
                   {{/if}} class='mr-sm-2 form-inline form-control'>
                   {{#each interventionType}}
                     <option value="{{{../label}}}σδel{{id}}" {{#if isDisabled}} disabled {{/if}}  {{#if isActive}} selected{{/if}}>
@@ -95,7 +96,7 @@
         {{/each}}
       </ul>
       <div class='buttoner col-xs-12'>
-        {{#if clinImpReady}} 
+        {{#if clinImpReady}}
           <button onClick="Actions.Heterogeneity.fetchRFV()" class="pull-right
             btn btn-default {{#unless canFetch}} disabled{{/unless}}">
             View
@@ -207,7 +208,7 @@
                 <!-- </li> -->
                 <hr>
               <li>
-              {{../../text.judgementField}} 
+              {{../../text.judgementField}}
                 <select onChange="Actions.Heterogeneity.selectIndividual(this)" class='mr-sm-2 controls-container'>
                   {{#each levels}}
                   <option value="{{../id}}σδel{{id}}" {{#if isDisabled}} disabled {{/if}} {{#if isActive}} selected{{/if}}>
@@ -220,5 +221,6 @@
         {{/each}}
       </ul>
     </div>
+  </div>
   {{/if}}
 <!-- </div> -->

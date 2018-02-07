@@ -1,5 +1,6 @@
+<div class="container-fluid">
 <blockquote id="directIndrSelectCont" class='col-xs-12'>
-  <h3 id="directIndrTitle" 
+  <h3 id="directIndrTitle"
     class="directTitle">
     {{#if statusReady}}
       Indirectness for direct evidence is evaluated
@@ -58,7 +59,7 @@
     {{else}}
       {{#unless statusReady}}
         {{text.setAllTitle}}
-        <select  onchange="Actions.DirectIndr.setAll(this);" class="{{#if statusReady}} disabled{{/if}}"> 
+        <select  onchange="Actions.DirectIndr.setAll(this);" class="{{#if statusReady}} disabled{{/if}}">
           <option value="--" disabled selected>
             --
           </option>
@@ -138,4 +139,5 @@
         </ul>
     {{/each}}
   </ul>
+</div>
 </div>

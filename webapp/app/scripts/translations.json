@@ -146,7 +146,7 @@
     },
     "ClinImp" : {
       "question" : "Define threshold of clinical importance",
-      "reset" : [ "Reset?" 
+      "reset" : [ "Reset?"
                 , "Clinical importance value will be set to default"
                 , "Reset successful"
                 ]
