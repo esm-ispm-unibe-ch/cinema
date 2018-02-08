@@ -69,28 +69,28 @@
         {{/each}}
     </div>
 </blockquote>
-{{#if listReady}}
-  <div id='comparisonList' class='col-xs-12'>
-    <h5>
-      You have selected the following
-      <strong>{{numSelectedComparisons}}</strong> comparisons. Confidence in the results will
-    be graded for:
-    </h5>
-      <ul class="list-inline">
-        {{#each selectedComparisons}}
-        <li class="">
-          <span class="badge">{{this}}</span>
-        </li>
-      {{/each}}
-      </ul>
-    <div class="pull-right">
-      <strong>
-        <i class="glyphicon glyphicon-exclamation-sign"></i>
-        <em>Analysis is performed including all studies</em>
-      </strong>
-    </div>
-  </div>
-{{/if}}
+{{!-- {{#if listReady}} --}}
+  {{!-- <div id='comparisonList' class='col-xs-12'> --}}
+    {{!-- <h5> --}}
+      {{!-- You have selected the following --}}
+      {{!-- <strong>{{numSelectedComparisons}}</strong> comparisons. Confidence in the results will --}}
+    {{!-- be graded for: --}}
+    {{!-- </h5> --}}
+      {{!-- <ul class="list-inline"> --}}
+        {{!-- {{#each selectedComparisons}} --}}
+        {{!-- <li class=""> --}}
+          {{!-- <span class="badge">{{this}}</span> --}}
+        {{!-- </li> --}}
+      {{!-- {{/each}} --}}
+      {{!-- </ul> --}}
+    {{!-- <div class="pull-right"> --}}
+      {{!-- <strong> --}}
+        {{!-- <i class="glyphicon glyphicon-exclamation-sign"></i> --}}
+        {{!-- <em>Analysis is performed including all studies</em> --}}
+      {{!-- </strong> --}}
+    {{!-- </div> --}}
+  {{!-- </div> --}}
+{{!-- {{/if}} --}}
   <div id='' class='col-xs-12'>
       {{#if isLoading}}
         <div id="conMatloader" class="col-md-offset-2 col-md-8 col-xs-12"  aria="downloading contribution matrix" aria-hidden="false">

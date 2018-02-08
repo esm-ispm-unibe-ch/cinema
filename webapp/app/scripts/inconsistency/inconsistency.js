@@ -87,7 +87,7 @@ var Inconsistency = {
                                   'onclick': 'Actions.Inconsistency.gotoRoute(\'heterogeneity\')',
                                   'href': '#inconsistency/heterogeneity'
                                 }
-                      }, 'Heterogeneity')
+                      }, h("h3",'Heterogeneity'))
               ]),
           h(incli, [
                 h('a', {
@@ -95,7 +95,7 @@ var Inconsistency = {
                                   'onclick': 'Actions.Inconsistency.gotoRoute(\'incoherence\')',
                                   'href': '#inconsistency/incoherence'
                                 }
-                      }, 'Incoherence')
+                      }, h("h3",'Incoherence'))
               ])
       ])
       ,h('div.row',child)];

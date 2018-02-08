@@ -52,7 +52,7 @@ var RoB = {
   render: (model) => {
     if(RoB.view.isReady(model)){
       let children = _.map(RoB.renderChildren, c => {return c.render(model);});
-      return h('div#contentStudyLimitations.row',children);
+      return h('div#contentStudyLimitations.row.container-fluid',children);
     }else{
     }
   },

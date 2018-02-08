@@ -1,40 +1,42 @@
 <div class="container-fluid">
 <blockquote id="refvals" class='col-xs-12'>
-  <h3>
-    Incoherence is assessed both globally and locally
-  </h3>
-  <h4 id="referenceValuesTitle">{{text.title}}</h4>
-  <h5 id="">{{text.subTitle}}</h5>
-  <ul class='col-xs-12 list-inline'>
-    <li>{{{text.QstatisticLabel}}}:
-      {{rfvsq}}
-    </li>
-    <li>({{rfvsdf}} {{text.df}}),
-    </li>
-    <li>{{text.pvalueLabel}}:
-      {{rfvsp}}
-    </li>
-  </ul>
-  {{#if customized}}
-    <br>
-    <label class=' controls-title mr-sm-2'>
-    {{numberCustomized}}
-    {{#if customizedSingular}}
-      {{text.customizedTitleSingular}}
-    {{else}}
-      {{text.customizedTitlePlural}}
-    {{/if}}
-    </label>
-  {{/if}}
-  <button class="pull-right btn btn-default btn-pad"
-        onClick="Actions.Router.gotoRoute('indirectness')" >Proceed</button>
-  <button onClick="Actions.Incoherence.resetIncoherence()" class="pull-right btn btn-default"> {{text.resetButton}} </button>
+    {{!-- <h4>{{text.title}} --}}
+     {{!-- {{text.subTitle}} --}}
+    {{!-- </h4> --}}
+    <h4>
+  Global test based on a random-effects design-by-treatment interaction model
+      </h4>
+      <strong>
+      <ul class='list-inline font-weight-bold'>
+        <li class="font-weight-bold">{{{text.QstatisticLabel}}}:
+          {{rfvsq}}
+        </li>
+        <li class="font-weight-bold">({{rfvsdf}} {{text.df}}),
+        </li>
+        <li class="font-weight-bold">{{text.pvalueLabel}}:
+          {{rfvsp}}
+        </li>
+      </ul>
+      </strong>
 </blockquote>
 <div id="IncoherenceBoxes" class='col-xs-12 well collapse in'>
-<blockquote>
-  <h4 >{{text.boxesTitle}}</h4>
-  <h5 >{{text.boxesSubTitle}}</h5>
-</blockquote>
+  <blockquote>
+    <h4>{{text.boxesTitle}}: {{text.boxesSubTitle}}
+      </h4>
+      {{#if customized}}
+        <label class='controls-title'>
+        {{numberCustomized}}
+        {{#if customizedSingular}}
+          {{text.customizedTitleSingular}}
+        {{else}}
+          {{text.customizedTitlePlural}}
+        {{/if}}
+        </label>
+      {{/if}}
+    <button onClick="Actions.Incoherence.resetIncoherence()" class="btn btn-default"> {{text.resetButton}} </button>
+    <button class="btn btn-default btn-pad"
+          onClick="Actions.Router.gotoRoute('indirectness')" >Proceed</button>
+  </blockquote>
   <ul class='list-inline'>
     {{#each boxes}}
       <li style='border-color:{{color}}' class='well compRobSelector {{#if customized}} customized {{/if}}' id="comp-{{id}}">

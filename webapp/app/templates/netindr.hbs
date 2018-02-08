@@ -37,10 +37,11 @@
         {{/if}}
       {{/if}}
       {{#if statusReady}}
-        <button class="pull-right btn btn-default btn-pad"
-          onClick="Actions.Router.gotoRoute('pubbias')" >Proceed</button>
-        <button onClick="Actions.NetIndr.resetNetIndr()" class="pull-right btn btn-default
+        <br>
+        <button onClick="Actions.NetIndr.resetNetIndr()" class="btn btn-default
           {{#unless statusReady}} disabled{{/unless}}"> {{text.resetButton}} </button>
+        <button class="btn btn-default btn-pad"
+          onClick="Actions.Router.gotoRoute('pubbias')" >Proceed</button>
     {{/if}}
   </div>
 </blockquote>

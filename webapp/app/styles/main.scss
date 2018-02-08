@@ -101,6 +101,7 @@ border-radius: 7px!important;
   padding-left: 40px!important;
 }
 
+
 .btn {
   -webkit-border-radius: 5px!important;
   -moz-border-radius: 5px!important;
@@ -229,6 +230,11 @@ user-select: none;
   margin-bottom:50px;
 }
 
+.comments{
+  font-style: italic;
+  font-size: 15px;
+  padding-top:5px;
+}
 /* Responsive: Portrait tablets and up */
 @media screen and (min-width: 768px) {
   .container {

@@ -56,15 +56,19 @@
         <button id="projectClear" class="pull-right btn btn-default">
           Clear Project
         </button>
+        <span class="comments">
+         look at the <a href="#doc" onClick="Actions.Router.gotoRoute('doc')">documentation
+            page </a>for the definition of each field
+        </span>
         {{#if view.hasFormatType}}
-          <h3>File format and type</h3>
+          <h3>File format and outcome type</h3>
           <ul>
             <li class="list-group-item">
               Format 
               <span class="badge">{{view.format}}</span>
             </li>
             <li class="list-group-item">
-              Type 
+              Outcome
               <span class="badge">{{view.type}}</span>
             </li>
           </ul>
@@ -78,7 +82,7 @@
         <div id="project-info">
         </div>
         <ul>
-          <h3>File format and type</h3>
+          <h3>File format and Outcome type</h3>
           {{#unless view.format}}
             <li>
               Format 
@@ -101,14 +105,14 @@
                 wide: Single comparison per row
               </li>
               <li>
-                iv: Inverse variance (Comparison per row)
+                iv: Inverse variance (Single comparison per row)
               </li>
             </ul>
             </li>
           {{/unless}}
           {{#unless view.type}}
             <li>
-              Type 
+              Outcome 
             <select onchange="Actions.Project.selectType(this)">
                 <option value="nothing" disabled="true" {{#unless
                         view.hasSelectedType}}selected{{/unless}}>--</option>
@@ -133,7 +137,7 @@
         {{#unless view.canProceed}}
         {{#if view.hasFormatType}}
         <h3>Associate columns to fields</h3>
-          <ul id="required-columns" class="col-md-6">
+          <ul id="required-columns" class="imprecisionList col-md-6">
             {{#each view.requiredFields}}
             <li>
               <ul class="list-inline">
@@ -155,6 +159,11 @@
               </ul>
             </li>
             {{/each}}
+            <li>
+        <span class="comments">
+         (* required) 
+        </span>
+            </li>
             {{#each view.optionalFields}}
             <li>
               <ul class='list-inline'>
@@ -211,6 +220,4 @@
         {{/if}}
       {{/if}}
     {{/if}}
-
-
 </div>

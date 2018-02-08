@@ -97,7 +97,7 @@
       "--"
     ],
     "directIndr": {
-      "title": "Evaluate indirectness",
+      "title": "Indirectness",
       "selectionTitle": "Specify indirectness assessments for each direct estimate",
       "defaultTitle": "Selected rule:",
       "customizedpreSingular": "Judgement for",
@@ -123,7 +123,7 @@
       "saveButton": "Save Chart"
     },
     "directRob": {
-      "title": "Evaluate study limitations",
+      "title": "Study limitations",
       "selectionTitle": "Select how to summarize risk of bias across studies for each direct estimate",
       "defaultTitle": "Selected rule:",
       "customizedpreSingular": "Judgement for",
@@ -157,7 +157,7 @@
         "Some concerns",
         "Major concerns"
       ],
-      "title": "Evaluate indirectness",
+      "title": "Indirectness",
       "selectionTitle": "Select how to summarize indirectness across contributions for each network estimate",
       "mixedtitle": "mixed",
       "indirecttitle": "indirect",
@@ -184,7 +184,7 @@
         "Some concerns",
         "Major concerns"
       ],
-      "title": "Evaluate Study Limitations",
+      "title": "Study Limitations",
       "selectionTitle": "Select how to summarize risk of bias across contributions for each network estimate",
       "mixedtitle": "mixed",
       "indirecttitle": "indirect",
@@ -215,7 +215,7 @@
         "Major concerns"
       ],
       "title": "Heterogeneity",
-      "selectionTitle": "Evaluation of heterogeneity",
+      "selectionTitle": "Heterogeneity",
       "referenceValues": "Reference Values",
       "ruleButton": "Select default rule",
       "mixedtitle": "mixed",
@@ -249,12 +249,12 @@
         "Major concerns"
       ],
       "changedJudgement": "Judgement saved",
-      "title": "Global test for incoherence",
+      "title": "Global test",
       "subTitle": "Based on a random-effects design-by-treatment interaction model",
       "QstatisticLabel": "χ<sup>2</sup> statistic",
       "df": "degrees of freedom",
       "pvalueLabel": "P value",
-      "boxesTitle" : "Local tests for incoherence",
+      "boxesTitle" : "Local tests",
       "boxesSubTitle" : "Separating indirect from direct evidence",
       "mixedtitle": "mixed",
       "indirecttitle": "indirect",
@@ -278,7 +278,7 @@
         "Major concerns"
       ],
       "title": "Imprecision",
-      "selectionTitle": "Evaluation of imprecision",
+      "selectionTitle": "Imprecision",
       "referenceValues": "Reference Values",
       "mixedtitle": "mixed",
       "indirecttitle": "indirect",
@@ -301,7 +301,7 @@
         "Suspected"
       ],
       "title": "Publication bias",
-      "selectionTitle": "Evaluation of publication bias",
+      "selectionTitle": "Publication bias",
       "mixedtitle": "mixed",
       "directtitle": "direct",
       "indirecttitle": "indirect",

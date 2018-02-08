@@ -12,7 +12,8 @@ var Template = (model,children) => {
       _.extend(View(model),{text:model.getState().text.directIndr})
     );
     let tmplchildren = _.map(children, c => {return c.render(model);});
-    return [h('div#directSelectionWrapper.col-xs-12',convertHTML(tmpl))].concat(_.flatten(tmplchildren));
+  let content = [h('div#directSelectionWrapper.col-xs-12',convertHTML(tmpl))].concat(_.flatten(tmplchildren));
+  return h("div.row.container-fluid",content);
 }
 
 module.exports = () => {

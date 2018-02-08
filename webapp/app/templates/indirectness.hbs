@@ -1,7 +1,5 @@
-<div class="container-fluid">
 <blockquote id="directIndrSelectCont" class='col-xs-12'>
-  <h3 id="directIndrTitle"
-    class="directTitle">
+  <h3>
     {{#if statusReady}}
       Indirectness for direct evidence is evaluated
     {{else}}
@@ -76,10 +74,10 @@
       {{/unless}}
     {{/if}}
     {{#if statusReady}}
-      <a class="pull-right btn btn-default btn-pad" href="#NetIndr">Proceed</a>
-      <button onClick="Actions.DirectIndr.resetDirectIndr()" class="pull-right
-      btn-pad btn btn-default
+      <br>
+      <button onClick="Actions.DirectIndr.resetDirectIndr()" class="btn-pad btn btn-default
       {{#unless statusReady}} disabled{{/unless}}"> {{text.resetButton}} </button>
+      <a class="btn btn-default btn-pad" href="#NetIndr">Proceed</a>
     {{/if}}
   </div>
 </blockquote>
@@ -139,5 +137,4 @@
         </ul>
     {{/each}}
   </ul>
-</div>
 </div>

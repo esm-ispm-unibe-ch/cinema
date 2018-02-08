@@ -1,36 +1,47 @@
 <!-- <div id='hetercontainer' class='col-xs-12'> -->
 <div class="container-fluid">
   <blockquote id="refvals" class='col-xs-12'>
-    <ul class='list-inline col-xs-12'>
+    <ul class='col-xs-12 imprecisionList'>
       <li>
-            Importance of heterogeneity depends on the variability of effects in
-            relation to a clinically important size of effect
-            <br>
-          <label class='controls-title mr-sm-2'>
-            Define clinically important size of effect: {{smtitle}}
-          </label>
+        <ul class="list-inline">
+          <li>
+            <label class='controls-title mr-sm-2'>
+              Define clinically important size of effect: {{smtitle}}
+            </label>
+          </li>
+          <li>
+            <input id="clinImpInput" name="clinImp" value="{{clinImp}}"
+               class='mr-sm-2 form-inline form-control' {{#if clinImpReady}}
+               disabled {{/if}} />
+          </li>
+          <li>
+            <button onClick="Actions.Heterogeneity.setClinImp()" class="btn btn-default
+              {{#if clinImpReady}} disabled{{/if}}">Set</button>
+            <button onClick="Actions.Heterogeneity.resetClinImp('{{emType}}')" class="btn btn-default
+              {{#unless clinImpReady}} disabled{{/unless}}">Reset</button>
+          </li>
+        </ul>
       </li>
-      <li>
-        <input id="clinImpInput" name="clinImp" value="{{clinImp}}"
-           class='mr-sm-2 form-inline form-control' {{#if clinImpReady}}
-             disabled {{/if}}>
-      </li>
-      <li>
+      <li class="comments">
           Effects lower than <strong> {{clinImpLow}} </strong> and larger than
           <strong> {{clinImpHigh}} </strong>
           are considered to be clinically important
       </li>
       <li>
-        <button onClick="Actions.Heterogeneity.setClinImp()" class="btn btn-default
-          {{#if clinImpReady}} disabled{{/if}}">Set</button>
-        <button onClick="Actions.Heterogeneity.resetClinImp('{{emType}}')" class="btn btn-default
-          {{#unless clinImpReady}} disabled{{/unless}}">Reset</button>
+        <span class="comments">
+          Importance of heterogeneity depends on the variability of effects in
+            relation to a clinically important size of effect
+          </span>
       </li>
     </ul>
-    <h4 id="referenceValuesTitle" class="pointer" data-toggle="collapse" data-target="#rfvSelector">To view between-study variance estimates for
-      each direct comparison along with reference intervals, select type of
-      intervention and outcome (optional)</h4>
+    <button  id="referenceValuesTitle" class="btn btn-default" data-toggle="collapse" data-target="#rfvSelector">
+    Between-study variance estimates for
+      each direct comparison along with reference intervals
+    </button>
     <div id="rfvSelector" class='form-inline col-xs-12 collapse'>
+      <label>Select type of intervention and outcome 
+        <span class="comments">optional</span>
+      </label>
       <ul class='list-inline'>
         {{#unless rfvReady}}
           <li>
@@ -46,7 +57,6 @@
           <button onClick="Actions.Heterogeneity.deselectIntTypes()" class="pull-right btn btn-default
           ">Deselect all</button>
           </li>
-          <li>
         {{/unless}}
         <ul class='list-inline'>
           {{#each treatments}}
@@ -96,13 +106,14 @@
         {{/each}}
       </ul>
       <div class='buttoner col-xs-12'>
+        <br>
         {{#if clinImpReady}}
-          <button onClick="Actions.Heterogeneity.fetchRFV()" class="pull-right
+          <button onClick="Actions.Heterogeneity.fetchRFV()" class="
             btn btn-default {{#unless canFetch}} disabled{{/unless}}">
             View
           </button>
         {{/if}}
-        <button onClick="Actions.Heterogeneity.resetRFV()" class="pull-right btn btn-default
+        <button onClick="Actions.Heterogeneity.resetRFV()" class="btn btn-default
           {{#unless rfvReady}} disabled{{/unless}}">Reset</button>
       </div>
     </div>
@@ -110,9 +121,9 @@
   {{#if clinImpReady}}
     <blockquote id="heterogeneityBoxes" class='col-xs-12'>
       <div class='form-inline'>
-          <label class=' controls-title mr-sm-2'>
-            {{text.selectionTitle}}
-          </label>
+      The estimated value of between-study variance for the network
+      meta-analysis is
+      <strong>{{rfvsTauSquare}}</strong>
           {{#if customized}}
             <br>
             <label class=' controls-title mr-sm-2'>
@@ -126,18 +137,13 @@
           {{/if}}
       </div>
       {{#if heterReady}}
-        <button class="pull-right btn btn-default btn-pad"
-          onClick="Actions.Inconsistency.gotoRoute('incoherence')" >Proceed</button>
-    <button onClick="Actions.Heterogeneity.resetHeters()" class="pull-right btn btn-default
+        <button onClick="Actions.Heterogeneity.resetHeters()" class="btn btn-default
           {{#unless heterReady}} disabled{{/unless}}"> {{text.resetButton}} </button>
-    {{/if}}
+        <button class="btn btn-default btn-pad"
+          onClick="Actions.Inconsistency.gotoRoute('incoherence')" >Proceed</button>
+      {{/if}}
     </blockquote>
     <div id="heterBoxes" class='col-xs-12 well collapse in'>
-    <blockquote class='col-xs-12'>
-      The estimated value of between-study variance for the network
-      meta-analysis is
-      <strong>{{rfvsTauSquare}}</strong>
-    </blockquote>
       <ul class='list-inline'>
         {{#each boxes}}
         <li  style='border-color:{{color}}' class='well compRobSelector {{#if customized}} customized {{/if}}' id="comp-{{id}}">

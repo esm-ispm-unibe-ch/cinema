@@ -5,9 +5,10 @@
       </h3>
       {{#if pubbiasReady}}
         <div>
-          <button class="pull-right btn btn-default btn-pad"
+          <br>
+          <button onClick="Actions.Pubbias.reset()" class="btn btn-default"> {{text.resetButton}} </button>
+          <button class="btn btn-default btn-pad"
           onClick="Actions.Router.gotoRoute('report')" >Proceed</button>
-          <button onClick="Actions.Pubbias.reset()" class="pull-right btn btn-default"> {{text.resetButton}} </button>
         {{else}}
           <button onClick="Actions.Pubbias.allUndetected()" class="pull-left btn
             btn-default"> {{text.allUndetected}} </button>

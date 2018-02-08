@@ -50,9 +50,10 @@
         {{/if}}
       {{/if}}
     {{#if statusReady}}
-      <a class="pull-right btn btn-default btn-pad" href="#directRob">Proceed</a>
-      <button onClick="Actions.DirectRob.resetDirectRob()" class="pull-right btn btn-default
+    <br>
+      <button onClick="Actions.DirectRob.resetDirectRob()" class="btn btn-default
       {{#unless statusReady}} disabled{{/unless}}"> {{text.resetButton}} </button>
+      <a class="btn btn-default btn-pad" href="#directRob">Proceed</a>
     {{/if}}
   </div>
 </blockquote>

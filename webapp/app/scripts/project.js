@@ -339,7 +339,7 @@ var PR = {
       PR.model.saveState();
     },
     editFormatType: () => {
-     Messages.alertify().confirm('Clear Format/Type?','You will have to reselect the file\' fields',
+     Messages.alertify().confirm('Clear Format/Outcome?','You will have to reselect the file\'s fields',
         () => {
           let pr = PR.view.getProject();
           delete(pr.type);
@@ -347,7 +347,7 @@ var PR = {
           delete(pr.settings.format);
           delete(pr.settings.type);
           PR.model.saveState();
-          Messages.alertify().message('Format and type have been reset');
+          Messages.alertify().message('Format and Outcome type have been reset');
       },()=>{});
     },
     checkFile: () => {
