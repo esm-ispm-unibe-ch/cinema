@@ -144,7 +144,7 @@ var NP = {
         }else{
           _.map(vertices, n => {
             NP.view.cy.elements('node[id="'+n.id+'"]').style({
-              'pie-size': '87%',
+              'pie-size': '92%',
             });
           });
         }
@@ -199,12 +199,14 @@ var NP = {
           'text-halign': 'center',
           'node-text-rotation': 'autorotate',
           'color': NP.view.getOptions().norobcolor,
-          'text-outline-color': NP.view.getOptions().defaultVertexColor,
-          'text-outline-width':'1px',
+          //'color': "#D7D787",
+          //'text-outline-color': NP.view.getOptions().defaultVertexColor,
+          'text-outline-color': "#84A8C7",
+          'text-outline-width':'0.5px',
           'background-color': NP.view.getOptions().defaultVertexColor,
           'width': '60px',
           'height': '60px',
-          'pie-size': '87%',
+          'pie-size': '92%',
           'pie-1-background-color':NP.view.getOptions().lowrobcolor,
           'pie-2-background-color':NP.view.getOptions().unclearrobcolor,
           'pie-3-background-color':NP.view.getOptions().highrobcolor,
@@ -491,12 +493,12 @@ var NP = {
             vertexColorBy: 'noColor',
             edgeSizeBy: 'equal',
             edgeColorBy: 'noColor',
-            defaultVertexColor: '#61AFD1',
+            defaultVertexColor: '#84A8C7',
             lowrobcolor: lowrobcolor,
             unclearrobcolor: unclearrobcolor,
             highrobcolor: highrobcolor, 
             norobcolor: '#282C34',
-            selectedColor: '#C678D7',
+            selectedColor: '#2C4D6D',
             minSize: 30,
             maxSize: 130,
           }
