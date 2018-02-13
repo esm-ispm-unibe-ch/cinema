@@ -146,7 +146,7 @@ var PR = {
     initProject: (model) => {
       let prj = PR.view.getProject();
       prj.rawData = model;
-      console.log("model",model);
+      //console.log("model",model);
       prj.rawData.selected={};
       prj.isRecognized = false;
       if (!_.isUndefined(model.type)){
@@ -158,7 +158,7 @@ var PR = {
       PR.model.saveState();
     },
     makeStudies: (dataset) => {
-      console.log("to object gia na kaneis studies",dataset);
+      //console.log("to object gia na kaneis studies",dataset);
       return Checker.checkTypes(dataset)
       .then(Checker.checkMissingValues)
       .then(Checker.checkConsistency)
@@ -305,8 +305,17 @@ var PR = {
       };
       let availables = pr.rawData.columns;
       let requiredFields = pr.rawData.defaults.required[getrequired(format,type)];
+      let reqdecs = _.reduce(_.zip(requiredFields, pr.rawData.defaults.requiredDescriptions[getrequired(format,type)])
+        ,(ac,d) => {
+        ac[_.head(d)] = _.last(d);
+        return ac;
+      },{});
+      //console.log("requiredDescriptions", reqdecs);
       let required = _.map(requiredFields, req => {
-              return {name: req, selected:_.contains(availables,req)?req:"--", isActive:false};
+              return { name: req
+                      , selected: _.contains(availables,req)?req:"--", isActive:false
+                      , description: reqdecs[req]
+                     };
             });
       let optionalFields = pr.rawData.defaults.optional;
       let optional = _.map(optionalFields, req => {
@@ -601,7 +610,6 @@ var PR = {
       }else{
         res = numSelected === numreqs;
       }
-      console.log('numreqs',numreqs,numSelected,res);
       return res;
     },
     notRecognized: () => {
