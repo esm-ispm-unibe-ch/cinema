@@ -186,12 +186,8 @@ var Update = (model) => {
             }else{
               out = studies.long;
             }
-              console.log("formated indata", out);
               return out;
           }
-          console.log("rtype",rtype);
-          console.log("indata",
-               formatData(rtype, project.studies));
           let hmc = ocpu.call('getHatMatrix',{indata: formatData(rtype, project.studies),
               type: rtype,
               model: cm.params.MAModel,
@@ -260,15 +256,17 @@ var Update = (model) => {
                     reslve(_.flatten([_.flatten(nextrow)].concat([savedRow])));
                   }).catch(err=>{rjct(err)});
                 }else{
-                  let gmr = ocpu.call('getComparisonContribution',{
-                    c1: hatmatrix,
+                  let gmr = ocpu.call('getStudyContribution',{
+                    hatmatrix: hatmatrix,
                     comparison: row
                   }, (sessionr) => {
                     sessionr.getObject( (rowback) => {
-                      // console.log("currentCM",updaters.getCM(),"row ",row," came back ",rowback);
+                      //console.log("currentCM",updaters.getCM(),"row ",row," came back ",rowback);
+                      let studycontributions = updaters.sumStudyContrs(rowback.studyRow);
                       updaters.getCM().savedComparisons.push({
                         rowname:row,
-                        comparisons:rowback.contribution
+                        perstudy:studycontributions,
+                        comparisons:rowback.comparisonRow.contribution
                       });
                       updaters.getCM().currentRow = row;
                       updaters.saveState();
@@ -292,7 +290,7 @@ var Update = (model) => {
           });
         };
        return sequencePromises(comparisons, updaters.getCM().savedComparisons).then(output => {
-         // console.log("Server output",output);
+          //console.log("Server output",output);
           updaters.getCM().colNames = output[0].names;
           let rows = _.reduceRight(output, (mem ,row) => {
             return mem.concat(
@@ -303,7 +301,7 @@ var Update = (model) => {
           // console.log('the ocpu result',connma,'pushing to project');
           let cm = updaters.getCM();
           let result = updaters.formatMatrix(cm);
-          // console.log('RESULTS FROM SERVER',result);
+           //console.log('RESULTS FROM SERVER',result);
           rslv(result);
        }).catch(err => {console.log('caugth error',err);rjc(err);});
       });
@@ -356,6 +354,10 @@ var Update = (model) => {
       cm.directStudies = _.map(directRows,row=>{return row.comparisons});
       cm.indirectRowNames = _.map(indirectRows,row=>{return row.rowname});
       cm.indirectStudies = _.map(indirectRows,row=>{return row.comparisons});
+      cm.studycontributions = _.reduce(rows, 
+        (m,row) => { 
+          m[row.rowname] = row.perstudy; 
+          return m},{});
       if(cm.selectedComparisons.length !== (directRows.length+indirectRows.length)){
         throw 'unable to match comparison names';
       }
@@ -492,7 +494,7 @@ var Update = (model) => {
         cm.sortedRowNames = [];
         if(res.directStudies.length !== 0){
           cm.sortedRowNames =
-          cm.sortedRowNames.concat(['Mixed estimates'])
+            cm.sortedRowNames.concat(['Mixed estimates'])
           .concat(cm.directRowNames);
         }
         if(res.indirectStudies.length !== 0){
@@ -520,13 +522,83 @@ var Update = (model) => {
         resolve([encodedUri,cmfilename]);
       });
     },
+    makeStudyDownloader: (res) => {
+      return new Promise((resolve,reject) => {
+        let cm = res;
+        let scs = cm.studycontributions;
+        let colnames = _.keys(_.values(scs)[0]);
+        let cw  = colnames.length;
+        cm.sortedStudies = [];
+        if(res.directStudies.length !== 0){
+          cm.sortedStudies = 
+          cm.sortedStudies.concat([Array(cw).fill()])
+          .concat(res.directStudies);
+        }
+        if(res.indirectStudies.length !== 0){
+          cm.sortedStudies = 
+          cm.sortedStudies.concat([Array(cw).fill()])
+          .concat(res.indirectStudies);
+        }
+        cm.sortedRowNames = [];
+        if(res.directStudies.length !== 0){
+          cm.sortedRowNames =
+            cm.sortedRowNames.concat(['Mixed estimates'])
+          .concat(cm.directRowNames);
+        }
+        if(res.indirectStudies.length !== 0){
+          cm.sortedRowNames =
+          cm.sortedRowNames
+          .concat(['Indirect estimates'])
+          .concat(cm.indirectRowNames);
+        }
+        let studies = _.map(cm.sortedRowNames,
+          r => {
+            let row = scs[r];
+            let res = Array(cw).fill("--");
+            if (typeof row !== 'undefined'){
+              res = _.values(row);
+            }
+            return res;
+          })
+        let cols = colnames;
+        let rows = cm.sortedRowNames;
+        let fcols = [params.MAModel+' '+params.sm].concat(cols);
+        let fstudies = _.map(_.zip(rows, studies), r=>{
+          return [r[0]].concat(r[1]);
+        });
+        fstudies = _.map(fstudies,st=>{return _.object(fcols,st);});
+        let csvTable = json2csv({
+          data: fstudies,
+          fields: fcols,
+        });
+        let csvContent = 'data:text/csv;charset=utf-8,'+csvTable;
+        var encodedUri = encodeURI(csvContent);
+        let cmfilename = (project.title+'_'+cm.params.MAModel+'_'+cm.params.sm).replace(/\,/g,'_')+'.csv';
+        resolve([encodedUri,cmfilename]);
+      });
+    },
+    downloadStudyCSV: () => {
+      updaters.makeStudyDownloader(updaters.getCM()).then( zfile => {
+        let [blob,filename] = zfile;
+        download(blob,filename);
+      });
+    },
     downloadCSV: () => {
       updaters.makeDownloader(updaters.getCM()).then( zfile => {
         let [blob,filename] = zfile;
         download(blob,filename);
       });
     },
-    showContributionMatrix: () => {
+    sumStudyContrs: (contrs) => {
+      let scs = _.groupBy(contrs, "study");
+      let result = _.mapObject(scs, 
+        (st,k) => {
+          let contr = 
+            _.reduce(st, function(memo, num)
+              { return memo + num.contribution; }, 0); 
+          return contr
+        });
+      return result;
     },
   }
   return updaters;

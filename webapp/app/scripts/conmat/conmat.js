@@ -75,6 +75,9 @@ var CM = {
     downloadCSV: () => {
        Update(CM.model).downloadCSV();
     },
+    downloadStudyCSV: () => {
+       Update(CM.model).downloadStudyCSV();
+    },
     showContributionMatrix: () => {
       $('.table-manipulator').toggleClass('hidden');
        Update(CM.model).showTable();
