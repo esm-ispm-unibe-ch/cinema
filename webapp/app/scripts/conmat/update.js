@@ -147,8 +147,8 @@ var Update = (model) => {
     },
     fetchContributionMatrix: (ncm) => {
       return new Promise((resolve, reject) => {
-        ocpu.seturl('http://52.28.184.220:8004/ocpu/library/contribution/R');
-         //ocpu.seturl('http://localhost:8004/ocpu/library/contribution/R');
+        //ocpu.seturl('http://52.28.184.220:8004/ocpu/library/contribution/R');
+        ocpu.seturl('http://localhost:8004/ocpu/library/contribution/R');
         let cms = model.getState().project.CM.contributionMatrices;
         var result = {};
         let ncmparams = params;
@@ -186,19 +186,21 @@ var Update = (model) => {
             }else{
               out = studies.long;
             }
+              console.log("formated indata", out);
               return out;
           }
-          let hmc = ocpu.call('getHatMatrix',{
-              indata: formatData(rtype,project.studies),
+          console.log("rtype",rtype);
+          console.log("indata",
+               formatData(rtype, project.studies));
+          let hmc = ocpu.call('getHatMatrix',{indata: formatData(rtype, project.studies),
               type: rtype,
               model: cm.params.MAModel,
               sm: cm.params.sm,
             }, (sessionh) => {
-          sessionh.getObject( (hatmatrix) => {
-            //console.log('the hatmatrix returned ',hatmatrix);
-            cm.hatmatrix = hatmatrix;
-            updaters.saveState();
-            updaters.fetchRows(ncm).then(res => {
+            sessionh.getObject( (hatmatrix) => {
+              cm.hatmatrix = hatmatrix;
+              updaters.saveState();
+              updaters.fetchRows(ncm).then(res => {
               resolve(res);
             }).catch(err => {console.log(err);reject(err)});
           })

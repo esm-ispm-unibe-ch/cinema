@@ -23,6 +23,8 @@ ADD toRoot /root
 # dependency for netmeta r package
 # RUN apt-get install -y r-cran-rgl
 
+RUN apt-get install -y libv8-3.14-dev
+
 #Install contribution package in image
 # RUN chmod +x /root/installContribution -R 
 
@@ -37,10 +39,10 @@ ADD toRoot /root
 # RUN d=d sh -c 'cd /root/cinema/webapp/ && gulp'
 # RUN d=d sh -c 'rm -rf /root/cinema/webapp/www/'
 # RUN d=d sh -c 'mv /root/cinema/webapp/dist /root/cinema/webapp/www'
-RUN ji=ji sh -c 'rm -rf /usr/local/lib/R/site-library/contribution/www/'
-RUN ji=ji sh -c 'cp -rf /root/www/ /usr/local/lib/R/site-library/contribution/www/'
+#RUN jj=jj sh -c 'rm -rf /usr/local/lib/R/site-library/contribution/www/'
+#RUN jj=jj sh -c 'cp -rf /root/www/ /usr/local/lib/R/site-library/contribution/www/'
 # RUN d=d sh -c 'cp -rf /root/cinema/webapp/www/ /usr/local/lib/R/site-library/contribution/www/'
-RUN jj=jj sh -c 'Rscript /root/installContribution/rgrade.batch'
+RUN j2=j2 sh -c 'Rscript /root/installContribution/rgrade.batch'
 #restarting opencpu service
 RUN sh -c 'service opencpu stop'
 RUN sh -c 'service opencpu restart'

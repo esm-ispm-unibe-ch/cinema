@@ -93,7 +93,6 @@ var fileChecker = {
         }
       }
     });
-    console.log("answer",answer.model);
     return answer;
   },
   checkTypes: (project) => {
