@@ -250,7 +250,7 @@ var Update = (model) => {
                   return (sc.rowname === row);
                 });
                 if(typeof foundComp !== 'undefined'){
-                  // console.log("found row ",row," in saved");
+                   //console.log("found row ",foundComp," in saved");
                   let savedRow = {names: hatmatrix.colNames, row:foundComp.rowname, contribution:foundComp.contributions};
                   sequencePromises(rest,savedComparisons).then( nextrow => {
                     reslve(_.flatten([_.flatten(nextrow)].concat([savedRow])));
@@ -291,7 +291,7 @@ var Update = (model) => {
         };
        return sequencePromises(comparisons, updaters.getCM().savedComparisons).then(output => {
           //console.log("Server output",output);
-          updaters.getCM().colNames = output[0].names;
+         //updaters.getCM().colNames = output[0].comparisonRow.names;
           let rows = _.reduceRight(output, (mem ,row) => {
             return mem.concat(
               { rowname: row.row, 
@@ -300,6 +300,10 @@ var Update = (model) => {
           },[]);
           // console.log('the ocpu result',connma,'pushing to project');
           let cm = updaters.getCM();
+         if(typeof cm.colNames === 'undefined'){
+           cm.colNames = output[0].comparisonRow.names;
+         }
+         console.log("nonon ",cm.colNames);
           let result = updaters.formatMatrix(cm);
            //console.log('RESULTS FROM SERVER',result);
           rslv(result);
