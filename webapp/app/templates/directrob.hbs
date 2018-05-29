@@ -14,99 +14,99 @@
           {{/each}}
           </ul>
       </div>
-    {{#unless statusReady}}
-      <label class=' controls-title mr-sm-2'>
-        {{text.selectionTitle}}
-      </label>
-      <select onChange="Actions.DirectRob.selectrob(this)" {{#if statusReady}}
-        disabled {{/if}} class='mr-sm-2 form-inline form-control'>
-        {{#each rulesselections}}
-          {{#if isAvailable}}
-            <option value="{{value}}" {{#if isDisabled}} disabled {{/if}} {{#if isActive}} selected{{/if}}>
-            {{label}}
-            </option>
-          {{/if}}
-        {{/each}}
-      </select>
-      {{/unless}}
-      {{#if statusReady}}
-        <label class=' controls-title mr-sm-2'>
-          {{text.defaultTitle}}
-          {{ruleName}}
-        </label>
-        {{#if customized}}
-          <br>
-          <label class=' controls-title mr-sm-2'>
-            {{#if customizedSingular}}
-              {{text.customizedPreSingular}}
-              {{numberCustomized}}
-              {{text.customizedTitleSingular}}
-            {{else}}
-              {{text.customizedPrePlural}}
-              {{numberCustomized}}
-              {{text.customizedTitlePlural}}
-            {{/if}}
-          </label>
-        {{/if}}
-      {{/if}}
-    {{#if statusReady}}
-    <br>
-      <button onClick="Actions.DirectRob.resetDirectRob()" class="btn btn-default
-      {{#unless statusReady}} disabled{{/unless}}"> {{text.resetButton}} </button>
-      <a class="btn btn-default btn-pad" href="#directRob">Proceed</a>
-    {{/if}}
-  </div>
+    {{!-- {{#unless statusReady}} --}}
+      {{!-- <label class=' controls-title mr-sm-2'> --}}
+        {{!-- {{text.selectionTitle}} --}}
+      {{!-- </label> --}}
+      {{!-- <select onChange="Actions.DirectRob.selectrob(this)" {{#if statusReady}} --}}
+        {{!-- disabled {{/if}} class='mr-sm-2 form-inline form-control'> --}}
+        {{!-- {{#each rulesselections}} --}}
+          {{!-- {{#if isAvailable}} --}}
+            {{!-- <option value="{{value}}" {{#if isDisabled}} disabled {{/if}} {{#if isActive}} selected{{/if}}> --}}
+            {{!-- {{label}} --}}
+            {{!-- </option> --}}
+          {{!-- {{/if}} --}}
+        {{!-- {{/each}} --}}
+      {{!-- </select> --}}
+      {{!-- {{/unless}} --}}
+      {{!-- {{#if statusReady}} --}}
+        {{!-- <label class=' controls-title mr-sm-2'> --}}
+          {{!-- {{text.defaultTitle}} --}}
+          {{!-- {{ruleName}} --}}
+        {{!-- </label> --}}
+        {{!-- {{#if customized}} --}}
+          {{!-- <br> --}}
+          {{!-- <label class=' controls-title mr-sm-2'> --}}
+            {{!-- {{#if customizedSingular}} --}}
+              {{!-- {{text.customizedPreSingular}} --}}
+              {{!-- {{numberCustomized}} --}}
+              {{!-- {{text.customizedTitleSingular}} --}}
+            {{!-- {{else}} --}}
+              {{!-- {{text.customizedPrePlural}} --}}
+              {{!-- {{numberCustomized}} --}}
+              {{!-- {{text.customizedTitlePlural}} --}}
+            {{!-- {{/if}} --}}
+          {{!-- </label> --}}
+        {{!-- {{/if}} --}}
+      {{!-- {{/if}} --}}
+    {{!-- {{#if statusReady}} --}}
+    {{!-- <br> --}}
+      {{!-- <button onClick="Actions.DirectRob.resetDirectRob()" class="btn btn-default --}}
+      {{!-- {{#unless statusReady}} disabled{{/unless}}"> {{text.resetButton}} </button> --}}
+      {{!-- <a class="btn btn-default btn-pad" href="#directRob">Proceed</a> --}}
+    {{!-- {{/if}} --}}
+  {{!-- </div> --}}
 </blockquote>
-<div id="robSelector" class='col-xs-12 well'>
-  <ul class='list-inline'>
-    {{#each directComparisons}}
-    <li style='border-color:{{color}}' class='well compRobSelector {{#if customized}} customized {{/if}}' id="comp-{{id}}">
-        <ul>
-          {{#if tn1}}
-            <li>
-              <ul>
-                <li>
-                  <strong>{{tn1}}</strong>
-                 </li><li>
-                  vs
-                  </li><li>
-                  <strong>{{tn2}}</strong>
-                </li>
-              </ul>
-              <hr>
-            </li>
-          {{else}}
-            <li>
-            Comparison: <span class='pull-right'><strong>{{niceid}}</strong></span>
-              <hr>
-            </li>
-            {{/if}}
-          <li>
-            Number of studies: <strong class='pull-right'>{{numStudies}}</strong>
-            {{#if sampleSize}}
-          </li><li>
-            Sample size: <strong class='pull-right'>{{sampleSize}}</strong>
-            {{/if}}
-              <hr>
-          </li><li class="majrob  {{#unless ../isMaj}} robLabel{{/unless}}">
-            Majority RoB: <strong class='pull-right'>{{majrobName}} </strong>
-          </li><li class="meanrob {{#unless ../isMean}} robLabel{{/unless}}">
-            Average RoB: <strong class='pull-right'> {{meanrobName}}</strong>
-          </li><li class='maxrob {{#unless ../isMax}} robLabel{{/unless}}'>
-            Highest RoB: <strong class='pull-right'> {{maxrobName}}</strong>
-              <hr>
-          </li><li>
-            Direct RoB:
-            <select onChange="Actions.DirectRob.selectIndividual(this)"
-              {{#unless ../statusReady}} disabled {{/unless}} class='pull-right mr-sm-2 controls-container'>
-              {{#each robselections}}
-              <option value="{{../id}}σδel{{id}}" {{#if isDisabled}} disabled {{/if}} {{#if isActive}} selected{{/if}}>
-                    {{label}}
-                </option>
-              {{/each}}
-            </select>
-          </li>
-        </ul>
-    {{/each}}
-  </ul>
-</div>
+{{!-- <div id="robSelector" class='col-xs-12 well'> --}}
+  {{!-- <ul class='list-inline'> --}}
+    {{!-- {{#each directComparisons}} --}}
+    {{!-- <li style='border-color:{{color}}' class='well compRobSelector {{#if customized}} customized {{/if}}' id="comp-{{id}}"> --}}
+        {{!-- <ul> --}}
+          {{!-- {{#if tn1}} --}}
+            {{!-- <li> --}}
+              {{!-- <ul> --}}
+                {{!-- <li> --}}
+                  {{!-- <strong>{{tn1}}</strong> --}}
+                 {{!-- </li><li> --}}
+                  {{!-- vs --}}
+                  {{!-- </li><li> --}}
+                  {{!-- <strong>{{tn2}}</strong> --}}
+                {{!-- </li> --}}
+              {{!-- </ul> --}}
+              {{!-- <hr> --}}
+            {{!-- </li> --}}
+          {{!-- {{else}} --}}
+            {{!-- <li> --}}
+            {{!-- Comparison: <span class='pull-right'><strong>{{niceid}}</strong></span> --}}
+              {{!-- <hr> --}}
+            {{!-- </li> --}}
+            {{!-- {{/if}} --}}
+          {{!-- <li> --}}
+            {{!-- Number of studies: <strong class='pull-right'>{{numStudies}}</strong> --}}
+            {{!-- {{#if sampleSize}} --}}
+          {{!-- </li><li> --}}
+            {{!-- Sample size: <strong class='pull-right'>{{sampleSize}}</strong> --}}
+            {{!-- {{/if}} --}}
+              {{!-- <hr> --}}
+          {{!-- </li><li class="majrob  {{#unless ../isMaj}} robLabel{{/unless}}"> --}}
+            {{!-- Majority RoB: <strong class='pull-right'>{{majrobName}} </strong> --}}
+          {{!-- </li><li class="meanrob {{#unless ../isMean}} robLabel{{/unless}}"> --}}
+            {{!-- Average RoB: <strong class='pull-right'> {{meanrobName}}</strong> --}}
+          {{!-- </li><li class='maxrob {{#unless ../isMax}} robLabel{{/unless}}'> --}}
+            {{!-- Highest RoB: <strong class='pull-right'> {{maxrobName}}</strong> --}}
+              {{!-- <hr> --}}
+          {{!-- </li><li> --}}
+            {{!-- Direct RoB: --}}
+            {{!-- <select onChange="Actions.DirectRob.selectIndividual(this)" --}}
+              {{!-- {{#unless ../statusReady}} disabled {{/unless}} class='pull-right mr-sm-2 controls-container'> --}}
+              {{!-- {{#each robselections}} --}}
+              {{!-- <option value="{{../id}}σδel{{id}}" {{#if isDisabled}} disabled {{/if}} {{#if isActive}} selected{{/if}}> --}}
+                    {{!-- {{label}} --}}
+                {{!-- </option> --}}
+              {{!-- {{/each}} --}}
+            {{!-- </select> --}}
+          {{!-- </li> --}}
+        {{!-- </ul> --}}
+    {{!-- {{/each}} --}}
+  {{!-- </ul> --}}
+{{!-- </div> --}}

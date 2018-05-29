@@ -2,20 +2,24 @@ var deepSeek = require('safe-access');
 var uniqId = require('../../lib/mixins.js').uniqId;
 
 
+var deepSeek = require('safe-access');
+var uniqId = require('../../lib/mixins.js').uniqId;
+
+
 var View = (model) => {
   let modelPosition = 'getState().project.netRob.ConChart';
   let viewers = {
-    drobReady: () => {
+    dirsReady: () => {
       let isready = false;
-      if (deepSeek(model,'getState().project.DirectRob.status')==='ready'){
+      let studycontrs = deepSeek(model,'getState().project.CM.currentCM.studycontributions');
+      if (typeof studycontrs !== 'undefined'){
         isready = true;
       }
       return isready;
     },
     isReady: () => {
       let isready = false;
-      let  conchartstate = deepSeek(model,'getState().project.netRob.ConChart');
-      if (viewers.drobReady() && (typeof conchartstate !== 'undefined')){
+      if (viewers.dirsReady()){
         isready = true;
       }
       return isready;
@@ -23,7 +27,15 @@ var View = (model) => {
     createChart: () => {
       let m = model.getState().project;
       let cm = m.CM.currentCM;
-      let colNames = cm.colNames;
+      //let colNames = cm.colNames;
+      let studycontrs = cm.studycontributions;
+      let robs = m.studies.robs;
+      let studies = 
+        _.map(
+          _.sortBy(
+            _.pairs(robs), a => {return a[1]})
+          , b => {return b[0]});
+      let colNames = studies;
       let cw = colNames.length;
         //Filter rows
         let numDirects = cm.directStudies.length;
@@ -37,52 +49,28 @@ var View = (model) => {
         if(numIndirects!==0){
           rowNames = rowNames.concat(cm.indirectRowNames);
         }
-        // rowNames = rowNames.concat('Entire network');
-      let comps = m.studies.directComparisons;
-      let cc = _.map(colNames, cn =>{
-        let dc = _.find(comps, c => {
-          let cid = uniqId([c.t1.toString(),c.t2.toString()]);
-          let cnid = uniqId(cn.split(':'));
-          return _.isEqual(cid,cnid);
-        });
-        return {id:cn, rob:dc.directRob};
-      });
-      let ccm = _.object(rowNames,_.map(pers,per=>{
-        let a = _.zip(_.map(cc,cdc=>{return {comp:cdc.id,rob:cdc.rob};}),
-        _.map(per,p=>{return {cont:p};}));
-        a = _.map(a, aa =>{
-          return _.extend(aa[0],aa[1]);
-        });
-        return a;
-      }));
-      let dts = _.map(ccm, r => {
-        return _.sortBy(r, c => {
-          return c.rob;
-        });
-      });
-      let dtsps = _.map(dts[0], (r,i) => {
-        return _.map(dts,c=>{return c[i].cont});
-      });
-      let dtsts = _.map(dts[0], (c,i) => {
-        let dt = {};
-        switch(c.rob){
-          case 1:
-            dt.backgroundColor = m.robLevels[0].color;
-          break;
-          case 2:
-            dt.backgroundColor = m.robLevels[1].color;
-          break;
-          case 3:
-            dt.backgroundColor = m.robLevels[2].color;
-          break;
-        }
-        dt.label = c.comp;
-        dt.data=dtsps[i];
-        dt.borderColor = _.reduce(dt.data, (memo, d)=> {
-          return memo.concat('rgba(255,254,253,0.9)');
-        },[]);
-        dt.borderWidth = 1;
-        return dt;
+      let dtsts = _.map(studies, st => {
+          let dt = {};
+              dt.label = st;
+              dt.data = _.map(rowNames, r => {
+                return studycontrs[r][st].toFixed(2);
+              })
+              switch(robs[st]){
+                case 1:
+                  dt.backgroundColor = m.robLevels[0].color;
+                break;
+                case 2:
+                  dt.backgroundColor = m.robLevels[1].color;
+                break;
+                case 3:
+                  dt.backgroundColor = m.robLevels[2].color;
+                break;
+              }
+              dt.borderColor = _.reduce(dt.data, (memo, d)=> {
+                return memo.concat('rgba(255,254,253,0.9)');
+              },[]);
+              dt.borderWidth = 1;
+              return dt;
       });
       let chartData={
           labels: rowNames,

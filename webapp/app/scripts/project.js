@@ -191,6 +191,8 @@ var PR = {
             _.unzip(sortStudies(_.map(dcomps, comp => {return comp.t1+":"+comp.t2}),dcomps))[1];
           let indirects = PR.update.makeIndirectComparisons(mdl.nodes,mdl.directComparisons);
           mdl.indirectComparisons = indirects;
+          mdl.robs = _.mapObject(_.groupBy(mdl.long,"id"),s => {return s[0].rob});
+          mdl.indrs = _.mapObject(_.groupBy(mdl.long,"id"),s => {return s[0].indirectness});
           prj.studies = mdl;
           prj.isSaved = true;
           PR.update.setProject(prj);

@@ -29,7 +29,7 @@ var Update = (model) => {
     },
     dindrReady: () => {
       let isready = false;
-      if (deepSeek(model,'getState().project.indirectness.directs.status')==='ready'){
+      if (typeof deepSeek(model,'getState().project.CM.currentCM.studycontributions')!=='undefined'){
         isready = true;
       }
       return isready;
@@ -146,10 +146,10 @@ var Update = (model) => {
         let project =  deepSeek(model,'getState().project');
         let levels = deepSeek(model,'getState().defaults.netIndrLevels');
         return _.map(sortStudies(rownames,studies), d => {
-          let contributions = _.object(colnames,(d[1]));
+          let contributions = project.CM.currentCM.studycontributions[d[0]];
           contributions = _.mapObject(contributions, (amount,id) => {
             return {
-              indr: directIndrs[id],
+              indr: project.studies.indrs[id],
               amount
             }
           });

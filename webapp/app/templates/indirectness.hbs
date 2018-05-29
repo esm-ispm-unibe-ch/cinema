@@ -19,122 +19,63 @@
           {{/each}}
           </ul>
       </div>
-    {{#unless statusReady}}
-      <label class=' controls-title mr-sm-2'>
-        {{text.selectionTitle}}
-      </label>
-      <select onChange="Actions.DirectIndr.selectDirectRule(this)" {{#if statusReady}}
-        disabled {{/if}} class='mr-sm-2 form-inline form-control'>
-          {{#each rulesselections}}
-            {{#if isAvailable}}
-              <option value="{{value}}" {{#if isDisabled}} disabled {{/if}} {{#if isActive}} selected{{/if}}>
-              {{label}}
-              </option>
-            {{/if}}
-          {{/each}}
-        </select>
-      {{/unless}}
-        {{#if statusReady}}
-          <label class=' controls-title mr-sm-2'>
-            {{text.defaultTitle}}
-            {{ruleName}}
-          </label>
-          {{#if customized}}
-            <br>
-            <label class=' controls-title mr-sm-2'>
-              {{#if customizedSingular}}
-                {{text.customizedPreSingular}}
-                {{numberCustomized}}
-                {{text.customizedTitleSingular}}
-              {{else}}
-                {{text.customizedPrePlural}}
-                {{numberCustomized}}
-                {{text.customizedTitlePlural}}
-              {{/if}}
-            </label>
-          {{/if}}
-        {{/if}}
-    {{else}}
-      {{#unless statusReady}}
-        {{text.setAllTitle}}
-        <select  onchange="Actions.DirectIndr.setAll(this);" class="{{#if statusReady}} disabled{{/if}}">
-          <option value="--" disabled selected>
-            --
-          </option>
-          <option value="1">
-            {{text.allLow}}
-          </option>
-          <option value="2">
-            {{text.allModerate}}
-          </option>
-          <option value="3">
-            {{text.allHigh}}
-          </option>
-        </select>
-      {{/unless}}
-    {{/if}}
-    {{#if statusReady}}
-      <br>
-      <button onClick="Actions.DirectIndr.resetDirectIndr()" class="btn-pad btn btn-default
-      {{#unless statusReady}} disabled{{/unless}}"> {{text.resetButton}} </button>
-      <a class="btn btn-default btn-pad" href="#NetIndr">Proceed</a>
     {{/if}}
   </div>
 </blockquote>
-<div id="indrSelector" class='col-xs-12 well out indent'>
-  <ul class='list-inline'>
-    {{#each directComparisons}}
-    <li style='border-color:{{color}}' class='well compSelector {{#if customized}} customized {{/if}}' id="comp-{{id}}">
-        <ul>
-          {{#if tn1}}
-            <li>
-              <ul>
-                <li>
-                  <strong>{{tn1}}</strong>
-                 </li><li>
-                  vs
-                  </li><li>
-                  <strong>{{tn2}}</strong>
-                </li>
-              </ul>
-              <hr>
-            </li>
-          {{else}}
-            <li>
-            Comparison: <span class='pull-right'><strong>{{niceid}}</strong></span>
-              <hr>
-            </li>
-            {{/if}}
-          <li>
-            Number of studies: <strong class='pull-right'>{{numStudies}}</strong>
-            {{#if sampleSize}}
-          </li><li>
-            Sample size: <strong class='pull-right'>{{sampleSize}}</strong>
-            {{/if}}
-              <hr>
-          </li>
-          {{#if ../hasData}}
-            <li class="majrob  {{#unless ../isMaj}} robLabel{{/unless}}">
-            Majority: <strong class='pull-right'>{{majindrName}} </strong>
-          </li><li class="meanrob {{#unless ../isMean}} robLabel{{/unless}}">
-            Average: <strong class='pull-right'> {{meanindrName}}</strong>
-          </li><li class='maxrob {{#unless ../isMax}} robLabel{{/unless}}'>
-            Highest: <strong class='pull-right'> {{maxindrName}}</strong>
-              <hr>
-            </li>
-          {{/if}}
-          <li>
-            Judgement:
-            <select onChange="Actions.DirectIndr.selectIndividual(this)"
-              {{#unless ../statusReady}} disabled {{/unless}} class='pull-right mr-sm-2 controls-container'>
-              {{#each indrselections}}
-              <option value="{{../id}}σδel{{id}}" {{#if isDisabled}} disabled {{/if}} {{#if isActive}} selected{{/if}}>
-                    {{label}}
-                </option>
-              {{/each}}
-            </select>
-          </li>
-        </ul>
-    {{/each}}
-  </ul>
-</div>
+{{!-- <div id="indrSelector" class='col-xs-12 well out indent'> --}}
+  {{!-- <ul class='list-inline'> --}}
+    {{!-- {{#each directComparisons}} --}}
+    {{!-- <li style='border-color:{{color}}' class='well compSelector {{#if customized}} customized {{/if}}' id="comp-{{id}}"> --}}
+        {{!-- <ul> --}}
+          {{!-- {{#if tn1}} --}}
+            {{!-- <li> --}}
+              {{!-- <ul> --}}
+                {{!-- <li> --}}
+                  {{!-- <strong>{{tn1}}</strong> --}}
+                 {{!-- </li><li> --}}
+                  {{!-- vs --}}
+                  {{!-- </li><li> --}}
+                  {{!-- <strong>{{tn2}}</strong> --}}
+                {{!-- </li> --}}
+              {{!-- </ul> --}}
+              {{!-- <hr> --}}
+            {{!-- </li> --}}
+          {{!-- {{else}} --}}
+            {{!-- <li> --}}
+            {{!-- Comparison: <span class='pull-right'><strong>{{niceid}}</strong></span> --}}
+              {{!-- <hr> --}}
+            {{!-- </li> --}}
+            {{!-- {{/if}} --}}
+          {{!-- <li> --}}
+            {{!-- Number of studies: <strong class='pull-right'>{{numStudies}}</strong> --}}
+            {{!-- {{#if sampleSize}} --}}
+          {{!-- </li><li> --}}
+            {{!-- Sample size: <strong class='pull-right'>{{sampleSize}}</strong> --}}
+            {{!-- {{/if}} --}}
+              {{!-- <hr> --}}
+          {{!-- </li> --}}
+          {{!-- {{#if ../hasData}} --}}
+            {{!-- <li class="majrob  {{#unless ../isMaj}} robLabel{{/unless}}"> --}}
+            {{!-- Majority: <strong class='pull-right'>{{majindrName}} </strong> --}}
+          {{!-- </li><li class="meanrob {{#unless ../isMean}} robLabel{{/unless}}"> --}}
+            {{!-- Average: <strong class='pull-right'> {{meanindrName}}</strong> --}}
+          {{!-- </li><li class='maxrob {{#unless ../isMax}} robLabel{{/unless}}'> --}}
+            {{!-- Highest: <strong class='pull-right'> {{maxindrName}}</strong> --}}
+              {{!-- <hr> --}}
+            {{!-- </li> --}}
+          {{!-- {{/if}} --}}
+          {{!-- <li> --}}
+            {{!-- Judgement: --}}
+            {{!-- <select onChange="Actions.DirectIndr.selectIndividual(this)" --}}
+              {{!-- {{#unless ../statusReady}} disabled {{/unless}} class='pull-right mr-sm-2 controls-container'> --}}
+              {{!-- {{#each indrselections}} --}}
+              {{!-- <option value="{{../id}}σδel{{id}}" {{#if isDisabled}} disabled {{/if}} {{#if isActive}} selected{{/if}}> --}}
+                    {{!-- {{label}} --}}
+                {{!-- </option> --}}
+              {{!-- {{/each}} --}}
+            {{!-- </select> --}}
+          {{!-- </li> --}}
+        {{!-- </ul> --}}
+    {{!-- {{/each}} --}}
+  {{!-- </ul> --}}
+{{!-- </div> --}}

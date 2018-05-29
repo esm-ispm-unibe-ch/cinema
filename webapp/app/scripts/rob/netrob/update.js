@@ -29,7 +29,8 @@ var Update = (model) => {
     },
     drobReady: () => {
       let isready = false;
-      if (deepSeek(model,'getState().project.DirectRob.status')==='ready'){
+      if (typeof deepSeek(model 
+        ,'getState().project.CM.currentCM.studycontributions')!=='undefined'){
         isready = true;
       }
       return isready;
@@ -102,7 +103,6 @@ var Update = (model) => {
           });
           return [colname,dc.directRob];
       }));
-      // console.log('cmdirectrows',cm,'directrobs',directRobs);
       let groupContributions = (contributions) => {
         let res =  _.groupBy(_.toArray(contributions),'rob');
         res = _.map(res, r => {
@@ -147,10 +147,10 @@ var Update = (model) => {
       let makeRules = (rownames,colnames,studies) => {
         let project =  deepSeek(model,'getState().project');
         return _.map(sortStudies(rownames,studies), d => {
-          let contributions = _.object(colnames,(d[1]));
+          let contributions = project.CM.currentCM.studycontributions[d[0]];
           contributions = _.mapObject(contributions, (amount,id) => {
             return {
-              rob: directRobs[id],
+              rob: project.studies.robs[id],
               amount
             }
           });

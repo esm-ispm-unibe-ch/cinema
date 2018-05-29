@@ -109,6 +109,10 @@ var Model = {
       vertex.low = _.filter(vertex.rob, r => {return r===1}).length/vertex.numStudies*100;
       vertex.unclear = _.filter(vertex.rob, r => {return r===2}).length/vertex.numStudies*100;
       vertex.high = _.filter(vertex.rob, r => {return r===3}).length/vertex.numStudies*100;
+      vertex.indirectness = accumulate(group,'indirectness');
+      vertex.indrlow = _.filter(vertex.indirectness, r => {return r===1}).length/vertex.numStudies*100;
+      vertex.indrunclear = _.filter(vertex.indirectness, r => {return r===2}).length/vertex.numStudies*100;
+      vertex.indrhigh = _.filter(vertex.indirectness, r => {return r===3}).length/vertex.numStudies*100;
       return vertex;
     };
     let res = _.map(_.toArray(grouped), (grp) => verticeFromGroup(grp));

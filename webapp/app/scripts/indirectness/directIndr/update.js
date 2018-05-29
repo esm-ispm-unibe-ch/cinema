@@ -110,6 +110,7 @@ var Update = (model) => {
     skeletonModel: () => {
       let levels = updaters.indrLevels();
       let directBoxes = clone(deepSeek(model,'getState().project.studies.directComparisons'));
+      let studycontrs =  clone(deepSeek(model,'getState().project.CM.currentCM.studycontributions'));
       _.map(directBoxes, box => {box.judgement = "nothing"; return box});
       let hd = (() => {
         let out = false;

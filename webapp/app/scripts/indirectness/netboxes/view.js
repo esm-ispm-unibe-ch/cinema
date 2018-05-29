@@ -70,7 +70,7 @@ var View = (model) => {
     },
     dindrReady: () => {
       let isready = false;
-      if (deepSeek(model,'getState().project.indirectness.directs.status')==='ready'){
+      if (typeof deepSeek(model,'getState().project.CM.currentCM.studycontributions')!=='undefined'){
         isready = true;
       }
       return isready;

@@ -303,7 +303,6 @@ var Update = (model) => {
          if(typeof cm.colNames === 'undefined'){
            cm.colNames = output[0].comparisonRow.names;
          }
-         console.log("nonon ",cm.colNames);
           let result = updaters.formatMatrix(cm);
            //console.log('RESULTS FROM SERVER',result);
           rslv(result);

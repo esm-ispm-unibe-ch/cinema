@@ -6,7 +6,6 @@ var NetIndr = require('../netboxes/netboxes.js')();
 var IndrChart = require('../indrchart/indrchart.js')();
 
 var DirectIndr = {
-  //actions will trigered by hml actions and other msgs 
   actions: {
     resetDirectIndr: () => {
       let [title,msg] = DirectIndr.model.getState().text.directRob.resetConfirm;

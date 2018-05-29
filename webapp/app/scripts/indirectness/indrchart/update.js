@@ -5,7 +5,6 @@ var children = [
   ];
 
 var Update = (model) => {
-  //update functions will only change state in that node of the model DAG
   let modelPosition = 'getState().project.indirectness.IndrChart';
   let updaters = {
     getState: () => {
