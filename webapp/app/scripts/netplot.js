@@ -23,7 +23,7 @@ var NP = {
     },
     redrawNP: () => {
       $(document).on('click','.np-redraw', {} ,e=>{
-        NP.view.cy.layout({name:'circle'});
+        NP.view.cy.layout({name:'circle',fit:true});
       });
     },
     exportNP: () => {
@@ -135,18 +135,34 @@ var NP = {
     colorVertices : (filter) => {
       let vertices = NP.view.vertices;
         NP.view.cy.batch( () => {
-        if(filter === 'noColor'){
-          _.map(vertices, n => {
-            NP.view.cy.elements('node[id="'+n.id+'"]').style({
-              'pie-size': 0,
+        switch (filter){
+          case "noColor":
+            _.map(vertices, n => {
+              NP.view.cy.elements('node[id="'+n.id+'"]').style({
+                'pie-size': 0,
+              });
             });
-          });
-        }else{
-          _.map(vertices, n => {
-            NP.view.cy.elements('node[id="'+n.id+'"]').style({
-              'pie-size': '92%',
+          break;
+          case "rob":
+            _.map(vertices, n => {
+              NP.view.cy.elements('node[id="'+n.id+'"]').style({
+                'pie-size': '92%',
+                'pie-1-background-size': n.low,
+                'pie-2-background-size': n.unclear,
+                'pie-3-background-size': n.high,
+              });
             });
-          });
+          break;
+          case "indirectness":
+            _.map(vertices, n => {
+              NP.view.cy.elements('node[id="'+n.id+'"]').style({
+                'pie-size': '92%',
+                'pie-1-background-size': n.indrlow,
+                'pie-2-background-size': n.indrunclear,
+                'pie-3-background-size': n.indrhigh,
+              });
+            });
+          break;
         }
       });
     },
@@ -167,6 +183,15 @@ var NP = {
             case 'max':
             e.ecolor = colors[e.maxrob-1];
             break;
+            case 'majorityIndr':
+            e.ecolor = colors[e.majindr-1];
+            break;
+            case 'meanIndr':
+            e.ecolor = colors[e.meanindr-1];
+            break;
+            case 'maxIndr':
+            e.ecolor = colors[e.maxindr-1];
+            break;
             case 'noColor':
             e.ecolor = NP.view.getOptions().norobcolor;
             break;
@@ -183,17 +208,17 @@ var NP = {
         avoidOverlap: true,
         zoomingEnabled: true,
         userZoomingEnabled: false,
-        fit:true,
         layout :{
           name: 'circle',
+          fit:true,
           ready: () => {
-            // NP.cyIsReady = true;
-            // NP.cy.center();
+             //NP.cyIsReady = true;
+             //NP.view.cy.center();
           }
         },
         style: cytoscape.stylesheet()
         .selector('node')
-        .style({
+        .css({
           'content': 'data(label)',
           'text-valign': 'center',
           'text-halign': 'center',
@@ -254,6 +279,11 @@ var NP = {
             isAvailable:true,
           },
           {
+            label:'Indirectness',
+            value:'indirectness',
+            isAvailable:true,
+          },
+          {
             label:'No color',
             value:'noColor',
             isAvailable:true,
@@ -309,6 +339,21 @@ var NP = {
           {
           label:'Highest RoB',
           value:'max',
+          isAvailable:true,
+          },
+          {
+          label:'Majority Indirectness',
+          value:'majorityIndr',
+          isAvailable:true,
+          },
+          {
+          label:'Average Indirectness',
+          value:'meanIndr',
+          isAvailable:true,
+          },
+          {
+          label:'Highest Indirectness',
+          value:'maxIndr',
           isAvailable:true,
           },
           {
@@ -533,7 +578,7 @@ var NP = {
       NP.view.resizeElements(NP.view.getOptions().vertexSizeBy,NP.view.getOptions().edgeSizeBy);
       NP.view.colorEdges(NP.view.getOptions().edgeColorBy);
       NP.view.colorVertices(NP.view.getOptions().vertexColorBy);
-      NP.view.cy.layout({name:'circle'});
+      NP.view.cy.layout({name:'circle',fit:true});
       NP.view.showWholeTable();
       NP.view.bindElementSelection(NP.view.cy);
     }

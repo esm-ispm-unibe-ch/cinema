@@ -4,7 +4,7 @@
   "dependencies": {
     "bootstrap-sass": "~3.3.5",
     "modernizr": "~2.8.1",
-    "cytoscape": "^2.7.10",
+    "cytoscape": "^2.7.29",
     "handlebars": "^3.0.0",
     "underscore": "^1.8.3",
     "handsontable": "^0.29.0",
