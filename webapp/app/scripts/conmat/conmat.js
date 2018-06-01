@@ -78,6 +78,9 @@ var CM = {
     downloadStudyCSV: () => {
        Update(CM.model).downloadStudyCSV();
     },
+    downloadLeaguetable: () => {
+       Update(CM.model).downloadLeaguetable();
+    },
     showContributionMatrix: () => {
       $('.table-manipulator').toggleClass('hidden');
        Update(CM.model).showTable();

@@ -7,7 +7,7 @@ var deepSeek = require('safe-access');
 var Messages = require('../messages.js').Messages;
 var clone = require('../lib/mixins.js').clone;
 var sortComparisonIds = require('../lib/mixins.js').sortComparisonIds;
-var json2csv = require('json2csv');
+const json2csv = require('json2csv');
 var download = require('downloadjs');
 var Heterogeneity = require('../inconsistency/heterogeneity/heterogeneity.js')();
 var Incoherence = require('../inconsistency/incoherence/incoherence.js')();
@@ -147,8 +147,8 @@ var Update = (model) => {
     },
     fetchContributionMatrix: (ncm) => {
       return new Promise((resolve, reject) => {
-        //ocpu.seturl('http://52.28.184.220:8004/ocpu/library/contribution/R');
-        ocpu.seturl('http://localhost:8004/ocpu/library/contribution/R');
+        ocpu.seturl('http://52.28.184.220:8004/ocpu/library/contribution/R');
+        //ocpu.seturl('http://localhost:8004/ocpu/library/contribution/R');
         let cms = model.getState().project.CM.contributionMatrices;
         var result = {};
         let ncmparams = params;
@@ -188,18 +188,28 @@ var Update = (model) => {
             }
               return out;
           }
-          let hmc = ocpu.call('getHatMatrix',{indata: formatData(rtype, project.studies),
+          let hmc = ocpu.call('getHatMatrix',
+            {indata: formatData(rtype, project.studies),
               type: rtype,
               model: cm.params.MAModel,
               sm: cm.params.sm,
             }, (sessionh) => {
             sessionh.getObject( (hatmatrix) => {
               cm.hatmatrix = hatmatrix;
-              updaters.saveState();
-              updaters.fetchRows(ncm).then(res => {
-              resolve(res);
-            }).catch(err => {console.log(err);reject(err)});
-          })
+              let lt = ocpu.call('leaguetable',
+                { fromhatmatrix: hatmatrix.forleaguetable
+                , model: hatmatrix.model
+                , sm: hatmatrix.sm
+                }, sessionhh => {
+                  sessionhh.getObject( (leaguetable) => {
+                  cm.leaguetable = leaguetable;
+                  updaters.saveState();
+                  updaters.fetchRows(cm).then(res => {
+                    resolve(res);
+                  }).catch(errf => {reject(errf)});
+                });
+            }).catch(errl => {console.log(errl);reject(errl)});
+          }).catch(err => {console.log(err);reject(err)});
          });
          hmc.fail( () => {
            reject('R returned an error: ' + hmc.responseText);
@@ -210,7 +220,7 @@ var Update = (model) => {
               resolve(res);
             }).catch(err => {reject(err)});
        }
-     });
+      }).catch(err => {reject(err)});
     },
     filterRows : (rows,intvs,rule) =>{
       let res = [];
@@ -287,7 +297,7 @@ var Update = (model) => {
             }else{
               rjct('Computation canceled');
             }
-          });
+          }).catch(err => {console.log('caugth error',err);rjct(err);});
         };
        return sequencePromises(comparisons, updaters.getCM().savedComparisons).then(output => {
           //console.log("Server output",output);
@@ -307,7 +317,7 @@ var Update = (model) => {
            //console.log('RESULTS FROM SERVER',result);
           rslv(result);
        }).catch(err => {console.log('caugth error',err);rjc(err);});
-      });
+     }).catch(err => {console.log('caugth error',err);rjc(err);});
     },
     updateContributionCache: () => {
       let cms = model.getState().project.CM.contributionMatrices;
@@ -515,13 +525,10 @@ var Update = (model) => {
           return [r[0]].concat(r[1]);
         });
         fstudies = _.map(fstudies,st=>{return _.object(fcols,st);});
-        let csvTable = json2csv({
-          data: fstudies,
-          fields: fcols,
-        });
+        let csvTable = json2csv.parse(fstudies, {fields: fcols});
         let csvContent = 'data:text/csv;charset=utf-8,'+csvTable;
         var encodedUri = encodeURI(csvContent);
-        let cmfilename = (project.title+'_'+cm.params.MAModel+'_'+cm.params.sm).replace(/\,/g,'_')+'.csv';
+        let cmfilename = (project.title+'_'+cm.params.MAModel+'_'+cm.params.sm+"_perComparisonContribution").replace(/\,/g,'_')+'.csv';
         resolve([encodedUri,cmfilename]);
       });
     },
@@ -570,13 +577,21 @@ var Update = (model) => {
           return [r[0]].concat(r[1]);
         });
         fstudies = _.map(fstudies,st=>{return _.object(fcols,st);});
-        let csvTable = json2csv({
-          data: fstudies,
-          fields: fcols,
-        });
+        let csvTable = json2csv.parse(fstudies, {fields: fcols});
         let csvContent = 'data:text/csv;charset=utf-8,'+csvTable;
         var encodedUri = encodeURI(csvContent);
-        let cmfilename = (project.title+'_'+cm.params.MAModel+'_'+cm.params.sm).replace(/\,/g,'_')+'.csv';
+        let cmfilename = (project.title+'_'+cm.params.MAModel+'_'+cm.params.sm+"_perStudyContribution").replace(/\,/g,'_')+'.csv';
+        resolve([encodedUri,cmfilename]);
+      });
+    },
+    makeLeagueTableDownloader: (res) => {
+      return new Promise((resolve,reject) => {
+        let cm = res;
+        let league = cm.leaguetable;
+        let csvTable = json2csv.parse(league, {header: false});
+        let csvContent = 'data:text/csv;charset=utf-8,'+csvTable;
+        var encodedUri = encodeURI(csvContent);
+        let cmfilename = (project.title+'_'+cm.params.MAModel+'_'+cm.params.sm+"_leaguetable").replace(/\,/g,'_')+'.csv';
         resolve([encodedUri,cmfilename]);
       });
     },
@@ -588,6 +603,12 @@ var Update = (model) => {
     },
     downloadCSV: () => {
       updaters.makeDownloader(updaters.getCM()).then( zfile => {
+        let [blob,filename] = zfile;
+        download(blob,filename);
+      });
+    },
+    downloadLeaguetable: () => {
+      updaters.makeLeagueTableDownloader(updaters.getCM()).then( zfile => {
         let [blob,filename] = zfile;
         download(blob,filename);
       });
