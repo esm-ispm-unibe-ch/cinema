@@ -66,11 +66,14 @@ var Model = {
     });
     Model.saveState();
   },
-  saveState: () => {
+  persistToLocalStorage: () => {
     localStorage.clear();
+    localStorage.setItem('state', JSON.stringify(Model.getState()));
+    console.log('saved to localstorage');
+  },
+  saveState: () => {
     let wt = document.documentElement.scrollTop || document.body.scrollTop;
     Model.state.wt = wt;
-    localStorage.setItem('state', JSON.stringify(Model.getState()));
     // console.log('saving state');
     // console.log('rendering');
     View.render(Model).then(

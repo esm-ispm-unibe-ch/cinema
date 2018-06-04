@@ -35,9 +35,9 @@
             <th>
               Publication bias
             </th>
-            {{!-- <th> --}}
-              {{!-- Confidence rating --}}
-            {{!-- </th> --}}
+            <th>
+              Confidence rating
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -73,16 +73,15 @@
                 <td style="background-color:{{pubbias.color}}"  {{# if pubbias.customized}} class='customized-report'{{/if}}>
                   {{pubbias.label}}
                 </td>
-                {{!-- <td> --}}
-                  {{!-- High --}}
-                  {{!-- <!-- <select> --> --}}
-                  {{!-- <!--   {{#each levels}} --> --}}
-                  {{!-- <!--     <option value="{{id}}σδεl{{../id}}"> --> --}}
-                  {{!-- <!--       {{label}} --> --}}
-                  {{!-- <!--     </option> --> --}}
-                  {{!-- <!--   {{/each}} --> --}}
-                  {{!-- <!-- </select> --> --}}
-                {{!-- </td> --}}
+                <td>
+                  <select> 
+                    {{#each levels}} 
+                      <option value="{{id}}σδεl{{../id}}">
+                        {{label}}
+                      </option>
+                    {{/each}}
+                  </select>
+                </td>
               </tr>
             {{/each}}
           {{/if}}
@@ -118,16 +117,15 @@
                 <td style="background-color:{{pubbias.color}}"  {{# if pubbias.customized}} class='customized-report'{{/if}}>
                   {{pubbias.label}}
                 </td>
-                {{!-- <td> --}}
-                  {{!-- High --}}
-                  {{!-- <!-- <select> --> --}}
-                  {{!-- <!--   {{#each levels}} --> --}}
-                  {{!-- <!--     <option value="{{id}}σδεl{{../id}}"> --> --}}
-                  {{!-- <!--       {{label}} --> --}}
-                  {{!-- <!--     </option> --> --}}
-                  {{!-- <!--   {{/each}} --> --}}
-                  {{!-- <!-- </select> --> --}}
-                {{!-- </td> --}}
+                <td>
+                  <select> 
+                    {{#each levels}} 
+                      <option value="{{id}}σδεl{{../id}}">
+                        {{label}}
+                      </option>
+                    {{/each}}
+                  </select>
+                </td>
               </tr>
             {{/each}}
           {{/if}}

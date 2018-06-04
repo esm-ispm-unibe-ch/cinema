@@ -9,10 +9,12 @@ var Inconsistency = {
   actions: {
     gotoRoute: (route) => {
       Inconsistency.update.gotoRoute(route);
+      Inconsistency.model.persistToLocalStorage();
     },
     directlyToRoute: (route) => {
       Inconsistency.model.Actions.Router.gotoRoute("inconsistency");
       Inconsistency.update.gotoRoute(route);
+      Inconsistency.model.persistToLocalStorage();
     },
   },
   modelPosition: 'getState().project.inconsistency',

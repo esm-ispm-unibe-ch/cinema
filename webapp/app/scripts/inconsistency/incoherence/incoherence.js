@@ -19,6 +19,10 @@ var Incoherence = {
       let msg = Incoherence.model.getState().text.Incoherence.changedJudgement;
       Update(Incoherence.model).selectIndividual(judgement);
     },
+    proceed: () => {
+      Actions.Router.gotoRoute('indirectness');
+      Incoherence.model.persistToLocalStorage();
+    },
   },
   view: {
     register: (model) => {

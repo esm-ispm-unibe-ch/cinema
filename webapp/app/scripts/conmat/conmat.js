@@ -98,6 +98,10 @@ var CM = {
         window.scrollTo(0,top);
       }
     },
+    proceed: () => {
+      Actions.Router.gotoRoute('rob');
+      CM.model.persistToLocalStorage();
+    },
   },
   //has to be incorporated to view module
   view: {

@@ -414,6 +414,10 @@ var PR = {
         reject(err);
       })
     },
+    proceed: () => {
+      Actions.Router.gotoRoute('general');
+      PR.model.persistToLocalStorage();
+    }
   },
   view: {
     getProject: () => {

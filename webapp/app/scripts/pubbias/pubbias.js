@@ -30,7 +30,11 @@ var Pubbias = {
     },
     updateState: () => {
       Update(Pubbias.model).updateState(Pubbias.model);
-    }
+    },
+    proceed: () => {
+      Actions.Router.gotoRoute('report');
+      Pubbias.model.persistToLocalStorage();
+    },
   },
   modelPosition: 'getState().project.pubbias',
   view: {

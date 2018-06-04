@@ -20,6 +20,10 @@ var NetIndr = {
     selectIndividual: (judgement) => {
       Update(NetIndr.model).selectIndividual(judgement);
     },
+    proceed: () => {
+      Actions.Router.gotoRoute('pubbias');
+      NetIndr.model.persistToLocalStorage();
+    },
   },
   view: {
     register: (model) => {

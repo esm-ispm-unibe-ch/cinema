@@ -20,6 +20,10 @@ var NetRob = {
     selectIndividual: (judgement) => {
       Update(NetRob.model).selectIndividual(judgement);
     },
+    proceed: () => {
+      Actions.Router.gotoRoute('imprecision');
+      NetRob.model.persistToLocalStorage();
+    },
   },
   view: {
     register: (model) => {
