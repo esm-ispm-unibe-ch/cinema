@@ -159,50 +159,61 @@ var PR = {
     },
     makeStudies: (dataset) => {
       //console.log("to object gia na kaneis studies",dataset);
-      return Checker.checkTypes(dataset)
-      .then(Checker.checkMissingValues)
-      .then(Checker.checkConsistency)
-      .then(project => {
-        let prj = PR.view.getProject();
-        prj.format = project.format;
-        prj.type = project.type;
-        let mdl = {};
-        if(project.format === 'long'){
-          mdl.long = project.model;
-          mdl.wide = Reshaper.longToWide(project.model,project.type);
-          }else{
-            if (project.format === "iv"){
-              mdl.long = Reshaper.wideToLong(project.model,"iv");
-              mdl.wide = project.model;
-            }else{
-              mdl.long = Reshaper.wideToLong(project.model,project.type);
-              mdl.wide = project.model;
-            }
-          }
-          if (project.format === "iv"){
-            mdl.nodes = PR.model.makeNodes("iv", mdl.long);
-          }else{
-            mdl.nodes = PR.model.makeNodes(project.type, mdl.long);
-          }
-          let ids = _.pluck(mdl.nodes,'id');
-          let sortedIds = ComparisonModel.orderIds(ids);
-          let dcomps = PR.update.makeDirectComparisons(project.format, mdl.wide);
-          mdl.directComparisons = 
-            _.unzip(sortStudies(_.map(dcomps, comp => {return comp.t1+":"+comp.t2}),dcomps))[1];
-          let indirects = PR.update.makeIndirectComparisons(mdl.nodes,mdl.directComparisons);
-          mdl.indirectComparisons = indirects;
-          mdl.robs = _.mapObject(_.groupBy(mdl.long,"id"),s => {return s[0].rob});
-          mdl.indrs = _.mapObject(_.groupBy(mdl.long,"id"),s => {return s[0].indirectness});
-          prj.studies = mdl;
-          prj.isSaved = true;
-          PR.update.setProject(prj);
-          return prj;
-        });
+      return new Promise((resolve,reject) => {
+      let res = Checker.checkTypes(dataset)
+          .then(Checker.checkMissingValues)
+          .then(Checker.checkConsistency)
+          .then(project => {
+            let prj = PR.view.getProject();
+            prj.format = project.format;
+            prj.type = project.type;
+            let mdl = {};
+            if(project.format === 'long'){
+              mdl.long = project.model;
+              mdl.wide = Reshaper.longToWide(project.model,project.type);
+              }else{
+                if (project.format === "iv"){
+                  mdl.long = Reshaper.wideToLong(project.model,"iv");
+                  mdl.wide = project.model;
+                }else{
+                  mdl.long = Reshaper.wideToLong(project.model,project.type);
+                  mdl.wide = project.model;
+                }
+              }
+              if (project.format === "iv"){
+                mdl.nodes = PR.model.makeNodes("iv", mdl.long);
+              }else{
+                mdl.nodes = PR.model.makeNodes(project.type, mdl.long);
+              }
+              let ids = _.pluck(mdl.nodes,'id');
+              let sortedIds = ComparisonModel.orderIds(ids);
+              let dcomps = PR.update.makeDirectComparisons(project.format, mdl.wide);
+              mdl.directComparisons = 
+                _.unzip(sortStudies(_.map(dcomps, comp => {return comp.t1+":"+comp.t2}),dcomps))[1];
+              let indirects = PR.update.makeIndirectComparisons(mdl.nodes,mdl.directComparisons);
+              mdl.indirectComparisons = indirects;
+              mdl.robs = _.mapObject(_.groupBy(mdl.long,"id"),s => {return s[0].rob});
+              mdl.indrs = _.mapObject(_.groupBy(mdl.long,"id"),s => {return s[0].indirectness});
+              prj.studies = mdl;
+              prj.isSaved = true;
+              PR.update.setProject(prj);
+              return prj;
+            })
+          .catch( err => {
+            Messages.alertify().error(err);
+            reject(err);
+          });
+          resolve(res);
+        })
     },
     recognizeFile: (dataset) => {
       return new Promise((resolve,reject) => {
         resolve(Checker.checkColumnNames(dataset))
       })
+      .catch( err => {
+        Messages.alertify().error(err);
+        reject(err);
+      });
     },
     getJSON: (infile, filename) => {
       return FR.handleFileSelect(infile)
@@ -227,12 +238,21 @@ var PR = {
     },
     //The main project reading function
     fetchProject: (evt) => {
+      return new Promise((resolve,reject) => {
       var filename = htmlEntities($('#files').val().replace(/C:\\fakepath\\/i, '')).slice(0, -4);
       PR.update.getJSON(evt,filename).then(data => {
         PR.update.createProject(filename);
         return data;
       })
+      .catch( err => {
+        Messages.alertify().error(err);
+        reject(err);
+      })
       .then(PR.update.recognizeFile)
+      .catch( err => {
+        Messages.alertify().error(err);
+        reject(err);
+      })
       .then(answer => {
         PR.update.initProject(answer);
         let hasFormat = ! _.isUndefined(answer.format);
@@ -242,12 +262,14 @@ var PR = {
           PR.update.makeStudies(answer);
         }
       })
+      .catch( err => {
+        Messages.alertify().error(err);
+        reject(err);
+      })
       //.then(project => {
           //Messages.alertify().success(PR.model.state.text.longFileUpload.title);
       //})
-      //.catch( err => {
-        //Messages.alertify().error(PR.model.getState().text.wrongFileFormat+err);
-      //});
+      })
     },
     changeName: () => {
       let prevVal = PR.view.getProject().title;
@@ -353,10 +375,9 @@ var PR = {
      Messages.alertify().confirm('Clear Format/Outcome?','You will have to reselect the file\'s fields',
         () => {
           let pr = PR.view.getProject();
-          delete(pr.type);
-          delete(pr.format);
-          delete(pr.settings.format);
-          delete(pr.settings.type);
+          pr.type = null;
+          pr.format = null;
+          pr.settings = null;
           PR.model.saveState();
           Messages.alertify().message('Format and Outcome type have been reset');
       },()=>{});
@@ -381,7 +402,8 @@ var PR = {
          });
         pr.model = newmodel;
         resolve(pr);
-      }).then(
+      })
+      .then(
         PR.update.makeStudies
       )
       .then(project => {
@@ -389,7 +411,8 @@ var PR = {
       })
       .catch( err => {
         Messages.alertify().error(PR.model.getState().text.wrongFileFormat+err);
-      });
+        reject(err);
+      })
     },
   },
   view: {

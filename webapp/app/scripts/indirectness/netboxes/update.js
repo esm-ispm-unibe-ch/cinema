@@ -146,7 +146,16 @@ var Update = (model) => {
         let project =  deepSeek(model,'getState().project');
         let levels = deepSeek(model,'getState().defaults.netIndrLevels');
         return _.map(sortStudies(rownames,studies), d => {
-          let contributions = project.CM.currentCM.studycontributions[d[0]];
+        let stcs = deepSeek(project,"CM.currentCM.studycontributions");
+        let key = _.find(_.keys(stcs), k => {
+              let aresame = (
+                ( (k.split(':')[0]===d[0].split(':')[0]) &&
+                (k.split(':')[1]===d[0].split(':')[1])) || 
+                ( (k.split(':')[1]===d[0].split(':')[0]) &&
+                (k.split(':')[0]===d[0].split(':')[1]))
+              );
+              return aresame});
+          let contributions = stcs[key];
           contributions = _.mapObject(contributions, (amount,id) => {
             return {
               indr: project.studies.indrs[id],

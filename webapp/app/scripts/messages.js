@@ -27,7 +27,7 @@ var Messages = {
       // notifier defaults
       notifier:{
           // auto-dismiss wait time (in seconds)
-          delay:5,
+          delay:25,
           // default position
           position:'top-right'
       },

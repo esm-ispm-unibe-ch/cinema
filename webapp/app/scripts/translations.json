@@ -119,7 +119,7 @@
     },
     "IndrChart": {
       "title": "Indirectness contributions",
-      "subtitle": "The bar chart shows the contributions of each piece of direct evidence to the network estimate",
+      "subtitle": "The bar chart shows the contributions of each study to the network estimate",
       "saveButton": "Save Chart"
     },
     "directRob": {
@@ -141,7 +141,7 @@
     },
     "ConChart": {
       "title": "Risk of bias contributions",
-      "subtitle": "The bar chart shows the contributions of each piece of direct evidence to the network estimate",
+      "subtitle": "The bar chart shows the contributions of each piece of study to the network estimate",
       "saveButton": "Save Chart"
     },
     "ClinImp" : {
