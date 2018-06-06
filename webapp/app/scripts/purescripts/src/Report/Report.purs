@@ -22,21 +22,6 @@ import Model
 import StudyLimitationsModel
 import Report.View as V
 
-{--main :: String -> Eff (console :: CONSOLE) Unit--}
-{--main = do--}
-{--  log--}
-
-studyLimitationsReady :: Maybe State -> String
-studyLimitationsReady s = do
-    case s of 
-         Nothing -> "false"
-         Just a -> do
-           let b = a ^. _State 
-                   <<< project <<< _Project 
-                   <<< netRob <<< _NetRobModel 
-                   <<< studyLimitations <<< _StudyLimitations
-           show b."status"
-  
 render :: Foreign -> String 
 render m = do
     let rs = readState m  

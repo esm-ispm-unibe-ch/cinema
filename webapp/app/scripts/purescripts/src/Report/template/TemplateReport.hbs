@@ -74,10 +74,15 @@
                   {{pubbias.label}}
                 </td>
                 <td>
-                  <select> 
-                    {{#each levels}} 
-                      <option value="{{id}}σδεl{{../id}}">
-                        {{label}}
+                  <select onChange="Actions.Report.updateReportJudgement(this)()"
+                          style="border: solid {{judgement.selected.color}};
+                                 border-radius: 5px;
+                                 background: white;"> 
+                    {{#each judgement.levels}} 
+                    <option style="background:{{color}}" value="{{id}}σδεl{{../id}}" 
+                              {{#if selected }} selected="selected"
+                              {{/if}}>
+                    {{label}}
                       </option>
                     {{/each}}
                   </select>
@@ -118,9 +123,14 @@
                   {{pubbias.label}}
                 </td>
                 <td>
-                  <select> 
-                    {{#each levels}} 
-                      <option value="{{id}}σδεl{{../id}}">
+                  <select onChange="Actions.Report.updateReportJudgement(this)()"
+                          style="border: solid {{judgement.selected.color}};
+                                 border-radius: 5px;
+                                 background: white;"> 
+                    {{#each judgement.levels}} 
+                    <option style="background:{{color}}" value="{{id}}σδεl{{../id}}" 
+                              {{#if selected }} selected="selected"
+                              {{/if}}>
                         {{label}}
                       </option>
                     {{/each}}

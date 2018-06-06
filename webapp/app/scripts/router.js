@@ -19,6 +19,7 @@ var Imprecision = require('./imprecision/imprecision.js')();
 var Indirectness = require('./indirectness/directIndr/directIndr.js')();
 var Pubbias = require('./pubbias/pubbias.js')();
 var Report = require('./purescripts/output/Report');
+var ReportUpdate = require('./purescripts/output/Report.Update');
 
 var Router = {
   view: {
@@ -155,9 +156,7 @@ var Router = {
              Indirectness.destroyRender(model);
           }
           if(Router.view.currentRoute() === 'report'){
-            let state = model.getState();
-              cnode = convertHTML(child.module.render(state));
-
+              cnode = convertHTML(child.module.render(model.getState()));
           }else{
             cnode = child.module.render(model);
           }
@@ -197,7 +196,7 @@ var Router = {
     Router.actions.bindNavControls();
     _.map(Router.renderChildren, c => {
       if ( c.route === 'report' ){
-        Router.model.Actions.Report = Report.Actions;
+        Router.model.Actions.Report = ReportUpdate;
       }else{
         c.module.view.register(model);
       }

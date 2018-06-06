@@ -110,7 +110,6 @@ stringToComparison del str = do
                        (unsafePartial $ fromJust $ head sid)
               st2 = stringToTreatmentId 
                        (unsafePartial $ fromJust $ last sid)
-
             in Comparison { id : str
                        , t1 : min st1 st2                     
                        , t2 : max st1 st2                       
@@ -143,6 +142,16 @@ isIdOfComparison id comp = do
   let t1 = min (comp ^. _Comparison)."t1" (comp ^. _Comparison)."t2"
       t2 = max (comp ^. _Comparison)."t1" (comp ^. _Comparison)."t2"
       sid = S.split (S.Pattern ":") id
+      st1 = unsafePartial $ fromJust $ head sid
+      st2 = unsafePartial $ fromJust $ last sid
+  (st1 == treatmentIdToString t1) && (st2 == treatmentIdToString t2)  ||
+  (st1 == treatmentIdToString t2) && (st2 == treatmentIdToString t1) 
+
+isIdOfComparisonComma :: String -> Comparison -> Boolean
+isIdOfComparisonComma id comp = do
+  let t1 = min (comp ^. _Comparison)."t1" (comp ^. _Comparison)."t2"
+      t2 = max (comp ^. _Comparison)."t1" (comp ^. _Comparison)."t2"
+      sid = S.split (S.Pattern ",") id
       st1 = unsafePartial $ fromJust $ head sid
       st2 = unsafePartial $ fromJust $ last sid
   (st1 == treatmentIdToString t1) && (st2 == treatmentIdToString t2)  ||

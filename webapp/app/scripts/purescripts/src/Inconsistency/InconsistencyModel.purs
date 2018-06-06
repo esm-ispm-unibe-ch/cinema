@@ -145,7 +145,6 @@ instance showReferenceValues :: Show ReferenceValues where
 instance decodeReferenceValues :: Decode ReferenceValues where
   decode = genericDecode opts
 
--- HeterogeneityBox <
 newtype HeterogeneityBox = HeterogeneityBox
     { id :: String
     , judgement :: Int
@@ -168,6 +167,8 @@ skeletonHeterogeneityBox = HeterogeneityBox { id : "None"
                                         , ruleLevel : -1
                                         , customized : false
                                         }
+{--instance decodeHeterogeneityBox :: Decode HeterogeneityBox where--}
+  {--decode = genericDecode opts--}
 instance decodeHeterogeneityBox :: Decode HeterogeneityBox where
   decode p = do
     id <- p ! "id" >>= readString
@@ -196,10 +197,8 @@ heterboxcustomized = prop (SProxy :: SProxy "customized")
   
 {--instance decodeStringComparisonIds :: Decode StringComparisonIds where--}
   {--decode = genericDecode opts--}
--- HeterogeneityBox >
 
 
--- HeterogeneityLevel <
 newtype HeterogeneityLevel = HeterogeneityLevel
     { id :: Int
     , color :: String
@@ -209,10 +208,11 @@ _HeterogeneityLevel = lens (\(HeterogeneityLevel s) -> s) (\_ -> HeterogeneityLe
 derive instance genericHeterogeneityLevel :: Rep.Generic HeterogeneityLevel _
 instance showHeterogeneityLevel :: Show HeterogeneityLevel where
     show = genericShow
+{--instance decodeHeterogeneityLevel :: Decode HeterogeneityLevel where--}
+  {--decode = genericDecode opts--}
 instance decodeHeterogeneityLevel :: Decode HeterogeneityLevel where
   decode p = do
     id <- p ! "id" >>= readInt
     color <- p ! "color" >>= readString
     pure $ HeterogeneityLevel { id
                               , color }
--- HeterogeneityLevel >

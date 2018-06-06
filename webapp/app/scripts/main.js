@@ -1,5 +1,5 @@
 var Model = require('./model.js').Model;
-let version = "1.1.1";
+let version = "1.2.1";
 
 Model.init(version);
 window.Actions = Model.Actions;
@@ -9,6 +9,7 @@ window.Model.state = Model.getState();
 window.Model.getState = Model.getState;
 
 window.Model.saveState = Model.saveState;
+window.Model.persistToLocalStorage = Model.persistToLocalStorage;
 
 module.export = () => {
   return Model;

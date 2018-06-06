@@ -74,6 +74,7 @@ newtype Project = Project
   , indirectness :: Indirectness
   , imprecision :: Imprecision
   , pubbias :: Pubbias
+  , report :: Report
   }
 derive instance genericProject :: Rep.Generic Project _
 instance showProject :: Show Project where
@@ -94,6 +95,7 @@ instance decodeProject :: Decode Project where
     indr <- p ! "indirectness"
     indirectness <- indr ! "netindr" >>= decode
     pubbias <- p ! "pubbias" >>= decode
+    report <- p ! "report" >>= decode
     pure $ Project { title
                    , format
                    , "type" : tp
@@ -106,7 +108,8 @@ instance decodeProject :: Decode Project where
                    , indirectness
                    , imprecision
                    , pubbias
-                   , inconsistency }
+                   , inconsistency 
+                   , report}
 _Project :: Lens' Project (Record _)
 _Project = lens (\(Project s) -> s) (\_ -> Project)
 netRob :: forall a b r. Lens { netRob :: a | r } { netRob :: b | r } a b

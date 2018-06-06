@@ -232,6 +232,10 @@ var Update = (model) => {
       if (updaters.cmReady()) {
         if ((updaters.clinImpReady())) {
           if (updaters.getState().heters.status === 'ready'){
+              let mdl = model.getState();
+              _.map(children, c => {
+                c.update.updateState(mdl)(mdl);
+              });
           }else{
             updaters.setHetersState(updaters.hetersSkeletonModel());
           }
@@ -242,22 +246,22 @@ var Update = (model) => {
         }
         if ((updaters.getState().referenceValues.status === 'ready') 
         || (updaters.getState().referenceValues.status === 'edited')){
+              let mdl = model.getState();
+              _.map(children, c => {
+                c.update.updateState(mdl)(mdl);
+              });
         }else{
           updaters.setRFVState(updaters.rfvEmptyModel());
+          updaters.saveState();
         }
       }else{
         model.getState().project.inconsistency.heterogeneity = {};
         updaters.setRFVState(updaters.rfvEmptyModel());
         updaters.setHetersState(updaters.hetersEmptyModel());
       }
-      let mdl = model.getState();
-      _.map(children, c => {
-        c.update.updateState(mdl)(mdl);
-      });
     },
     setRFVState: (newState) => {
       model.getState().project.inconsistency.heterogeneity.referenceValues = newState;
-      updaters.saveState();
     },
     setHetersState: (newState) => {
       model.getState().project.inconsistency.heterogeneity.heters = newState;
@@ -283,10 +287,14 @@ var Update = (model) => {
           let sm = model.getState().project.CM.currentCM.params.sm;
           let useExps =  ((sm === 'OR') || (sm === 'RR'));
           let tauSquare = 'nothing';
-          let CIf = useExps ? Math.exp(nmaRow["lower CI"]) : nmaRow["lower CI"];
-          let CIs = useExps ? Math.exp(nmaRow["upper CI"]) : nmaRow["upper CI"];
-          let PrIf = useExps ? Math.exp(nmaRow["lower PrI"]) : nmaRow["lower PrI"];
-          let PrIs = useExps ? Math.exp(nmaRow["upper PrI"]) : nmaRow["upper PrI"];
+          let CIf = useExps 
+            ? Math.exp(nmaRow["lower CI"]) : nmaRow["lower CI"];
+          let CIs = useExps 
+            ? Math.exp(nmaRow["upper CI"]) : nmaRow["upper CI"];
+          let PrIf = useExps 
+            ? Math.exp(nmaRow["lower PrI"]) : nmaRow["lower PrI"];
+          let PrIs = useExps 
+            ? Math.exp(nmaRow["upper PrI"]) : nmaRow["upper PrI"];
           let contents = {}
             // console.log("BOX id",s[0]);
             contents =  {

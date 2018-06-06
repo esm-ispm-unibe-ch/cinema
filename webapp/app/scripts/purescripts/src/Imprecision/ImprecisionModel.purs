@@ -49,11 +49,12 @@ newtype ImprecisionBox = ImprecisionBox
     , ruleLevel :: Int
     , customized :: Boolean
     }
+derive instance genericImprecisionBox :: Rep.Generic ImprecisionBox _
 _ImprecisionBox :: Lens' ImprecisionBox (Record _)
 _ImprecisionBox = lens (\(ImprecisionBox s) -> s) (\_ -> ImprecisionBox)
-derive instance genericImprecisionBox :: Rep.Generic ImprecisionBox _
 instance showImprecisionBox :: Show ImprecisionBox where
     show = genericShow
+
 skeletonImprecisionBox = ImprecisionBox { id : "None"
                                         , judgement : -1
                                         , label : "--"
