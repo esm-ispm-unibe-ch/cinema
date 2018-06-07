@@ -26,6 +26,7 @@ import SaveModel
 import UpdateJudgement
 import Report.Model
 import ResetJudgements
+import DownloadJudgements
 
 updateState :: forall eff. Foreign 
   -> Eff (console :: CONSOLE 
@@ -36,18 +37,18 @@ updateState mdl = do
   let (s :: Either String State) = readState mdl
   case s of
     Left err -> do saveState "report" emptyReport
-                   logShow $ "reading state in Report error: " <> err
+                   {--logShow $ "reading state in Report error: " <> err--}
     Right st -> do
       if isReady st then do
         if hasChanged st then do
           logShow $ "report already ocupied"
           else do
             saveState "report" (skeletonReport st)
-            logShow $ "filling skeletonReport report"
+            {--logShow $ "filling skeletonReport report"--}
             {--logShow $ getJudgementDebug st--}
         else do
           saveState "report" emptyReport
-          logShow $ "Report Not Ready"
+          {--logShow $ "Report Not Ready"--}
 
 emptyReport :: Report
 emptyReport = Report 
@@ -95,6 +96,8 @@ updateReportJudgement a = do
 {--resetJudgements = resetJudgements--}
 
 resetAll = resetJudgements
+
+download = downloadJudgements
 
 hasJudgements :: State -> Boolean
 hasJudgements st = (st ^. _State <<< project <<< _Project 

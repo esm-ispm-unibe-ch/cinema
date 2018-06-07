@@ -6,10 +6,14 @@ var sumBy = require('./lib/mixins.js').sumBy;
 var Router = require('./router.js').Router;
 var Project = require('./project.js')();
 var Messages = require('./messages.js');
+var download = require('downloadjs');
+const json2csv = require('json2csv');
 
 var Model = {
-  Actions: {
-    alertify: Messages.Messages.alertify
+  Actions: 
+  { alertify: Messages.Messages.alertify
+  , download: download
+  , json2csv: json2csv
   },
   defaults: {
     robLevels: [

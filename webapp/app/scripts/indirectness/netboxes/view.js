@@ -1,4 +1,6 @@
 var deepSeek = require('safe-access');
+var clone = require('../../lib/mixins.js').clone;
+var fixid = require('../../lib/mixins.js').hatmatrixIdOfComparison;
 
 var View = (model) => {
   let NetIndrModelPosition = 'getState().project.indirectness.netindr';
@@ -6,6 +8,7 @@ var View = (model) => {
     makeBoxes: (comparisons) => {
       let project =  deepSeek(model,'getState().project');
       let boxes = _.map(comparisons, dc => {
+        dc.id = fixid(clone(dc.id));
         dc.color = (() => {
           let color = '';
           let level = _.find(viewers.getState().levels, l => {return l.id === dc.judgement});

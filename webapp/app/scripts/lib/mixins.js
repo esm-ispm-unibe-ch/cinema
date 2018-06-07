@@ -77,6 +77,24 @@ var clone = (obj) =>{
   throw new Error('Unable to copy obj! Its type isn\'t supported.');
 };
 
+let hatmatrixIdOfComparison = (id) => {
+  if (typeof window.Model !== 'undefined'){
+    if (typeof window.Model.state !== 'undefined'){
+      if (typeof window.Model.state.project !== 'undefined'){
+        var project = window.Model.getState().project;
+        var rownames = project.CM.currentCM.hatmatrix.rowNames;
+        var rid = rownames.find(function(n){
+          var t1 = n.split(":")[0].toString();
+          var t2 = n.split(":")[1].toString();
+          var armA = id.split(":")[0].toString();
+          var armB = id.split(":")[1].toString();
+          return (armA===t1 && armB===t2) || (armA===t2 && armB===t1)
+        });
+        return rid;
+      }
+    }
+  }
+};
 
 let sortStudies = (rownames, studies) => {
   let fixednames = _.map(rownames, sid => {
@@ -144,6 +162,7 @@ module.exports = {
   htmlEntities: htmlEntities,
   clone: clone,
   sortComparisonIds: sortComparisonIds,
-  sortStudies: sortStudies
+  sortStudies: sortStudies,
+  hatmatrixIdOfComparison: hatmatrixIdOfComparison
 }
 
