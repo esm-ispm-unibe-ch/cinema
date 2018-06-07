@@ -25,6 +25,7 @@ import PubbiasModel
 import SaveModel
 import UpdateJudgement
 import Report.Model
+import ResetJudgements
 
 updateState :: forall eff. Foreign 
   -> Eff (console :: CONSOLE 
@@ -85,6 +86,15 @@ updateReportJudgement :: forall e. Foreign
 updateReportJudgement a = do
   updateJudgement a
   logShow $ "updated judgement"
+
+{--resetJudgements :: forall eff. Foreign --}
+  {---> Eff (console :: CONSOLE --}
+         {--, updateJudgs :: RESET_JUDGEMENTS --}
+         {--| eff--}
+         {--) Unit--}
+{--resetJudgements = resetJudgements--}
+
+resetAll = resetJudgements
 
 hasJudgements :: State -> Boolean
 hasJudgements st = (st ^. _State <<< project <<< _Project 

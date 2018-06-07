@@ -5,10 +5,12 @@ var accumulate = require('./lib/mixins.js').accumulate;
 var sumBy = require('./lib/mixins.js').sumBy;
 var Router = require('./router.js').Router;
 var Project = require('./project.js')();
+var Messages = require('./messages.js');
 
 var Model = {
-  Actions: {}
-  ,
+  Actions: {
+    alertify: Messages.Messages.alertify
+  },
   defaults: {
     robLevels: [
       { id: 1,
