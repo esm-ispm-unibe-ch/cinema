@@ -3,6 +3,9 @@ var clone = require('../../lib/mixins.js').clone;
 var uniqId = require('../../lib/mixins.js').uniqId;
 var sortStudies = require('../../lib/mixins.js').sortStudies;
 var Messages = require('../../messages.js').Messages;
+var ClinImp = require('../../purescripts/output/ClinImp');
+ClinImp.update = require('../../purescripts/output/ClinImp.Update');
+var ComparisonModel = require('../../purescripts/output/ComparisonModel');
 var Report = require('../../purescripts/output/Report');
 Report.view = require('../../purescripts/output/Report.View');
 Report.update = require('../../purescripts/output/Report.Update');
@@ -38,9 +41,25 @@ var Update = (model) => {
     statusReady: () => {
       return  (updaters.getState().status === 'ready');
     },
+    clinImpReady: () => {
+      let isready = false;
+      if (deepSeek(model,'getState().project.clinImp.status')==='ready'){
+        isready = true;
+      }
+      return isready;
+    },
+    clinImp: () => {
+      return model.getState().project.clinImp.baseValue;
+    },
+    clinImpLow: () => {
+      return model.getState().project.clinImp.lowerBound.toFixed(3);
+    },
+    clinImpHigh: () => {
+      return model.getState().project.clinImp.upperBound.toFixed(3);
+    },
     updateState: (model) => {
-      let cm = model.getState().project.CM.currentCM;
-      if (updaters.cmReady()){
+      let cm = deepSeek(model,"getState().project.CM.currentCM");
+      if (updaters.cmReady() && updaters.clinImpReady()){
         if (updaters.getState().status === 'ready'){
         }else{
           updaters.setState(updaters.skeletonModel());
@@ -211,13 +230,49 @@ var Update = (model) => {
         }
         return xr;
       };
-      if (comparison.isMixed) {
-        let dcont = comparison.directContribution;
-        if (dcont > 0.9){
-          level = 1;
-        }else{
-          level = updaters.mixedRuleTable[pindex(sidepvalue)][pindex(netpvalue)];
+      let lowClin = parseFloat(updaters.clinImpLow());
+      let highClin = parseFloat(updaters.clinImpHigh());
+      let lowDir = parseFloat(comparison.directL);
+      let highDir = parseFloat(comparison.directU);
+      let lowIndir = parseFloat(comparison.indirectL);
+      let highIndir = parseFloat(comparison.indirectU);
+      // boolean tuple is in area Left Inside to the Right of the Clinically
+      // important zone
+      let makeVector = (l, h) => {
+        let lowest = parseFloat(l);
+        let highest = parseFloat(h);
+        // left of clin imp
+        let areaA = false;
+        // inside clin imp zone
+        let areaB = false;
+        // right of clin imp zone
+        let areaC = false;
+        if (lowest < lowClin){
+          areaA = true;
         }
+        if ((lowest < highClin) && (highest > lowClin)){
+          areaB = true;
+        }
+        if (highest > highClin){
+          areaC = true;
+        }
+        let vec = [areaA, areaB, areaC];
+        //console.log("areas vectors",[lowest,highest], vec,[lowClin,highClin]);
+        return vec;
+      }
+      if (comparison.isMixed) {
+        // common areas
+        let rule = { 0: 3
+                   , 1: 3
+                   , 2: 2
+                   , 3: 1};
+        let dirv = makeVector(lowDir, highDir);
+        let indirv = makeVector(lowIndir, highIndir); 
+        let vsum = _.reduce(_.map(_.zip(dirv,indirv), 
+          a => {let [f,s] = a; return f === s?1:0}),
+          (acc,r) => {return acc + r},0);
+        level = rule[vsum];
+        //console.log("vsum",vsum,"level",level);
       }else{
         if (comparison.isDirect) {
           level = 1;
@@ -259,6 +314,33 @@ var Update = (model) => {
         boxes: [],
         referenceValues: []
       }
+    },
+    setClinImp: () => {
+        let mdl = model.getState();
+        let clinImp = Number(document.getElementById('clinImpInput').value);
+        ClinImp.showValid(model.getState().project.clinImp)(clinImp)();
+        let isValid = ClinImp.isValid(model.getState().project.clinImp)(clinImp);
+        if(! isValid.value1){
+          Messages.alertify().error('Error in setting Clinically Important value: '+isValid.value0);
+        }else{
+          ClinImp.update.set(model.getState().project.clinImp)(Number(clinImp))();
+          updaters.updateState(model);
+        }
+    },
+    resetClinImp: (emtype) => {
+      let [title,msg,successmsg] = model.getState().text.ClinImp.reset;
+      return new Promise (function(resolve,reject) {
+        Messages.alertify().confirm
+          ( title
+          , msg
+          , function () {
+            ClinImp.update.reSet(emtype)();
+            Messages.alertify().message(successmsg);
+            resolve(true);
+        }, function () {reject(false);});
+        }).then(function(res){
+      }).catch(function(reason){
+      })
     },
     resetIncoherence: () => {
       updaters.setState(updaters.skeletonModel());

@@ -7,6 +7,9 @@ exports.updateClinImpChildren = function () {
       Actions.Heterogeneity.updateState();
       if (typeof Actions.Imprecision !== 'undefined'){
         Actions.Imprecision.updateState();
+        if (typeof Actions.Incoherence !== 'undefined'){
+          Actions.Incoherence.updateState();
+        }
       }
     }
   }

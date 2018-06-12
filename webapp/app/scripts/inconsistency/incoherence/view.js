@@ -142,6 +142,35 @@ var View = (model) => {
     getState: () => {
       return deepSeek(model,modelPosition);
     },
+    clinImpReady: () => {
+      return model.getState().project.clinImp.status === "ready";
+    },
+    clinImp: () => {
+      return model.getState().project.clinImp.baseValue;
+    },
+    clinImpLow: () => {
+      return model.getState().project.clinImp.lowerBound.toFixed(3);
+    },
+    clinImpHigh: () => {
+      return model.getState().project.clinImp.upperBound.toFixed(3);
+    },
+    clinImpReady: () => {
+      return model.getState().project.clinImp.status === "ready";
+    },
+    emType: () => {
+      return model.getState().project.clinImp.emtype;
+    },
+    smtitle: () => {
+      let sm = model.getState().project.CM.currentCM.params.sm;
+      let outtext = {
+        OR: "Odds ratio",
+        RR: "Risk ratio",
+        RD: "Risk difference",
+        MD: "Mean difference",
+        SMD: "Standardised mean difference"
+      };
+      return outtext[sm];
+    },
     heterReady: () => {
       return viewers.getState().heters.status === 'ready'
     },

@@ -1,4 +1,41 @@
 <div class="container-fluid">
+  <blockquote id="refvals" class='col-xs-12'>
+    <ul class='col-xs-12 imprecisionList'>
+      <li>
+        <ul class="list-inline">
+          <li>
+            <label class='controls-title mr-sm-2'>
+              Define clinically important size of effect: {{smtitle}}
+            </label>
+          </li>
+          <li>
+            <input id="clinImpInput" name="clinImp" value="{{clinImp}}"
+               class='mr-sm-2 form-inline form-control' {{#if clinImpReady}}
+               disabled {{/if}} />
+          </li>
+          <li>
+            <button onClick="Actions.Incoherence.setClinImp()" class="btn btn-default
+              {{#if clinImpReady}} disabled{{/if}}">Set</button>
+            <button onClick="Actions.Incoherence.resetClinImp('{{emType}}')" class="btn btn-default
+              {{#unless clinImpReady}} disabled{{/unless}}">Reset</button>
+          </li>
+        </ul>
+      </li>
+      <li class="comments">
+          Effects lower than <strong> {{clinImpLow}} </strong> and larger than
+          <strong> {{clinImpHigh}} </strong>
+          are considered to be clinically important
+      </li>
+      <li>
+        <span class="comments">
+          Importance of Incoherence depends on the variability of direct and
+          indirect effects in
+            relation to a clinically important size of effect
+          </span>
+      </li>
+    </ul>
+</blockquote>
+{{#if clinImpReady}}
 <blockquote id="refvals" class='col-xs-12'>
     {{!-- <h4>{{text.title}} --}}
      {{!-- {{text.subTitle}} --}}
@@ -39,7 +76,8 @@
   </blockquote>
   <ul class='list-inline'>
     {{#each boxes}}
-      <li style='border-color:{{color}}' class='well compRobSelector {{#if customized}} customized {{/if}}' id="comp-{{id}}">
+      <li style='border-color:{{color}}' class='well compRobSelector
+        incoherencebox {{#if customized}} customized {{/if}}' id="comp-{{id}}">
         <ul>
           <li  style="clear:both" >
             <strong>
@@ -76,55 +114,59 @@
             <li>
               Direct contribution: <strong
                 class='pull-right'>{{dcont}}%</strong>
-              <hr>
             </li>
+            <hr>
             <li>
-            <ul>
-            <li>
-              <strong>
-              {{../../text.IFLabel}}
-              </strong>
-            </li>
-            <li>
-              {{../../boxSideTitle}}: <strong class='pull-right'>{{sideIF}}({{sideIFLower}},{{sideIFUpper}})</strong>
-            </li>
-            <li  style="clear:both" >
-              {{../../text.pvalueLabel}}: <strong class='pull-right'>{{pvalue}}</strong>
-            </li>
-            </ul>
+              <ul>
+              <li>
+                <strong>
+                {{../../text.IFLabel}}
+                </strong>
+              </li>
+              <li>
+                {{../../boxSideTitle}}: <strong class='pull-right'>{{sideIF}}({{sideIFLower}},{{sideIFUpper}})</strong>
+              </li>
+              <li  style="clear:both" >
+                {{../../text.pvalueLabel}}: <strong class='pull-right'>{{pvalue}}</strong>
+              </li>
+              </ul>
               <hr>
             </li>
           {{/if}}
           {{#if isDirect}}
-            <ul>
-            <li  style="clear:both" >
-              {{../../text.direct}} {{../../measureSuffix}}: <strong
-                 class='pull-right'>{{direct}}({{directL}},{{directU}})</strong>
-            </li>
             <li>
-             <strong> {{../../text.IFLabel}}: </strong>
-             Not applicable
-            <hr>
+              <ul>
+              <li  style="clear:both" >
+                {{../../text.direct}} {{../../measureSuffix}}: <strong
+                   class='pull-right'>{{direct}}({{directL}},{{directU}})</strong>
+              </li>
+              <li>
+               <strong> {{../../text.IFLabel}}: </strong>
+               Not applicable
+              <hr>
+              </li>
+              </ul>
             </li>
-            </ul>
           {{/if}}
           {{#if isIndirect}}
-            <ul>
-            <li  style="clear:both" >
-              {{../../text.indirect}} {{../../measureSuffix}}: <strong
-                 class='pull-right'>{{indirect}}({{indirectL}},{{indirectU}})</strong>
-            </li>
             <li>
-             <strong> {{../../text.IFLabel}}: </strong>
-             Not applicable
-            <hr>
+              <ul>
+              <li  style="clear:both" >
+                {{../../text.indirect}} {{../../measureSuffix}}: <strong
+                   class='pull-right'>{{indirect}}({{indirectL}},{{indirectU}})</strong>
+              </li>
+              <li>
+               <strong> {{../../text.IFLabel}}: </strong>
+               Not applicable
+              <hr>
+              </li>
+              </ul>
             </li>
-            </ul>
           {{/if}}
           <li>
           {{../text.judgementField}}
             <select onChange="Actions.Incoherence.selectIndividual(this)"
-               class='mr-sm-2 controls-container'>
+               class='mr-sm-2 pull-right controls-container'>
               {{#each levels}}
               <option value="{{../id}}σδel{{id}}" {{#if isDisabled}} disabled
               {{/if}} {{#if isActive}} selected class='oijfjf'{{/if}}>
@@ -137,4 +179,5 @@
     {{/each}}
   </ul>
 </div>
+{{/if}}
 </div>

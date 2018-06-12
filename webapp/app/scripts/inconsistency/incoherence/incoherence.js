@@ -23,6 +23,15 @@ var Incoherence = {
       Actions.Router.gotoRoute('indirectness');
       Incoherence.model.persistToLocalStorage();
     },
+    setClinImp: (value) => {
+      Update(Incoherence.model).setClinImp();
+    },
+    resetClinImp: (emtype) => {
+      Update(Incoherence.model).resetClinImp(emtype);
+    },
+    updateState: () => {
+      Update(Incoherence.model).updateState(Incoherence.model);
+    },
   },
   view: {
     register: (model) => {
