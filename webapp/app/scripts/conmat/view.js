@@ -1,3 +1,4 @@
+var sortComparisonIds = require('../lib/mixins.js').sortComparisonIds;
 var deepSeek = require('safe-access');
 
 var View = (model) => {
@@ -134,10 +135,24 @@ var View = (model) => {
       _.first(_.filter(cntrs, c=> {return c.id ==='intvs'})).selections = intvs;
       return cntrs;
     },
+    comparisonIds: () => {
+      let directs = deepSeek(model.getState(),'project.studies.directComparisons');
+      let sorted = [];
+      if(typeof directs !== "undefined") {
+        let rows = _.union(_.pluck(directs,'id'),
+          model.getState().project.studies.indirectComparisons);
+        sorted = sortComparisonIds(
+          _.map(rows, r => {
+            return r.replace(',',':');
+          })
+        )
+      }
+      return sorted;
+    },
     selectedComparisons: () =>{
       let intvs = model.getState().project.CM.currentCM.params.intvs;
       let rule = model.getState().project.CM.currentCM.params.rule;
-      let allComps = model.getState().project.CM.currentCM.allComparisonIds;
+      let allComps = viewers.comparisonIds();
       let res = [];
       switch(rule){
         case 'every':

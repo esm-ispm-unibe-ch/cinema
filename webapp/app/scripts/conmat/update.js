@@ -206,13 +206,16 @@ var Update = (model) => {
                   updaters.saveState();
                   updaters.fetchRows(cm).then(res => {
                     resolve(res);
-                  }).catch(errf => {reject(errf)});
+                  }).catch( err => {
+                     console.log("failed hatmatrix",err.responseText);
+                     reject('R returned an error: ' + err.responseText);
+                  });
                 });
-            }).catch(errl => {console.log(errl);reject(errl)});
-          }).catch(err => {console.log(err);reject(err)});
-         });
-         hmc.fail( () => {
-           reject('R returned an error: ' + hmc.responseText);
+            })
+          })
+         }).catch( (err) => {
+           console.log("failed hatmatrix",err.responseText);
+           reject('R returned an error: ' + err.responseText);
         });
         }else{
             console.log("found hatmatrix", cm.hatmatrix);
@@ -220,7 +223,7 @@ var Update = (model) => {
               resolve(res);
             }).catch(err => {reject(err)});
        }
-      }).catch(err => {reject(err)});
+      })
     },
     filterRows : (rows,intvs,rule) =>{
       let res = [];
@@ -286,9 +289,8 @@ var Update = (model) => {
                         reslve(_.flatten([_.flatten(nextrow)].concat(rowback)));
                       }).catch(err => {rjct(err)});
                     });
-                  });
-                  gmr.fail( () => {
-                    rjct('R returned an error: ' + gmr.responseText);
+                  }).catch( (err) => {
+                    rjct('R returned an error: ' + err.responseText);
                   });
                 }
               }else{
@@ -297,7 +299,7 @@ var Update = (model) => {
             }else{
               rjct('Computation canceled');
             }
-          }).catch(err => {console.log('caugth error',err);rjct(err);});
+          })
         };
        return sequencePromises(comparisons, updaters.getCM().savedComparisons).then(output => {
           //console.log("Server output",output);
@@ -317,7 +319,7 @@ var Update = (model) => {
            //console.log('RESULTS FROM SERVER',result);
           rslv(result);
        }).catch(err => {console.log('caugth error',err);rjc(err);});
-     }).catch(err => {console.log('caugth error',err);rjc(err);});
+     })
     },
     updateContributionCache: () => {
       let cms = model.getState().project.CM.contributionMatrices;
