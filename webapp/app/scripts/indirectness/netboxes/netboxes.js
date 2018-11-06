@@ -21,7 +21,7 @@ var NetIndr = {
       Update(NetIndr.model).selectIndividual(judgement);
     },
     proceed: () => {
-      Actions.Router.gotoRoute('pubbias');
+      Actions.Router.gotoRoute('imprecision');
       NetIndr.model.persistToLocalStorage();
     },
   },

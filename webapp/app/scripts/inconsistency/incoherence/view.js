@@ -2,7 +2,7 @@ var deepSeek = require('safe-access');
 var clone = require('../../lib/mixins.js').clone;
 
 var View = (model) => {
-  let modelPosition = 'getState().project.inconsistency.incoherence';
+  let modelPosition = 'getState().project.incoherence';
   let viewers = {
     isReady: () => {
       let isReady = false;

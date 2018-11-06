@@ -215,7 +215,7 @@ After the analysis is performed you can download:
 - the league table
 ```Reset your evaluation``` button deletes all previous choises and computations so use with
 caution.
-```Proceed``` takes you to the Study limitations domain and saves the state of
+```Proceed``` takes you to the within-study bias domain and saves the state of
 the procedure (If you refresh or close and revisit the site CINeMA will remember
 where you were)
 
@@ -223,7 +223,7 @@ where you were)
 they will be kept throughout the evaluation process. **Only network
 comparisons you have chosen here will appear in the next tabs.** *
 
-Study Limitations
+Within-study bias
 =================
 <span id="rob"></span>
 
@@ -245,6 +245,18 @@ pairwise comparisons feeding into each estimation (Majority, Average,
 Highest). **You can also manually change your judgments** independently of
 the applied selection rules.
 
+Across-studies bias
+================
+
+Lacking a concrete methodology of asseccing across-studies bias (publication bias) in NMA, users are limited to report whether they suspect or not the presence of bias on a per comparison level for the comparisons they selected to examine.
+
+Indirectness
+============
+
+Indirectness domain is identical to [Within-study bias](#rob) where judgements
+are informed from the study level judgement on indirectness the user has
+provided on the dataset.
+
 Imprecision
 ===========
 
@@ -265,13 +277,8 @@ based on a clinically important odds ratio of 0.8.
 
 ![](images/impr.png)
 
-Inconsistency
+Heterogeneity
 =============
-
-We propose judging the inconsistency domain separately for heterogeneity
-and incoherence (disagreement between direct and indirect evidence).
-
-**Heterogeneity**
 
 Importance of heterogeneity depends on the variability of effects in
 relation to the clinically important size of effect. The clinically
@@ -307,7 +314,8 @@ intervals specific to the outcome and types of compared interventions
 formulated by considerations based on predictive intervals, users can
 amend heterogeneity judgments manually.
 
-**Incoherence**
+Incoherence
+===========
 
 We propose assessing incoherence both globally (using the design by
 treatment interaction model [[3](#White),[4](#Higgins)]) and locally (using the side splitting
@@ -348,18 +356,6 @@ random-effects design by treatment interaction model and the
 inconsistency factors in the scale of the effect measure using the side
 splitting approach for comparisons that both direct and indirect
 evidence is available.
-
-Indirectness
-============
-
-Indirectness domain is identical to [Study Limitations](#rob) where judgements
-are informed from the study level judgement on indirectness the user has
-provided on the dataset.
-
-Publication Bias
-================
-
-Lacking a concrete methodology of asseccing publication bias in NMA, users are limited to report whether they suspect or not the presence of publication bias on a per comparison level for the comparisons they selected to examine.
 
 Report
 ======

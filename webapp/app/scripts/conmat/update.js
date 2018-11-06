@@ -636,7 +636,8 @@ var children = [
   ClinicalImportance,
   Indirectness,
   Imprecision,
-  Inconsistency,
+  Heterogeneity,
+  Incoherence,
   Pubbias
   ];
 

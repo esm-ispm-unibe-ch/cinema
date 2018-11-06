@@ -28,6 +28,10 @@ var Heterogeneity = {
     deselectIntTypes: () => {
       Update(Heterogeneity.model).deselectIntTypes();
     },
+    proceed: () => {
+      Actions.Router.gotoRoute('incoherence');
+      Heterogeneity.model.persistToLocalStorage();
+    },
     resetRFV: () => {
       let [title,msg,successmsg] = Heterogeneity.model.getState().text.Heterogeneity.resetConfirm;
       Messages.alertify().confirm(title,msg,

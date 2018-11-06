@@ -70,7 +70,8 @@ newtype Project = Project
   , studies :: Studies
   , "CM" :: CMContainer
   , netRob :: NetRobModel
-  , inconsistency :: Inconsistency
+  , heterogeneity :: Heterogeneity
+  , incoherence :: Incoherence
   , indirectness :: Indirectness
   , imprecision :: Imprecision
   , pubbias :: Pubbias
@@ -90,10 +91,11 @@ instance decodeProject :: Decode Project where
     studies <- p ! "studies" >>= decode
     cm <- p ! "CM" >>= decode
     netRob <- p ! "netRob" >>= decode
-    inconsistency <- p ! "inconsistency" >>= decode
     imprecision <- p ! "imprecision" >>= decode
     indr <- p ! "indirectness"
     indirectness <- indr ! "netindr" >>= decode
+    heterogeneity <- p ! "heterogeneity" >>= decode
+    incoherence <- p ! "incoherence" >>= decode
     pubbias <- p ! "pubbias" >>= decode
     report <- p ! "report" >>= decode
     pure $ Project { title
@@ -107,8 +109,9 @@ instance decodeProject :: Decode Project where
                    , netRob 
                    , indirectness
                    , imprecision
+                   , heterogeneity 
+                   , incoherence 
                    , pubbias
-                   , inconsistency 
                    , report}
 _Project :: Lens' Project (Record _)
 _Project = lens (\(Project s) -> s) (\_ -> Project)
@@ -120,6 +123,10 @@ imprecision :: forall a b r. Lens { imprecision :: a | r } { imprecision :: b | 
 imprecision = prop (SProxy :: SProxy "imprecision")
 indirectness :: forall a b r. Lens { indirectness :: a | r } { indirectness :: b | r } a b
 indirectness = prop (SProxy :: SProxy "indirectness")
+heterogeneity :: forall a b r. Lens { heterogeneity :: a | r } { heterogeneity :: b | r } a b
+heterogeneity = prop (SProxy :: SProxy "heterogeneity")
+incoherence :: forall a b r. Lens { incoherence :: a | r } { incoherence :: b | r } a b
+incoherence = prop (SProxy :: SProxy "incoherence")
 pubbias :: forall a b r. Lens { pubbias :: a | r } { pubbias :: b | r } a b
 pubbias = prop (SProxy :: SProxy "pubbias")
 studies :: forall a b r. Lens { studies :: a | r } { studies :: b | r } a b

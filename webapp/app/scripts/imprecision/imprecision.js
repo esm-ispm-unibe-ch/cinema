@@ -30,12 +30,16 @@ var Imprecision = {
     },
     updateState: () => {
       Update(Imprecision.model).updateState(Imprecision.model);
-    }
+    },
+    proceed: () => {
+      Actions.Router.gotoRoute('heterogeneity');
+      Imprecision.model.persistToLocalStorage();
+    },
   },
-  modelPosition: 'getState().project.inconsistency',
+  modelPosition: 'getState().project.imprecision',
   view: {
     isActive: (route) => {
-      return route === Imprecision.model.getState().project.inconsistency.route;
+      return route === Imprecision.model.getState().project.imprecision.route;
     },
     register: (model) => {
       Imprecision.model = model;

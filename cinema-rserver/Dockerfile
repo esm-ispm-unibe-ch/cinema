@@ -42,7 +42,7 @@ RUN apt-get install -y libv8-3.14-dev
 #RUN jj=jj sh -c 'rm -rf /usr/local/lib/R/site-library/contribution/www/'
 #RUN jj=jj sh -c 'cp -rf /root/www/ /usr/local/lib/R/site-library/contribution/www/'
 # RUN d=d sh -c 'cp -rf /root/cinema/webapp/www/ /usr/local/lib/R/site-library/contribution/www/'
-RUN j3=j3 sh -c 'Rscript /root/installContribution/rgrade.batch'
+RUN j4=j4 sh -c 'Rscript /root/installContribution/rgrade.batch'
 #restarting opencpu service
 RUN sh -c 'service opencpu stop'
 RUN sh -c 'service opencpu restart'

@@ -3,7 +3,7 @@ var clone = require('../../lib/mixins.js').clone;
 var Nodes = require('../../purescripts/output/Heterogeneity.Nodes');
 
 var View = (model) => {
-  let modelPosition = 'project.inconsistency.heterogeneity';
+  let modelPosition = 'project.heterogeneity';
   let viewers = {
     isReady: () => {
       let isReady = false;
@@ -31,7 +31,7 @@ var View = (model) => {
       return result;
     },
     availableParameters: () => {
-      let ap = deepSeek(model.getState(), ".project.inconsistency.heterogeneity.referenceValues.availableParameters");
+      let ap = deepSeek(model.getState(), ".project.heterogeneity.referenceValues.availableParameters");
       let result = [];
       if (typeof ap !== "undefined"){
         result = clone(ap);

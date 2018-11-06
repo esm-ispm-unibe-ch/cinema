@@ -20,7 +20,7 @@ var children = [
   ];
 
 var Update = (model) => {
-  let modelPosition = 'project.inconsistency.heterogeneity';
+  let modelPosition = 'project.heterogeneity';
   let availableParameters =  [
     {
       id: 'measurement',
@@ -240,7 +240,7 @@ var Update = (model) => {
             updaters.setHetersState(updaters.hetersSkeletonModel());
           }
         }else{
-          model.getState().project.inconsistency.heterogeneity = {};
+          model.getState().project.heterogeneity = {};
           updaters.setRFVState(updaters.rfvEmptyModel());
           updaters.setHetersState(updaters.hetersEmptyModel());
         }
@@ -255,16 +255,16 @@ var Update = (model) => {
           updaters.saveState();
         }
       }else{
-        model.getState().project.inconsistency.heterogeneity = {};
+        model.getState().project.heterogeneity = {};
         updaters.setRFVState(updaters.rfvEmptyModel());
         updaters.setHetersState(updaters.hetersEmptyModel());
       }
     },
     setRFVState: (newState) => {
-      model.getState().project.inconsistency.heterogeneity.referenceValues = newState;
+      model.getState().project.heterogeneity.referenceValues = newState;
     },
     setHetersState: (newState) => {
-      model.getState().project.inconsistency.heterogeneity.heters = newState;
+      model.getState().project.heterogeneity.heters = newState;
       updaters.saveState();
     },
     saveState: () => {

@@ -1,6 +1,9 @@
 <!-- <div id='hetercontainer' class='col-xs-12'> -->
 <div class="container-fluid">
   <blockquote id="refvals" class='col-xs-12'>
+    <h3>
+        Heterogeneity
+    </h3>
     <ul class='col-xs-12 imprecisionList'>
       <li>
         <ul class="list-inline">
@@ -140,7 +143,7 @@
         <button onClick="Actions.Heterogeneity.resetHeters()" class="btn btn-default
           {{#unless heterReady}} disabled{{/unless}}"> {{text.resetButton}} </button>
         <button class="btn btn-default btn-pad"
-          onClick="Actions.Inconsistency.gotoRoute('incoherence')" >Proceed</button>
+          onClick="Actions.Heterogeneity.proceed()" >Proceed</button>
       {{/if}}
     </blockquote>
     <div id="heterBoxes" class='col-xs-12 well collapse in'>

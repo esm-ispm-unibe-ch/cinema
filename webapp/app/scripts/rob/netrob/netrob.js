@@ -21,7 +21,7 @@ var NetRob = {
       Update(NetRob.model).selectIndividual(judgement);
     },
     proceed: () => {
-      Actions.Router.gotoRoute('imprecision');
+      Actions.Router.gotoRoute('pubbias');
       NetRob.model.persistToLocalStorage();
     },
   },

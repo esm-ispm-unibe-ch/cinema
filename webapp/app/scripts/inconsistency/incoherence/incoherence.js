@@ -20,7 +20,7 @@ var Incoherence = {
       Update(Incoherence.model).selectIndividual(judgement);
     },
     proceed: () => {
-      Actions.Router.gotoRoute('indirectness');
+      Actions.Router.gotoRoute('report');
       Incoherence.model.persistToLocalStorage();
     },
     setClinImp: (value) => {

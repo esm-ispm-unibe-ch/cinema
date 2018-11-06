@@ -71,7 +71,6 @@ getNodes mdl = do
     Left err -> []
     Right st -> do
       let nds = (st  ^. _State <<< project <<< _Project
-                       <<< inconsistency <<< _Inconsistency
                        <<< heterogeneity <<< _Heterogeneity
                        <<< referenceValues <<< _ReferenceValues)."treatments"
       nds
@@ -107,8 +106,8 @@ deselectIntTypes mdl = do
   let out = map (\node -> _Node <<< interventionType .~
                 defaultInterventionTypes $ node) nds 
   {--logShow $ "changing node" <> (show out) <> it--}
-  {--saveState "inconsistency.heterogeneity.referenceValues.status" "not-set"--}
-  saveState "inconsistency.heterogeneity.referenceValues.treatments" $
+  {--saveState "heterogeneity.referenceValues.status" "not-set"--}
+  saveState "heterogeneity.referenceValues.treatments" $
     nodesToForeign out
                   
 
@@ -125,8 +124,8 @@ setAllNodesIntType mdl intype = do
   let out = map (\node -> _Node <<< interventionType .~
                 (chooseInterventionType it) $ node) nds 
   {--logShow $ "changing node" <> (show out) <> it--}
-  saveState "inconsistency.heterogeneity.referenceValues.status" "edited"
-  saveState "inconsistency.heterogeneity.referenceValues.treatments" $
+  saveState "heterogeneity.referenceValues.status" "edited"
+  saveState "heterogeneity.referenceValues.treatments" $
     nodesToForeign out
                   
 
@@ -152,8 +151,8 @@ setNodeIntType mdl nodeLabel intype = do
                             $ node
                            ) nds 
   {--logShow $ "changing node" <> (show out) <> it--}
-  saveState "inconsistency.heterogeneity.referenceValues.status" "edited"
-  saveState "inconsistency.heterogeneity.referenceValues.treatments" $
+  saveState "heterogeneity.referenceValues.status" "edited"
+  saveState "heterogeneity.referenceValues.treatments" $
     nodesToForeign out
                   
 hasSelectedAll :: Foreign -> Boolean

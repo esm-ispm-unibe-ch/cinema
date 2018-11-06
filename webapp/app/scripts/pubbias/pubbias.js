@@ -32,7 +32,7 @@ var Pubbias = {
       Update(Pubbias.model).updateState(Pubbias.model);
     },
     proceed: () => {
-      Actions.Router.gotoRoute('report');
+      Actions.Router.gotoRoute('indirectness');
       Pubbias.model.persistToLocalStorage();
     },
   },

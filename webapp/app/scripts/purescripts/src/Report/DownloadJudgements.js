@@ -13,12 +13,12 @@ exports.downloadJudgements = function () {
         var fields = 
           ["Comparison"
           , "Number of studies"
-          ,"Study Limitations"
+          , "Within-study bias"
+          , "Across-studies bias"
+          , "Indirectness"
           , "Imprecision"
           , "Heterogeneity"
           , "Incoherence"
-          , "Indirectness"
-          , "Publication bias"
           , "Confidence rating"
           ]
         var report = project.report;
@@ -37,11 +37,11 @@ exports.downloadJudgements = function () {
           out[fields[0]] = rid; 
           out[fields[1]] = row.numberOfStudies;
           out[fields[2]] = row.studyLimitation.label;
-          out[fields[3]] = row.imprecision.label;
-          out[fields[4]] = row.heterogeneity.label;
-          out[fields[5]] = row.incoherence.label;
-          out[fields[6]] = row.indirectness.label;
-          out[fields[7]] = row.pubbias.label
+          out[fields[3]] = row.pubbias.label
+          out[fields[4]] = row.indirectness.label;
+          out[fields[5]] = row.imprecision.label;
+          out[fields[6]] = row.heterogeneity.label;
+          out[fields[7]] = row.incoherence.label;
           out[fields[8]] = row.judgement.selected.label;
           return out;
         }

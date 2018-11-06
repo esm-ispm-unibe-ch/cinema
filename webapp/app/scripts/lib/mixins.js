@@ -91,8 +91,14 @@ let hatmatrixIdOfComparison = (id) => {
           return (armA===t1 && armB===t2) || (armA===t2 && armB===t1)
         });
         return rid;
+      }else{
+        return id;
       }
+    }else{
+      return id;
     }
+  }else{
+    return id;
   }
 };
 

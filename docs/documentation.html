@@ -1,0 +1,1735 @@
+ <head>
+  <meta charset="utf-8"/>
+  <title>
+    CINeMA documentation
+  </title>
+  <link href="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.1/styles/github.min.css" rel="stylesheet"/>
+  <style type="text/css">
+   body,table tr{background-color:#fff}table tr td,table tr th{border:1px solid #ccc;text-align:left;padding:6px 13px;margin:0}pre code,table,table tr{padding:0}hr,pre code{background:0 0}body{font:16px Helvetica,Arial,sans-serif;line-height:1.4;color:#333;word-wrap:break-word;padding:10px 15px}strong,table tr th{font-weight:700}h1{font-size:2em;margin:.67em 0;text-align:center}h2{font-size:1.75em}h3{font-size:1.5em}h4{font-size:1.25em}h1,h2,h3,h4,h5,h6{font-weight:700;position:relative;margin-top:15px;margin-bottom:15px;line-height:1.1}h1,h2{border-bottom:1px solid #eee}hr{height:0;margin:15px 0;overflow:hidden;border:0;border-bottom:1px solid #ddd}a{color:#4183C4}a.absent{color:#c00}ol,ul{padding-left:15px;margin-left:5px}ol{list-style-type:lower-roman}table tr{border-top:1px solid #ccc;margin:0}table tr:nth-child(2n){background-color:#aaa}table tr td :first-child,table tr th :first-child{margin-top:0}table tr td:last-child,table tr th :last-child{margin-bottom:0}img{max-width:100%}blockquote{padding:0 15px;border-left:4px solid #ccc}code,tt{margin:0 2px;padding:0 5px;white-space:nowrap;border:1px solid #eaeaea;background-color:#f8f8f8;border-radius:3px}pre code{margin:0;white-space:pre;border:none}.highlight pre,pre{background-color:#f8f8f8;border:1px solid #ccc;font-size:13px;line-height:19px;overflow:auto;padding:6px 10px;border-radius:3px}
+  </style>
+ </head>
+ <body>
+  <p>
+   Below you can find a brief guide of using CINeMA to evaluate confidence
+   <br/>
+   in network meta-analysis treatment effects.
+  </p>
+  <h1 id="my-projects">
+   My projects
+  </h1>
+  <p>
+   CINeMA requires a .csv file with the study
+   <strong>
+    outcome
+   </strong>
+   data and study-level
+   <br/>
+   <strong>
+    risk of bias
+   </strong>
+   (RoB) and
+   <strong>
+    indirectness
+   </strong>
+   judgements which you can upload in My Projects. We
+   <br/>
+   describe below how the data should be formatted.
+  </p>
+  <h2 id="binary-data">
+   Binary data
+  </h2>
+  <h4 id="long-format">
+   long format
+  </h4>
+  <p>
+   If your outcome is binary, there are two possible formats to upload your
+   <br/>
+   data. The first is a long format, where each treatment arm occupies one
+   <br/>
+   row.
+  </p>
+  <p>
+   <strong>
+    Example binary format 1 (long):
+   </strong>
+  </p>
+  <table>
+   <thead>
+    <tr>
+     <th>
+      id
+     </th>
+     <th>
+      t
+     </th>
+     <th>
+      r
+     </th>
+     <th>
+      n
+     </th>
+     <th>
+      rob
+     </th>
+     <th align="center">
+      indirectness
+     </th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr>
+     <td>
+      1
+     </td>
+     <td>
+      A
+     </td>
+     <td>
+      5
+     </td>
+     <td>
+      12
+     </td>
+     <td>
+      2
+     </td>
+     <td align="center">
+      1
+     </td>
+    </tr>
+    <tr>
+     <td>
+      1
+     </td>
+     <td>
+      B
+     </td>
+     <td>
+      7
+     </td>
+     <td>
+      15
+     </td>
+     <td>
+      2
+     </td>
+     <td align="center">
+      1
+     </td>
+    </tr>
+    <tr>
+     <td>
+      2
+     </td>
+     <td>
+      A
+     </td>
+     <td>
+      6
+     </td>
+     <td>
+      9
+     </td>
+     <td>
+      3
+     </td>
+     <td align="center">
+      2
+     </td>
+    </tr>
+    <tr>
+     <td>
+      2
+     </td>
+     <td>
+      B
+     </td>
+     <td>
+      7
+     </td>
+     <td>
+      10
+     </td>
+     <td>
+      3
+     </td>
+     <td align="center">
+      2
+     </td>
+    </tr>
+    <tr>
+     <td>
+      2
+     </td>
+     <td>
+      C
+     </td>
+     <td>
+      2
+     </td>
+     <td>
+      8
+     </td>
+     <td>
+      3
+     </td>
+     <td align="center">
+      2
+     </td>
+    </tr>
+   </tbody>
+  </table>
+  <table>
+   <thead>
+    <tr>
+     <th>
+      field
+     </th>
+     <th>
+      description - long-binary
+     </th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr>
+     <td>
+      id
+     </td>
+     <td>
+      specifies the study and has to be numeric
+     </td>
+    </tr>
+    <tr>
+     <td>
+      t
+     </td>
+     <td>
+      specifies the treatment code and it can be either numeric or string
+     </td>
+    </tr>
+    <tr>
+     <td>
+      r
+     </td>
+     <td>
+      is the number of events
+     </td>
+    </tr>
+    <tr>
+     <td>
+      n
+     </td>
+     <td>
+      is the sample size
+     </td>
+    </tr>
+    <tr>
+     <td>
+      rob
+     </td>
+     <td>
+      specifies risk of bias. It can take either 1, 2 and 3 or L, U, H values for low, unclear and high risk of bias
+     </td>
+    </tr>
+    <tr>
+     <td>
+      indirectness
+     </td>
+     <td>
+      specifies indirectness, levels are the same as in risk of bias
+     </td>
+    </tr>
+   </tbody>
+  </table>
+  <h4 id="wide-format">
+   wide format
+  </h4>
+  <p>
+   In the second format, each row represents a comparison. The number of
+   <br/>
+   rows that each study occupies equals the number of comparisons that it examines.
+   <br/>
+   Two arm studies (studies with two treatment arms) occupy one
+   <br/>
+   row, three arm studies occupy three rows, four arm studies occupy six
+   <br/>
+   rows etc.
+  </p>
+  <p>
+   <strong>
+    Example binary format 2 (wide):
+   </strong>
+  </p>
+  <table>
+   <thead>
+    <tr>
+     <th>
+      id
+     </th>
+     <th>
+      t1
+     </th>
+     <th>
+      r1
+     </th>
+     <th>
+      n1
+     </th>
+     <th>
+      t2
+     </th>
+     <th>
+      r2
+     </th>
+     <th>
+      n2
+     </th>
+     <th>
+      rob
+     </th>
+     <th>
+      indirectness
+     </th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr>
+     <td>
+      1
+     </td>
+     <td>
+      A
+     </td>
+     <td>
+      5
+     </td>
+     <td>
+      12
+     </td>
+     <td>
+      B
+     </td>
+     <td>
+      7
+     </td>
+     <td>
+      15
+     </td>
+     <td>
+      2
+     </td>
+     <td>
+      1
+     </td>
+    </tr>
+    <tr>
+     <td>
+      2
+     </td>
+     <td>
+      A
+     </td>
+     <td>
+      6
+     </td>
+     <td>
+      9
+     </td>
+     <td>
+      B
+     </td>
+     <td>
+      7
+     </td>
+     <td>
+      10
+     </td>
+     <td>
+      3
+     </td>
+     <td>
+      2
+     </td>
+    </tr>
+    <tr>
+     <td>
+      2
+     </td>
+     <td>
+      A
+     </td>
+     <td>
+      6
+     </td>
+     <td>
+      9
+     </td>
+     <td>
+      C
+     </td>
+     <td>
+      2
+     </td>
+     <td>
+      8
+     </td>
+     <td>
+      3
+     </td>
+     <td>
+      2
+     </td>
+    </tr>
+    <tr>
+     <td>
+      2
+     </td>
+     <td>
+      B
+     </td>
+     <td>
+      7
+     </td>
+     <td>
+      10
+     </td>
+     <td>
+      C
+     </td>
+     <td>
+      2
+     </td>
+     <td>
+      8
+     </td>
+     <td>
+      3
+     </td>
+     <td>
+      2
+     </td>
+    </tr>
+   </tbody>
+  </table>
+  <table>
+   <thead>
+    <tr>
+     <th>
+      field
+     </th>
+     <th>
+      description / wide-binary
+     </th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr>
+     <td>
+      id
+     </td>
+     <td>
+      specifies the study and has to be numeric
+     </td>
+    </tr>
+    <tr>
+     <td>
+      t1, t2
+     </td>
+     <td>
+      specifies the treatment codes and it can be either numeric or string
+     </td>
+    </tr>
+    <tr>
+     <td>
+      r1, r2
+     </td>
+     <td>
+      number of events in treatments t1 and t2
+     </td>
+    </tr>
+    <tr>
+     <td>
+      n1, n2
+     </td>
+     <td>
+      sample size in treatments t1 and t2
+     </td>
+    </tr>
+    <tr>
+     <td>
+      rob
+     </td>
+     <td>
+      specifies risk of bias. It can take either 1, 2 and 3 or L, U, H values for low, unclear and high risk of bias
+     </td>
+    </tr>
+    <tr>
+     <td>
+      indirectness
+     </td>
+     <td>
+      specifies indirectness, levels are the same as in risk of bias
+     </td>
+    </tr>
+   </tbody>
+  </table>
+  <h3 id="continuous-data">
+   Continuous data
+  </h3>
+  <p>
+   If your outcome is continuous, there are two possible formats that you
+   <br/>
+   can upload your data. The first is a long format, where each treatment
+   <br/>
+   arm occupies one row.
+  </p>
+  <h4 id="long-format_1">
+   long format
+  </h4>
+  <p>
+   <strong>
+    Example continuous format 1 (long):
+   </strong>
+  </p>
+  <table>
+   <thead>
+    <tr>
+     <th>
+      id
+     </th>
+     <th>
+      t
+     </th>
+     <th>
+      y
+     </th>
+     <th>
+      sd
+     </th>
+     <th>
+      n
+     </th>
+     <th>
+      rob
+     </th>
+     <th align="center">
+      indirectness
+     </th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr>
+     <td>
+      1
+     </td>
+     <td>
+      A
+     </td>
+     <td>
+      5
+     </td>
+     <td>
+      5
+     </td>
+     <td>
+      12
+     </td>
+     <td>
+      2
+     </td>
+     <td align="center">
+      1
+     </td>
+    </tr>
+    <tr>
+     <td>
+      1
+     </td>
+     <td>
+      B
+     </td>
+     <td>
+      7
+     </td>
+     <td>
+      6
+     </td>
+     <td>
+      15
+     </td>
+     <td>
+      2
+     </td>
+     <td align="center">
+      1
+     </td>
+    </tr>
+    <tr>
+     <td>
+      2
+     </td>
+     <td>
+      A
+     </td>
+     <td>
+      6
+     </td>
+     <td>
+      7
+     </td>
+     <td>
+      9
+     </td>
+     <td>
+      3
+     </td>
+     <td align="center">
+      2
+     </td>
+    </tr>
+    <tr>
+     <td>
+      2
+     </td>
+     <td>
+      B
+     </td>
+     <td>
+      7
+     </td>
+     <td>
+      8
+     </td>
+     <td>
+      10
+     </td>
+     <td>
+      3
+     </td>
+     <td align="center">
+      2
+     </td>
+    </tr>
+    <tr>
+     <td>
+      2
+     </td>
+     <td>
+      C
+     </td>
+     <td>
+      2
+     </td>
+     <td>
+      9
+     </td>
+     <td>
+      8
+     </td>
+     <td>
+      3
+     </td>
+     <td align="center">
+      2
+     </td>
+    </tr>
+   </tbody>
+  </table>
+  <table>
+   <thead>
+    <tr>
+     <th>
+      field
+     </th>
+     <th>
+      description / long-continuous
+     </th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr>
+     <td>
+      id
+     </td>
+     <td>
+      specifies the study and has to be numeric
+     </td>
+    </tr>
+    <tr>
+     <td>
+      t
+     </td>
+     <td>
+      specifies the treatment code and it can be either numeric or string
+     </td>
+    </tr>
+    <tr>
+     <td>
+      y
+     </td>
+     <td>
+      is the mean
+     </td>
+    </tr>
+    <tr>
+     <td>
+      sd
+     </td>
+     <td>
+      is the standard deviation
+     </td>
+    </tr>
+    <tr>
+     <td>
+      n
+     </td>
+     <td>
+      is the sample size
+     </td>
+    </tr>
+    <tr>
+     <td>
+      rob
+     </td>
+     <td>
+      specifies risk of bias. It can take either 1, 2 and 3 or L, U, H values for low, unclear and high risk of bias
+     </td>
+    </tr>
+    <tr>
+     <td>
+      indirectness
+     </td>
+     <td>
+      specifies indirectness, levels are the same as in risk of bias
+     </td>
+    </tr>
+   </tbody>
+  </table>
+  <h4 id="wide-format_1">
+   wide format
+  </h4>
+  <p>
+   In the second format, each row represents a comparison. The number of
+   <br/>
+   rows that each study occupies equals the number of comparisons that it
+   <br/>
+   examines. Two arm studies (studies with two treatment arms) occupy one
+   <br/>
+   row, three arm studies occupy three rows, four arm studies occupy six
+   <br/>
+   rows etc.
+  </p>
+  <p>
+   <strong>
+    Continuous format 2 (wide):
+   </strong>
+  </p>
+  <table>
+   <thead>
+    <tr>
+     <th>
+      id
+     </th>
+     <th>
+      t1
+     </th>
+     <th>
+      y1
+     </th>
+     <th>
+      sd1
+     </th>
+     <th>
+      n1
+     </th>
+     <th>
+      t2
+     </th>
+     <th>
+      y2
+     </th>
+     <th>
+      sd2
+     </th>
+     <th>
+      n2
+     </th>
+     <th>
+      rob
+     </th>
+     <th>
+      indirectness
+     </th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr>
+     <td>
+      1
+     </td>
+     <td>
+      A
+     </td>
+     <td>
+      5
+     </td>
+     <td>
+      5
+     </td>
+     <td>
+      12
+     </td>
+     <td>
+      B
+     </td>
+     <td>
+      7
+     </td>
+     <td>
+      6
+     </td>
+     <td>
+      15
+     </td>
+     <td>
+      2
+     </td>
+     <td>
+      1
+     </td>
+    </tr>
+    <tr>
+     <td>
+      2
+     </td>
+     <td>
+      A
+     </td>
+     <td>
+      6
+     </td>
+     <td>
+      7
+     </td>
+     <td>
+      9
+     </td>
+     <td>
+      B
+     </td>
+     <td>
+      7
+     </td>
+     <td>
+      8
+     </td>
+     <td>
+      10
+     </td>
+     <td>
+      3
+     </td>
+     <td>
+      2
+     </td>
+    </tr>
+    <tr>
+     <td>
+      2
+     </td>
+     <td>
+      A
+     </td>
+     <td>
+      6
+     </td>
+     <td>
+      7
+     </td>
+     <td>
+      9
+     </td>
+     <td>
+      C
+     </td>
+     <td>
+      2
+     </td>
+     <td>
+      9
+     </td>
+     <td>
+      8
+     </td>
+     <td>
+      3
+     </td>
+     <td>
+      2
+     </td>
+    </tr>
+    <tr>
+     <td>
+      2
+     </td>
+     <td>
+      B
+     </td>
+     <td>
+      7
+     </td>
+     <td>
+      8
+     </td>
+     <td>
+      10
+     </td>
+     <td>
+      C
+     </td>
+     <td>
+      2
+     </td>
+     <td>
+      9
+     </td>
+     <td>
+      8
+     </td>
+     <td>
+      3
+     </td>
+     <td>
+      2
+     </td>
+    </tr>
+   </tbody>
+  </table>
+  <table>
+   <thead>
+    <tr>
+     <th>
+      field
+     </th>
+     <th>
+      description / wide-continuous
+     </th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr>
+     <td>
+      id
+     </td>
+     <td>
+      specifies the study and has to be numeric
+     </td>
+    </tr>
+    <tr>
+     <td>
+      t1, t2
+     </td>
+     <td>
+      specifies the treatment codes and it can be either numeric or string
+     </td>
+    </tr>
+    <tr>
+     <td>
+      y1, y2
+     </td>
+     <td>
+      mean in treatments t1 and t2
+     </td>
+    </tr>
+    <tr>
+     <td>
+      sd1, sd2
+     </td>
+     <td>
+      standard deviations in treatments t1 and t2
+     </td>
+    </tr>
+    <tr>
+     <td>
+      rob
+     </td>
+     <td>
+      specifies risk of bias. It can take either 1, 2 and 3 or L, U, H values for low, unclear and high risk of bias
+     </td>
+    </tr>
+    <tr>
+     <td>
+      indirectness
+     </td>
+     <td>
+      specifies indirectness, levels are the same as in risk of bias
+     </td>
+    </tr>
+   </tbody>
+  </table>
+  <h2 id="inverse-variance-data">
+   Inverse variance data
+  </h2>
+  <p>
+   It might be that there are not available summary data for each
+   <br/>
+   intervention group for each study. In such a case, an overall estimate
+   <br/>
+   of the effect and its standard error are collected. We provide below the
+   <br/>
+   required format for this kind of data, which we call ‘inverse variance
+   <br/>
+   data’.
+  </p>
+  <p>
+   <strong>
+    Example inverse variance data format:
+   </strong>
+  </p>
+  <table>
+   <thead>
+    <tr>
+     <th>
+      id
+     </th>
+     <th>
+      t1
+     </th>
+     <th>
+      t2
+     </th>
+     <th>
+      effect
+     </th>
+     <th>
+      se
+     </th>
+     <th>
+      rob
+     </th>
+     <th>
+      indirectness
+     </th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr>
+     <td>
+      1
+     </td>
+     <td>
+      A
+     </td>
+     <td>
+      B
+     </td>
+     <td>
+      0.5
+     </td>
+     <td>
+      0.3
+     </td>
+     <td>
+      2
+     </td>
+     <td>
+      1
+     </td>
+    </tr>
+    <tr>
+     <td>
+      2
+     </td>
+     <td>
+      B
+     </td>
+     <td>
+      D
+     </td>
+     <td>
+      0.8
+     </td>
+     <td>
+      0.2
+     </td>
+     <td>
+      1
+     </td>
+     <td>
+      2
+     </td>
+    </tr>
+    <tr>
+     <td>
+      3
+     </td>
+     <td>
+      A
+     </td>
+     <td>
+      6
+     </td>
+     <td>
+      0.7
+     </td>
+     <td>
+      0.4
+     </td>
+     <td>
+      3
+     </td>
+     <td>
+      2
+     </td>
+    </tr>
+   </tbody>
+  </table>
+  <table>
+   <thead>
+    <tr>
+     <th>
+      field
+     </th>
+     <th>
+      description / iv
+     </th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr>
+     <td>
+      id
+     </td>
+     <td>
+      specifies the study and has to be numeric
+     </td>
+    </tr>
+    <tr>
+     <td>
+      t1, t2
+     </td>
+     <td>
+      specifies the treatment codes and it can be either numeric or string
+     </td>
+    </tr>
+    <tr>
+     <td>
+      effect
+     </td>
+     <td>
+      The effect estimate of t1 versus t2. It can be log odds ratio, log risk ratio, log hazard ratio, mean difference or standardized mean difference. In case that this format is used, you will be asked whether your data measure a binary, continuous or time to event outcome.
+     </td>
+    </tr>
+    <tr>
+     <td>
+      se
+     </td>
+     <td>
+      the standard error of the effect estimate
+     </td>
+    </tr>
+    <tr>
+     <td>
+      rob
+     </td>
+     <td>
+      specifies risk of bias. It can take either 1, 2 and 3 or L, U, H values for low, unclear and high risk of bias
+     </td>
+    </tr>
+    <tr>
+     <td>
+      indirectness
+     </td>
+     <td>
+      specifies indirectness, levels are the same as in risk of bias
+     </td>
+    </tr>
+   </tbody>
+  </table>
+  <h2 id="notes-for-all-data-formats">
+   Notes for all data formats
+  </h2>
+  <ol>
+   <li>
+    <p>
+     All fields described above are mandatory (depending on the format you
+     <br/>
+     choose), but CINeMA allows for
+     <strong>
+      custom field names
+     </strong>
+     .
+    </p>
+   </li>
+   <li>
+    <p>
+     Although one can place any treatment names on t, we encourage users
+     <br/>
+     not to put string names with blanks or special characters. It is also preferable
+     <br/>
+     for names to be short, e.g. characters.
+    </p>
+   </li>
+   <li>
+    <p>
+     You can have any other variables in the dataset you wish.
+    </p>
+   </li>
+  </ol>
+  <p>
+   After uploading a dataset, information on the number of studies, number
+   <br/>
+   of interventions and number of comparisons with direct data appears.
+  </p>
+  <h1 id="configuration">
+   Configuration
+  </h1>
+  <p>
+   You can then go to Configuration where the network plot and the data
+   <br/>
+   appear. Options of undertaking network meta-analysis also appear in this
+   <br/>
+   page.
+  </p>
+  <h2 id="network-plot">
+   Network plot
+  </h2>
+  <p>
+   The network plot is automatically drawn with equally sized nodes and
+   <br/>
+   edges. You can choose to weight nodes and/or edges according to the
+   <br/>
+   sample size or the number of studies. Nodes can either be all blue or
+   <br/>
+   colored according to the involved studies with low (green), unclear
+   <br/>
+   (yellow) and high (red) risk of bias or indirectness.
+   <br/>
+   Edges can be all black, colored
+   <br/>
+   according to the average risk of bias or indirectness of the included studies
+   <br/>
+   (Average RoB/indirectness)
+   <br/>
+   , colored according to the most prevalent bias/indirectness level within each
+   <br/>
+   comparison (Majority RoB/indirectness) or colored according to the maximum
+   <br/>
+   bias/indirecntess level within each comparison (Highest RoB/indirectness).
+   <br/>
+   The network plot image can be exported as .png file using the
+   <code>
+    Save Plot
+   </code>
+   button.
+  </p>
+  <p>
+   Outcome data also appear next to the network plot. By clicking to a
+   <br/>
+   specific edge or node, the respective outcome data corresponding to the
+   <br/>
+   particular edge or node appear on the right.
+  </p>
+  <h2 id="define-you-analysis">
+   Define you analysis
+  </h2>
+  <p>
+   Here you can choose:
+  </p>
+  <p>
+   a)  Whether you will use a fixed effect or a random effects model.
+  </p>
+  <p>
+   b)  The effect measure to be used.
+  </p>
+  <p>
+   c)  The intervention comparisons to appear. Selecting all interventions,
+   <br/>
+   the contributions of each pairwise to each network estimate will
+   <br/>
+   be calculated. For convenience, in particular in large networks, you
+   <br/>
+   may choose to display less than all network comparisons (rows in the
+   <br/>
+   contribution matrix). If this is the case, select the interventions
+   <br/>
+   you are interested in and specify whether you want to evaluate all
+   <br/>
+   the comparisons that contain this interventions (
+   <strong>
+    Containing
+   </strong>
+   ) or only
+   <br/>
+   the comparisons that are formed between the selected
+   <br/>
+   interventions (
+   <strong>
+    Between
+   </strong>
+   ). A list of the comparisons to be evaluated
+   <br/>
+   will appear. Note that the analysis is performed using all studies.
+  </p>
+  <p>
+   When your analysis is defined, press the ‘Setup your evaluation’ button.
+   <br/>
+   The contribution matrix –which provides estimations on how much each
+   <br/>
+   direct piece of evidence contributes to each network estimate- is
+   <br/>
+   calculated. Press ‘Cancel’ if you wish to interrupt the calculations.
+  </p>
+  <p>
+   After the analysis is performed you can download:
+   <br/>
+   - the per study contribution matrix
+   <br/>
+   - the per comparison contribution matrix
+   <br/>
+   - the league table
+   <br/>
+   <code>
+    Reset your evaluation
+   </code>
+   button deletes all previous choises and computations so use with
+   <br/>
+   caution.
+   <br/>
+   <code>
+    Proceed
+   </code>
+   takes you to the within-study bias domain and saves the state of
+   <br/>
+   the procedure (If you refresh or close and revisit the site CINeMA will remember
+   <br/>
+   where you were)
+  </p>
+  <p>
+   *Note: the choices in this step are of particular importance because
+   <br/>
+   they will be kept throughout the evaluation process.
+   <strong>
+    Only network
+    <br/>
+    comparisons you have chosen here will appear in the next tabs.
+   </strong>
+   *
+  </p>
+  <h1 id="within-study-bias">
+   Within-study bias
+  </h1>
+  <p>
+   <span id="rob">
+   </span>
+  </p>
+  <h4 id="risk-of-bias-contributions">
+   Risk of bias contributions
+  </h4>
+  <p>
+   A bar graph will then be drawn which shows the contributions of each
+   <br/>
+   study to the network estimate. The bars are colored
+   <br/>
+   according to the bias level and their length is proportional to the
+   <br/>
+   percentage contribution of each study to the network
+   <br/>
+   estimates. You can download this figure as .png file using the
+   <code>
+    Save
+Chart
+   </code>
+   button.
+  </p>
+  <h2 id="select-how-to-summarize-risk-of-bias-across-contributions-for-each-network-estimate">
+   Select how to summarize risk of bias across contributions for each network estimate
+  </h2>
+  <p>
+   You need to pick a selection rule for evaluating each network estimate
+   <br/>
+   with respect to Study Limitations according to the risk of bias of
+   <br/>
+   pairwise comparisons feeding into each estimation (Majority, Average,
+   <br/>
+   Highest).
+   <strong>
+    You can also manually change your judgments
+   </strong>
+   independently of
+   <br/>
+   the applied selection rules.
+  </p>
+  <h1 id="across-studies-bias">
+   Across-studies bias
+  </h1>
+  <p>
+   Lacking a concrete methodology of asseccing across-studies bias (publication bias) in NMA, users are limited to report whether they suspect or not the presence of bias on a per comparison level for the comparisons they selected to examine.
+  </p>
+  <h1 id="indirectness">
+   Indirectness
+  </h1>
+  <p>
+   Indirectness domain is identical to
+   <a href="#rob">
+    Within-study bias
+   </a>
+   where judgements
+   <br/>
+   are informed from the study level judgement on indirectness the user has
+   <br/>
+   provided on the dataset.
+  </p>
+  <h1 id="imprecision">
+   Imprecision
+  </h1>
+  <p>
+   Importance of imprecise treatment effects depends on whether their
+   <br/>
+   confidence intervals include values that could lead into different
+   <br/>
+   clinical decisions. You need to specify a clinically important size of
+   <br/>
+   effect on the scale of your effect measure. After pressing ‘Set’ the
+   <br/>
+   range of values to be considered as clinically important appear. As a
+   <br/>
+   default, imprecision judgements are formulated as follows: we
+   <br/>
+   characterize as very serious in terms of imprecision network estimates
+   <br/>
+   whose confidence intervals cross both limits of the clinically important
+   <br/>
+   effects zone. If only one of the two values is crossed by network
+   <br/>
+   estimates’ confidence intervals they are characterized as serious and
+   <br/>
+   not serious applies to those estimates that do not cross neither value.
+   <br/>
+   The hypothetical forest plot below serves as an illustration of the
+   <br/>
+   strategy we apply to judge upon imprecision of network treatment effects
+   <br/>
+   based on a clinically important odds ratio of 0.8.
+  </p>
+  <p>
+   <img alt="" src="images/impr.png"/>
+  </p>
+  <h1 id="heterogeneity">
+   Heterogeneity
+  </h1>
+  <p>
+   Importance of heterogeneity depends on the variability of effects in
+   <br/>
+   relation to the clinically important size of effect. The clinically
+   <br/>
+   important value needs to be the same as in Imprecision; if already
+   <br/>
+   specified it will automatically appear on the top of Heterogeneity.
+   <br/>
+   Otherwise, it needs to be specified here and will be inherited in
+   <br/>
+   Imprecision. We make use of prediction intervals to prepopulate
+   <br/>
+   judgments on heterogeneity and its implications on the quality of the
+   <br/>
+   network treatment effects. In particular, we judge the agreement of
+   <br/>
+   conclusions based on confidence and prediction intervals in relation to
+   <br/>
+   the clinically important effect size. Our judgements based on a
+   <br/>
+   hypothetical clinically important odds ratio of 0.8 are summarized and
+   <br/>
+   illustrated in the table and in the figure below.
+  </p>
+  <p>
+   We measure the number of crossings of the confidence and prediction interval with the clinical important interval and judge their agreement using the following table:
+  </p>
+  <p>
+   |0 Prediction interval crossings | 1 Prediction interval crossings | 2 Prediction interval crossings |
+   <br/>
+   -----------------------------|   |   |  |
+   <br/>
+   <strong>
+    0 Confidence interval crossings
+   </strong>
+   | No serious | Serious    | Very serious
+   <br/>
+   <strong>
+    1 Confidence interval crossings
+   </strong>
+   | NA         | No serious | Serious
+   <br/>
+   <strong>
+    2   Confidence interval crossings
+   </strong>
+   | NA         | NA         | No serious
+  </p>
+  <p>
+   Summary of recommendations on judging heterogeneity of NMA treatment
+   <br/>
+   effects based on a clinically important odds ratio of 0.8.
+  </p>
+  <p>
+   <img alt="" src="images/heter.png"/>
+  </p>
+  <p>
+   The estimated value of between-study variance for the network
+   <br/>
+   meta-analysis is displayed. It is also possible to view between-study
+   <br/>
+   variance estimates for each direct comparison along with reference
+   <br/>
+   intervals specific to the outcome and types of compared interventions
+   <br/>
+   [
+   <a href="#Turner">
+    1
+   </a>
+   ,
+   <a href="#Rhodes">
+    2
+   </a>
+   ]. If critical appraisal of those lead to changing conclusions
+   <br/>
+   formulated by considerations based on predictive intervals, users can
+   <br/>
+   amend heterogeneity judgments manually.
+  </p>
+  <h1 id="incoherence">
+   Incoherence
+  </h1>
+  <p>
+   We propose assessing incoherence both globally (using the design by
+   <br/>
+   treatment interaction model [
+   <a href="#White">
+    3
+   </a>
+   ,
+   <a href="#Higgins">
+    4
+   </a>
+   ]) and locally (using the side splitting
+   <br/>
+   approach [
+   <a href="#Dias">
+    5
+   </a>
+   ]). Below, we describe the rules we use to prepopulate our
+   <br/>
+   incoherence judgements.
+  </p>
+  <p>
+   We judge comparisons that only direct evidence exists as ‘no serious’
+   <br/>
+   with respect to incoherence. For comparisons that only indirect
+   <br/>
+   evidence exists, we judge incoherence as ‘no serious’, ‘serious’ and
+   <br/>
+   ‘very serious’ depending on whether the p-value of the design by
+   <br/>
+   treatment interaction model is more 0.10, between 0.01 and 0.10 and less
+   <br/>
+   than 0.01 respectively. In a similar to Heterogeneity manner we make use of confidence intervals of direct and indirect estimates to examine whether they agree.
+   <br/>
+   To classify their agreement we partition into three areas:
+   <br/>
+   - left from the clinically important zone A
+   <br/>
+   - the clinically important zone itself B
+   <br/>
+   - right from the clinically important zone C
+   <br/>
+   An interval belongs to A and/or B and/or C areas.
+   <br/>
+   One can define the boolean vector {a,b,c} describing the intervals
+   <br/>
+   positioning.
+   <br/>
+   In order to judge Incoherence we decided to look at the agreement of the direct
+   <br/>
+   and indirect estimates concerning their positioning relative to the clinically important value.
+   <br/>
+   The following table shows the 4 cases that the direct and indirect intervals can be found by expressing the number of areas they have in common, as well as the judgement implied.
+   <br/>
+   Direct and indirect confidence intervals belonging to:
+  </p>
+  <table>
+   <thead>
+    <tr>
+     <th>
+      common areas
+     </th>
+     <th>
+      Incoherence judgement
+     </th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr>
+     <td>
+      0
+     </td>
+     <td>
+      <strong>
+       Major concerns
+      </strong>
+     </td>
+    </tr>
+    <tr>
+     <td>
+      1
+     </td>
+     <td>
+      <strong>
+       Major concerns
+      </strong>
+     </td>
+    </tr>
+    <tr>
+     <td>
+      2
+     </td>
+     <td>
+      <strong>
+       Some concerns
+      </strong>
+     </td>
+    </tr>
+    <tr>
+     <td>
+      3
+     </td>
+     <td>
+      <strong>
+       No concerns
+      </strong>
+     </td>
+    </tr>
+   </tbody>
+  </table>
+  <p>
+   The following examples showcase Incoherence judgements based on the above
+   <br/>
+   rule.
+   <br/>
+   <img alt="" src="images/incoherence.jpg"/>
+  </p>
+  <p>
+   Incoherence tab contains the chi-square statistic based on a
+   <br/>
+   random-effects design by treatment interaction model and the
+   <br/>
+   inconsistency factors in the scale of the effect measure using the side
+   <br/>
+   splitting approach for comparisons that both direct and indirect
+   <br/>
+   evidence is available.
+  </p>
+  <h1 id="report">
+   Report
+  </h1>
+  <p>
+   After assessing separately quality of evidence for each domain, go the
+   <br/>
+   ‘Report’ tab. Each row shows a network meta-analysis treatment effect
+   <br/>
+   along with the judgements made for each domain. A gray line appears for
+   <br/>
+   judgements that have been manually modified.
+  </p>
+  <p>
+   There are 4 levels of confidence for the final judgement of each NMA comparison:
+   <br/>
+   - High
+   <br/>
+   - Moderate
+   <br/>
+   - Low
+   <br/>
+   - Very low
+   <br/>
+   One can place judgement once at least one domain has been reviewed.
+   <br/>
+   By pressing
+   <code>
+    Reset
+   </code>
+   all judgements are set to High.
+   <br/>
+   The user can also download the final report as a
+   <strong>
+    <em>
+     csv
+    </em>
+   </strong>
+   by clicking the
+   <br/>
+   <code>
+    Download Report
+   </code>
+   .
+  </p>
+  <h1 id="references">
+   References
+  </h1>
+  <p>
+   1.
+   <span id="Turner">
+    Turner RM, Davey J, Clarke MJ, Thompson SG, Higgins JP. Predicting
+    <br/>
+    the extent of heterogeneity in meta-analysis, using empirical data from
+    <br/>
+    the Cochrane Database of Systematic Reviews. Int J Epidemiol. 2012
+    <br/>
+    Jun;41(3):818–27.
+    <br/>
+   </span>
+  </p>
+  <p>
+   2.
+   <span id="Rhodes">
+    Rhodes KM, Turner RM, Higgins JPT. Predictive distributions were
+    <br/>
+    developed for the extent of heterogeneity in meta-analyses of continuous
+    <br/>
+    outcome data. J Clin Epidemiol. 2015 Jan;68(1):52–60.
+    <br/>
+   </span>
+  </p>
+  <p>
+   3.
+   <span id="White">
+    White IR, Barrett JK, Jackson D, Higgins JPT. Consistency and
+    <br/>
+    inconsistency in network meta-analysis: model estimation using
+    <br/>
+    multivariate meta-regression. Res Synth Methods. 2012 Jun;3(2):111–25.
+    <br/>
+   </span>
+  </p>
+  <p>
+   4.
+   <span id="Higgins">
+    Higgins JPT, Jackson D, Barrett JK, Lu G, Ades AE, White IR.
+    <br/>
+    Consistency and inconsistency in network meta-analysis: concepts and
+    <br/>
+    models for multi-arm studies. Res Synth Methods. 2012 Jun;3(2):98–110.
+    <br/>
+   </span>
+  </p>
+  <p>
+   5.
+   <span id="Dias">
+    Dias S, Welton NJ, Caldwell DM, Ades AE. Checking consistency in
+    <br/>
+    mixed treatment comparison meta-analysis. Stat Med. 2010 Mar
+    <br/>
+    30;29(7–8):932–44.
+    <br/>
+   </span>
+  </p>
+ </body>

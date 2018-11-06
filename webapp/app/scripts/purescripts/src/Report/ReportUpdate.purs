@@ -171,13 +171,11 @@ hasIndirectness st = (st ^. _State <<< project <<< _Project
 
 hasIncoherence :: State -> Boolean
 hasIncoherence st = (st ^. _State <<< project <<< _Project 
-                    <<< inconsistency <<< _Inconsistency 
                     <<< incoherence <<< _Incoherence)
                    ."status" == "ready"
 
 hasHeterogeneity :: State -> Boolean
 hasHeterogeneity st = (st ^. _State <<< project <<< _Project 
-                    <<< inconsistency <<< _Inconsistency 
                     <<< heterogeneity <<< _Heterogeneity
                     <<< heters <<< _Heters)
                    ."status" == "ready"
@@ -417,7 +415,6 @@ getJudgement st c = do
 getIncoherence :: State -> Comparison -> IncoherenceBox
 getIncoherence st c = do
   let incoherences = st  ^. _State <<< project <<< _Project 
-                     <<< inconsistency <<< _Inconsistency
                      <<< incoherence <<< _Incoherence
                      <<< boxes
   if hasIncoherence st then
@@ -433,7 +430,6 @@ getIncoherence st c = do
 getHeterogeneity :: State -> Comparison -> HeterogeneityBox
 getHeterogeneity st c = do
   let heterboxes = st  ^. _State <<< project <<< _Project 
-                     <<< inconsistency <<< _Inconsistency
                      <<< heterogeneity <<< _Heterogeneity
                      <<< heters <<< _Heters
                      <<< boxes

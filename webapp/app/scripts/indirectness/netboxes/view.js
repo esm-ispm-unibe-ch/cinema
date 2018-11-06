@@ -7,7 +7,8 @@ var View = (model) => {
   let viewers = {
     makeBoxes: (comparisons) => {
       let project =  deepSeek(model,'getState().project');
-      let boxes = _.map(comparisons, dc => {
+      let _comparisons = clone(comparisons)
+      let boxes = _.map(_comparisons, dc => {
         dc.id = fixid(clone(dc.id));
         dc.color = (() => {
           let color = '';

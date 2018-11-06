@@ -14,7 +14,8 @@ var Error = require('./error.js')();
 var General = require('./general.js')();
 var RoB = require('./rob/directrob/directrob.js')();
 var ConChart = require('./rob/conchart/conchart.js')();
-var Inconsistency = require('./inconsistency/inconsistency.js')();
+var Heterogeneity = require('./inconsistency/heterogeneity/heterogeneity.js')();
+var Incoherence = require('./inconsistency/incoherence/incoherence.js')();
 var Imprecision = require('./imprecision/imprecision.js')();
 var Indirectness = require('./indirectness/directIndr/directIndr.js')();
 var Pubbias = require('./pubbias/pubbias.js')();
@@ -42,16 +43,19 @@ var Router = {
           case 'rob':
             return (conmatStatus==='ready');
             break;
-          case 'inconsistency':
-            return (conmatStatus==='ready');
-            break;
-          case 'imprecision':
+          case 'pubbias':
             return (conmatStatus==='ready');
             break;
           case 'indirectness':
             return (conmatStatus==='ready');
             break;
-          case 'pubbias':
+          case 'imprecision':
+            return (conmatStatus==='ready');
+            break;
+          case 'heterogeneity':
+            return (conmatStatus==='ready');
+            break;
+          case 'incoherence':
             return (conmatStatus==='ready');
             break;
           case 'report':
@@ -62,7 +66,7 @@ var Router = {
       }
     },
     menuRoutes: ['welcome', 'project', 'doc'],
-    evalRoutes: ['general', 'rob', 'imprecision', 'inconsistency', 'indirectness', 'pubbias', 'report'],
+    evalRoutes: ['general', 'rob', 'pubbias', 'indirectness', 'imprecision', 'heterogeneity', 'incoherence', 'report'],
     dependencies: {
       project: [],
       general: ['projectName'],
@@ -218,9 +222,6 @@ var Router = {
     { route: 'rob',
       module: RoB
     },
-    { route: 'inconsistency',
-      module: Inconsistency,
-    },
     { route: 'imprecision',
       module: Imprecision,
     },
@@ -229,6 +230,12 @@ var Router = {
     },
     { route: 'pubbias',
       module: Pubbias,
+    },
+    { route: 'heterogeneity',
+      module: Heterogeneity,
+    },
+    { route: 'incoherence',
+      module: Incoherence,
     },
     { route: 'report',
       module: Report,

@@ -1,5 +1,9 @@
 # Change log
-Rough reporting of important changes in functionality.
+
+## v1.3.0 - Nov. 05 2018
+
+**Updates:** 
+- Domains renamed according to CINeMA papers
 
 ## v1.2.2 - Jun. 20 2018
 
