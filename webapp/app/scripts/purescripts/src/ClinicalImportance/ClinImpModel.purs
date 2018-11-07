@@ -19,7 +19,7 @@ import Data.Lens.Record (prop)
 import Data.Lens.Zoom (Traversal, Traversal', Lens, Lens', zoom)
 import Data.Tuple
 
-import Model
+import EffectMeasure (isRatio, EffectMeasureType (..) )
 
 opts = defaultOptions { unwrapSingleConstructors = true }
 

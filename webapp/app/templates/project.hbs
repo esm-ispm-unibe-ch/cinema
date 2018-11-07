@@ -27,8 +27,17 @@
             369(9557):201 – 207, 2007</a>
         </div>
     </div>
+    {{#if view.hasCached}}
+        <button onClick="Actions.Project.loadCached()" class="btn
+          btn-default">
+          Load cached Project
+        </button>
+    {{/if}}
+    <button onClick="Actions.Project.resetApp()" class="btn
+      btn-default">
+      Reset <span class='logo'>CINeMA</span>
+    </button>
   {{/unless}}
-
   {{#if view.hasFile}}
     <h3>Project details</h3>
         <ul>
@@ -137,6 +146,7 @@
             </button>
           {{/if}}
         {{/if}}
+
         {{#unless view.canProceed}}
         {{#if view.hasFormatType}}
         <h3>Associate columns to fields</h3>

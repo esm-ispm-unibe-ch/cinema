@@ -1,7 +1,11 @@
 # Change log
 
-## v1.3.0 - Nov. 05 2018
+## v1.4.0 - Nov. 07 2018
 
+**Updates:** 
+- Added reset functionality to My projects
+
+## v1.3.0 - Nov. 06 2018
 **Updates:** 
 - Domains renamed according to CINeMA papers
 

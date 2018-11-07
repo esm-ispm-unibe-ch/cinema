@@ -417,6 +417,17 @@ var PR = {
     proceed: () => {
       Actions.Router.gotoRoute('general');
       PR.model.persistToLocalStorage();
+    },
+    loadCached: () => {
+      PR.model.loadCachedModel();
+    },
+    resetApp: () => {
+      Messages.alertify().confirm('Reset CINeMA','All changes will be lost - reset will probably fix weird behavior',
+        () => {
+        Messages.alertify().message('Resetting');
+        localStorage.clear();
+        window.location.reload();
+      },()=>{});
     }
   },
   view: {
@@ -425,6 +436,11 @@ var PR = {
     },
     hasFile: () => {
       return PR.view.getProject().hasFile;
+    },
+    hasCached: () => {
+      let cachedModel = PR.model.cachedModel();
+      //console.log("has cached", cachedModel);
+      return cachedModel !== "Nothing";
     },
     canUpload: () => {
       return ! PR.view.getProject().hasFile;

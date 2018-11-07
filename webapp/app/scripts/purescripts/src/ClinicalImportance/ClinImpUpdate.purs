@@ -16,6 +16,7 @@ import Data.Lens.Zoom (Traversal, Traversal', Lens, Lens', zoom)
 import Model
 import Text.Model
 import SaveModel as S
+import EffectMeasure
 import ClinImp.Model
 import ClinImp.View
 import UpdateClinImpChildren
@@ -31,22 +32,19 @@ updateState :: forall eff. Foreign -> Eff (console :: CONSOLE
                    , modelOut :: S.SAVE_STATE 
                    , updateClinImpChildren :: UPDATE_CHILDREN | eff) Unit
 updateState mdl = do
+  {--logShow "updating CLINIMP"--}
   let (s :: Either String State) = readState mdl
   case s of
     Left err -> do saveState "clinImp" $ sanitizeClinImp emptyClinImp
                    {--logShow $ "reading state in Report error: " <> err--}
     Right st -> do
-      if isReady st then do
-          saveState "clinImp" $ sanitizeClinImp (skeletonClinImp $ getEffectMeasureType st)
-          updateChildren
-          {--let rows = foldl (<>) "" $ map (\c -> isSelectedComparison c--}
-          {--                (getSelected st) <> "\n" ) (getDirects st)  --}
-          {--log $ "Report Ready selected rows" <> rows--}
-          {--log $ "Clincal Importance Ready"--}
+      if hasConMat st then do
+        if isReady st then do
+          log $ "Clincal Importance Ready"
+          else do
+            saveState "clinImp" $ sanitizeClinImp (skeletonClinImp $ getEffectMeasureType st)
         else do
           saveState "clinImp" $ sanitizeClinImp emptyClinImp
-          updateChildren
-          {--log $ "Clinical Importance  Not Ready"--}
 
 
 set :: forall eff. Foreign -> Foreign -> Eff (console :: CONSOLE 
@@ -94,8 +92,10 @@ setBaseValue measure ci =
                                 , status = "ready"
                                 }
 
-updateChildren :: forall eff. Eff ( updateClinImpChildren :: UPDATE_CHILDREN | eff ) Unit
-updateChildren = updateClinImpChildren
+updateChildren :: forall eff. Eff ( updateClinImpChildren :: UPDATE_CHILDREN 
+                                  | eff ) Unit
+updateChildren = do 
+  updateClinImpChildren
 
 
 reSet :: forall eff. Foreign -> 

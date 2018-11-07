@@ -26,6 +26,8 @@ import ComparisonModel
 import StudyLimitationsModel
 import IndirectnessModel
 import InconsistencyModel
+import ClinImp.Model
+import EffectMeasure
 import ImprecisionModel
 import PubbiasModel
 import Report.Model
@@ -70,6 +72,7 @@ newtype Project = Project
   , studies :: Studies
   , "CM" :: CMContainer
   , netRob :: NetRobModel
+  , clinImp :: ClinImp
   , heterogeneity :: Heterogeneity
   , incoherence :: Incoherence
   , indirectness :: Indirectness
@@ -96,6 +99,7 @@ instance decodeProject :: Decode Project where
     indirectness <- indr ! "netindr" >>= decode
     heterogeneity <- p ! "heterogeneity" >>= decode
     incoherence <- p ! "incoherence" >>= decode
+    clinImp <- p ! "clinImp" >>= decode
     pubbias <- p ! "pubbias" >>= decode
     report <- p ! "report" >>= decode
     pure $ Project { title
@@ -108,6 +112,7 @@ instance decodeProject :: Decode Project where
                    , "CM" : cm
                    , netRob 
                    , indirectness
+                   , clinImp
                    , imprecision
                    , heterogeneity 
                    , incoherence 
@@ -129,6 +134,8 @@ incoherence :: forall a b r. Lens { incoherence :: a | r } { incoherence :: b | 
 incoherence = prop (SProxy :: SProxy "incoherence")
 pubbias :: forall a b r. Lens { pubbias :: a | r } { pubbias :: b | r } a b
 pubbias = prop (SProxy :: SProxy "pubbias")
+clinImp :: forall a b r. Lens { clinImp :: a | r } { clinImp :: b | r } a b
+clinImp = prop (SProxy :: SProxy "clinImp")
 studies :: forall a b r. Lens { studies :: a | r } { studies :: b | r } a b
 studies = prop (SProxy :: SProxy "studies")
 cmContainer :: forall a b r. Lens { "CM" :: a | r } { "CM" :: b | r } a b
@@ -201,43 +208,6 @@ getSelected st = (st  ^. _State <<< project <<< _Project
                  <<< currentCM <<< _ContributionMatrix)."selectedComparisons"
 -- ContributionMatrix >
 
--- EffectMeasureType <
-data EffectMeasureType = RR | OR | RD | MD | SMD
-
-derive instance genericEffectMeasureType :: Rep.Generic EffectMeasureType _
-
-instance showEffectMeasureType :: Show EffectMeasureType where
-  show RR  = "RR"
-  show OR  = "OR"
-  show RD  = "RD"
-  show MD  = "MD"
-  show SMD = "SMD"
-
-instance decodeEffectMeasureType :: Decode EffectMeasureType where
-  decode = readEffectMeasureType
-
-readEffectMeasureType :: Foreign -> F EffectMeasureType
-readEffectMeasureType fem = do
-  let mem = runExcept $ readString fem
-  case mem  of 
-       Left _ -> fail $ ForeignError "not a string"
-       Right em -> case em of 
-                        "RR" -> pure RR
-                        "OR" -> pure OR
-                        "RD" -> pure RD
-                        "MD" -> pure MD
-                        "SMD" -> pure SMD
-                        otherwise -> fail 
-                         $ ForeignError "unknown effect measure type"
-
-isRatio :: EffectMeasureType -> Boolean
-isRatio RR  = true
-isRatio OR  = true
-isRatio RD  = false
-isRatio MD  = false
-isRatio SMD = false
-
--- EffectMeasureType <
 
 -- CMParameters <
 newtype CMParameters = CMParameters

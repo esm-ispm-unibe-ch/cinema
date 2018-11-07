@@ -152,29 +152,50 @@ var Model = {
     Model.saveState();
     // View.updateSelections();
   },
-  init: (version) => {
-    Router.register(Model);
-    View.init(Model);
+  loadCachedModel: () => {
+    let savedModel = JSON.parse(localStorage.state);
+    Model.setState(savedModel);
+  },
+  initializeModel: (version) => {
+    Model.setState(Model.skeletonModel(version));
+  },
+  clearCachedModel: () => {
+    localStorage.clear();
+  },
+  cachedModel: () =>{
+    let out = "Maybe state";
+    if (typeof localStorage.state === 'undefined'){
+      out = "Nothing"
+    }else{
+      out = JSON.parse(localStorage.state);
+    }
+    return out;
+  },
+  checkCachedModel: (version) => {
     let versionsAreCompatible=(v1,v2) => {
       return v1.split(".").slice(0,2).toString() === v2.split(".").slice(0,2).toString();
     }
-    // localStorage.clear();
-    if (typeof localStorage.state === 'undefined'){
-      // console.log('no cached state');
-      Model.setState(Model.skeletonModel(version));
+    let savedModel = Model.cachedModel();
+    if (savedModel === 'Nothing'){
+      Model.clearCachedModel();
     }else{
-      let savedModel = JSON.parse(localStorage.state);
       if ((typeof savedModel.version !== 'undefined') && versionsAreCompatible(version,savedModel.version)){
         // comply with EU cookie law
         if(Model.hasExpired(savedModel.timestamp)){
-          Model.setState(Model.skeletonModel(version));
+          Model.clearCachedModel();
         }else{
-          Model.setState(savedModel);
+          console.log("cachedStorage ok");
         }
       }else{
-        Model.setState(Model.skeletonModel(version));
+        Model.clearCachedModel();
       }
     }
+  },
+  init: (version) => {
+    Router.register(Model);
+    View.init(Model);
+    Model.checkCachedModel(version);
+    Model.initializeModel(version);
   },
   hasExpired: (date) => {
     let current = new Date();

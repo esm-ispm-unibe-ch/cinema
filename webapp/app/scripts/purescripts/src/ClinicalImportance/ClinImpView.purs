@@ -38,4 +38,6 @@ register :: forall e. Foreign -> Unit
 register s = unit
 
 isReady :: State -> Boolean
-isReady = hasConMat
+isReady st = (st ^. _State <<< project <<< _Project 
+             <<< clinImp <<< _ClinImp)
+             ."status" == "ready"

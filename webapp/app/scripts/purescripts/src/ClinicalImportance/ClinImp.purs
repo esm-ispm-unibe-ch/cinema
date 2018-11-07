@@ -21,6 +21,7 @@ import Data.Lens.Zoom
 import Data.Tuple
 
 import Model 
+import EffectMeasure
 import ClinImp.Model
 import SaveModel
 

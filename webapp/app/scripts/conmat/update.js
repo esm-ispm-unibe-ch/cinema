@@ -1,6 +1,5 @@
 var RoB = require('../rob/directrob/directrob.js')();
 var Imprecision = require('../imprecision/imprecision.js')();
-var Inconsistency = require('../inconsistency/inconsistency.js')();
 var Indirectness = require('../indirectness/directIndr/directIndr.js')();
 var uniqId = require('../lib/mixins.js').uniqId;
 var deepSeek = require('safe-access');
@@ -139,10 +138,8 @@ var Update = (model) => {
     updateChildren: (model) => {
       let mdl = model.getState();
       RoB.update.updateState(model);
-      Imprecision.update.updateState(model);
-      Inconsistency.update.updateState(model);
-      Indirectness.update.updateState(model);
       Pubbias.update.updateState(model);
+      Indirectness.update.updateState(model);
       ClinicalImportance.update.updateState(mdl)(mdl);
     },
     fetchContributionMatrix: (ncm) => {
@@ -631,15 +628,12 @@ var Update = (model) => {
 };
 
 //have to updatechildren manually!
-var children = [
-  RoB,
-  ClinicalImportance,
-  Indirectness,
-  Imprecision,
-  Heterogeneity,
-  Incoherence,
-  Pubbias
-  ];
+//var children = [
+  //RoB,
+  //Indirectness,
+  ////ClinicalImportance,
+  //Pubbias
+  //];
 
 module.exports = () => {
   return Update;
