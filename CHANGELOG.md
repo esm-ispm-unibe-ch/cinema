@@ -2,12 +2,21 @@
 
 ## v1.4.0 - Nov. 07 2018
 
-**Updates:** 
-- Added reset functionality to My projects
+**Stability improvements:** 
+- Added ```Reset``` functionality to ```My Projects```. Helps when app is stack.
+- Projects are not automatically loaded after page refresh. Added load cached
+  project in ```My Projects```
 
 ## v1.3.0 - Nov. 06 2018
 **Updates:** 
-- Domains renamed according to CINeMA papers
+- Domains renamed and reordered according to the updated [CINeMA papers](http://www.ispm.unibe.ch/research/research_groups/evidence_synthesis_methods/index_eng.html#pane551967)
+ - **within-study bias**
+ - **across-studies bias** 
+ - **indirectness** 
+ - **imprecision**,
+ - **heterogeneity** 
+ - **incoherence**
+
 
 ## v1.2.2 - Jun. 20 2018
 
