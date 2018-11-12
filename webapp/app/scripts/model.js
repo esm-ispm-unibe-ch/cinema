@@ -78,10 +78,8 @@ var Model = {
       localStorage.setItem('state', JSON.stringify(Model.getState()));
       console.log('saved to localstorage');
     } catch (e) {
-      if (e == QUOTA_EXCEEDED_ERR) {
         //data wasn't successfully saved due to quota exceed so throw an error
-        console.log('Quota exceeded!'); 
-      }
+        console.log('Quota exceeded!',e); 
     }
   },
   saveState: () => {
