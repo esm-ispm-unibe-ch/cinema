@@ -1,13 +1,21 @@
 # Change log
 
-## v1.4.0 - Nov. 07 2018
+## Frontend v1.4.1 - Nov. 12 2018
+**bug fix**
+- Fixed runtime error when localstorage quota exceeded.
+
+## Backend v1.3.3 - Nov. 12 2018
+**bug fix**
+- Fixed problem with double zero binary studies 
+
+## Frontend v1.4.0 - Nov. 07 2018
 
 **Stability improvements:** 
 - Added ```Reset``` functionality to ```My Projects```. Helps when app is stack.
 - Projects are not automatically loaded after page refresh. Added load cached
   project in ```My Projects```
 
-## v1.3.0 - Nov. 06 2018
+## Frontend v1.3.0 - Nov. 06 2018
 **Updates:** 
 - Domains renamed and reordered according to the updated [CINeMA papers](http://www.ispm.unibe.ch/research/research_groups/evidence_synthesis_methods/index_eng.html#pane551967)
  - **within-study bias**
@@ -18,7 +26,7 @@
  - **incoherence**
 
 
-## v1.2.2 - Jun. 20 2018
+## Frontend v1.2.2 - Jun. 20 2018
 
 **Updates:** 
 - Updated Documentation page.
@@ -26,12 +34,12 @@
 **Bug fixes:**
 - Added disclaimer file.
 
-## v1.2.0 - Jun. 12 2018
+## Frontend v1.2.0 - Jun. 12 2018
 
 **Updates:**
 - New rules for Incoherence according the position of direct and indirect confidence intervals in respect to clinical important value
 
-## v1.1.0 - Jun. 6 2018
+## Frontend v1.1.0 - Jun. 6 2018
 
 Report page improvements
 
@@ -45,7 +53,7 @@ Report page improvements
 - contribution rownames in Study limitations and Indirectness according to
   hatmatrix of ```netmeta```
 
-## v1.0.0 - Jun. 1 2018
+## Frontend v1.0.0 - Jun. 1 2018
 
 Switched to **study** contribution. Calculate contributions of each study from hatmatrix.
 This affects **Study limitations** and **Indirectness**.
