@@ -1,3 +1,4 @@
+var Config = require("../config.js").config;
 var RoB = require('../rob/directrob/directrob.js')();
 var Imprecision = require('../imprecision/imprecision.js')();
 var Indirectness = require('../indirectness/directIndr/directIndr.js')();
@@ -143,14 +144,14 @@ var Update = (model) => {
       ClinicalImportance.update.updateState(mdl)(mdl);
     },
     fetchContributionMatrix: (ncm) => {
+      let rserver = Config.rserverurl;
       return new Promise((resolve, reject) => {
-        ocpu.seturl('http://52.28.184.220:8004/ocpu/library/contribution/R');
-        //ocpu.seturl('http://localhost:8004/ocpu/library/contribution/R');
+        ocpu.seturl(rserver);
         let cms = model.getState().project.CM.contributionMatrices;
         var result = {};
         let ncmparams = params;
         let cm = ncm;
-        console.log('CCCCCCTRRRRRRREEEEAAAAATTTIIIIIINNGGGGGGGG MMMMMAAATTTTTRIXXXXX');
+        console.log('CCCCCCCCTRRRRRRREEEEAAAAATTTIIIIIINNGGGGGGGG MMMMMAAATTTTTRIXXXXX');
         //check if the matrix is in the model;
         let foundCM = updaters.findConMatInCache(cm);
         if(_.isEmpty(foundCM) === false){

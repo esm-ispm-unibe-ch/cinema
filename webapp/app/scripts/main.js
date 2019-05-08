@@ -1,7 +1,7 @@
 var Model = require('./model.js').Model;
-let version = "1.4.2";
+var Config = require("./config.js").config;
 
-Model.init(version);
+Model.init(Config.version);
 window.Actions = Model.Actions;
 //Need it for passing the model to purescript actions
 window.Model = {};

@@ -20,18 +20,42 @@ const ext_replace = require('gulp-ext-replace');
 const replace = require('gulp-replace');
 const randomstring = require('randomstring');
 const fs = require('fs');
+const template = require('gulp-template');
+const rename = require('gulp-rename');
+
+function string_src(filename, string) {
+  var src = require('stream').Readable({ objectMode: true })
+  src._read = function () {
+    this.push(new gutil.File({
+      cwd: "",
+      base: "",
+      path: filename,
+      contents: new Buffer(string)
+    }))
+    this.push(null)
+  }
+  return src
+}
 
 var config = {};
-
 if(fs.existsSync("config.json")){
   config = require('./config.json');
 }else{
   config = {
-    version: "0.0.0",
-    ganalID: "UA-XXXXXXXXX-X"
+    version: "1.4.3",
+    ganalID: "UA-XXXXXXXXX-X",
+    rserverurl: "http://localhost:8004/ocpu/library/contribution/R"
   }
 }
+conf = { config: {
+         version: config.version,
+         rserverurl: config.rserverurl
+       }};
 
+gulp.task('config', function() {
+  return string_src("config.js", "module.exports="+JSON.stringify(conf))
+    .pipe(gulp.dest('app/scripts/'));
+});
 
 gulp.task('hbsTojs', () => {
   let modulify = c => {
@@ -70,31 +94,49 @@ gulp.task('styles', () => {
     .pipe(reload({stream: true}));
 });
 
-  // add custom browserify options here
+// using vinyl-source-stream:
+gulp.task('scripts', function() {
   const customOpts = {
     entries: 'app/scripts/main.js',
     debug: true
   };
   var bopts = assign({}, watchify.args, customOpts);
-  var b = watchify(browserify(bopts));
+  var bundleStream = browserify(bopts).transform(babelify).bundle();
 
-  b.transform(babelify);
+  return bundleStream
+    .pipe(source('bundle.js'))
+    .pipe($.plumber())
+    .pipe(buffer())
+    .pipe($.sourcemaps.init({loadMaps: true}))
+    .pipe($.sourcemaps.write('.'))
+    .pipe(gulp.dest('.tmp/scripts'));
+});
 
-  function bundle () {
-    return b.bundle()
-      .on('error', gutil.log.bind(gutil, 'Browserify Error'))
-      .pipe(source('bundle.js'))
-      .pipe($.plumber())
-      .pipe(buffer())
-      .pipe($.sourcemaps.init({loadMaps: true}))
-      .pipe($.sourcemaps.write('.'))
-      .pipe(gulp.dest('.tmp/scripts'))
-      .pipe(reload({stream: true}));
-  }
+// add custom browserify options here
+const customOpts = {
+  entries: 'app/scripts/main.js',
+  debug: true
+};
+var bopts = assign({}, watchify.args, customOpts);
+var b = watchify(browserify(bopts));
 
-  gulp.task('scripts', bundle);
-  b.on('update', bundle); // on any dep update, runs the bundler
-  b.on('log', gutil.log); // output build logs to terminal
+b.transform(babelify);
+
+function watchbundle () {
+  return b.bundle()
+    .on('error', gutil.log.bind(gutil, 'Browserify Error'))
+    .pipe(source('bundle.js'))
+    .pipe($.plumber())
+    .pipe(buffer())
+    .pipe($.sourcemaps.init({loadMaps: true}))
+    .pipe($.sourcemaps.write('.'))
+    .pipe(gulp.dest('.tmp/scripts'));
+    //.pipe(reload({stream: true}));
+}
+
+gulp.task('watchscripts', watchbundle);
+b.on('update', watchbundle); // on any dep update, runs the bundler
+b.on('log', gutil.log); // output build logs to terminal
 
 function lint(files, options) {
   return gulp.src(files)
@@ -120,7 +162,7 @@ gulp.task('lint:test', () => {
     .pipe(gulp.dest('test/spec'));
 });
 
-gulp.task('html', ['styles', 'scripts', 'templates', 'hbsTojs'], () => {
+gulp.task('html', ['config', 'styles', 'scripts', 'templates', 'hbsTojs'], () => {
   var inject = require('gulp-inject-string');
   var postfix = config.version==='0.0.0'?randomstring.generate():config.version;
   var ganal = config.version==='0.0.0'?'':`<script async src='https://www.googletagmanager.com/gtag/js?id=`+config.ganalID+`'></script>
@@ -176,7 +218,7 @@ gulp.task('extras',() => {
 gulp.task('clean', del.bind(null, ['.tmp', 'dist']));
 
 gulp.task('serve', () => {
-  runSequence(['clean', 'wiredep'], ['styles', 'templates', 'hbsTojs', 'scripts', 'fonts'], () => {
+  runSequence(['clean', 'wiredep'], ['styles', 'templates', 'hbsTojs', 'watchscripts', 'fonts'], () => {
     browserSync({
       notify: false,
       port: 9000,
@@ -200,7 +242,7 @@ gulp.task('serve', () => {
     gulp.watch('app/styles/**/*.scss', ['styles']);
     gulp.watch('app/templates/**/*.hbs', ['templates']);
     gulp.watch('app/scripts/**/*.hbs', ['hbsTojs']);
-    gulp.watch('app/scripts/**/*.js', ['scripts']);
+    gulp.watch('app/scripts/**/*.js', ['watchscripts']);
     gulp.watch('app/fonts/**/*', ['fonts']);
     gulp.watch('bower.json', ['wiredep', 'fonts']);
   });
