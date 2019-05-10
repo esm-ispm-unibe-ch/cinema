@@ -5,6 +5,23 @@ Source files for building the webapp.
 CINeMA is a single page web application written in javascript and purescript.
 First purescript files have to be compiled with ```pulp``` and the ```gulp``` takes care of the rest.
 
+### Quick start with ```Docker```
+The easiest way given you have ```Docker``` installed is to use the following:
+for developing
+```
+docker run -ti -p 80:80 tosku/cinema-web-dev bash
+```
+and for deploying
+```
+docker run -d -p 80:80 tosku/cinema-web-dev
+```
+this will pull the more resent version of the front end and deploy it in ```localhost:80```
+
+Unless you provide ```webapp/config.json``` R calculations will be queried in
+```localhost:8004``` so you would have to deploy the R server also:
+```
+docker run -d -p 8004:8004 tosku/cinema-rserver
+```
 ### Installation
 First download CINeMA
 

@@ -61,4 +61,4 @@ RUN mv cinema /usr/share/nginx/
 COPY default.conf /etc/nginx/conf.d/
 COPY rebuildandrun.sh /usr/bin
 RUN chmod +x /usr/bin/rebuildandrun.sh
-CMD nginx
+CMD rebuildandrun.sh && nginx -g 'daemon off;'

@@ -18,5 +18,3 @@ gulp build
 mv dist cinema 
 rm -rf /usr/share/nginx/cinema 
 mv cinema /usr/share/nginx/
-nginx
-nginx -s reload
