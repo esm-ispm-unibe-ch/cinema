@@ -5,15 +5,14 @@ node_modules/
 */test/bower_components
 .Rproj.user
 *.swp
-cinema-web/design/
 DISCLAIMER.txt
 <<<<<<< HEAD
 *.swo
 =======
 *.swp
 >>>>>>> master
-RServer/toRoot/www/
 notes/
 monitor/
 papers/
-cinema-web/www/
+docker/cinema-web/
+webapp/app/config.json
