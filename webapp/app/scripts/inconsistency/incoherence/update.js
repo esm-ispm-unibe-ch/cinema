@@ -263,10 +263,8 @@ var Update = (model) => {
       if (comparison.isMixed) {
         // common areas
         if(sidepvalue>=0.1){
-          console.log("side pvalue > 0.10");
           level = 1;
         }else{
-          console.log("side pvalue < 0.10");
           let rule = { 0: 3
                      , 1: 3
                      , 2: 2
