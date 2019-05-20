@@ -167,6 +167,9 @@
                 </strong>
                   <hr>
               </li>
+              <li>
+               NMA estimate: <strong class='pull-right'>{{nmaEffect}}</strong>
+              </li>
               {{#if ../../rfvReady}}
                 {{#if tauSquare}}
                   <li class="align-right">
@@ -204,12 +207,15 @@
                 <li>
                   Confidence interval: <strong class='pull-right'>({{CIf}},{{CIs}})</strong>
                 </li>
+                {{!-- <li> --}}
+                 {{!-- Crosses: <strong class='pull-right'>{{crosses}}</strong> --}}
+                {{!-- </li> --}}
                 <li>
                   Prediction interval: <strong class='pull-right'>({{PrIf}},{{PrIs}})</strong>
                   <hr>
                 </li>
                 <li>
-                  <em>{{{crosses}}}</em>
+                  <em>{{{crossestext}}}</em>
                 </li>
                 <!-- <li> -->
                 <!--   Null effect interval: <strong -->

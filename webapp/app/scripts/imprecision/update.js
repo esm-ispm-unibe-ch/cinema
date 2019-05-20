@@ -102,12 +102,14 @@ var Update = (model) => {
           let sm = model.getState().project.CM.currentCM.params.sm;
           let useExps =  ((sm === 'OR') || (sm === 'RR'));
           let CIf = useExps ? Math.exp(nmaRow["lower CI"]) : nmaRow["lower CI"];
+          let nmaEffect = useExps ? Math.exp(nmaRow["NMA treatment effect"]) : nmaRow["NMA treatment effect"];
           let CIs = useExps ? Math.exp(nmaRow["upper CI"]) : nmaRow["upper CI"];
           let contents = {}
             // console.log("BOX id",s[0]);
             contents =  {
                 id: nmaRow["_row"],
                 CIf: CIf.toFixed(3),
+                nmaEffect: nmaEffect.toFixed(3),
                 CIs: CIs.toFixed(3)
             }
           if(_.isUndefined(pairRow)){
@@ -121,7 +123,23 @@ var Update = (model) => {
           }
           contents.levels = deepSeek(model,'getState().project.imprecision.levels');
           let clinImp = deepSeek(model,'getState().project.clinImp');
-          let crossParams = [contents.CIf,contents.CIs,clinImp.lowerBound,clinImp.upperBound].map(n => {return Number(n)});
+          let zlb = clinImp.lowerBound;
+          let zub = clinImp.upperBound;
+          let nulleffect = 0;
+          if (useExps) {
+            nulleffect = 1;
+          }else{
+            nulleffect = 0;
+          }
+          let crossParams = [ contents.CIf 
+                            , contents.CIs
+                            , zlb
+                            , zub 
+                            , nmaEffect
+                            , nulleffect
+                            ].map(
+                              n => {return Number(n)
+                              });
           contents.ruleLevel = updaters.getRuleLevel(...crossParams);
           contents.crosses = updaters.getNumberOfCrosses(...crossParams);
           contents.judgement = contents.ruleLevel;
@@ -135,13 +153,13 @@ var Update = (model) => {
        //console.log("BOXES Names naoume",mixed,indirect);
       return _.union(mixed,indirect);
     },
-    getRuleLevel: (CIf,CIs,lowerBound,upperBound) => {
-      let ciCrosses = Rules.numberOfCrosses(CIf)(CIs)(lowerBound)(upperBound);
+    getRuleLevel: (CIf,CIs,lowerBound,upperBound,effect,nulleffect) => {
+      let ciCrosses = Rules.numberOfCrosses(CIf)(effect)(CIs)(lowerBound)(nulleffect)(upperBound);
       let result = parseInt(ciCrosses) + 1;
       return result;
     },
-    getNumberOfCrosses: (CIf,CIs,lowerBound,upperBound) => {
-      let ciCrosses = Rules.numberOfCrosses(CIf)(CIs)(lowerBound)(upperBound);
+    getNumberOfCrosses: (CIf,CIs,lowerBound,upperBound,effect,nulleffect) => {
+      let ciCrosses = Rules.numberOfCrosses(CIf)(effect)(CIs)(lowerBound)(nulleffect)(upperBound);
       let result = parseInt(ciCrosses);
       return result;
     },

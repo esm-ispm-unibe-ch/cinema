@@ -289,6 +289,8 @@ var Update = (model) => {
           let tauSquare = 'nothing';
           let CIf = useExps 
             ? Math.exp(nmaRow["lower CI"]) : nmaRow["lower CI"];
+          let nmaEffect = useExps 
+            ? Math.exp(nmaRow["NMA treatment effect"]) : nmaRow["NMA treatment effect"];
           let CIs = useExps 
             ? Math.exp(nmaRow["upper CI"]) : nmaRow["upper CI"];
           let PrIf = useExps 
@@ -300,6 +302,7 @@ var Update = (model) => {
             contents =  {
                 id: nmaRow["_row"],
                 CIf: CIf.toFixed(3), 
+                nmaEffect: nmaEffect.toFixed(3),
                 CIs: CIs.toFixed(3),
                 PrIf: PrIf.toFixed(3), 
                 PrIs: PrIs.toFixed(3)
@@ -323,7 +326,21 @@ var Update = (model) => {
           }
           contents.levels = updaters.getState().heters.levels;
           let clinImp = deepSeek(model,'getState().project.clinImp');
-          let crossParams = [contents.CIf,contents.CIs,contents.PrIf,contents.PrIs,clinImp.lowerBound,clinImp.upperBound].map(n => {return Number(n)});
+          let nulleffect = 0;
+          if (useExps) {
+            nulleffect = 1;
+          }else{
+            nulleffect = 0;
+          }
+          let crossParams = [ contents.CIf
+                            , contents.CIs
+                            , contents.PrIf
+                            , contents.PrIs
+                            , clinImp.lowerBound
+                            , clinImp.upperBound
+                            , nmaEffect
+                            , nulleffect
+                            ].map(n => {return Number(n)});
           contents.ruleLevel = updaters.getRuleLevel(...crossParams);
           contents.crosses = updaters.getNumberOfCrosses(...crossParams);
           contents.judgement = contents.ruleLevel;
@@ -340,16 +357,14 @@ var Update = (model) => {
       // console.log("BOXES Names naoume",mixed,indirect);
       return _.union(mixed,indirect);
     },
-    getRuleLevel: (CIf,CIs,PrIf,PrIs,lowerBound,upperBound) => {
-      let ciCrosses = Nodes.numberOfCrosses(CIf)(CIs)(lowerBound)(upperBound);
-      let priCrosses = Nodes.numberOfCrosses(PrIf)(PrIs)(lowerBound)(upperBound);
+    getRuleLevel: (CIf,CIs,PrIf,PrIs,lowerBound,upperBound,effect,nulleffect) => {
+      let [ciCrosses, priCrosses] = Nodes.jointCrosses(CIf)(CIs)(PrIf)(PrIs)(lowerBound)(upperBound)(nulleffect)(effect);
       let result = Nodes.ruleLevel(parseInt(ciCrosses))(parseInt(priCrosses));
       return result;
     },
-    getNumberOfCrosses: (CIf,CIs,PrIf,PrIs,lowerBound,upperBound) => {
-      let ciCrosses = Nodes.numberOfCrosses(CIf)(CIs)(lowerBound)(upperBound);
-      let priCrosses = Nodes.numberOfCrosses(PrIf)(PrIs)(lowerBound)(upperBound);
-      let result = [parseInt(ciCrosses),parseInt(priCrosses)];
+    getNumberOfCrosses: (CIf,CIs,PrIf,PrIs,lowerBound,upperBound,effect,nulleffect) => {
+      let [ciCrosses, priCrosses] = Nodes.jointCrosses(CIf)(CIs)(PrIf)(PrIs)(lowerBound)(upperBound)(nulleffect)(effect);
+      let result = [parseInt(ciCrosses), parseInt(priCrosses)];
       return result;
     },
     resetHeters: () => {

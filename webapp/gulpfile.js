@@ -130,8 +130,8 @@ function watchbundle () {
     .pipe(buffer())
     .pipe($.sourcemaps.init({loadMaps: true}))
     .pipe($.sourcemaps.write('.'))
-    .pipe(gulp.dest('.tmp/scripts'));
-    //.pipe(reload({stream: true}));
+    .pipe(gulp.dest('.tmp/scripts'))
+    .pipe(reload({stream: true}));
 }
 
 gulp.task('watchscripts', watchbundle);

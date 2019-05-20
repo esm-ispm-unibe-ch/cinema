@@ -158,7 +158,7 @@ var View = (model) => {
             return q;
           });
         }
-        box.crosses = model.getState().text.Heterogeneity.nullText[box.crosses[0]][box.crosses[1]];
+        box.crossestext = model.getState().text.Heterogeneity.nullText[box.crosses[0]][box.crosses[1]];
         return box;
       });
     },

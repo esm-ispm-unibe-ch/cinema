@@ -61,33 +61,47 @@ isTheSameComparison fc1 fc2 = do
              Right sc2 -> stringToComparison ":" sc2
       c1 == c2 && (c1 /= skeletonComparison) && (c2 /= skeletonComparison)
 
-numberOfCrosses :: Foreign -> Foreign -> Foreign -> Foreign -> Int
-numberOfCrosses fil fih fzl fzh = do
+{--CIlow effect CIhigh zonelower Null zonehigher--}
+numberOfCrosses :: Foreign -> Foreign -> Foreign -> Foreign -> Foreign -> Foreign -> Int
+numberOfCrosses fil feffect fih fzl fnul fzh = do
   let eil = runExcept $ readNumber fil
+  let eeffect = runExcept $ readNumber feffect
   let eih = runExcept $ readNumber fih
   let ezl = runExcept $ readNumber fzl
+  let enul = runExcept $ readNumber fnul
   let ezh = runExcept $ readNumber fzh
   let fromRight = (\e -> case e of
                    Left _ -> -1.0
                    Right v -> v)
-  case any isLeft [eil, eih, ezl, ezh] of
+  case any isLeft [eil, eeffect, eih, ezl, enul, ezh] of
     true  -> -1
     false -> 
       let il = fromRight eil
+          effect = fromRight eeffect
           ih = fromRight eih
-          zl = fromRight ezl
-          zh = fromRight ezh
+          zl' = fromRight ezl
+          zh' = fromRight ezh
+          effectInZone = il > zl' && ih < zh'
+          nul = fromRight enul
+          {--Toshi's rule--}
+          zl = if (effect > nul) then
+                 zl' else nul
+          zh = if (effect < nul) then
+                 zh' else nul
           t1 = zl - ih
           t2 = zh - il
           d1 = zl - il
           d2 = zh - ih
-        in case t1 * t2 > 0.0 of
-             true  -> 0
-             false -> case d1 * d2 > 0.0 of
-                           true -> 1
-                           false -> case d2 > 0.0 of
-                                         true -> 0
-                                         false -> 2
+       in if effectInZone
+            then 0
+            else
+              case t1 * t2 > 0.0 of
+                true  -> 0
+                false -> case d1 * d2 > 0.0 of
+                             true -> 1
+                             false -> case d2 > 0.0 of
+                                           true -> 0
+                                           false -> 2
 
 ruleLevel :: Foreign -> Foreign -> Int
 ruleLevel fcicrs fpricrs = do

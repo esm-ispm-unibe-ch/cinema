@@ -219,33 +219,62 @@ getComparisonType mdl fid = do
                      else
                       "Pharmacological vs Pharmacological"
 
-numberOfCrosses :: Foreign -> Foreign -> Foreign -> Foreign -> Int
-numberOfCrosses fil fih fzl fzh = do
+{--CIlow CIhigh PrIlow PrIhigh zonelower zonehigher nmaEffect null--}
+jointCrosses :: Foreign -> Foreign 
+  -> Foreign -> Foreign 
+  -> Foreign -> Foreign 
+  -> Foreign -> Foreign 
+  -> Array Int
+jointCrosses fil fih fprl fprh fzl fzh feffect fnul = do
   let eil = runExcept $ readNumber fil
   let eih = runExcept $ readNumber fih
+  let eprl = runExcept $ readNumber fprl
+  let eprh = runExcept $ readNumber fprh
   let ezl = runExcept $ readNumber fzl
   let ezh = runExcept $ readNumber fzh
+  let eeffect = runExcept $ readNumber feffect
+  let enul = runExcept $ readNumber fnul
   let fromRight = (\e -> case e of
                    Left _ -> -1.0
                    Right v -> v)
-  case any isLeft [eil, eih, ezl, ezh] of
-    true  -> -1
+  case any isLeft [eil, eih, eprl, eprh, ezl, ezh, eeffect, enul] of
+    true  -> [-1, -1]
     false -> 
       let il = fromRight eil
           ih = fromRight eih
-          zl = fromRight ezl
-          zh = fromRight ezh
-          t1 = zl - ih
-          t2 = zh - il
-          d1 = zl - il
-          d2 = zh - ih
-        in case t1 * t2 > 0.0 of
-             true  -> 0
-             false -> case d1 * d2 > 0.0 of
-                           true -> 1
-                           false -> case d2 > 0.0 of
-                                         true -> 0
-                                         false -> 2
+          prl = fromRight eprl
+          prh = fromRight eprh
+          zl' = fromRight ezl
+          zh' = fromRight ezh
+          effect = fromRight eeffect
+          effectInZone = il > zl' && ih < zh'
+          nul = fromRight enul
+          {--Toshi's rule--}
+          zl = if (effect > nul || effectInZone) then
+                 zl' else nul
+          zh = if (effect < nul || effectInZone) then
+                 zh' else nul
+          icrs = numberOfCrosses il effect ih zl nul zh
+          prcrs = numberOfCrosses prl effect prh zl nul zh
+       in [icrs, prcrs]
+
+numberOfCrosses :: Number -> Number -> Number -> Number -> Number -> Number -> Int
+numberOfCrosses il effect ih zl nul zh =
+  let t1 = zl - ih
+      t2 = zh - il
+      d1 = zl - il
+      d2 = zh - ih
+      effectInZone = il > zl && ih < zh
+   in if effectInZone
+        then 0
+        else
+          case t1 * t2 > 0.0 of
+            true  -> 0
+            false -> case d1 * d2 > 0.0 of
+                         true -> 1
+                         false -> case d2 > 0.0 of
+                                       true -> 0
+                                       false -> 2
 
 ruleLevel :: Foreign -> Foreign -> Int
 ruleLevel fcicrs fpricrs = do
@@ -259,6 +288,8 @@ ruleLevel fcicrs fpricrs = do
        false -> 
          let cicrs  = fromRight ecicrs
              pricrs = fromRight epricrs
-             ruleTable = [[1,2,3],[0,1,2],[0,0,1]]
+             ruleTable = [[1,2,3]
+                         ,[0,1,2]
+                         ,[0,0,1]]
           in unsafePartial $ fromJust ((unsafePartial $ fromJust 
                (ruleTable !! cicrs )) !! pricrs)
