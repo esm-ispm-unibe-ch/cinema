@@ -41,7 +41,7 @@ var Incoherence = {
   },
   update: {
     updateState: (model) => {
-        Update(Incoherence.model).updateState(model);
+        Update(Incoherence.model).updateState(Incoherence.model);
     },
   },
   render: (model) => {

@@ -262,17 +262,22 @@ var Update = (model) => {
       }
       if (comparison.isMixed) {
         // common areas
-        let rule = { 0: 3
-                   , 1: 3
-                   , 2: 2
-                   , 3: 1};
-        let dirv = makeVector(lowDir, highDir);
-        let indirv = makeVector(lowIndir, highIndir); 
-        let vsum = _.reduce(_.map(_.zip(dirv,indirv), 
-          a => {let [f,s] = a; return f === s?1:0}),
-          (acc,r) => {return acc + r},0);
-        level = rule[vsum];
-        //console.log("vsum",vsum,"level",level);
+        if(sidepvalue>=0.1){
+          console.log("side pvalue > 0.10");
+          level = 1;
+        }else{
+          console.log("side pvalue < 0.10");
+          let rule = { 0: 3
+                     , 1: 3
+                     , 2: 2
+                     , 3: 1};
+          let dirv = makeVector(lowDir, highDir);
+          let indirv = makeVector(lowIndir, highIndir); 
+          let vsum = _.reduce(_.map(_.zip(dirv,indirv), 
+            a => {let [f,s] = a; return f === s?1:0}),
+            (acc,r) => {return acc + r},0);
+          level = rule[vsum];
+        }
       }else{
         if (comparison.isDirect) {
           level = 1;

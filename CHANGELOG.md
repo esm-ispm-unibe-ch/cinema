@@ -1,5 +1,13 @@
 # Change log
 
+## Frontend v1.5-6.0 - May 20 2019
+- Heterogeneity and Imprecision clinicaly important zones defined
+ defined as the null effect and the further from the point estimate clinical important value.
+- Incoherence rules for mixed comparisons judged as *no concerns* when they have
+  side p-value>0.1
+- added config.json file
+- created docker-web-dev image for development and building frontend
+
 ## Frontend v1.4.1 - Nov. 12 2018
 **bug fix**
 - Fixed runtime error when localstorage quota exceeded.
