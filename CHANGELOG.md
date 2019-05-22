@@ -1,5 +1,14 @@
 # Change log
 
+## Frontend v1.7.0 - May 22 2019
+- Incoherence: 
+ - NMA effects with **only direct** evidence or **only indirect** evidence 
+are assigned a judgment determined by the p-value of the design-by-treatment interaction test
+ - Design by treatment p-value minimum range changed from 0.01 to **0.05**
+ - Star networks are judged as having major concerns.
+- Accept **M**-**m** in input dataset levels as well as the old **U**(nlear)
+  level
+
 ## Frontend v1.5-6.0 - May 20 2019
 - Heterogeneity and Imprecision clinicaly important zones defined
  defined as the null effect and the further from the point estimate clinical important value.

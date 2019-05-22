@@ -222,7 +222,7 @@ var Update = (model) => {
         if (pv > 0.1){
           xr = 0;
         }else{
-          if ((pv <= 0.1) && (pv > 0.01)){
+          if ((pv <= 0.1) && (pv > 0.05)){
             xr = 1;
           }else{
             xr = 2;
@@ -277,15 +277,13 @@ var Update = (model) => {
           level = rule[vsum];
         }
       }else{
-        if (comparison.isDirect) {
-          level = 1;
+        let rule = [1,2,3];
+        //if network is not star
+        if (typeof netpvalue !== 'undefined'){
+          level = rule[pindex(netpvalue)];
         }else{
-          if (comparison.isIndirect) {
-            let rule = [1,2,3];
-            level = rule[pindex(netpvalue)];
-          }else{
-            level = 0;
-          }
+          //star network get major concerns
+          level = 3;
         }
       }
       return level;

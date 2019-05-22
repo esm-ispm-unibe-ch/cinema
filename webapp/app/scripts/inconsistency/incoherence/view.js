@@ -128,7 +128,14 @@ var View = (model) => {
       return viewers.getState().referenceValues[1]; 
     },
     rfvsp: () => {
-      return viewers.getState().referenceValues[2]; 
+      let pv = viewers.getState().referenceValues[2];  
+      let out = 0;
+      if (typeof pv === "undefined"){
+        out = "NA"
+      }else {
+        out = pv;
+      }
+      return out;
     },
     rfvFilled: () => {
       return _.all(_.toArray(viewers.getState().referenceValues.params), p=> { return p!== 'nothing'});

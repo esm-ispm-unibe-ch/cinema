@@ -15,15 +15,15 @@ var Settings = {
                 ,{short:'treatment id',long:''}
                 ,{short:'number of events',long:''}
                 ,{short:'sample size',long:''}
-                ,{short:'Risk of Bias',long:'specifies risk of bias. It can take either 1, 2 and 3 or L, U, H values for low, unclear and high risk of bias'}
-                ,{short:'Indirectness',long:'specifies Indirectness. It can take either 1, 2 and 3 or L, U, H values for low, unclear and high indirectness'}],
+                ,{short:'Risk of Bias',long:'specifies risk of bias. It can take either 1, 2 and 3 or L, M, H values for low, unclear and high risk of bias'}
+                ,{short:'Indirectness',long:'specifies Indirectness. It can take either 1, 2 and 3 or L, M, H values for low, unclear and high indirectness'}],
     continuousLong: [{short:'study id',long:'specifies the study - unique for each study'}
                     ,{short:'treatment id',long:''}
                     ,{short:'mean',long:''}
                     ,{short:'standand deviation',long:''}
                     ,{short:'sample size',long:''}
-                    ,{short:'Risk of Bias',long:'specifies risk of bias. It can take either 1, 2 and 3 or L, U, H values for low, unclear and high risk of bias'}
-                    ,{short:'Indirectness',long:'specifies Indirectness. It can take either 1, 2 and 3 or L, U, H values for low, unclear and high indirectness'}],
+                    ,{short:'Risk of Bias',long:'specifies risk of bias. It can take either 1, 2 and 3 or L, M, H values for low, unclear and high risk of bias'}
+                    ,{short:'Indirectness',long:'specifies Indirectness. It can take either 1, 2 and 3 or L, M, H values for low, unclear and high indirectness'}],
     binaryWide: [{short:'study id',long:'specifies the study - unique for each study'}
                 ,{short:'first treatment',long:'id of first treatment'}
                 ,{short:'number of events',long:'number of events in first treatment'}
@@ -31,8 +31,8 @@ var Settings = {
                 ,{short:'second treatment',long:'id of second treatment'}
                 ,{short:'number of events',long:'number of events in second treatment'}
                 ,{short:'sample size',long:'sample size of second treatment'}
-                ,{short:'Risk of Bias',long:'specifies risk of bias. It can take either 1, 2 and 3 or L, U, H values for low, unclear and high risk of bias'}
-                ,{short:'Indirectness',long:'specifies Indirectness. It can take either 1, 2 and 3 or L, U, H values for low, unclear and high indirectness'}],
+                ,{short:'Risk of Bias',long:'specifies risk of bias. It can take either 1, 2 and 3 or L, M, H values for low, unclear and high risk of bias'}
+                ,{short:'Indirectness',long:'specifies Indirectness. It can take either 1, 2 and 3 or L, M, H values for low, unclear and high indirectness'}],
     continuousWide: [{short:'study id',long:'specifies the study - unique for each study'}
                     ,{short:'treatment id',long:''}
                     ,{short:'mean',long:''}
@@ -42,15 +42,15 @@ var Settings = {
                     ,{short:'mean',long:''}
                     ,{short:'standand deviation',long:''}
                     ,{short:'sample size',long:''}
-                    ,{short:'Risk of Bias',long:'specifies risk of bias. It can take either 1, 2 and 3 or L, U, H values for low, unclear and high risk of bias'}
-                    ,{short:'Indirectness',long:'specifies Indirectness. It can take either 1, 2 and 3 or L, U, H values for low, unclear and high indirectness'}],
+                    ,{short:'Risk of Bias',long:'specifies risk of bias. It can take either 1, 2 and 3 or L, M, H values for low, unclear and high risk of bias'}
+                    ,{short:'Indirectness',long:'specifies Indirectness. It can take either 1, 2 and 3 or L, M, H values for low, unclear and high indirectness'}],
     iv: [{short:'study id',long:'specifies the study - unique for each study'}
         ,{short:'first treatment',long:'id of first treatment'}
         ,{short:'second treatment',long:'id of second treatment'}
         ,{short:'effect',long:'The effect estimate of t1 versus t2. It can be log odds ratio, log risk ratio, log hazard ratio, mean difference or standardized mean difference. In case that this format is used, you will be asked whether your data measure a binary, continuous or time to event outcome. '}
         ,{short:'standand error',long:'the standard error of the effect estimate'}
-        ,{short:'Risk of Bias',long:'specifies risk of bias. It can take either 1, 2 and 3 or L, U, H values for low, unclear and high risk of bias'}
-        ,{short:'Indirectness',long:'specifies Indirectness. It can take either 1, 2 and 3 or L, U, H values for low, unclear and high indirectness'}],
+        ,{short:'Risk of Bias',long:'specifies risk of bias. It can take either 1, 2 and 3 or L, M, H values for low, unclear and high risk of bias'}
+        ,{short:'Indirectness',long:'specifies Indirectness. It can take either 1, 2 and 3 or L, M, H values for low, unclear and high indirectness'}],
   },
   //optionalDescriptions: [
   //{short:'indirectness',long:'per study judgement of indirectness'}
@@ -136,8 +136,8 @@ var fileChecker = {
           }
         }
         if("indirectness" in r){
-          if(r.indirectness!=='l'&&r.indirectness!=='u'&&r.indirectness!=='h'&&r.indirectness!=='L'&&r.indirectness!=='U'&&r.indirectness!=='H'&&r.indirectness!==1&&r.indirectness!==2&&r.indirectness!==3){
-            reject('<strong>indirectness</strong> can be 1, 2, 3 or L, U, H')
+          if(r.indirectness!=='l'&&r.indirectness!=='m'&&r.indirectness!=='u'&&r.indirectness!=='h'&&r.indirectness!=='L'&&r.indirectness!=='M'&&r.indirectness!=='U'&&r.indirectness!=='H'&&r.indirectness!==1&&r.indirectness!==2&&r.indirectness!==3){
+            reject('<strong>indirectness</strong> can be 1, 2, 3 or L, M, H')
           }else{
             switch(r.indirectness){
               case 'L':
@@ -145,6 +145,12 @@ var fileChecker = {
               break;
               case 'l':
               r.indirectness =1;
+              break;
+              case 'M':
+              r.indirectness =2;
+              break;
+              case 'm':
+              r.indirectness =2;
               break;
               case 'U':
               r.indirectness =2;
@@ -161,8 +167,8 @@ var fileChecker = {
             }
           }
         }
-        if(r.rob!=='l'&&r.rob!=='u'&&r.rob!=='h'&&r.rob!=='L'&&r.rob!=='U'&&r.rob!=='H'&&r.rob!==1&&r.rob!==2&&r.rob!==3){
-          reject('<strong>rob</strong> can be 1, 2, 3 or L, U, H')
+        if(r.rob!=='l'&&r.rob!=='m'&&r.rob!=='u'&&r.rob!=='h'&&r.rob!=='L'&&r.rob!=='M'&&r.rob!=='U'&&r.rob!=='H'&&r.rob!==1&&r.rob!==2&&r.rob!==3){
+          reject('<strong>rob</strong> can be 1, 2, 3 or L, M, H')
         }else{
           switch(r.rob){
             case 'L':
@@ -170,6 +176,12 @@ var fileChecker = {
             break;
             case 'l':
             r.rob =1;
+            break;
+            case 'M':
+            r.rob =2;
+            break;
+            case 'm':
+            r.rob =2;
             break;
             case 'U':
             r.rob =2;
