@@ -1,5 +1,9 @@
 # Change log
 
+## Frontend v1.8.0 - May 24 2019
+**bug fix**
+- Heterogeneity crosses miscalculated
+
 ## Frontend v1.7.0 - May 22 2019
 - Incoherence: 
  - NMA effects with **only direct** evidence or **only indirect** evidence 

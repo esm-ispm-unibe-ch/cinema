@@ -58,7 +58,7 @@ var View = (model) => {
             l.isActive = isActive;
             return l;
           });
-        box.crosses = model.getState().text.Imprecision.nullText[box.crosses];
+        box.crossestext = model.getState().text.Imprecision.nullText[box.crosses];
         return box;
       });
     },

@@ -247,24 +247,30 @@ jointCrosses fil fih fprl fprh fzl fzh feffect fnul = do
           zl' = fromRight ezl
           zh' = fromRight ezh
           effect = fromRight eeffect
-          effectInZone = il > zl' && ih < zh'
           nul = fromRight enul
           {--Toshi's rule--}
-          zl = if (effect > nul || effectInZone) then
-                 zl' else nul
-          zh = if (effect < nul || effectInZone) then
-                 zh' else nul
-          icrs = numberOfCrosses il effect ih zl nul zh
-          prcrs = numberOfCrosses prl effect prh zl nul zh
+          effectInZone = il > zl' && ih < zh'
+          zl = if (effect < nul) then
+                 nul else zl'
+          zh = if (effect > nul) then
+                 nul else zh'
+          icrs  = if effectInZone then
+                    0 else
+                    numberOfCrosses il ih zl zh
+          prcrs = if effectInZone 
+                    then
+                      numberOfCrosses prl prh zl' zh'
+                    else 
+                      numberOfCrosses prl prh zl zh
        in [icrs, prcrs]
 
-numberOfCrosses :: Number -> Number -> Number -> Number -> Number -> Number -> Int
-numberOfCrosses il effect ih zl nul zh =
-  let t1 = zl - ih
-      t2 = zh - il
-      d1 = zl - il
-      d2 = zh - ih
-      effectInZone = il > zl && ih < zh
+numberOfCrosses :: Number -> Number -> Number -> Number -> Int
+numberOfCrosses ilow ihigh zlow zhigh =
+  let t1 = zlow - ihigh
+      t2 = zhigh - ilow
+      d1 = zlow - ilow
+      d2 = zhigh - ihigh
+      effectInZone = ilow > zlow && ihigh < zhigh
    in if effectInZone
         then 0
         else

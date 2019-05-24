@@ -358,12 +358,12 @@ var Update = (model) => {
       return _.union(mixed,indirect);
     },
     getRuleLevel: (CIf,CIs,PrIf,PrIs,lowerBound,upperBound,effect,nulleffect) => {
-      let [ciCrosses, priCrosses] = Nodes.jointCrosses(CIf)(CIs)(PrIf)(PrIs)(lowerBound)(upperBound)(nulleffect)(effect);
+      let [ciCrosses, priCrosses] = Nodes.jointCrosses(CIf)(CIs)(PrIf)(PrIs)(lowerBound)(upperBound)(effect)(nulleffect);
       let result = Nodes.ruleLevel(parseInt(ciCrosses))(parseInt(priCrosses));
       return result;
     },
     getNumberOfCrosses: (CIf,CIs,PrIf,PrIs,lowerBound,upperBound,effect,nulleffect) => {
-      let [ciCrosses, priCrosses] = Nodes.jointCrosses(CIf)(CIs)(PrIf)(PrIs)(lowerBound)(upperBound)(nulleffect)(effect);
+      let [ciCrosses, priCrosses] = Nodes.jointCrosses(CIf)(CIs)(PrIf)(PrIs)(lowerBound)(upperBound)(effect)(nulleffect);
       let result = [parseInt(ciCrosses), parseInt(priCrosses)];
       return result;
     },
