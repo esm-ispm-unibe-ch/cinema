@@ -40,7 +40,7 @@ npm install -g bower
 ```
 and then the purescript stuff, psc and pulp
 ```
-npm install -g purescript pulp
+npm install -g purescript@0.11.7 pulp@12.2.0
 ````
 Install npm packages
 
