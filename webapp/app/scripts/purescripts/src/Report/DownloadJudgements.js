@@ -14,7 +14,7 @@ exports.downloadJudgements = function () {
           ["Comparison"
           , "Number of studies"
           , "Within-study bias"
-          , "Across-studies bias"
+          , "Reporting bias"
           , "Indirectness"
           , "Imprecision"
           , "Heterogeneity"

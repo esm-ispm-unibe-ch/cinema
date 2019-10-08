@@ -1,5 +1,9 @@
 # Change log
 
+## Frontend v1.9.0 - Oct 8 2019
+**terminology change**
+- Changed **Across-study** bias to **Reporting** bias
+
 ## Frontend v1.8.0 - May 24 2019
 **bug fix**
 - Heterogeneity crosses miscalculated

@@ -65,9 +65,9 @@
         "info": "Indirectness evaluation"
       },
       "pubbias": {
-        "label": "Across-studies bias",
-        "title": "Across-studies bias",
-        "info": "Across-studies bias evaluation page"
+        "label": "Reporting bias",
+        "title": "Reporting bias",
+        "info": "Reporting bias evaluation page"
       },
       "report": {
         "label": "Report",
@@ -305,17 +305,17 @@
         "Undetected",
         "Suspected"
       ],
-      "title": "Across-studies bias",
-      "selectionTitle": "Across-studies bias",
+      "title": "Reporting bias",
+      "selectionTitle": "Reporting bias",
       "mixedtitle": "mixed",
       "directtitle": "direct",
       "indirecttitle": "indirect",
       "defaultTitle": "Selected:",
       "resetButton": "Reset",
-      "resetConfirm": ["Reset?","All changes will be lost","Across-studies bias selections cleared"],
-      "PubbiasSet": "Across-studies bias Updated",
-      "judgementField": "Across-studies bias judgment",
-      "ImprecisionSet": "Across-studies bias Updated",
+      "resetConfirm": ["Reset?","All changes will be lost","Reporting bias selections cleared"],
+      "PubbiasSet": "Reporting bias Updated",
+      "judgementField": "Reporting bias judgment",
+      "ImprecisionSet": "Reporting bias Updated",
       "allUndetected": "Set all undetected",
       "allDetected": "Set all suspected"
     },
