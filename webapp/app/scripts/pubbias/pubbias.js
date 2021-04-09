@@ -22,11 +22,17 @@ var Pubbias = {
       Messages.alertify().message(updated);
         Update(Pubbias.model).selectIndividual(value);
     },
-    allDetected: () => {
-        Update(Pubbias.model).allDetected();
+    allLow: () => {
+        Update(Pubbias.model).allLow();
     },
-    allUndetected: () => {
-        Update(Pubbias.model).allUndetected();
+    allSome: () => {
+        Update(Pubbias.model).allSome();
+    },
+    allHigh: () => {
+        Update(Pubbias.model).allHigh();
+    },
+    uploadTable2: (evt) => {
+        Update(Pubbias.model).uploadTable2(evt);
     },
     updateState: () => {
       Update(Pubbias.model).updateState(Pubbias.model);

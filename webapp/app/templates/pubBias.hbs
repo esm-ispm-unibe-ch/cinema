@@ -10,15 +10,29 @@
           <button class="btn btn-default btn-pad"
           onClick="Actions.Pubbias.proceed()" >Proceed</button>
         {{else}}
-          <button onClick="Actions.Pubbias.allUndetected()" class="pull-left btn
-            btn-default"> {{text.allUndetected}} </button>
-          <button onClick="Actions.Pubbias.allDetected()" class="pull-left btn-pad btn btn-default"> {{text.allDetected}} </button>
+            <button onClick="Actions.Pubbias.allLow()" class="pull-left btn-pad
+              btn  btn-default"> {{text.allLow}} </button>
+            <button onClick="Actions.Pubbias.allSome()" class="pull-left btn-pad
+              btn btn-default"> {{text.allSome}} </button>
+            <button onClick="Actions.Pubbias.allHigh()" class="pull-left btn-pad
+              btn btn-default"> {{text.allHigh}} </button>
+            <div class='well col-xs-3 project-uploader'>
+            Upload Table 2 from <a target='_blank'
+                                  href='https://cinema.ispm.unibe.ch/rob-men'>ROB-MEN</a>
+              <input onchange="Actions.Pubbias.uploadTable2(this)" type="file" id="table2Uploader" name="file" accept=".csv,.CSV" />
+            </div>
+        </div>
         </div>
       {{/if}}
     </blockquote>
     {{#if pubbiasReady}}
     <div id="PubbiasBoxes" class='col-xs-12 well collapse in'>
       <ul class='list-inline'>
+        {{#if hasUploaded}}
+          <h3>
+            Judgements imported from ROB-MEN
+          </h3>
+        {{/if}}
         {{#each boxes}}
         <li  style='border-color:{{color}}' class='well compRobSelector {{#if customized}} customized {{/if}}' id="comp-{{id}}">
             <ul>
@@ -41,13 +55,21 @@
                 <hr>
               <li>
               {{../../text.judgementField}}
+              {{#if ../../hasUploaded}}
+                <div class="well"> 
+                  <strong>
+                    {{judgementlabel.label}}
+                  </strong>
+                </div>
+              {{else}}
                 <select onChange="Actions.Pubbias.selectIndividual(this)" class='mr-sm-2 controls-container'>
                   {{#each levels}}
-                  <option value="{{../id}}σδel{{id}}" {{#if isDisabled}} disabled {{/if}} {{#if isActive}} selected{{/if}}>
+                    <option value="{{../id}}σδel{{id}}" {{#if isDisabled}} disabled {{/if}} {{#if isActive}} selected{{/if}}>
                         {{label}}
                     </option>
                   {{/each}}
                 </select>
+              {{/if}}
               </li>
             </ul>
         {{/each}}

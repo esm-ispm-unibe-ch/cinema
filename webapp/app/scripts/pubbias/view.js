@@ -21,6 +21,7 @@ var View = (model) => {
             l.isActive = isActive;
             return l;
           });
+        box.judgementlabel = _.find(box.levels, l=>{return(l.isActive === true)});
         return box;
       });
     },
@@ -29,6 +30,12 @@ var View = (model) => {
     },
     pubbiasReady: () => {
       return viewers.getState().status === 'ready';
+    },
+    hasUploaded: () => {
+      return viewers.getState().hasUploaded === 'true';
+    },
+    hasNotUploaded: () => {
+      return viewers.getState().hasUploaded !== 'true';
     },
   }
   return viewers;

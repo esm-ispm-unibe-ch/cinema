@@ -42,7 +42,7 @@ if(fs.existsSync("config.json")){
   config = require('./config.json');
 }else{
   config = {
-    version: "1.4.3",
+    version: "2.0.0",
     ganalID: "UA-XXXXXXXXX-X",
     rserverurl: "http://localhost:8004/ocpu/library/contribution/R"
   }

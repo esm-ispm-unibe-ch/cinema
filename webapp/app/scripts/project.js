@@ -240,6 +240,7 @@ var PR = {
     fetchProject: (evt) => {
       return new Promise((resolve,reject) => {
       var filename = htmlEntities($('#files').val().replace(/C:\\fakepath\\/i, '')).slice(0, -4);
+        console.log("filename project",filename);
       PR.update.getJSON(evt,filename).then(data => {
         PR.update.createProject(filename);
         return data;

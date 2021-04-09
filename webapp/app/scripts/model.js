@@ -61,6 +61,9 @@ var Model = {
         color: '#02c000'
       },
       { id: 2,
+        color: '#e0df02'
+      },
+      { id: 3,
         color: '#c00000'
     }],
     locale: 'EN',

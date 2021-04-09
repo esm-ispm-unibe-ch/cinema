@@ -5,6 +5,9 @@ var sortStudies = require('../lib/mixins.js').sortStudies;
 var Messages = require('../messages.js').Messages;
 var Report = require('../purescripts/output/Report');
 var Rules = require('../purescripts/output/Imprecision.Rules');
+var FR = require('../lib/readFile.js').FR;
+var htmlEntities = require('../lib/mixins.js').htmlEntities;
+var Checker = require('../lib/fileChecks.js').Checker;
 Report.view = require('../purescripts/output/Report.View');
 Report.update = require('../purescripts/output/Report.Update');
 var ComparisonModel = require('../purescripts/output/ComparisonModel');
@@ -30,16 +33,76 @@ var Update = (model) => {
     pubbiasReady: () => {
       return (deepSeek(model,'getState().project.pubbias.status')==='ready');
     },
-    allDetected: () => {
+    allLow: () => {
+      _.map(updaters.getState().boxes,b=>{
+        b.judgement = 1;
+      });
+      updaters.getState().status = 'ready';
+      updaters.saveState();
+    },
+    allSome: () => {
       _.map(updaters.getState().boxes,b=>{
         b.judgement = 2;
       });
       updaters.getState().status = 'ready';
       updaters.saveState();
     },
-    allUndetected: () => {
+    allHigh: () => {
+      _.map(updaters.getState().boxes,b=>{
+        b.judgement = 3;
+      });
       updaters.getState().status = 'ready';
       updaters.saveState();
+    },
+    uploadTable2: (evt) => {
+      return new Promise((resolve,reject) => {
+       function checkFile(json) {
+         return new Promise((resolve,reject) => {
+           let requiredColumns = ['comparison','treat1','treat2','final'];
+           //Check column names
+           let titles = Object.keys(json[0]);
+           let isTable2 = _.isEqual(requiredColumns,_.intersection(requiredColumns,titles))
+           if(!isTable2){
+             let err = "Columns not correct. Need:".concat(requiredColumns);
+             reject(err);
+           }
+           let boxes = updaters.getState().boxes;
+           let selectedRows = _.filter(json, function(r){
+             let comp1 = r.treat1+":"+r.treat2;
+             let comp2 = r.treat2+":"+r.treat1;
+             let fnd = _.find(boxes, (b)=>{return(b.id===comp1||b.id===comp2)});
+             let isSelectedRow = !_.isUndefined(fnd);
+             return isSelectedRow;
+           });
+           _.map(selectedRows, r => {
+             if(!((r.final === 1 || r.final === 2 ) || r.final === 3)){
+               console.log("r.final",r.final);
+               reject("final judgement not 1 2 or 3 "+r.final);
+             }else{
+               console.log("r",r);
+             }
+           });
+           resolve(selectedRows);
+          });
+       };
+
+      console.log("uploading table2 from Robmen");
+      var filename = htmlEntities($('#table2Uploader').val().replace(/C:\\fakepath\\/i, '')).slice(0, -4);
+        console.log("filename",filename);
+       FR.handleFileSelect(evt)
+        .then(FR.convertCSVtoJSON)
+        .then(checkFile)
+        .then(table2 => {
+          console.log("Answer",table2);
+          _.map(table2, r=>{updaters.selectIndividualInternal(r.comparison,r.final)})
+          updaters.getState().hasUploaded = 'true';
+          updaters.getState().status = 'ready';
+          updaters.saveState();
+        })
+        .catch( err => {
+            Messages.alertify().error(err);
+        })
+      })
     },
     updateState: (model) => {
       let mdl = model.getState();
@@ -120,12 +183,12 @@ var Update = (model) => {
       let boxes = updaters.createEstimators();
       return { 
         status: 'not-ready',
+        hasUploaded: 'false',
         boxes,
         levels: PubbiasLevels
       }
     },
-    selectIndividual: (value) => {
-      let [tid,tv] = value.value.split('σδel');
+    selectIndividualInternal: (tid, tv) => {
       let boxes = updaters.getState().boxes;
       let tbc = _.find(boxes, m => {
         return Rules.isTheSameComparison(m.id)(tid);
@@ -135,6 +198,10 @@ var Update = (model) => {
       updaters.saveState();
       updaters.getState().status = 'ready';
       updaters.saveState();
+    },
+    selectIndividual: (value) => {
+      let [tid,tv] = value.value.split('σδel');
+      updaters.selectIndividualInternal(tid,tv);
     },
   }
   return updaters;

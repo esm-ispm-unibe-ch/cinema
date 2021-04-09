@@ -302,8 +302,9 @@
     },
     "Pubbias": {
       "levels":[
-        "Undetected",
-        "Suspected"
+        "Low risk",
+        "Some concerns",
+        "High risk"
       ],
       "title": "Reporting bias",
       "selectionTitle": "Reporting bias",
@@ -316,8 +317,9 @@
       "PubbiasSet": "Reporting bias Updated",
       "judgementField": "Reporting bias judgment",
       "ImprecisionSet": "Reporting bias Updated",
-      "allUndetected": "Set all undetected",
-      "allDetected": "Set all suspected"
+      "allLow": "Set all Low risk",
+      "allSome": "Set all Some concerns",
+      "allHigh": "Set all High risk"
     },
     "Report": {
       "levels":[

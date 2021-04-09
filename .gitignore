@@ -16,3 +16,5 @@ monitor/
 papers/
 docker/cinema-web/
 webapp/config.json
+package-lock.json
+**/*.js_bc
