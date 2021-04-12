@@ -80,6 +80,7 @@
         "info": "PLOS paper Abstract"
       }
     },
+    "uploadDataset": "Upload Dataset",
     "uploadProject": "Upload Project",
     "clearCurrentProject": "Clear Project",
     "longFileUpload": {

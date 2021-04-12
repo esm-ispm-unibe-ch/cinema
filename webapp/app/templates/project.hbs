@@ -2,10 +2,16 @@
   <div class='projects-container col-xs-12 col-md-offset-2 col-md-8'>
 
     {{#unless view.hasFile}}
-        <h3>File uploader</h3>
+    {{#if view.hasCached}}
+        <button onClick="Actions.Project.loadCached()" class="btn
+          btn-default">
+          Load cached Project
+        </button>
+    {{/if}}
+    <h3>Dataset uploader</h3>
     <div class='well col-xs-12 project-uploader'>
           <span class="prtitle">
-            {{{model.text.uploadProject}}}
+            {{{model.text.uploadDataset}}}
           </span>
           <span class="pull-left glyphicon glyphicon-cloud-upload" aria-hidden="true"></span>
           <span id='prinfo' class="info pull-right glyphicon glyphicon-info-sign" aria-hidden="true"></span>
@@ -27,12 +33,22 @@
             369(9557):201 – 207, 2007</a>
         </div>
     </div>
-    {{#if view.hasCached}}
-        <button onClick="Actions.Project.loadCached()" class="btn
-          btn-default">
-          Load cached Project
-        </button>
-    {{/if}}
+    <h3>Project uploader</h3>
+    <div class='well col-xs-12 project-uploader'>
+          <span class="prtitle">
+            {{{model.text.uploadProject}}}
+          </span>
+          <span class="pull-left glyphicon glyphicon-cloud-upload" aria-hidden="true"></span>
+          <span id='prinfo' class="info pull-right glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+        </h4>
+        <div class="form-group">
+      <input onchange="Actions.Project.readProject(this)" type="file"
+      id="uploadProject" name="uploadProject" accept=".cnm,.CNM" />
+        <div class='col-xs-12 col-md-offset-2 col-md-8'>
+          You can upload here previously saved projects (<em>.cnm</em> files).
+        </div>
+    </div>
+    </div>
     <button onClick="Actions.Project.resetApp()" class="btn
       btn-default">
       Reset <span class='logo'>CINeMA</span>
@@ -235,5 +251,7 @@
           <button > Save </button>
         {{/if}}
       {{/if}}
+    <a onClick="Actions.Project.saveProject()" class="btn btn-default"
+      id="saveProject">Save project</a>
     {{/if}}
 </div>

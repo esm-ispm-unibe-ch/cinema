@@ -157,6 +157,22 @@ var Model = {
     let savedModel = JSON.parse(localStorage.state);
     Model.setState(savedModel);
   },
+  versionsAreCompatible: (v1,v2) => {
+    return v1.split(".").slice(0,2).toString() === v2.split(".").slice(0,2).toString();
+  },
+  checkSavedProject: (state) => {
+    return new Promise((resolve,reject) => {
+      let cinv = Model.getState().version;
+      if(Model.versionsAreCompatible(state.version,cinv)){
+        resolve(state);
+      }else{
+        reject("Unfortunately cannot upload, the file's version ("+state.version+") is not compatible with CINeMA v:"+cinv);
+      }
+    })
+  },
+  loadSavedProject: (state) => {
+    Model.setState(state);
+  },
   initializeModel: (version) => {
     Model.setState(Model.skeletonModel(version));
   },
@@ -173,14 +189,11 @@ var Model = {
     return out;
   },
   checkCachedModel: (version) => {
-    let versionsAreCompatible=(v1,v2) => {
-      return v1.split(".").slice(0,2).toString() === v2.split(".").slice(0,2).toString();
-    }
     let savedModel = Model.cachedModel();
     if (savedModel === 'Nothing'){
       Model.clearCachedModel();
     }else{
-      if ((typeof savedModel.version !== 'undefined') && versionsAreCompatible(version,savedModel.version)){
+      if ((typeof savedModel.version !== 'undefined') && Model.versionsAreCompatible(version,savedModel.version)){
         // comply with EU cookie law
         if(Model.hasExpired(savedModel.timestamp)){
           Model.clearCachedModel();
@@ -201,7 +214,7 @@ var Model = {
   hasExpired: (date) => {
     let current = new Date();
     let modelDate = Date(date);
-    //one year expiration perios is set
+    //one year expiration period  is set for cached projects
     let timeDiff = Math.abs(Date.parse(date) - current.getTime())/ 1000 / 60 / 60 / 24 / 365;
     let res = false;
     if (timeDiff > 1) {

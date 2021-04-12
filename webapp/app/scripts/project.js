@@ -24,6 +24,7 @@ var accumulate = require('./lib/mixins.js').accumulate;
 var Netplot = require('./netplot.js')();
 var ConMat = require('./conmat/conmat.js')();
 var ComparisonModel = require('./purescripts/output/ComparisonModel');
+var download = require('downloadjs');
 
 var PR = {
   actions: {
@@ -236,11 +237,27 @@ var PR = {
       npr.studyLimitationLevels = studyLimitationLevels;
       PR.update.setProject(npr);
     },
-    //The main project reading function
-    fetchProject: (evt) => {
+    readProject: (evt) => { //Reads .cnm files into projects
+      return new Promise((resolve,reject) => {
+        return FR.handleFileSelect(evt).then(statestring => {
+           return(JSON.parse(statestring));
+        }).then(
+        PR.model.checkSavedProject)
+        .then(PR.model.loadSavedProject)
+        .then(() =>{
+           Messages.alertify().success('Project successfully uploaded');
+        })
+        .catch( err => {
+          reject(err);
+        });
+      })
+      .catch( err => {
+        Messages.alertify().error(err);
+      });
+    },
+    fetchProject: (evt) => { //The main project reading function
       return new Promise((resolve,reject) => {
       var filename = htmlEntities($('#files').val().replace(/C:\\fakepath\\/i, '')).slice(0, -4);
-        console.log("filename project",filename);
       PR.update.getJSON(evt,filename).then(data => {
         PR.update.createProject(filename);
         return data;
@@ -421,6 +438,14 @@ var PR = {
     },
     loadCached: () => {
       PR.model.loadCachedModel();
+    },
+    saveProject: () => {
+        let project = PR.model.getState().project;
+        let creation = new Date(PR.view.getProject().creationDate);
+        let datestring = creation.getHours().toString() +"."+ creation.getMinutes().toString()+"_"+creation.toLocaleDateString();
+        let filename = (project.title+'_'+datestring).replace(/\,/g,'_')+'.cnm';
+        let blob = localStorage.state;
+        download(blob,filename);
     },
     resetApp: () => {
       Messages.alertify().confirm('Reset CINeMA','All changes will be lost - reset will probably fix weird behavior',
