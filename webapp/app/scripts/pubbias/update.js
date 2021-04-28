@@ -74,12 +74,13 @@ var Update = (model) => {
              let isSelectedRow = !_.isUndefined(fnd);
              return isSelectedRow;
            });
+           if(selectedRows.length !== boxes.length){
+             reject("comparisons are missing from file");
+           }
            _.map(selectedRows, r => {
              if(!((r.final === 1 || r.final === 2 ) || r.final === 3)){
                console.log("r.final",r.final);
-               reject("final judgement not 1 2 or 3 "+r.final);
-             }else{
-               console.log("r",r);
+               reject("final judgement in file not 1 2 or 3, found: "+r.final);
              }
            });
            resolve(selectedRows);
