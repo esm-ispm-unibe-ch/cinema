@@ -81,6 +81,12 @@ var CM = {
     downloadLeaguetable: () => {
        Update(CM.model).downloadLeaguetable();
     },
+    downloadLeaguetableMH: () => {
+       Update(CM.model).downloadLeaguetableMH();
+    },
+    downloadLeaguetableH: () => {
+       Update(CM.model).downloadLeaguetableH();
+    },
     showContributionMatrix: () => {
       $('.table-manipulator').toggleClass('hidden');
        Update(CM.model).showTable();

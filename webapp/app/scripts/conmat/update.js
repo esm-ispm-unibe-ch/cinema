@@ -177,17 +177,26 @@ var Update = (model) => {
           rtype = 'iv';
         }
         if(_.isEmpty(cm.hatmatrix)){
-          let formatData = (tp,studies) =>{
+          let formatData = (tp,studies,exclude) =>{
             let out = {};
             if(tp === "iv"){
-              out = studies.wide;
+                out = studies.wide;
             }else{
               out = studies.long;
+            }
+            if(exclude === "H"){
+              out = _.filter(out, 
+                //function(s){return(s.rob===1 | s.rob===2)})
+                function(s){return(s.rob===1 | s.rob===2)})
+            }
+            if(exclude === "MH"){
+              out = _.filter(out, 
+                function(s){return(s.rob===1)})
             }
               return out;
           }
           let hmc = ocpu.call('getHatMatrix',
-            {indata: formatData(rtype, project.studies),
+            {indata: formatData(rtype, project.studies, "none"),
               type: rtype,
               model: cm.params.MAModel,
               sm: cm.params.sm,
@@ -215,7 +224,55 @@ var Update = (model) => {
            console.log("failed hatmatrix",err.responseText);
            reject('R returned an error: ' + err.responseText);
         });
-        }else{
+        ocpu.call('getHatMatrix',
+          {indata: formatData(rtype, project.studies,"H"),
+            type: rtype,
+            model: cm.params.MAModel,
+            sm: cm.params.sm,
+          }, (sessionh) => {
+          sessionh.getObject( (hatmatrix) => {
+            let lt = ocpu.call('leaguetable',
+              { fromhatmatrix: hatmatrix.forleaguetable
+              , model: hatmatrix.model
+              , sm: hatmatrix.sm
+              }, sessionhh => {
+                sessionhh.getObject( (leaguetable) => {
+                cm.leaguetableLM = leaguetable;
+                updaters.saveState();
+              });
+          })
+        })
+       }).catch( (err) => {
+         let msg = "sensitity analysis not possible for Low and Medium risk within study bias studies";
+         msg = msg + 'R returned an error: ' + err.responseText;
+         Messages.alertify().alert(msg);
+         cm.leaguetableLM = {};
+      });
+      ocpu.call('getHatMatrix',
+        {indata: formatData(rtype, project.studies,"MH"),
+            type: rtype,
+            model: cm.params.MAModel,
+            sm: cm.params.sm,
+          }, (sessionh) => {
+          sessionh.getObject( (hatmatrix) => {
+            let lt = ocpu.call('leaguetable',
+              { fromhatmatrix: hatmatrix.forleaguetable
+              , model: hatmatrix.model
+              , sm: hatmatrix.sm
+              }, sessionhh => {
+                sessionhh.getObject( (leaguetable) => {
+                cm.leaguetableL = leaguetable;
+                updaters.saveState();
+              });
+          })
+        })
+       }).catch( (err) => {
+         let msg = "sensitity analysis not possible for Low risk within study bias studies";
+         msg = msg + 'R returned an error: ' + err.responseText;
+         Messages.alertify().alert(msg);
+         cm.leaguetableL = {};
+      });
+      }else{
             console.log("found hatmatrix", cm.hatmatrix);
             updaters.fetchRows(cm).then(res => {
               resolve(res);
@@ -611,6 +668,28 @@ var Update = (model) => {
       updaters.makeLeagueTableDownloader(updaters.getCM()).then( zfile => {
         let [blob,filename] = zfile;
         download(blob,filename);
+      });
+    },
+    downloadLeaguetableMH: () => {
+      return new Promise((resolve,reject) => {
+          let cm = updaters.getCM();
+          let league = cm.leaguetableL;
+          let csvTable = json2csv.parse(league, {header: false});
+          let csvContent = 'data:text/csv;charset=utf-8,'+csvTable;
+          var encodedUri = encodeURI(csvContent);
+          let filename = (project.title+'_'+cm.params.MAModel+'_'+cm.params.sm+"_leaguetableLowBias").replace(/\,/g,'_')+'.csv';
+          download(encodedUri,filename);
+      });
+    },
+    downloadLeaguetableH: () => {
+      return new Promise((resolve,reject) => {
+          let cm = updaters.getCM();
+          let league = cm.leaguetableLM;
+          let csvTable = json2csv.parse(league, {header: false});
+          let csvContent = 'data:text/csv;charset=utf-8,'+csvTable;
+          var encodedUri = encodeURI(csvContent);
+          let filename = (project.title+'_'+cm.params.MAModel+'_'+cm.params.sm+"_leaguetableLowMediumBias").replace(/\,/g,'_')+'.csv';
+          download(encodedUri,filename);
       });
     },
     sumStudyContrs: (contrs) => {

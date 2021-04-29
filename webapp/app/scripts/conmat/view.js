@@ -45,6 +45,22 @@ var View = (model) => {
         return false;
       }
     },
+    hasleaguetableLM: () => {
+      let ltlm = cmc().leaguetableLM;
+      if(_.isEmpty(ltlm)){
+        return false;
+      }else{
+        return true;
+      }
+    },
+    hasleaguetableL: () => {
+      let ltl = cmc().leaguetableL;
+      if(_.isEmpty(ltl)){
+        return false;
+      }else{
+        return true;
+      }
+    },
     table: () => {
       return cmc().directStudies;
     },

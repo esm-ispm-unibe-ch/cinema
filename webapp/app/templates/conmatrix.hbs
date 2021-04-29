@@ -141,6 +141,15 @@
         id="downloadAnchorElem">Download per <strong>comparison</strong> contribution matrix</a>
       <a onClick="Actions.ConMat.downloadLeaguetable()" class="btn btn-default"
         id="downloadLeaguetable">Download league table</a>
+      {{#if hasleaguetableLM}}
+      <a onClick="Actions.ConMat.downloadLeaguetableH()" class="btn btn-default"
+        id="downloadLeaguetableH">Download league table excluding high
+        within-study bias studies</a>
+        {{#if hasleaguetableL}}
+          <a onClick="Actions.ConMat.downloadLeaguetableMH()" class="btn btn-default"
+            id="downloadLeaguetableMH">Download league table excluding medium and high within-study bias studies</a>
+        {{/if}}
+      {{/if}}
       <button class="pull-right btn btn-default btn-pad"
           onClick="Actions.ConMat.proceed()" >Proceed</button>
       <a id="clearCM" onClick="Actions.ConMat.resetAnalysis()" class="btn
