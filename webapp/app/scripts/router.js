@@ -101,6 +101,20 @@ var Router = {
       }
       return isReady;
     },
+    title: () => {
+      let projectTitle = deepSeek(Router,'model.getState().project.title');
+      if (_.isUndefined(projectTitle)){
+        projectTitle="--"
+      }
+      return(projectTitle);
+    },
+    currentRoute: () => {
+      let currentRoute = deepSeek(Router,'model.getState().router.currentRoute');
+      if (_.isUndefined(currentRoute)){
+        currentRoute="--"
+      }
+      return(currentRoute);
+    },
   },
   update: {
     updateState: (model) => {

@@ -66,6 +66,7 @@
   "dependencies": {
     "alertifyjs": "^1.11.0",
     "downloadjs": "^1.4.7",
+    "fflate": "^0.6.10",
     "gulp-json-format": "^1.0.0",
     "gulp-rename": "^1.4.0",
     "gulp-template": "^5.0.0",

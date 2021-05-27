@@ -9,7 +9,6 @@
     </div>
     <!-- extra end -->
 <div class="docmenu">
-
   <ul class="nav navbar-nav mainMenu">
   {{#each view.mainMenu}}
       <li class="{{#if isActive}}active{{/if}} {{#unless isAvailable}}disabled{{/unless}}">
@@ -33,3 +32,11 @@
   </ol>
 </div>
 </nav>
+<div class="visible-print">
+  <h2>
+    "Confidence In Network Meta Analysis - CINeMA 2.0.0 printer friendly version "
+    <b>
+      {{view.title}}
+    </b>
+  </h2>
+</div>

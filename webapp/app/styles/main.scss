@@ -15,6 +15,16 @@ html{
   padding: 0.2em 0;
 }
 
+@print {
+    @page :footer {
+        display: none
+    }
+
+    @page :header {
+        display: none
+    }
+}
+
 .cinema {
   font-family: 'Limelight', cursive!important;
 }
