@@ -3,6 +3,8 @@
   <blockquote id="refvals" class='col-xs-12'>
     <h3>
         Heterogeneity
+            <span
+              onclick="Actions.alertify().message('The rules for judging heterogeneity are based on the agreement of conclusions based on confidence and prediction intervals in relation to the null effect and the clinically important effect on the opposite direction to the point estimate. Details can be found in Section 4.5 of the detailed manual.')" class="info pull-right   glyphicon glyphicon-info-sign" aria-hidden="true"></span>
     </h3>
     <ul class='col-xs-12 imprecisionList'>
       <li>
@@ -22,6 +24,8 @@
               {{#if clinImpReady}} disabled{{/if}}">Set</button>
             <button onClick="Actions.Heterogeneity.resetClinImp('{{emType}}')" class="btn btn-default
               {{#unless clinImpReady}} disabled{{/unless}}">Reset</button>
+            <span
+              onclick="Actions.alertify().message('The clinically important size of effect is the same as in “Imprecision” and “Incoherence”; if already specified it will automatically appear here. Otherwise, specify it here and it will be copied to the “Imprecision” and “Incoherence” domains. Press “Reset” to reset the clinically important effect size; note that this will affect the “Imprecision” and “Incoherence” domains too. Details can be found in Section 4.5 of the detailed manual.')" class="info glyphicon glyphicon-info-sign" aria-hidden="true"></span>
           </li>
         </ul>
       </li>

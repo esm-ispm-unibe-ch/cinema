@@ -1,6 +1,8 @@
   <blockquote id="refvals" class='col-xs-12'>
     <h3>
         Imprecision
+              <span id='prinfo'
+              onclick="Actions.alertify().message('The rules for judging imprecision are based on whether the confidence interval includes the line of no effect and the clinically important values. If the confidence interval crosses the line of no effect and extends to values that favor the opposite intervention to that favored by the point estimate, “Major concerns” is assigned. If only the null effect is included in the confidence intervals (and potentially also the clinically important value that favors the same intervention as the point estimate), “Some concerns” is assigned. Finally, “No concerns” is assigned to confidence intervals that only include the clinically important value that favors the same intervention as the point estimate. If the confidence interval lies entirely between the two clinically important values, “No concerns” is assigned. Details can be found in Section 4.4 of the detailed manual.')" class="info pull-right glyphicon glyphicon-info-sign" aria-hidden="true"></span>
     </h3>
     <ul class='col-xs-12 imprecisionList'>
       <li>
@@ -20,6 +22,10 @@
               {{#if clinImpReady}} disabled{{/if}}">Set</button>
             <button onClick="Actions.Imprecision.resetClinImp('{{emType}}')" class="btn btn-default
               {{#unless clinImpReady}} disabled{{/unless}}">Reset</button>
+          </li>
+          <li>
+              <span id='prinfo'
+              onclick="Actions.alertify().message('The clinically important size of effect is the same as in “Heterogeneity” and “Incoherence”; if already specified it will automatically appear here. Otherwise, specify it here and it will be copied to the “Heterogeneity” and “Incoherence” domains. Press “Reset” to reset the clinically important effect size; note that this will affect the “Heterogeneity” and “Incoherence” domains too. Details can be found in Section 4.4 of the detailed manual.')" class="info glyphicon glyphicon-info-sign" aria-hidden="true"></span>
           </li>
         </ul>
       </li>

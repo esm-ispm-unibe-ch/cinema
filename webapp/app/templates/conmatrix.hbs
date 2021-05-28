@@ -1,5 +1,8 @@
 <blockquote id="conMatrixTitleCont" class='col-xs-12'>
-<h3 id="contMatTitle">Define your analysis</h3>
+  <h3 id="contMatTitle">Define your analysis
+      <span id='prinfo'
+          onclick="Actions.alertify().message('Choose whether to perform a fixed effect or a random effects network meta-analysis and define effect measure type. Details can be found in Section 3.2 of the detailed manual.')" class="info pull-right glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+  </h3>
     <div class='form-inline pull-right col-xs-12'>
         {{#each controls}}
           <div class="form-inline  conMatControls">
@@ -31,7 +34,12 @@
     </div>
 </blockquote>
 <blockquote id="conMatrixTitleCont" class='col-xs-12'>
-<h3 id="contMatTitle">Select intervention comparisons for evaluation</h3>
+<h3 id="contMatTitle">Select intervention comparisons for evaluation
+      <span id='prinfo'
+            onclick="Actions.alertify().message(
+            'Select which intervention comparisons are to be evaluated. First select the interventions of interest and then specify whether to evaluate all the comparisons that contain these interventions (“Containing any of the above interventions”) or only the comparisons that are formed between the selected interventions (“Between the above interventions”). Details can be found in Section 3.3 of the detailed manual.'
+            )" class="info pull-right glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+      </h3>
     <div class='form-inline pull-right col-xs-12'>
         {{#each controls}}
           <div class="form-inline  conMatControls">

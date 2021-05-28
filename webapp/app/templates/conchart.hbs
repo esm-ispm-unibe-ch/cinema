@@ -1,5 +1,8 @@
 <blockquote id="conChartTitleCont" class='col-xs-12'>
-  <h3 id="contChartTitle">{{text.title}}</h3>
+  <h3 id="contChartTitle">{{text.title}}
+              <span 
+              onclick="Actions.alertify().message('Each bar corresponds to an estimate of relative effect. Each bar also represents a reordering of a column of the per‐study contribution matrix, where studies with low, moderate, and high risk of bias have been grouped together and colored accordingly. Each study is represented by a colored area with white borders and is proportional to its contribution. Details can be found in Section 4.1 of the detailed manual.')" class="info glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+  </h3>
   <span id="contChartTitle" class="comments">{{text.subtitle}}</span>
   <div class='form-inline'>
     <button onClick="Actions.ConChart.save()"

@@ -1,7 +1,10 @@
 <div id="NetPlot" class='collapse in'>
   <blockquote id="netplotControls" class='col-xs-12'>
     <div class='pull-right col-xs-12'>
-    <h3>Network Plot</h3>
+    <h3>Network Plot
+      <span id='prinfo'
+          onclick="Actions.alertify().message('{{view.info}}')" class="info pull-right glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+    </h3>
       <div class='form-inline'>
         {{#each view.controls}}
           <label class='np-control controls-title mr-sm-2'>{{title}}</label>

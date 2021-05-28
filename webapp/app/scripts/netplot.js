@@ -524,6 +524,9 @@ var NP = {
           return true;
         }
       }
+    },
+    info: () => {
+      return(NP.model.getState().text.infos.netplot);
     }
   },
   update: {

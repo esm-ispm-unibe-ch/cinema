@@ -4,6 +4,8 @@
     {{#unless statusReady}}
       <h4 class=' controls-title mr-sm-2'>
         {{text.selectionTitle}}
+              <span
+              onclick="Actions.alertify().message('Choosing “Majority RoB” will lead to a level of concern according to the risk of bias with the greatest total percentage contribution (the greatest block between green, yellow, and red in each bar). The “Highest RoB” will assign a level of concern determined by the highest risk of bias in each bar. Summarizing risk of bias assessments using “Average RoB” uses a weighted average score for each relative effect estimate according to the percentage contribution of studies at each bias level. Details can be found in Section 4.1 of the detailed manual.')" class="info glyphicon glyphicon-info-sign" aria-hidden="true"></span>
       </h4>
       <select onChange="Actions.NetRob.selectRule(this)" {{#if statusReady}}
         disabled {{/if}} class='mr-sm-2 form-inline form-control'>

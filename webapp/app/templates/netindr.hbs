@@ -4,6 +4,8 @@
     {{#unless statusReady}}
       <h4 class=' controls-title mr-sm-2'>
         {{text.selectionTitle}}
+              <span
+              onclick="Actions.alertify().message('Choosing “Majority” will lead to a level of concern according to the indirectness with the greatest total percentage contribution (the greatest block between green, yellow, and red in each bar). The “Highest” will assign a level of concern determined by the highest indirectness in each bar. Summarizing indirectness assessments using “Average” uses a weighted average score for each relative effect estimate according to the percentage contribution of studies at each bias level. Details can be found in Section 4.3 of the detailed manual.')" class="info glyphicon glyphicon-info-sign" aria-hidden="true"></span>
       </h4>
       <select onChange="Actions.NetIndr.selectRule(this)" {{#if statusReady}}
         disabled {{/if}} class='mr-sm-2 form-inline form-control'>

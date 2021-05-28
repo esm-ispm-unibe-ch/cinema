@@ -14,7 +14,8 @@
             {{{model.text.uploadDataset}}}
           </span>
           <span class="pull-left glyphicon glyphicon-cloud-upload" aria-hidden="true"></span>
-          <span id='prinfo' class="info pull-right glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+          <span id='prinfo'
+                onclick="Actions.alertify().message('{{model.text.infos.project.uploadcsv}}')" class="info pull-right glyphicon glyphicon-info-sign" aria-hidden="true"></span>
         </h4>
         <div class="form-group">
           <input onchange="Actions.Project.fetchProject(this)" type="file" id="files" name="file" accept=".csv,.CSV" />
@@ -39,7 +40,6 @@
             {{{model.text.uploadProject}}}
           </span>
           <span class="pull-left glyphicon glyphicon-cloud-upload" aria-hidden="true"></span>
-          <span id='prinfo' class="info pull-right glyphicon glyphicon-info-sign" aria-hidden="true"></span>
         </h4>
         <div class="form-group">
       <input onchange="Actions.Project.readProject(this)" type="file"
@@ -251,7 +251,13 @@
           <button > Save </button>
         {{/if}}
       {{/if}}
+      <span>
     <a onClick="Actions.Project.saveProject()" class="btn btn-default"
-      id="saveProject">Save project</a>
+      id="saveProject">Save project
+    </a>
+              <span id='prinfo'
+              onclick="Actions.alertify().message('You can save the entire project as a .cnm files for later use.'
+            )" class="info glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+      </span>
     {{/if}}
 </div>

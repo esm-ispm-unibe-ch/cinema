@@ -19,6 +19,8 @@
             <div class='well col-xs-3 project-uploader'>
             Upload Table 2 from <a target='_blank'
                                   href='https://cinema.ispm.unibe.ch/rob-men'>ROB-MEN</a>
+              <span
+              onclick="Actions.alertify().message('You can assess reporting bias with the <b>ROB-MEN</b> framework. Just click the link and follow the instructions')" class="info glyphicon glyphicon-info-sign" aria-hidden="true"></span>
               <input onchange="Actions.Pubbias.uploadTable2(this)" type="file" id="table2Uploader" name="file" accept=".csv,.CSV" />
             </div>
         </div>

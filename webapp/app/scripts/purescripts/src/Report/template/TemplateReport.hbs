@@ -1,7 +1,9 @@
 <div class="container-fluid routed" id='report'>
   <div class='col-xs-12'>
     <h3>
-      {{{project.title}}}
+      {{project.title}}
+        <span
+              onclick="Actions.alertify().message('Judgments for the six domains across all evaluated treatment effects are reported. A thick gray left border line appears for judgments whose automatically generated judgments have been manually modified. The default summary judgment is “High” confidence; using the dropdown menu downgrading by one, two, or three levels is possible leading to a confidence rating of “Moderate,” “Low,” or “Very low” respectively. Details can be found in Section 5 of the detailed manual.')" class="pull-right info glyphicon glyphicon-info-sign" aria-hidden="true"></span>
     </h3>
     <button class="pull-right btn btn-default btn-pad"
         onClick="Actions.Report.resetAll()">Reset</button>
