@@ -15,7 +15,7 @@
           </span>
           <span class="pull-left glyphicon glyphicon-cloud-upload" aria-hidden="true"></span>
           <span id='prinfo'
-                onclick="Actions.alertify().message('{{model.text.infos.project.uploadcsv}}')" class="info pull-right glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+                onclick="Actions.alertify().message('Upload a .csv file with the study outcome data. The dataset should also include the data on the study‐level risk of bias (RoB) and judgments on indirectness. Study‐level RoB and indirectness can take either {1, 2, 3}, {l, m, h} or {L, M, H} values for low, moderate, and high RoB and indirectness respectively. The outcome can be binary or continuous and the format of the data can be either long or wide. Details can be found in Section 2 of the detailed manual')" class="info pull-right glyphicon glyphicon-info-sign" aria-hidden="true"></span>
         </h4>
         <div class="form-group">
           <input onchange="Actions.Project.fetchProject(this)" type="file" id="files" name="file" accept=".csv,.CSV" />
