@@ -13,7 +13,7 @@
     "browserify": "^13.1.1",
     "csvtojson": "^1.1.4",
     "del": "^2.2.0",
-    "gulp": "^3.9.0",
+    "gulp": "^3.9.1",
     "gulp-autoprefixer": "^3.0.1",
     "gulp-babel": "^6.1.1",
     "gulp-cache": "^0.4.2",

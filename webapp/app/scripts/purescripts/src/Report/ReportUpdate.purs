@@ -24,6 +24,7 @@ import IndirectnessModel
 import PubbiasModel
 import SaveModel
 import UpdateJudgement
+import UpdateReason
 import Report.Model
 import ResetJudgements
 import DownloadJudgements
@@ -88,12 +89,13 @@ updateReportJudgement a = do
   updateJudgement a
   logShow $ "updated judgement"
 
-{--resetJudgements :: forall eff. Foreign --}
-  {---> Eff (console :: CONSOLE --}
-         {--, updateJudgs :: RESET_JUDGEMENTS --}
-         {--| eff--}
-         {--) Unit--}
-{--resetJudgements = resetJudgements--}
+updateReportReason :: forall e. Foreign 
+  -> Eff ( console :: CONSOLE
+         , updateMe :: UPDATE_REASON 
+         | e) Unit
+updateReportReason a = do
+  updateReason a
+  logShow $ "updated reason"
 
 resetAll = resetJudgements
 
@@ -104,9 +106,45 @@ hasJudgements st = (st ^. _State <<< project <<< _Project
                     <<< report <<< _Report)
                    ."status" == "ready"
 
+fixAllowedReasons :: State 
+                  -> Comparison 
+                  -> Array ReasonLevel 
+                  -> Array ReasonLevel
+fixAllowedReasons st c reass =
+      let StudyLimitation robbox = getStudyLimitation st c
+          roballowed = robbox."value" > 1
+          PubbiasBox pbbox = getPubbias st c
+          pballowed = pbbox."judgement" > 1
+          IndirectnessBox indbox = getIndirectness st c
+          indallowed = indbox."judgement" > 1
+          ImprecisionBox impbox = getImprecision st c
+          impallowed = impbox."judgement" > 1
+          HeterogeneityBox hetbox = getHeterogeneity st c
+          hetallowed = hetbox."judgement" > 1
+          IncoherenceBox incbox = getIncoherence st c
+          incallowed = incbox."judgement" > 1
+          updateReas :: Int -> Boolean
+          updateReas 1 = roballowed
+          updateReas 2 = pballowed
+          updateReas 3 = indallowed
+          updateReas 4 = impallowed
+          updateReas 5 = hetallowed
+          updateReas _ = incallowed
+          updateSelected :: Boolean -> Boolean -> Boolean
+          updateSelected _ false = false
+          updateSelected selected true = selected
+          newReass = map (\(ReasonLevel rl) -> do
+                          let isAllowed = updateReas (rl."id")
+                              isSelected = updateSelected rl."selected" isAllowed
+                          rl { allowed = isAllowed
+                             , selected = isSelected}
+                         ) reass
+       in map ReasonLevel newReass
+
 defaultJudgement :: State 
+                 -> Comparison
                  -> ReportJudgement
-defaultJudgement st =
+defaultJudgement st c =
   let levelsText = (st ^. _State <<< text <<< _TextContent
                  <<< reportText <<< _ReportText)."levels"
       defaultLevels = [ { id: 0
@@ -142,6 +180,43 @@ defaultJudgement st =
                      ReportLevel $ ol { label = label }
                    )
                    $ 0..3
+      defaultReasons = [ { id: 1
+                        , label: "Within-study bias"
+                        , color: "#02c000"
+                        , selected: false
+                        , allowed: false
+                        }
+                      , { id: 2
+                        , label: "Reporting bias"
+                        , color: "#0C8CE7"
+                        , selected: false
+                        , allowed: false
+                        }
+                      , { id: 3
+                        , label: "Indirectness"
+                        , color: "#e0df02"
+                        , selected: false
+                        , allowed: false
+                        }
+                      , { id: 4
+                        , label: "Imprecision"
+                        , color: "#c00000"
+                        , selected: false
+                        , allowed: false
+                        }
+                      , { id: 5
+                        , label: "Heterogeneity"
+                        , color: "#c00000"
+                        , selected: false
+                        , allowed: false
+                        }
+                      , { id: 6
+                        , label: "Incoherence"
+                        , color: "#c00000"
+                        , selected: false
+                        , allowed: false
+                        }
+                      ]
       getSelected :: Array ReportLevel ->  ReportLevel
       getSelected ls =
         let foundLevel = find (\lv -> (lv ^. _ReportLevel)."selected") ls
@@ -150,6 +225,7 @@ defaultJudgement st =
                  Nothing -> skeletonReportLevel
   in ReportJudgement{ selected : getSelected levels
                     , levels : levels
+                    , reasons : fixAllowedReasons st c $ map ReasonLevel defaultReasons
                     }
 
 hasDirects :: State -> Boolean
@@ -407,10 +483,13 @@ getJudgement st c = do
                   isIdOfComparisonComma (ib ^. _ReportRow)."id" c
               ) (directs <> indirects)
      in case judg of
-                 Just j -> (j ^. _ReportRow)."judgement"
-                 Nothing -> defaultJudgement st
+                 Just j -> let ReportJudgement oldj = (j ^. _ReportRow)."judgement" 
+                               newj = oldj { reasons = fixAllowedReasons st c
+                                           oldj."reasons"}
+                            in ReportJudgement newj
+                 Nothing -> defaultJudgement st c
     else
-    defaultJudgement st
+    defaultJudgement st c
 
 getIncoherence :: State -> Comparison -> IncoherenceBox
 getIncoherence st c = do

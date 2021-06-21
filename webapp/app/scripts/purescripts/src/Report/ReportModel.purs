@@ -55,6 +55,7 @@ skeletonStudyLimitation = StudyLimitation { id : "None"
 newtype ReportJudgement = ReportJudgement
   { selected :: ReportLevel
   , levels :: Array ReportLevel
+  , reasons :: Array ReasonLevel
   }
 derive instance genericReportJudgement :: Rep.Generic ReportJudgement _
 instance showReportJudgement :: Show ReportJudgement where
@@ -63,6 +64,7 @@ instance decodeReportJudgement :: Decode ReportJudgement where
   decode = genericDecode opts
 _ReportJudgement :: Lens' ReportJudgement (Record _)
 _ReportJudgement = lens (\(ReportJudgement s) -> s) (\_ -> ReportJudgement)
+
 
 newtype ReportRow = ReportRow 
   { id :: String
@@ -122,5 +124,29 @@ skeletonReportLevel = ReportLevel
   { id : 666
   , color : "black"
   , label : "--"
+  , selected : false
+  }
+
+newtype ReasonLevel = ReasonLevel
+  { id :: Int
+  , color :: String
+  , label :: String
+  , allowed :: Boolean
+  , selected :: Boolean
+  }
+derive instance genericReasonLevel :: Rep.Generic ReasonLevel _
+instance showReasonLevel :: Show ReasonLevel where
+    show = genericShow
+instance decodeReasonLevel :: Decode ReasonLevel where
+  decode = genericDecode opts
+_ReasonLevel :: Lens' ReasonLevel (Record _)
+_ReasonLevel = lens (\(ReasonLevel s) -> s) (\_ -> ReasonLevel)
+
+skeletonReasonLevel :: ReasonLevel
+skeletonReasonLevel = ReasonLevel 
+  { id : 666
+  , color : "black"
+  , label : "--"
+  , allowed : true
   , selected : false
   }

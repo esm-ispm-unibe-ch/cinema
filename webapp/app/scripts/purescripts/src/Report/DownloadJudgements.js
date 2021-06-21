@@ -20,6 +20,7 @@ exports.downloadJudgements = function () {
           , "Heterogeneity"
           , "Incoherence"
           , "Confidence rating"
+          , "Reason(s) for downgrading"
           ]
         var report = project.report;
         var directs =  report.directRows;
@@ -33,6 +34,7 @@ exports.downloadJudgements = function () {
           var armB = row.armB.toString();
           return (armA===t1 && armB===t2) || (armA===t2 && armB===t1)
         });
+        var reasons = row.judgement.reasons.filter(function(reas){return(reas.selected)}).map(function(r){return(r.label)});
         var out = {};
           out[fields[0]] = rid; 
           out[fields[1]] = row.numberOfStudies;
@@ -43,6 +45,7 @@ exports.downloadJudgements = function () {
           out[fields[6]] = row.heterogeneity.label;
           out[fields[7]] = row.incoherence.label;
           out[fields[8]] = row.judgement.selected.label;
+          out[fields[9]] = reasons;
           return out;
         }
         report = [].concat(directs.map(function(r){return parseRow(r)})

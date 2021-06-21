@@ -22,6 +22,11 @@ exports.resetJudgements = function () {
               });
               r.judgement.levels = lvs;
               r.judgement.selected = lvs[0];
+              var rsns = r.judgement.reasons.map(function (reas){
+                reas.selected = false;
+                return(reas);
+              });
+              r.judgement.reasons = rsns;
               return r;})
           }
           resetRows(directs);

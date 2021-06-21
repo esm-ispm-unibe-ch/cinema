@@ -3,7 +3,7 @@
     <h3>
       {{project.title}}
         <span
-              onclick="Actions.alertify().message('Judgments for the six domains across all evaluated treatment effects are reported. A thick gray left border line appears for judgments whose automatically generated judgments have been manually modified. The default summary judgment is “High” confidence; using the dropdown menu downgrading by one, two, or three levels is possible leading to a confidence rating of “Moderate,” “Low,” or “Very low” respectively. Details can be found in Section 5 of the detailed manual.')" class="pull-right info glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+              onclick="Actions.alertify().message('Judgments for the six domains across all evaluated treatment effects are reported. A thick grey left border line appears for judgments whose automatically generated judgments have been manually modified. The default summary judgment is “High” confidence\; downgrading by one, two, or three levels will lead to a confidence rating of “Moderate,” “Low,” or “Very low” respectively. Use the “Confidence rating” dropdown menu to manually assign an overall level of confidence to each relative effect. For each comparison, tick the relevant domains to indicate the reasons for downgrade\; these domains will automatically appear under the column \'Reason for downgrade\'. Details can be found in Section 5 of the detailed manual.')" class="pull-right info glyphicon glyphicon-info-sign" aria-hidden="true"></span>
     </h3>
     <button class="pull-right btn btn-default btn-pad"
         onClick="Actions.Report.resetAll()">Reset</button>
@@ -35,6 +35,9 @@
             <th>
               Confidence rating
             </th>
+            <th>
+              Reason(s) for downgrading
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -53,22 +56,82 @@
                 </td>
                 <td style="background-color:{{studyLimitation.color}}" {{# if studyLimitation.customized}} class='customized-report'{{/if}}>
                   {{studyLimitation.label}}
+                  {{# if judgement.reasons.0.allowed}}
+                    <input type="checkbox" id="coding" name="interest"
+                    onClick="Actions.Report.updateReportReason(this)()"
+                                                     value="{{id}}σδεl{{judgement.reasons.0.id}}"
+                                                       {{# if
+                                                         judgement.reasons.0.selected}}
+                                                       checked {{/if}}
+                                                     >
+                    </input>
+                  {{/if}}
                 </td>
                 <td style="background-color:{{pubbias.color}}"  {{# if pubbias.customized}} class='customized-report'{{/if}}>
                   {{pubbias.label}}
+                  {{# if judgement.reasons.1.allowed}}
+                    <input type="checkbox" id="coding" name="interest"
+                                                     value="{{id}}σδεl{{judgement.reasons.1.id}}"
+                    onClick="Actions.Report.updateReportReason(this)()"
+                                                       {{# if
+                                                         judgement.reasons.1.selected}}
+                                                       checked {{/if}}
+                                                     >
+                    </input>
+                  {{/if}}
                 </td>
                 <td style="background-color:{{indirectness.color}}"  {{# if indirectness.customized}} class='customized-report'{{/if}}>
                   {{indirectness.label}}
+                  {{# if judgement.reasons.2.allowed}}
+                  <input type="checkbox" id="coding" name="interest"
+                                                     value="{{id}}σδεl{{judgement.reasons.2.id}}"
+                    onClick="Actions.Report.updateReportReason(this)()"
+                                                       {{# if
+                                                         judgement.reasons.2.selected}}
+                                                       checked {{/if}}
+                                                     >
+                  </input>
+                  {{/if}}
                 </td>
                 <td style="background-color:{{imprecision.color}}"  {{# if
                   imprecision.customized}} class='customized-report'{{/if}}>
                   {{imprecision.label}}
+                  {{# if judgement.reasons.3.allowed}}
+                  <input type="checkbox" id="coding" name="interest"
+                                                     value="{{id}}σδεl{{judgement.reasons.3.id}}"
+                    onClick="Actions.Report.updateReportReason(this)()"
+                                                       {{# if
+                                                         judgement.reasons.3.selected}}
+                                                       checked {{/if}}
+                                                     >
+                  </input>
+                {{/if}}
                 </td>
                 <td style="background-color:{{heterogeneity.color}}"  {{# if heterogeneity.customized}} class='customized-report'{{/if}}>
                   {{heterogeneity.label}}
+                  {{# if judgement.reasons.4.allowed}}
+                  <input type="checkbox" id="coding" name="interest"
+                                                      value="{{id}}σδεl{{judgement.reasons.4.id}}"
+                    onClick="Actions.Report.updateReportReason(this)()"
+                                                       {{# if
+                                                         judgement.reasons.4.selected}}
+                                                       checked {{/if}}
+                                                     >
+                  </input>
+                {{/if}}
                 </td>
                 <td style="background-color:{{incoherence.color}}"  {{# if incoherence.customized}} class='customized-report'{{/if}}>
                   {{incoherence.label}}
+                  {{# if judgement.reasons.5.allowed}}
+                    <input type="checkbox" id="coding" name="interest"
+                                                       value="{{id}}σδεl{{judgement.reasons.5.id}}"
+                    onClick="Actions.Report.updateReportReason(this)()"
+                                                       {{# if
+                                                         judgement.reasons.5.selected}}
+                                                       checked {{/if}}
+                                                       >
+                  {{/if}}
+                  </input>
                 </td>
                 <td>
                   <select onChange="Actions.Report.updateReportJudgement(this)()"
@@ -79,10 +142,18 @@
                     <option style="background:{{color}}" value="{{id}}σδεl{{../id}}" 
                               {{#if selected }} selected="selected"
                               {{/if}}>
-                    {{label}}
+                        {{label}}
                       </option>
                     {{/each}}
                   </select>
+                </td>
+                <td>
+                  |
+                  {{#each judgement.reasons}} 
+                      {{#if selected}} 
+                        {{label}} |
+                      {{/if}}
+                  {{/each}}
                 </td>
               </tr>
             {{/each}}
@@ -102,22 +173,82 @@
                 </td>
                 <td style="background-color:{{studyLimitation.color}}" {{# if studyLimitation.customized}} class='customized-report'{{/if}}>
                   {{studyLimitation.label}}
+                  {{# if judgement.reasons.0.allowed}}
+                    <input type="checkbox" id="coding" name="interest"
+                    onClick="Actions.Report.updateReportReason(this)()"
+                                                     value="{{id}}σδεl{{judgement.reasons.0.id}}"
+                                                       {{# if
+                                                         judgement.reasons.0.selected}}
+                                                       checked {{/if}}
+                                                     >
+                    </input>
+                  {{/if}}
                 </td>
                 <td style="background-color:{{pubbias.color}}"  {{# if pubbias.customized}} class='customized-report'{{/if}}>
                   {{pubbias.label}}
+                  {{# if judgement.reasons.1.allowed}}
+                    <input type="checkbox" id="coding" name="interest"
+                                                     value="{{id}}σδεl{{judgement.reasons.1.id}}"
+                    onClick="Actions.Report.updateReportReason(this)()"
+                                                       {{# if
+                                                         judgement.reasons.1.selected}}
+                                                       checked {{/if}}
+                                                     >
+                    </input>
+                  {{/if}}
                 </td>
                 <td style="background-color:{{indirectness.color}}"  {{# if indirectness.customized}} class='customized-report'{{/if}}>
                   {{indirectness.label}}
+                  {{# if judgement.reasons.2.allowed}}
+                  <input type="checkbox" id="coding" name="interest"
+                                                     value="{{id}}σδεl{{judgement.reasons.2.id}}"
+                    onClick="Actions.Report.updateReportReason(this)()"
+                                                       {{# if
+                                                         judgement.reasons.2.selected}}
+                                                       checked {{/if}}
+                                                     >
+                  </input>
+                  {{/if}}
                 </td>
                 <td style="background-color:{{imprecision.color}}"  {{# if
                   imprecision.customized}} class='customized-report'{{/if}}>
                   {{imprecision.label}}
+                  {{# if judgement.reasons.3.allowed}}
+                  <input type="checkbox" id="coding" name="interest"
+                                                     value="{{id}}σδεl{{judgement.reasons.3.id}}"
+                    onClick="Actions.Report.updateReportReason(this)()"
+                                                       {{# if
+                                                         judgement.reasons.3.selected}}
+                                                       checked {{/if}}
+                                                     >
+                  </input>
+                {{/if}}
                 </td>
                 <td style="background-color:{{heterogeneity.color}}"  {{# if heterogeneity.customized}} class='customized-report'{{/if}}>
                   {{heterogeneity.label}}
+                  {{# if judgement.reasons.4.allowed}}
+                  <input type="checkbox" id="coding" name="interest"
+                                                      value="{{id}}σδεl{{judgement.reasons.4.id}}"
+                    onClick="Actions.Report.updateReportReason(this)()"
+                                                       {{# if
+                                                         judgement.reasons.4.selected}}
+                                                       checked {{/if}}
+                                                     >
+                  </input>
+                {{/if}}
                 </td>
                 <td style="background-color:{{incoherence.color}}"  {{# if incoherence.customized}} class='customized-report'{{/if}}>
                   {{incoherence.label}}
+                  {{# if judgement.reasons.5.allowed}}
+                    <input type="checkbox" id="coding" name="interest"
+                                                       value="{{id}}σδεl{{judgement.reasons.5.id}}"
+                    onClick="Actions.Report.updateReportReason(this)()"
+                                                       {{# if
+                                                         judgement.reasons.5.selected}}
+                                                       checked {{/if}}
+                                                       >
+                  {{/if}}
+                  </input>
                 </td>
                 <td>
                   <select onChange="Actions.Report.updateReportJudgement(this)()"
@@ -132,6 +263,14 @@
                       </option>
                     {{/each}}
                   </select>
+                </td>
+                <td>
+                  |
+                  {{#each judgement.reasons}} 
+                      {{#if selected}} 
+                        {{label}} |
+                      {{/if}}
+                  {{/each}}
                 </td>
               </tr>
             {{/each}}
