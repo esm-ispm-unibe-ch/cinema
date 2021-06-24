@@ -1,4 +1,21 @@
-# Change log
+# CINeMA Change log
+
+## Frontend v2.0.0 - June 2021
+Version 2.0.0 has huge UI improvements. Enjoy!
+- **Save/Load projects**: You can now save the entire state of a project as a
+  .cnm file. You can later load it or share it to other CINeMA users. This is
+  also a way to ensure the reproducibility of your evaluation.
+  Just go to `MY PROJECTS` page and click `Save Project` at the bottom.
+- Specify in the final report which domains lead you to downgrade the confidence
+  rating. These will be recorded and displayed in the **Reason(s) for downgrading**
+  column of the report.
+- Compatibility with the [**ROB-MEN**](https://cinema.ispm.unibe.ch/rob-men/) framework for assessing reporting bias. You can upload the table straight out of the ROB-MEN into the reporting bias domain of CINeMA.
+- Within-study bias **sensitivity analysis** by providing two additional league tables.
+  One excluding studies with high risk of bias and one excluding both high and moderate
+  within-study risk of bias.
+- **Info buttons** added throughout CINeMA with useful pop-up information and guidance. 
+- **Printer friendly** version for creating pdf files accessible through the footer
+  button.
 
 ## Frontend v1.9.0 - Oct 8 2019
 **terminology change**
